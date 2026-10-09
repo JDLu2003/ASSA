@@ -57,6 +57,8 @@ MARKS = {
     "docker": ("si", "docker", "#2496ED"),
     "notion": ("lobe", "notion", "#000000"),
     "kiro": ("lobe", "kiro-color", None),
+    "meta": ("lobe", "meta-color", None),
+    "digitalocean": ("si", "digitalocean", "#0080FF"),
 }
 
 # Brands without a published mark in either package: monogram tile

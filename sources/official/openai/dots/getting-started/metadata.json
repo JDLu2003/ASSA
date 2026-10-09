@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "dots",
+    "id": "getting-started",
+    "url": "https://help.openai.com/en/articles/20001530-getting-started-with-your-dot",
+    "kind": "official-web"
+  },
+  "path": "sources/official/openai/dots/getting-started",
+  "requested_url": "https://help.openai.com/en/articles/20001530-getting-started-with-your-dot",
+  "final_url": "https://help.openai.com/en/articles/20001530-getting-started-with-your-dot",
+  "title": "Getting started with your dot",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

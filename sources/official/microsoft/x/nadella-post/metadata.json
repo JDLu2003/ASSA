@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "microsoft",
+    "product": "x",
+    "id": "nadella-post",
+    "url": "https://x.com/satyanadella/status/2047033636923568440",
+    "kind": "social"
+  },
+  "path": "sources/official/microsoft/x/nadella-post",
+  "requested_url": "https://x.com/satyanadella/status/2047033636923568440",
+  "final_url": "https://x.com/satyanadella/status/2047033636923568440",
+  "title": "Satya Nadella on X: “Every agent will need its own computer.”",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

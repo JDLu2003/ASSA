@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "meta",
+    "product": "muse",
+    "id": "introducing-muse",
+    "url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/",
+    "kind": "official-web"
+  },
+  "path": "sources/official/meta/muse/introducing-muse",
+  "requested_url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/",
+  "final_url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/",
+  "title": "Introducing Muse: The World’s First Personal AI Agent Built for Everyone",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "cloudflare",
+    "product": "computer",
+    "id": "blog",
+    "url": "https://blog.cloudflare.com/cloudflare-computer/",
+    "kind": "official-web"
+  },
+  "path": "sources/official/cloudflare/computer/blog",
+  "requested_url": "https://blog.cloudflare.com/cloudflare-computer/",
+  "final_url": "https://blog.cloudflare.com/cloudflare-computer/",
+  "title": "Your agent needs a computer, not a container — introducing @cloudflare/computer",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

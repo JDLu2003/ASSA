@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "chatgpt",
+    "id": "release-notes",
+    "url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+    "kind": "official-web"
+  },
+  "path": "sources/official/openai/chatgpt/release-notes",
+  "requested_url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+  "final_url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+  "title": "ChatGPT release notes",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

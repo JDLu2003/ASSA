@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "digitalocean",
+    "product": "managed-agents",
+    "id": "why-we-built",
+    "url": "https://www.digitalocean.com/blog/why-we-built-managed-agents",
+    "kind": "official-web"
+  },
+  "path": "sources/official/digitalocean/managed-agents/why-we-built",
+  "requested_url": "https://www.digitalocean.com/blog/why-we-built-managed-agents",
+  "final_url": "https://www.digitalocean.com/blog/why-we-built-managed-agents",
+  "title": "The agent-first cloud: why we built Managed Agents",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

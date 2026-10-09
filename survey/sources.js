@@ -276,6 +276,17 @@ window.SOURCES = [
 "captured": "2026-10-09"
 },
 {
+"id": "cloudflare/computer/blog",
+"kind": "official",
+"vendor": "cloudflare",
+"product": "computer",
+"title": "Your agent needs a computer, not a container — introducing @cloudflare/computer",
+"url": "https://blog.cloudflare.com/cloudflare-computer/",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
 "id": "daytona/sandbox/overview",
 "kind": "official",
 "vendor": "daytona",
@@ -296,6 +307,28 @@ window.SOURCES = [
 "pdf": "https://github.com/JDLu2003/ASSA/blob/claude/jolly-hamilton-pz9s9e/sources/official/daytona/sandbox/pricing/page.pdf",
 "txt": "https://github.com/JDLu2003/ASSA/blob/claude/jolly-hamilton-pz9s9e/sources/official/daytona/sandbox/pricing/page.txt",
 "captured": "2026-10-09"
+},
+{
+"id": "digitalocean/managed-agents/press-release",
+"kind": "official",
+"vendor": "digitalocean",
+"product": "managed-agents",
+"title": "DigitalOcean Launches Managed Agents, Bringing Agent Execution, Tool Access, and Inference Together on One Cloud",
+"url": "https://investors.digitalocean.com/news/news-details/2026/DigitalOcean-Launches-Managed-Agents-Bringing-Agent-Execution-Tool-Access-and-Inference-Together-on-One-Cloud/default.aspx",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
+"id": "digitalocean/managed-agents/why-we-built",
+"kind": "official",
+"vendor": "digitalocean",
+"product": "managed-agents",
+"title": "The agent-first cloud: why we built Managed Agents",
+"url": "https://www.digitalocean.com/blog/why-we-built-managed-agents",
+"pdf": null,
+"txt": null,
+"captured": ""
 },
 {
 "id": "e2b/sandbox/overview",
@@ -705,6 +738,28 @@ window.SOURCES = [
 "captured": "2026-10-09"
 },
 {
+"id": "meta/muse/introducing-muse",
+"kind": "official",
+"vendor": "meta",
+"product": "muse",
+"title": "Introducing Muse: The World’s First Personal AI Agent Built for Everyone",
+"url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
+"id": "meta/muse/safety",
+"kind": "official",
+"vendor": "meta",
+"product": "muse",
+"title": "How We Built Safety Into Muse",
+"url": "https://security.muse.ai/",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
 "id": "microsoft/foundry-agent-service/overview",
 "kind": "official",
 "vendor": "microsoft",
@@ -769,6 +824,17 @@ window.SOURCES = [
 "pdf": "https://github.com/JDLu2003/ASSA/blob/claude/jolly-hamilton-pz9s9e/sources/official/microsoft/foundry/pricing/page.pdf",
 "txt": "https://github.com/JDLu2003/ASSA/blob/claude/jolly-hamilton-pz9s9e/sources/official/microsoft/foundry/pricing/page.txt",
 "captured": "2026-10-09"
+},
+{
+"id": "microsoft/x/nadella-post",
+"kind": "official",
+"vendor": "microsoft",
+"product": "x",
+"title": "Satya Nadella on X: “Every agent will need its own computer.”",
+"url": "https://x.com/satyanadella/status/2047033636923568440",
+"pdf": null,
+"txt": null,
+"captured": ""
 },
 {
 "id": "openai/agents-api/architecture",
@@ -892,6 +958,17 @@ window.SOURCES = [
 "captured": "2026-10-09"
 },
 {
+"id": "openai/chatgpt/release-notes",
+"kind": "official",
+"vendor": "openai",
+"product": "chatgpt",
+"title": "ChatGPT release notes",
+"url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
 "id": "openai/codex-cloud/environments",
 "kind": "official",
 "vendor": "openai",
@@ -912,6 +989,28 @@ window.SOURCES = [
 "pdf": "https://github.com/JDLu2003/ASSA/blob/claude/jolly-hamilton-pz9s9e/sources/official/openai/codex-cloud/overview/page.pdf",
 "txt": "https://github.com/JDLu2003/ASSA/blob/claude/jolly-hamilton-pz9s9e/sources/official/openai/codex-cloud/overview/page.txt",
 "captured": "2026-10-09"
+},
+{
+"id": "openai/dots/getting-started",
+"kind": "official",
+"vendor": "openai",
+"product": "dots",
+"title": "Getting started with your dot",
+"url": "https://help.openai.com/en/articles/20001530-getting-started-with-your-dot",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
+"id": "openai/dots/introducing-dots",
+"kind": "official",
+"vendor": "openai",
+"product": "dots",
+"title": "Introducing dots",
+"url": "https://openai.com/index/introducing-dots/",
+"pdf": null,
+"txt": null,
+"captured": ""
 },
 {
 "id": "openai/responses/migration-guide",
@@ -945,6 +1044,50 @@ window.SOURCES = [
 "pdf": "https://github.com/JDLu2003/ASSA/blob/claude/jolly-hamilton-pz9s9e/sources/official/openai/tools/web-search/page.complete.pdf",
 "txt": "https://github.com/JDLu2003/ASSA/blob/claude/jolly-hamilton-pz9s9e/sources/official/openai/tools/web-search/page.txt",
 "captured": "2026-10-09"
+},
+{
+"id": "openai/x/dots-post",
+"kind": "official",
+"vendor": "openai",
+"product": "x",
+"title": "OpenAI on X: “Introducing dots, powered by GPT-6 Astra. Remarkably capable, always-on agents built to handle everything.”",
+"url": "https://x.com/OpenAI/status/2104984504133918973",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
+"id": "press/cnbc/muse-amd",
+"kind": "official",
+"vendor": "press",
+"product": "cnbc",
+"title": "Meta Muse popularity lifts AMD stock to fresh highs as AI agents juice CPU sales",
+"url": "https://www.cnbc.com/2026/10/06/meta-muse-gives-amd-a-boost-as-ai-momentum-shifts-to-personal-agents-.html",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
+"id": "press/tomsguide/muse-vs-dots",
+"kind": "official",
+"vendor": "press",
+"product": "tomsguide",
+"title": "Meta Muse vs ChatGPT Dots — I compared the new AI agents",
+"url": "https://www.tomsguide.com/ai/meta-muse-vs-chatgpt-dots-i-compared-the-new-ai-agents-and-theyre-not-as-similar-as-they-look",
+"pdf": null,
+"txt": null,
+"captured": ""
+},
+{
+"id": "press/tomshardware/muse-epyc",
+"kind": "official",
+"vendor": "press",
+"product": "tomshardware",
+"title": "Meta Muse runs agents on AMD EPYC Turin hosts with two cores and 8GB of memory",
+"url": "https://www.tomshardware.com/pc-components/cpus/meta-muse-runs-agents-on-amd-epyc-turin-hosts-with-two-cores-and-8gb-of-memory-ai-agent-can-pass-terminal-commands-to-ubuntu-host-system",
+"pdf": null,
+"txt": null,
+"captured": ""
 },
 {
 "id": "sglang/inference/overview",

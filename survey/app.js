@@ -611,7 +611,7 @@
     { g: "tool", name: "搜索 API" },
     { g: "tool", p: "Exa", v: "", r: ["exa/search/overview", "exa/search/pricing"], c: [["n", ""], ["n", ""], ["n", ""], ["n", ""], ["h", "搜索、Deep Search、Contents、Answer、Monitors"], "$4–15/千次请求"] },
     { g: "tool", p: "Tavily", v: "", r: ["tavily/search/overview", "tavily/search/pricing"], c: [["n", ""], ["n", ""], ["n", ""], ["n", ""], ["h", "Search、Extract、Map、Crawl、Research"], "$0.008/积分（按量）"] },
-    { g: "app", name: "云端编程应用" },
+    { g: "app", name: "云端 agent 应用" },
     { g: "app", p: "Codex Cloud", v: "OpenAI", r: ["openai/codex-cloud/overview", "openai/codex-cloud/environments"],
       c: [["h", "Codex"], ["h", "ChatGPT 网页、桌面与手机，终端也可发起"], ["h", "OpenAI 模型"], ["h", "发布的云环境（仓库、依赖、工具），按任务分配工作区"], ["h", "network secret 经代理替换"], "—"] },
     { g: "app", p: "Claude Code 云会话", v: "Anthropic", r: ["anthropic/claude-code-web/overview"],
@@ -622,8 +622,12 @@
       c: [["h", "Jules"], ["h", "网页、CLI、API，或用 issue 标签分配"], ["h", "Gemini 3 Pro"], ["h", "在 Cloud VM 中克隆仓库并验证修改"], ["n", ""], "按方案"] },
     { g: "app", p: "Kiro Web", v: "AWS", r: ["aws/kiro-web/overview", "aws/kiro-web/sandbox"],
       c: [["h", "Kiro"], ["h", "网页，可从任意界面重新接入会话"], ["n", ""], ["h", "按任务分配隔离沙箱，内置 headless Chrome 与 Playwright MCP"], ["h", "浏览器自动化工具"], "—"] },
+    { g: "app", p: "Muse", v: "Meta", r: ["meta/muse/introducing-muse", "meta/muse/safety", "press/tomsguide/muse-vs-dots"],
+      c: [["h", "Meta 的 Muse agent"], ["h", "Muse 应用（iOS、Android、muse.ai）与 WhatsApp"], ["h", "Meta 的 Muse Spark 模型"], ["h", "每个用户一台 Muse Secure VM；出站请求与连接器操作由 Sentinel 审批，凭据在网络边界替换"], ["h", "浏览器、邮件与已连接的应用，经 Stripe 的 Link 结账"], "免费档，Power $20/月，Max $100/月"] },
+    { g: "app", p: "dots", v: "OpenAI", r: ["openai/dots/introducing-dots", "openai/dots/getting-started", "openai/chatgpt/release-notes"],
+      c: [["h", "OpenAI 的 dot，按自定义规则决定自行操作或请求批准"], ["h", "ChatGPT 网页、桌面与手机，Slack 与 Teams"], ["h", "GPT-6 Astra"], ["o", [["h", "每个 dot 一台云端计算机与浏览器，可随时打开或接管"], ["b", "可连接用户自己的电脑"]]], ["h", "插件连接 4,000 多个应用"], "Pro 与 Business Premium 含一个 dot"] },
   ];
-  const PL = { "OpenAI Agents API": "openai", "Claude Managed Agents": "anthropic", "Managed Agents API on Agent Platform": "gemini", "Bedrock Managed Agents, powered by OpenAI": "aws", "AgentCore Runtime": "aws", "Agent Runtime（原 Agent Engine）": "googlecloud", "Foundry Hosted agents": "azureai", "E2B": "e2b", "Daytona": "daytona", "Cloud Run sandboxes": "googlecloud", "GKE Agent Sandbox": "googlecloud", "Exa": "exa", "Tavily": "tavily", "Codex Cloud": "codex", "Claude Code 云会话": "claudecode", "Copilot cloud agent": "githubcopilot", "Jules": "google", "Kiro Web": "kiro" };
+  const PL = { "OpenAI Agents API": "openai", "Claude Managed Agents": "anthropic", "Managed Agents API on Agent Platform": "gemini", "Bedrock Managed Agents, powered by OpenAI": "aws", "AgentCore Runtime": "aws", "Agent Runtime（原 Agent Engine）": "googlecloud", "Foundry Hosted agents": "azureai", "E2B": "e2b", "Daytona": "daytona", "Cloud Run sandboxes": "googlecloud", "GKE Agent Sandbox": "googlecloud", "Exa": "exa", "Tavily": "tavily", "Codex Cloud": "codex", "Claude Code 云会话": "claudecode", "Copilot cloud agent": "githubcopilot", "Jules": "google", "Kiro Web": "kiro", "Muse": "meta", "dots": "openai" };
   const WHO = { h: "服务方运行", b: "用户提供", o: "两者可选", n: "空缺" };
   function drawMatrix(filter) {
     const cols = [["Harness", "var(--c-harness)"], ["会话接口", "var(--c-session)"], ["模型推理", "var(--c-model)"], ["执行环境", "var(--c-env)"], ["托管工具", "var(--c-tool)"], ["计费", "var(--rule)"]];
@@ -673,7 +677,7 @@
     const count = (col, k) => prods.filter((r) => r.c[col][0] === k).length;
     const own = (col) => [["服务方运行", count(col, "h"), "var(--accent)"], ["用户提供", count(col, "b"), "#c49a52"], ["两者可选", count(col, "o"), "var(--c-model)"], ["空缺", count(col, "n"), "var(--rule)"]];
     $("#donuts").innerHTML =
-      donut("产品类别", [["托管 harness 的服务", byG("managed"), "var(--ink)"], ["运行平台", byG("runtime"), "var(--c-session)"], ["沙箱服务", byG("sandbox"), "var(--c-env)"], ["搜索 API", byG("tool"), "var(--c-tool)"], ["云端编程应用", byG("app"), "var(--ink-3)"]]) +
+      donut("产品类别", [["托管 harness 的服务", byG("managed"), "var(--ink)"], ["运行平台", byG("runtime"), "var(--c-session)"], ["沙箱服务", byG("sandbox"), "var(--c-env)"], ["搜索 API", byG("tool"), "var(--c-tool)"], ["云端 agent 应用", byG("app"), "var(--ink-3)"]]) +
       donut("Harness 由谁提供", own(0)) +
       donut("执行环境由谁提供", own(3));
   }

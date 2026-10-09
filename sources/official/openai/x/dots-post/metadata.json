@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "x",
+    "id": "dots-post",
+    "url": "https://x.com/OpenAI/status/2104984504133918973",
+    "kind": "social"
+  },
+  "path": "sources/official/openai/x/dots-post",
+  "requested_url": "https://x.com/OpenAI/status/2104984504133918973",
+  "final_url": "https://x.com/OpenAI/status/2104984504133918973",
+  "title": "OpenAI on X: “Introducing dots, powered by GPT-6 Astra. Remarkably capable, always-on agents built to handle everything.”",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}
