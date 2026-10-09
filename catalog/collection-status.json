@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-10-09T13:11:54.632084+00:00",
+  "generated_at": "2026-10-09T13:12:54.843728+00:00",
   "priority": "Paper collection resumed following user instruction",
   "captured_webpages": 89,
   "captured_papers": 57,
   "products_index": "catalog/PRODUCTS.md",
-  "git_upload_status": "Current paper batch verified locally; upload pending",
+  "git_upload_status": "Paper originals, extracted text and indexes uploaded; source commit verified against remote branch",
   "remaining": [
     "Initial source inventory, not an exhaustive literature or market census.",
     "ACM publisher page for RhymeRL returned a browser access challenge; arXiv original retained.",
     "The user-mentioned IPADS OSDI filesystem/RL paper is not conclusively identified."
   ],
   "checks": {
-    "source_hashes": "415 file hashes verified; all PDFs parsed and all downloaded source archives listed successfully",
+    "source_hashes": "Previous product batch: 415 source hashes verified. Current paper inventory: 240 file hashes verified; all paper PDFs parsed and source archives listed.",
     "browser_tls": "verification retained; NSS database write access required in sandbox",
     "print_completeness": "Default and adjusted browser PDFs retained. PDF/DOM text screening passed; Kiro sandbox document uses full body line matching because printed sidebar is omitted. Kiro Web expanded reading layout visually inspected. Dynamic variants and text in images are not guaranteed by these checks.",
-    "git_lfs": "136 PDF/archive files represented as Git LFS pointers; source commit LFS fsck passed; both uploads confirmed",
+    "git_lfs": "New batch: 79 staged PDF/archive LFS pointers verified; Git LFS fsck passed; push succeeded and remote source commit matched.",
     "paper_integrity": "240 paper file hashes verified; all paper PDFs parsed, extracted titles matched, all source archives listed."
   },
   "paper_source_archives": 51,
@@ -22,6 +22,6 @@
   "component_and_agent_type_entries": 11,
   "previous_product_candidates_resolved": 15,
   "git_branch": "source-collection-20261009",
-  "verified_uploaded_source_commit": "0f2ee3d9b2d33d51ad6e4b098e6688266289d5d5",
+  "verified_uploaded_source_commit": "8772f1961e5ef4cc7cca09acf5ee8d8209461c40",
   "papers_index": "catalog/PAPERS.md"
 }
