@@ -1,0 +1,73 @@
+[
+  {
+    "query": "all:HistoRL",
+    "results": []
+  },
+  {
+    "query": "all:DeltaBox",
+    "results": [
+      {
+        "url": "http://arxiv.org/abs/2605.22781v2",
+        "title": "DeltaBox: Scaling Stateful AI Agents with Millisecond-Level Sandbox Checkpoint/Rollback",
+        "summary": "LLM-powered AI agents require high-frequency state exploration (e.g., test-time tree search and reinforcement learning), relying on rapid checkpoint and rollback (C/R) of the complete sandbox state, including files and process state (e.g., memory, contexts, etc.). Existing mechanisms duplicate the entire state, causing hundreds of milliseconds to seconds of latency per C/R, which severely bottlenecks deep search and large-scale fan-outs. This paper observes that subsequent checkpoints in AI agen"
+      }
+    ]
+  },
+  {
+    "query": "all:BlitzScale",
+    "results": [
+      {
+        "url": "http://arxiv.org/abs/2412.17246v2",
+        "title": "BLITZSCALE: Fast and Live Large Model Autoscaling with O(1) Host Caching",
+        "summary": "Model autoscaling is the key mechanism to achieve serverless model-as-a-service, but it faces a fundamental trade-off between scaling speed and storage/memory usage to cache parameters, and cannot meet frequent scaling requirements across multiple hosts. The key problem is that data plane performance is slow, and scaled instances remain stopped while parameters are loading. In this paper, we first show that the data plane can be made fast with no or O(1) caching by loading parameters through the"
+      },
+      {
+        "url": "http://arxiv.org/abs/2512.03416v1",
+        "title": "TokenScale: Timely and Accurate Autoscaling for Disaggregated LLM Serving with Token Velocity",
+        "summary": "The architectural shift to prefill/decode (PD) disaggregation in LLM serving improves resource utilization but struggles with the bursty nature of modern workloads. Existing autoscaling policies, often retrofitted from monolithic systems like those in AIBrix and DistServe, rely on lagging indicators such as GPU utilization or coarse-grained request counts. This results in slow reactions to load spikes, leading to significant Time-to First-Token (TTFT) and Time-Per-Output-Token (TPOT) SLO violati"
+      }
+    ]
+  },
+  {
+    "query": "all:\"agent as a service\"",
+    "results": [
+      {
+        "url": "http://arxiv.org/abs/2507.22326v1",
+        "title": "An Explainable Emotion Alignment Framework for LLM-Empowered Agent in Metaverse Service Ecosystem",
+        "summary": "Metaverse service is a product of the convergence between Metaverse and service systems, designed to address service-related challenges concerning digital avatars, digital twins, and digital natives within Metaverse. With the rise of large language models (LLMs), agents now play a pivotal role in Metaverse service ecosystem, serving dual functions: as digital avatars representing users in the virtual realm and as service assistants (or NPCs) providing personalized support. However, during the mo"
+      },
+      {
+        "url": "http://arxiv.org/abs/2505.08446v1",
+        "title": "Agent-as-a-Service based on Agent Network",
+        "summary": "The rise of large model-based AI agents has spurred interest in Multi-Agent Systems (MAS) for their capabilities in decision-making, collaboration, and adaptability. While the Model Context Protocol (MCP) addresses tool invocation and data exchange challenges via a unified protocol, it lacks support for organizing agent-level collaboration. To bridge this gap, we propose Agent-as-a-Service based on Agent Network (AaaS-AN), a service-oriented paradigm grounded in the Role-Goal-Process-Service (RG"
+      },
+      {
+        "url": "http://arxiv.org/abs/2605.13618v1",
+        "title": "OpenAaaS: An Open Agent-as-a-Service Framework for Distributed Materials-Informatics Research",
+        "summary": "The Materials Genome Initiative catalyzed the proliferation of centralized platforms--SaaS, PaaS, and IaaS--that aggregate computational and experimental resources for accelerated materials discovery. In parallel, breakthroughs in large language models (LLMs) and autonomous agents have created powerful new reasoning capabilities for scientific research. Yet a critical \"last mile\" problem remains: while we possess world-class models and vast repositories of materials data, we lack the organizatio"
+      },
+      {
+        "url": "http://arxiv.org/abs/2407.19438v1",
+        "title": "Conversational AI Multi-Agent Interoperability, Universal Open APIs for Agentic Natural Language Multimodal Communications",
+        "summary": "This paper analyses Conversational AI multi-agent interoperability frameworks and describes the novel architecture proposed by the Open Voice Interoperability initiative (Linux Foundation AI and DATA), also known briefly as OVON (Open Voice Network). The new approach is illustrated, along with the main components, delineating the key benefits and use cases for deploying standard multi-modal AI agency (or agentic AI) communications. Beginning with Universal APIs based on Natural Language, the fra"
+      },
+      {
+        "url": "http://arxiv.org/abs/2509.24380v3",
+        "title": "Agentic Services Computing",
+        "summary": "Services computing has evolved from Web services and microservices to cloud-native and serverless paradigms. These approaches established mature principles for describing, composing, deploying, operating, and governing reusable software functions. LLM-based agents now introduce a fundamentally different service form. Service value in this paradigm emerges not only from invoking predefined functions but also from delegating goals to autonomous entities. These entities understand context, use tool"
+      }
+    ]
+  },
+  {
+    "query": "all:\"agent sandbox\"",
+    "error": "The read operation timed out"
+  },
+  {
+    "query": "all:\"agent\" AND all:\"snapshot\"",
+    "error": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "query": "all:\"agent\" AND all:\"survey\"",
+    "error": "HTTP Error 429: Too Many Requests"
+  }
+]

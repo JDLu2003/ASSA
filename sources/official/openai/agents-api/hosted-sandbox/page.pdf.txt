@@ -1,0 +1,44 @@
+OpenAI-hosted sandboxes
+Run code and create downloadable files without managing compute.
+    Copy Page
+
+
+
+An OpenAI-hosted sandbox gives your agent a Linux workspace with Python, Node.js, and
+command-line tools. OpenAI provisions and connects it; your application supplies the task and
+retrieves the results. Choose a self-hosted sandbox when you need your own image, compute, or
+private network.
+
+For tasks that interact with websites through a browser, see Computer use.
+
+
+Configure the sandbox
+Set environment.type to openai_hosted in your create-session request. Add only the settings
+your workload needs. The sandbox’s working directory is /workspace .
+
+Choose the resources and network access your task needs with container_size and network .
+If you use an environment template, omitted settings inherit the template.
+
+
+Prepare packages and files
+Use these settings to make dependencies and inputs available in the sandbox:
+
+      packages : Install Python, system, or global npm packages with python , system , or
+      npm lists. Pin versions when needed, such as pandas==2.2.3 .
+      files : Supply input files by Files API ID or inline base64 content.
+
+
+Run setup commands
+Use setup_commands to run shell commands in order before the agent starts. For example, [{
+"command": "mkdir -p reports" }] creates a directory. Each command can set its own cwd ;
+the default is /workspace .
+
+Packages and input files are prepared before setup commands run. Use a setup command to
+check required dependencies or files. A nonzero setup exit status prevents the agent from
+starting.
+
+
+Set environment variables
+Use env to set string-valued environment variables. Agent-generated code can read these
+values.                                                                                     Ask AI
+

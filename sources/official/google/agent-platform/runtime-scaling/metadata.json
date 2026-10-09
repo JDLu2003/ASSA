@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform",
+    "id": "runtime-scaling",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:08:55.466690+00:00",
+  "path": "sources/official/google/agent-platform/runtime-scaling",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+  "http_status": 200,
+  "title": "Optimize and scale Agent Runtime performance  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "2aa5e597a041fdd0098f281432d93c71b2cd08c905bca53acbd2a580f7319823",
+      "bytes": 15671
+    },
+    "page.txt": {
+      "sha256": "4ddad620cd82d367b11dcf9edf67420bc4396756883dc5d860d8d3009650f685",
+      "bytes": 12283
+    },
+    "page.pdf": {
+      "sha256": "ff1e790dfbde32801edb0fe37bb25a73ab43433e579b721a33dafae2861747fe",
+      "bytes": 252754
+    },
+    "page.html": {
+      "sha256": "f31a99e229d832fe56468c3acc7d6fe8bcc7a7a80258989c24aebc56e92c238d",
+      "bytes": 201787
+    }
+  }
+}

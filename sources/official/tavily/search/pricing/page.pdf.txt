@@ -1,0 +1,179 @@
+       Getting Started      Credits & Pricing
+
+
+
+
+Getting Started
+
+
+Credits & Pricing                                                                                         Copy page
+
+
+Learn how to get and manage your Tavily API Credits.
+
+
+Free API Credits
+
+           Get your free API key
+           You get 1,000 free API Credits every month. No credit card required.
+
+
+
+
+Pricing Overview
+Tavily operates on a simple, credit-based model:
+
+       Free: 1,000 credits/month
+
+       Pay-as-you-go: $0.008 per credit (allows you to be charged per credit once your plan’s credit
+       limit is reached).
+
+       Monthly plans: $0.0075 - $0.005 per credit
+
+       Enterprise: Custom pricing and volume
+
+
+Plan                            Credits per month               Monthly price                  Price per credit
+
+Researcher                      1,000                           Free                           -
+
+Project                         4,000                           $30                            $0.0075
+
+      This website uses cookies and other tracking technologies to enhance user experience and to analyze
+Bootstrap                     15,000                         $100                          $0.0067
+       performance and traffic on our website. We also share information about your use of our site with our social
+Startupmedia, advertising and analytics
+                                38,000partners. If we have detected
+                                                               $220an opt-out preference signal    then it will be
+                                                                                              $0.0058
+        honored. Further information is available in our Cookie Notice
+Growth                          100,000                         $500                           $0.005
+                                           Do Not Sell or Share My Personal Information
+Pay as you go                   Per usage                       $0.008 / Credit                $0.008
+
+Enterprise                      Custom                          Custom
+                                                              Reject All                       Custom
+
+
+
+                                                          Accept Cookies
+Head to billing to explore our different options and manage your plan.
+API Credits Costs
+
+Tavily Search
+
+Your search depth determines the cost of your request.
+
+
+    Basic Search ( basic ): Each request costs 1 API credit.
+
+    Advanced Search ( advanced ): Each request costs 2 API credits.
+
+
+Tavily Extract
+
+The number of successful URL extractions and your extraction depth determines the cost of your
+request. You never get charged if a URL extraction fails.
+
+
+    Basic Extract ( basic ): Every 5 successful URL extractions cost 1 API credit
+
+    Advanced Extract ( advanced ): Every 5 successful URL extractions cost 2 API credits
+
+
+Tavily Map
+
+The number of pages mapped and whether or not natural-language instructions are specified
+determines the cost of your request. You never get charged if a map request fails.
+
+
+    Regular Mapping: Every 10 successful pages returned cost 1 API credit
+
+    Map with ( instructions ): Every 10 successful pages returned cost 2 API credits
+
+
+Tavily Crawl
+
+Tavily Crawl combines both mapping and extraction operations, so the cost is the sum of both:
+
+
+    Crawl Cost = Mapping Cost + Extraction Cost
+
+For example:
+
+       This website uses cookies and other tracking technologies to enhance user experience and to analyze
+    If you  crawl 10 pages with basic extraction depth, you’ll be charged 1 credit for mapping (10
+      performance and traffic on our website. We also share information about your use of our site with our social
+     media,+
+    pages)   2 credits
+           advertising   foranalytics
+                       and   extraction    (10 Ifsuccessful
+                                      partners.               extractions
+                                                  we have detected an opt-out 5) = 3 total
+                                                                           ÷ preference    credits
+                                                                                        signal then it will be
+      honored. Further information is available in our Cookie Notice
+    If you crawl 10 pages with advanced extraction depth, you’ll be charged 1 credit for mapping + 4
+    credits for extraction = 5 total credits
+
+
+Tavily Research
+
+Tavily Research follows a dynamic pricing model with minimum and maximum credit consumption
+boundaries associated with each request. The minimum and maximum boundaries differ based on if
+the request uses model=mini or model=pro .
+
+
+Request Cost Boundaries                         model=pro                             model=mini
+
+Per-request minimum                             15 credits                            4 credits
+
+Per-request maximum                             250 credits                           110 credits
+
+
+
+
+  Quickstart
+    Previous
+
+
+
+                                                                                                            Rate Limits
+                                                                                                                     Next
+
+
+   Ask a question...
+
+
+
+
+                             Resources                            Legal
+
+                             About                                Security & Complian…
+
+                             Tavily Search Crawler                Privacy Policy
+
+                             Tavily Status                        Website Terms of Use
+
+                                                                  Platform Terms of U…
+
+                                                                  Cookie Notice
+
+                                                                  Accessibility Menu
+
+                                                                  Do Not Sell or Share…
+      This website uses cookies and other tracking technologies to enhance user experience and to analyze
+      performance and traffic on our website. We also share information about your use of our site with our social
+      media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+      honored. Further information is available in our Cookie Notice
+
+   Assistant
+
+     Responses are generated using AI and may
+                contain mistakes.
+Ask aThis website uses cookies and other tracking technologies to enhance user experience and to analyze
+      question...
+     performance and traffic on our website. We also share information about your use of our site with our social
+     media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+     honored. Further information is available in our Cookie Notice
+

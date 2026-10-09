@@ -1,0 +1,553 @@
+                                                                   English   Preferences    Contact Us Feedback
+
+
+                         Get started      Service guides     Developer tools       AI resources
+
+   AgentCore Runtime versioning
+   and endpoints                               Documentation        Amazon Bedrock AgentCore      Developer Gu…
+   Invoke an agent
+
+   Shell execution                             Execute shell
+         Execute shell commands
+
+         Interactive Shells (Terminals)
+                                               commands in
+   Observe agents                              AgentCore Runtime
+   Security best practices
+
+   Troubleshoot
+                                               sessions
+AgentCore Memory: Add memory to
+                                                     PDF               RSS         Markdown
+your agent
+
+AgentCore Gateway                                    Agent Setup             Focus mode
+
+AgentCore Identity: Provide identity
+management for agent applications
+AgentCore payments: Enable secure
+microtransaction payments for AI               On this page
+agents
+                                                  How it works
+AgentCore Code Interpreter: Execute
+                                                  Prerequisites
+code and analyze data
+                                                  Execute a command
+AgentCore Browser: interact with web
+                                                  Coding agent workflow example
+applications
+                                                  Common use cases
+AgentCore Observability: Observe your
+                                                  Key design choices
+agents and resources
+                                                  Security considerations
+AgentCore MCP Server: Vibe coding
+                                                  Error handling
+with your coding assistant
+                                                  Best practices
+Policy in AgentCore: Control Agent
+Interactions
+AgentCore Evaluations: Evaluate agent
+performance
+                                               Did this page help you?
+AgentCore optimization
+                                                     Yes             No
+AWS Agent Registry: Centrally catalog
+and discover AI Resources                      Provide feedback
+
+AgentCore CLI reference
+AgentCore Python SDK reference
+
+AgentCore TypeScript SDK reference
+                                               The InvokeAgentRuntimeCommand operation lets you
+Security
+                                               execute shell commands directly inside a running AgentCore
+Tagging resources
+                                               Runtime session and stream the output back over HTTP/2.
+Quotas
+                                               Commands run in the same container, filesystem, and
+Release notes                                  environment as your agent - the same session used by
+                                               InvokeAgentRuntime . This enables workflows where your
+                   application uses English
+                                    the agent Preferences
+                                              for reasoning tasks and
+                                                            Contact Us Feedback
+                   commands for deterministic operations like running tests, git
+Get started         operations,
+              Service guides    orDeveloper
+                                   environment
+                                            tools setup.
+                                                      AI resources
+
+                   To call InvokeAgentRuntimeCommand , you need
+                    bedrock-agentcore:InvokeAgentRuntimeCommand
+                   permissions.
+
+
+
+
+                   How it works
+                    InvokeAgentRuntimeCommand runs a shell command
+                   inside the container of an active AgentCore Runtime session
+                   and streams the output back.
+
+                   Same agent, same session
+
+                    InvokeAgentRuntimeCommand operates on the same
+                   agent runtime and session as InvokeAgentRuntime . You
+                   don’t create separate resources. The agent you deployed with
+                   CreateAgentRuntime accepts both agent invocations and
+                   command execution on any active session.
+
+
+                          Note
+                          The AgentCore Runtime microVM does not include
+                          developer tools like git , npm , or language
+                          runtimes by default. Any tools your commands
+                          depend on must be included in your container
+                          image (via your Dockerfile) or installed dynamically
+                          at runtime.
+
+
+                   The response is a stream of three event types:
+
+
+                      Event                   When             Contains
+
+                      contentStart            First            Confirms the
+                                              chunk            command
+                                                               started
+
+                      contentDelta            During            stdout and/or
+                                              execution         stderr output
+
+                      contentStop             Last              exitCode and
+                                              chunk             status (
+                                                                COMPLETED or
+                                                                TIMED_OUT )
+                   Output streams in   real time.
+                                     English      You see results
+                                               Preferences        as they
+                                                              Contact  Us run, not
+                                                                           Feedback
+                   after they finish.
+Get started   Service guides     Developer tools     AI resources
+
+
+                   Prerequisites
+                        bedrock-
+                       agentcore:InvokeAgentRuntimeCommand IAM
+                       permission
+                       A valid AgentCore Runtime endpoint ARN
+
+
+                          Note
+                          Agents created after March 17, 2026 support
+                          command execution automatically. If you deployed
+                          your agent before this date, you must redeploy it to
+                          update the agent runtime.
+
+
+
+
+                   Execute a command
+                   Example
+
+
+
+                      Python           Java    JavaScript
+
+                       1. The following example shows how to use boto3 to
+                          execute a command in a AgentCore Runtime
+                           session.
+
+
+                               import boto3
+                               import sys
+
+
+                               client = boto3.client('bedrock-agentc
+
+                               response = client.invoke_agent_runtim
+                                   agentRuntimeArn='arn:aws:bedrock-
+                                   runtimeSessionId='session-id-at-l
+                                   qualifier='DEFAULT',
+                                   contentType='application/json',
+                                   accept='application/vnd.amazon.ev
+                                   body={
+                                       'command': '/bin/bash -c "npm
+                                          'timeout': 60
+                                   }
+                            )      English   Preferences    Contact Us Feedback
+
+
+Get started   Service guides # Process
+                                Developer the
+                                          tools streaming    response
+                                                   AI resources
+                            for event in response.get('stream', [
+                                if 'chunk' in event:
+                                    chunk = event['chunk']
+
+
+                                       if 'contentStart' in chunk:
+                                           print("Command execution
+
+                                       if 'contentDelta' in chunk:
+                                           delta = chunk['contentDel
+                                           if delta.get('stdout'):
+                                               print(delta['stdout']
+                                           if delta.get('stderr'):
+                                               print(delta['stderr']
+
+                                       if 'contentStop' in chunk:
+                                           stop = chunk['contentStop
+                                           print(f"\nExit code: {sto
+
+
+
+
+                   Coding agent workflow example
+                   A common pattern is to use InvokeAgentRuntime for
+                   reasoning and InvokeAgentRuntimeCommand for
+                   deterministic operations in the same session.
+
+                   Example End-to-end coding agent workflow
+
+
+                     import boto3
+                     import json
+
+
+                     client = boto3.client('bedrock-agentcore', re
+
+                     AGENT_ARN = 'arn:aws:bedrock-agentcore:us-wes
+                     SESSION_ID = 'session-id-at-least-33-characte
+
+                     def run_command(command, timeout=60):
+                         """Helper to run a command and return the
+                          response = client.invoke_agent_runtime_co
+                              agentRuntimeArn=AGENT_ARN,
+                              runtimeSessionId=SESSION_ID,
+                                contentType='application/json',
+                                   English     Preferences     Contact Us Feedback
+                                accept='application/vnd.amazon.events
+Get started   Service guides    body={'command':
+                                Developer  tools         command, 'timeout':
+                                                     AI resources
+                           )
+                           for event in response.get('stream', []):
+                               if 'chunk' in event and 'contentStop'
+                                   return event['chunk']['contentSto
+                           return None
+
+                      # Step 1: Invoke the agent to analyze and wri
+                      response = client.invoke_agent_runtime(
+                          agentRuntimeArn=AGENT_ARN,
+                          runtimeSessionId=SESSION_ID,
+                          payload=json.dumps({"prompt": "Read JIRA-
+                      )
+                      # Process agent response...
+
+                      # Step 2: Run tests deterministically
+                      exit_code = run_command('/bin/bash -c "cd /wo
+
+                      # Step 3: If tests pass, commit and push
+                      if exit_code == 0:
+                          run_command('/bin/bash -c "cd /workspace
+                          run_command('/bin/bash -c "cd /workspace
+                          run_command('/bin/bash -c "cd /workspace
+
+
+                   The agent writes the code. The platform runs the commands.
+                   Each does what it’s best at.
+
+
+
+
+                   Common use cases
+                   Running test suites
+                      After the agent writes code, run the project’s test suite
+                      as a command. The streaming response lets you detect
+                      failures early and feed specific error output back to the
+                      agent for iteration.
+
+
+                        /bin/bash -c "cd /workspace && npm test 2
+
+
+                   Git operations
+                      Branching, committing, and pushing are deterministic
+                      operations. Run them as commands after the agent
+                      completes its work, keeping version control logic out of
+                      the LLM.
+                                     English   Preferences    Contact Us Feedback
+                        /bin/bash -c "cd /workspace && git add -A
+
+Get started   Service guides    Developer tools      AI resources
+                   Dependency installation
+                      Bootstrap the environment before invoking the agent -
+                      clone repos, install packages, set up build tooling. This
+                      preparation runs faster and more reliably as direct
+                      commands.
+
+
+                        /bin/bash -c "pip install -r requirements
+
+
+                   Build and compile
+                      Compile steps and asset generation -anything with a
+                      known command that should run exactly as specified.
+
+
+                        /bin/bash -c "cd /workspace && cargo buil
+
+
+                   Linting and validation
+                      Run code quality checks as a validation gate after the
+                      agent writes code, before committing.
+
+
+                        /bin/bash -c "cd /workspace && npx eslint
+
+
+                   Environment inspection
+                      Check runtime state, installed packages, available tools -
+                      useful for debugging agent failures.
+
+
+                        /bin/bash -c "python --version && node --
+
+
+                   Data operations
+                      Fetch datasets, upload results, run data transformations
+                      -network and compute operations that run faster as
+                      direct commands.
+
+
+                        /bin/bash -c "aws s3 cp s3://my-bucket/da
+
+
+
+
+                   Key design choices
+                   One-shot, non-interactive execution
+                       Each command     spawns aPreferences
+                                     English       new bash process, runs
+                                                                Contact Us to
+                                                                            Feedback
+                       completion (or timeout), and returns. There is no
+Get started            persistent Developer
+              Service guides      shell session between
+                                             tools        commands. This
+                                                      AI resources
+                       matches how agent frameworks use command
+                      execution -craft a command, run it, read the output,
+                      decide what to do next.
+
+                   Streaming response over HTTP/2
+                      Output arrives as it’s produced, not buffered until
+                      completion. A npm test that takes two minutes
+                      streams results in real time. Your application can detect
+                      a failure in the first few seconds and cancel early rather
+                      than waiting for the full run.
+
+                   Container isolation
+                      Commands execute inside the same container as your
+                      agent code. They see the same filesystem, environment
+                      variables, and installed packages. A file the agent wrote
+                      at /workspace/fix.py is immediately visible to a
+                      command running cat /workspace/fix.py .
+
+                   Non-blocking to the runtime
+                      Command execution doesn’t block agent invocations.
+                      You can invoke the agent and run commands
+                      concurrently on the same session. The platform handles
+                      the concurrency.
+
+                   Stateless between commands
+                      Each command starts fresh -no shell history, no
+                      environment variable changes from previous commands
+                      carry over. If you need state, encode it in the command
+                      itself: cd /workspace && export NODE_ENV=test
+                      && npm test .
+
+
+
+
+                   Security considerations
+
+                          Tip
+                          For a consolidated view of all Runtime security
+                          recommendations, see Security best practices for
+                          AgentCore Runtime.
+
+
+
+                          Important
+                           Under theEnglish
+                                     AWS shared     responsibility
+                                                Preferences         model,
+                                                                 Contact Us you
+                                                                             Feedback
+                           are responsible for the security of the commands
+Get started                you execute
+              Service guides           in your
+                                 Developer  toolsAgentCore   Runtime sessions.
+                                                       AI resources
+                          AWS provides the secure infrastructure and
+                          isolation at the microVM level. You are responsible
+                          for the commands you run, the data you process,
+                          and the access controls you configure.
+
+
+                   The security boundary for command execution is the
+                   microVM. Each AgentCore Runtime session runs in an
+                   isolated microVM with its own kernel, memory, and
+                   filesystem. Commands you execute cannot access other
+                   customers' workloads or escape the VM boundary. However,
+                   within your VM, commands have full access to the container
+                   filesystem and any credentials or secrets you have
+                   configured.
+
+                   Auditing with CloudWatch Logs
+
+                   AgentCore Runtime sends the request ID and the input
+                   command to your agent’s Amazon CloudWatch Logs log
+                   group. You can use these logs to monitor command activity
+                   and maintain an audit trail of what commands were executed
+                   in your sessions. The command execution output (stdout and
+                   stderr) is streamed back to your application and is not logged
+                   by the service.
+
+                   Auditing with CloudTrail
+
+                   AWS CloudTrail records InvokeAgentRuntimeCommand
+                   API calls in your account. Each record includes metadata such
+                   as the caller identity, timestamp, source IP address, and
+                   response status. CloudTrail does not log the request or
+                   response payload. Use CloudTrail to audit who executed
+                   commands and when, then correlate with CloudWatch Logs
+                   logs using the request ID to see what command was
+                   executed.
+
+                   For sensitive workloads, consider implementing additional
+                   controls such as:
+
+                        Using IAM policies to restrict which principals can call
+                        InvokeAgentRuntimeCommand
+                        Configuring VPC endpoints to keep traffic within your
+                        network
+                        Setting up CloudWatch Logs metric filters and alarms to
+                        detect unexpected command patterns
+                                  English
+                       Reviewing CloudTrail  Preferences
+                                            logs            Contact
+                                                 regularly for      Us Feedback
+                                                               unauthorized
+                       access attempts
+Get started   Service guides    Developer tools     AI resources
+
+
+
+                   Error handling
+                   When using the InvokeAgentRuntimeCommand operation,
+                   you might encounter the following errors:
+
+                   ValidationException
+                      Occurs when the request parameters are invalid. Check
+                      that your agent ARN, session ID, and command are
+                      correctly formatted. The command must be between 1
+                      byte and 64 KB, the timeout must be between 1 and
+                      3600 seconds, and the session ID must be at least 33
+                      characters.
+
+                   ResourceNotFoundException
+                      Occurs when the specified agent runtime or session
+                      cannot be found. Verify that the agent ARN is correct
+                      and that the session is active.
+
+                   AccessDeniedException
+                      Occurs when you don’t have the necessary permissions.
+                      Ensure that your IAM policy includes the bedrock-
+                      agentcore:InvokeAgentRuntimeCommand
+                      permission.
+
+                   ThrottlingException
+                      Occurs when you exceed the request rate limit of 25
+                      TPS. Implement exponential backoff and retry logic in
+                      your application.
+
+                   RetryableConflictException
+                      Occurs (HTTP 409) when an
+                      InvokeAgentRuntimeCommand operation targets a
+                      session that the service is provisioning or tearing down.
+                      The message is Session operation in progress,
+                      please retry . This condition is transient and
+                      retryable. Retry with short exponential backoff instead
+                      of treating it as terminal. The AWS SDKs auto-retry this
+                      exception when default retries are enabled. If you
+                      disabled retries or call the API directly without an AWS
+                      SDK, retry it yourself.
+
+                   A command that completes with a non-zero exit code is not
+                   an API error. Check the exitCode in the contentStop
+                                              event to determine if the command
+                                                             English     PreferencesitselfContact
+                                                                                          succeeded.  A
+                                                                                                  Us Feedback
+                                              status of TIMED_OUT indicates the command exceeded
+                      Get started          the
+                                     Service   specified Developer
+                                             guides      timeout. tools          AI resources
+
+
+
+
+                                              Best practices
+                                              Follow these best practices when using the
+                                              InvokeAgentRuntimeCommand operation:
+
+                                                  Use InvokeAgentRuntimeCommand for deterministic
+                                                  operations (tests, git, builds) and
+                                                  InvokeAgentRuntime for reasoning tasks. Don’t route
+                                                  deterministic operations through the LLM.
+                                                  Include any developer tools your commands depend on
+                                                  (such as git , npm , or language runtimes) in your
+                                                  container image via your Dockerfile.
+                                                  Always check the exitCode in the contentStop
+                                                  event to determine if the command succeeded.
+                                                  Set appropriate timeouts. A test suite might need 5
+                                                  minutes, while a git push might only need 30
+                                                  seconds.
+                                                  Process streaming output incrementally to detect failures
+                                                  early. You can cancel a long-running command rather
+                                                  than waiting for it to complete.
+                                                  Encode state in the command itself using && chaining
+                                                  (for example, cd /workspace && export
+                                                  NODE_ENV=test && npm test ), since each command
+                                                  starts a fresh bash process.
+                                                  Use UUIDs for session IDs to meet the 33-character
+                                                  minimum requirement (for example, 12345678-1234-
+                                                  1234-1234-123456789012 ).
+
+
+
+
+                                              Next topic: Interactive Shells (Terminals)
+
+Get Started              Service Guides Previous topic: Shell
+                                              Developer       execution
+                                                          Tools      Helpful Links
+                                                                                                      Top
+AWS Hands-On             Choosing a generative      AWS Code Example        Download the AWS
+Tutorials                AI service                 Library                 Docs MCP Server
+AWS Solutions            AWS service guides         AWS CLI                 Sign into the AWS
+Library                  AWS CLI Tutorials on       AWS Builder Center      Console
+AWS Decision Guides      GitHub                     AWS Developer Tools     AWS re:Post
+                                                    Blog
+                                                                                  English       Preferences         Contact Us Feedback
+Privacy     |   Site terms   |    Cookie preferences   |   © 2026, Amazon Web Services, Inc. or its affiliates. All rights
+
+reserved.        English         Get started       Service guides            Developer tools            AI resources
+

@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "daytona",
+    "product": "sandbox",
+    "id": "overview",
+    "url": "https://www.daytona.io/docs/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:04:45.757754+00:00",
+  "path": "sources/official/daytona/sandbox/overview",
+  "requested_url": "https://www.daytona.io/docs/",
+  "final_url": "https://www.daytona.io/docs/",
+  "http_status": 200,
+  "title": "Documentation · Daytona",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "1fb03211849a3927b954bf9f843766126103e38304a64307ffd125f2d66fcccd",
+      "bytes": 3392
+    },
+    "page.txt": {
+      "sha256": "6a6f77e7a325a0389b6a53a8a6722b2bd5948a8f19cda4fb52e38ff01f0821de",
+      "bytes": 3775
+    },
+    "page.pdf": {
+      "sha256": "296ea3406277da71fd44ae2cf5659fe212f23852f0be50c4261a4a6bcdf6b418",
+      "bytes": 145005
+    }
+  }
+}

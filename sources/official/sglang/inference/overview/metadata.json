@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "sglang",
+    "product": "inference",
+    "id": "overview",
+    "url": "https://docs.sglang.ai/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:05:35.838421+00:00",
+  "path": "sources/official/sglang/inference/overview",
+  "requested_url": "https://docs.sglang.ai/",
+  "final_url": "https://docs.sglang.io/",
+  "http_status": 200,
+  "title": "Welcome to SGLang - SGLang Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "352868fb5f3a53b7a556bcead2b69e0cc17f67ae879365737c04b04b443a9405",
+      "bytes": 7804
+    },
+    "page.txt": {
+      "sha256": "59c85e621f6735bddec1927210af0c83bed34b7bdf23e3880798569aa1ee4b71",
+      "bytes": 5217
+    },
+    "page.pdf": {
+      "sha256": "8bfbca1691f8d61bd6fb554cbb6afdf4cae1377c8c7a7cf76a20fd413512e38c",
+      "bytes": 11299563
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore-runtime",
+    "id": "deep-research-blog",
+    "url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:20.857844+00:00",
+  "path": "sources/official/aws/agentcore-runtime/deep-research-blog",
+  "requested_url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+  "final_url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+  "http_status": 200,
+  "title": "Running deep research AI agents on Amazon Bedrock AgentCore | Artificial Intelligence",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "03fc4dc7a7102feee63a60ace2a023ee82649fd9356e0a68736f5bb3586fa64a",
+      "bytes": 19329
+    },
+    "page.txt": {
+      "sha256": "76e0fe5dc92e9cb4b41984116e4ac196308cab6f4b0130b8b070db1553e0909a",
+      "bytes": 15547
+    },
+    "page.pdf": {
+      "sha256": "90e81f98528104c560ea170bce7fbcb8c0eb7285e0a55319a4083c4662621d0b",
+      "bytes": 442207
+    }
+  }
+}

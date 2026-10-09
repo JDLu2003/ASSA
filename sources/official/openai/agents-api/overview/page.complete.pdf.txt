@@ -1,0 +1,137 @@
+Agents API
+Build durable cloud agents with a managed Codex harness.
+    Copy Page
+
+
+
+The Agents API gives your application access to the Codex harness through an OpenAI-managed API.
+
+OpenAI manages sessions, orchestration, context compaction, and recovery while your application provides tools and chooses its execution
+environment.
+
+Agents can operate in a sandbox where they can execute code, edit files, connect to MCP servers, and produce artifacts.
+
+See the API reference for endpoints, request parameters, and response fields.
+
+
+Pricing
+Model usage is billed at the selected model’s API rates. OpenAI tools use their standard rates, and OpenAI-hosted sandboxes use standard
+container rates.
+
+
+Try an example
+Try these complete examples:
+
+    Create and run a directory-tree script in an OpenAI-hosted sandbox.
+    Compare release notes with subagents and combine their findings into one answer.
+
+
+Explore complete applications:
+
+    Incident response agent: investigate alerts and request approval for recovery actions.
+    Slack bot: investigate requests using connected workplace tools.
+    Data analyst: answer warehouse questions with read-only SQL.
+    Use the GitHub issue investigator to reproduce reported bugs and share findings on GitHub.
+    Use the document reviewer to review documents with policy skills and specialist agents.
+
+
+Core concepts
+The Agents API is built around four main concepts:
+
+    Agent: The model, instructions, tools, and MCP servers available to the agent.
+    Environment: An optional sandbox or computer where the agent accesses files, loads skills, and runs commands.
+    Session: A durable instance of an agent that works on tasks and responds to input.
+    Events and items: The inputs sent to an agent and the output produced during a session.
+
+
+A session from start to finish
+Start with an OpenAI-hosted sandbox in the quickstart:
+
+ 1. Create a session. Configure the agent; OpenAI provisions its environment.
+ 2. Give it a task. User input starts a turn of work once the environment is ready.
+ 3. Follow progress. Stream output or use webhooks to learn when the agent finishes or needs input.
+ 4. Continue or steer. Send another task to the same session, or guide the agent during its current turn.
+
+
+With an OpenAI-hosted session, your application sends input and receives events, while OpenAI runs the agent and provisions and manages its
+sandbox. See environment options for setup and limitations.
+
+
+
+
+                                                                                                                                              Ask AI
+What the managed harness provides
+The managed Codex harness supports:
+
+    Running commands and code in a sandbox.
+    Applying relevant skills and instructions.
+    Connecting to external data through tools or MCP.
+    Steering the agent while it works.
+    Summarizing previous work to manage its context window.
+    Breaking work into subtasks and delegating to subagents.
+    Resuming a session where it left off.
+
+
+Check the quickstart prerequisites for API-key permissions and SDK setup. Configure these capabilities when you create a session:
+
+
+  Configure managed-harness capabilities                                                                                            Python
+
+  1    from openai import OpenAI
+  2
+  3    client = OpenAI()
+  4
+  5    session = client.beta.agents.sessions.create(
+  6        agent={
+  7            "model": "gpt-6-astra",
+  8            "instructions": "Use the OpenAI documentation MCP and web search to answer technical questions accurately. Delegate indepen
+  9            "tools": [
+  10               {"type": "programmatic_tool_calling"},
+  11               {
+  12                   "type": "mcp",
+  13                   "server_label": "openai_docs",
+  14                   "transport": {
+  15                       "type": "http",
+  16                       "server_url": "https://developers.openai.com/mcp",
+  17                   },
+  18               },
+  19               {"type": "web_search"},
+  20           ],
+  21           "multi_agent": {"enabled": True, "max_concurrent_subagents": 4},
+  22       },
+  23       environment={
+  24           "type": "self_hosted",
+  25           "workspace_directory": "/workspace",
+  26           "capability_directories": ["/workspace/capabilities/skills"],
+  27       },
+  28       input=[
+  29           {
+  30               "role": "user",
+  31               "content": [
+  32                   {
+  33                       "type": "input_text",
+  34                       "text": "Research how to connect an MCP server to an OpenAI agent, check for recent updates, and summarize the
+  35                   }
+  36               ],
+  37           }
+  38       ],
+  39   )
+  40   print(session.id)
+
+
+
+For a runtime comparison, see the Agents overview.
+For the AWS service built on the Agents API, see Bedrock Managed Agents.
+
+
+      The Agents API retains session state so you can continue work across turns without rebuilding the conversation context. You can delete sessions and published
+      artifacts when you no longer need them. The Agents API currently supports data residency only in the United States and does not support Zero Data Retention
+      (ZDR). Choosing a self-hosted sandbox does not make the Agents API ZDR-eligible. See Data controls in the OpenAI platform for details on data residency
+      and retention.
+
+
+
+
+                                                                                                                                                         Next
+                                                                                                                                                         Quickstart
+

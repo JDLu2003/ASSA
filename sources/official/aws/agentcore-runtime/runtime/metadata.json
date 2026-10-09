@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore-runtime",
+    "id": "runtime",
+    "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:10.431640+00:00",
+  "path": "sources/official/aws/agentcore-runtime/runtime",
+  "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+  "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+  "http_status": 200,
+  "title": "Host agent or tools with Amazon Bedrock AgentCore Runtime - Amazon Bedrock AgentCore",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "4c46ae8db859e274bca914e98c33c95bbdb6e7e138a7afc3189303b7c561723d",
+      "bytes": 13245
+    },
+    "page.txt": {
+      "sha256": "b51835b924803fd8afcd3408720559da142b4c14fa398732417ddc86fd58db6f",
+      "bytes": 8437
+    },
+    "page.pdf": {
+      "sha256": "825f8a97d593da3875832b07657eef18cc6b71c05f990eac8fbdc2bfab0b4ba9",
+      "bytes": 149149
+    }
+  }
+}

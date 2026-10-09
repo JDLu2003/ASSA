@@ -1,0 +1,1077 @@
+{
+  "run_at": "2026-10-09T12:06:06.636020+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "pricing",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:19.417624+00:00",
+      "path": "sources/official/openai/agents-api/pricing",
+      "status": "failed",
+      "error": "HTTP 404",
+      "capture_finished_at": "2026-10-09T12:03:19.664337+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "api",
+        "id": "pricing",
+        "url": "https://developers.openai.com/api/docs/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:19.664399+00:00",
+      "path": "sources/official/openai/api/pricing",
+      "requested_url": "https://developers.openai.com/api/docs/pricing",
+      "final_url": "https://developers.openai.com/api/docs/pricing",
+      "http_status": 200,
+      "title": "Pricing | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "cb42f3dc7bcf92fc735101ac51013eae62c2bb8f27161f868936a41d65874d47",
+          "bytes": 1918
+        },
+        "page.txt": {
+          "sha256": "21c16202c805825c5c5c788233922398b08746147898e925465143a7407b8820",
+          "bytes": 6619
+        },
+        "page.pdf": {
+          "sha256": "d3c4e67b5897c31072411c63011b89fa87687cb6bbe27f16b3cf1cca042cae4c",
+          "bytes": 56116
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:21.260970+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "responses",
+        "id": "overview",
+        "url": "https://developers.openai.com/api/docs/guides/responses",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:21.261018+00:00",
+      "path": "sources/official/openai/responses/overview",
+      "status": "failed",
+      "error": "HTTP 404",
+      "capture_finished_at": "2026-10-09T12:03:21.446745+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "tools",
+        "id": "web-search",
+        "url": "https://developers.openai.com/api/docs/guides/tools-web-search",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:21.446819+00:00",
+      "path": "sources/official/openai/tools/web-search",
+      "requested_url": "https://developers.openai.com/api/docs/guides/tools-web-search",
+      "final_url": "https://developers.openai.com/api/docs/guides/tools-web-search?api-mode=responses",
+      "http_status": 200,
+      "title": "Web search | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "aa065bc91c16f2c7b6879fca72478093bc0343fb04ddfa839cd57fc4d70d7048",
+          "bytes": 2406
+        },
+        "page.txt": {
+          "sha256": "9f355fddcbb390f3b8b78db35fe6e7787011eddc4855ae6c7fa8a7a59f0f80ae",
+          "bytes": 16786
+        },
+        "page.pdf": {
+          "sha256": "b31b03b900c79966ae0ee24962841fd03f002bfb91005b57f7e7710f055d183a",
+          "bytes": 67439
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:22.845728+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "tools",
+        "id": "code-interpreter",
+        "url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:22.845762+00:00",
+      "path": "sources/official/openai/tools/code-interpreter",
+      "requested_url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+      "final_url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+      "http_status": 200,
+      "title": "Code Interpreter | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "5fb62b191ff268440e2859dace288e3671a7608aa07764d2674338de9cbba5d1",
+          "bytes": 2143
+        },
+        "page.txt": {
+          "sha256": "ae73eb35445c33337830e884082faac9d8ff6426f081111733ea4435df4d5261",
+          "bytes": 8766
+        },
+        "page.pdf": {
+          "sha256": "9fdb88a3c07ee08cc62900809bf9a8f0da31da1220e9fc5a16ba57321b5a5939",
+          "bytes": 118706
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:23.871373+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "overview",
+        "url": "https://platform.claude.com/docs/en/managed-agents/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:23.871412+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/overview",
+      "requested_url": "https://platform.claude.com/docs/en/managed-agents/overview",
+      "final_url": "https://platform.claude.com/docs/en/managed-agents/overview",
+      "http_status": 200,
+      "title": "Claude Managed Agents overview - Claude Platform Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "6c62436401130f514e13724742e13be2ecf3a991804f4e64c87f9ae359b4c26e",
+          "bytes": 7941
+        },
+        "page.txt": {
+          "sha256": "4d255be55f4c34fa3a69f2cb509946721ecff27771063312b30dda8202e6cda1",
+          "bytes": 6739
+        },
+        "page.pdf": {
+          "sha256": "83ff16788e32bc84fb2c1d98830c9fcf8a4de411a6f6eae9c66edfd4e64a79b6",
+          "bytes": 335814
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:27.925020+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "pricing",
+        "url": "https://platform.claude.com/docs/en/managed-agents/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:27.925075+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/pricing",
+      "requested_url": "https://platform.claude.com/docs/en/managed-agents/pricing",
+      "final_url": "https://platform.claude.com/docs/en/managed-agents/pricing",
+      "http_status": 200,
+      "title": "Not Found - Claude Platform Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "a0a3eafa515f0d83bdb5d9ea194123c4fa3f9a134d3acf9fdc4b38bda7bc900e",
+          "bytes": 2896
+        },
+        "page.txt": {
+          "sha256": "c116b4b700d8e853519bb0da5ba7a8a36bc68bc6929e1df04ae119d4c6e8d5f8",
+          "bytes": 1235
+        },
+        "page.pdf": {
+          "sha256": "e3071711fc4472db6f64468e7d377c46421c9367e2c083bd559a9f55c758e982",
+          "bytes": 409728
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:31.267519+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-api",
+        "id": "pricing",
+        "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:31.267622+00:00",
+      "path": "sources/official/anthropic/claude-api/pricing",
+      "requested_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "final_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "http_status": 200,
+      "title": "Pricing - Claude Platform Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "5a7dfdb6b996d8aedc8447bc26c2d338589658fd5a66f8d4614df19f3af52830",
+          "bytes": 38260
+        },
+        "page.txt": {
+          "sha256": "97b4e2a7d30bff5daffb426ff48207cdcc614c0f515d8889d6a1a81d55ff20e8",
+          "bytes": 29339
+        },
+        "page.pdf": {
+          "sha256": "3d44e2141dbcceaa4b6a611aa0bbdd48c3f4ccdafb7c8acae9025c2ae967cfda",
+          "bytes": 766537
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:34.642980+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-api",
+        "id": "web-search",
+        "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:34.643061+00:00",
+      "path": "sources/official/anthropic/claude-api/web-search",
+      "requested_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+      "final_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+      "http_status": 200,
+      "title": "Web search tool - Claude Platform Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "8522e803f94dee2cdff598597134c6e13151922a9f582d0d8169a1f452cb1272",
+          "bytes": 21890
+        },
+        "page.txt": {
+          "sha256": "5f6748eae6346ba791294941a20579dc3a5e243706a0315a15f97431749eef92",
+          "bytes": 20238
+        },
+        "page.pdf": {
+          "sha256": "4e63cc9b402d10ab96ccbefed1468999bf27ef2ef5a2371cd01c059d7e4d6ab4",
+          "bytes": 546081
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:37.625634+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-api",
+        "id": "code-execution",
+        "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:37.625683+00:00",
+      "path": "sources/official/anthropic/claude-api/code-execution",
+      "requested_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+      "final_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+      "http_status": 200,
+      "title": "Code execution tool - Claude Platform Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "14493ca886ff5518d0361279353dfa14df8f9c5a2f711672879307bc700dec12",
+          "bytes": 33514
+        },
+        "page.txt": {
+          "sha256": "b09e40cb8a206d86e81d70c51e3778591045924888e818ef7511cf2a53f56c2e",
+          "bytes": 30054
+        },
+        "page.pdf": {
+          "sha256": "e4293c1bb10071469404b72edc52d39e1e5980f9f4be64bf6c2205f1ffae7168",
+          "bytes": 735196
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:41.399691+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore",
+        "id": "pricing",
+        "url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:41.399727+00:00",
+      "path": "sources/official/aws/agentcore/pricing",
+      "requested_url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+      "final_url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+      "http_status": 200,
+      "title": "Amazon Bedrock AgentCore Pricing - AWS",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "e768799abed854325d80ebbc23c102ce2e745ed57d0d7773f0eaf4f93f015e45",
+          "bytes": 14276
+        },
+        "page.txt": {
+          "sha256": "bcda707d9858846c78d76a4d83d4d9590aafeb61242cab9312292d0fcff766b2",
+          "bytes": 6377
+        },
+        "page.pdf": {
+          "sha256": "5aad90b4457f92eabcc340f31bb03d052fa76f6214abbdd7a339de1963081244",
+          "bytes": 173647
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:48.635369+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore",
+        "id": "overview",
+        "url": "https://aws.amazon.com/bedrock/agentcore/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:48.635417+00:00",
+      "path": "sources/official/aws/agentcore/overview",
+      "requested_url": "https://aws.amazon.com/bedrock/agentcore/",
+      "final_url": "https://aws.amazon.com/bedrock/agentcore/",
+      "http_status": 200,
+      "title": "Amazon Bedrock AgentCore - AWS",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "86d1c8d9c8b245fa52d1833a2f2dec709eafd43cadaadb9b9dc60e8c1a282061",
+          "bytes": 6653
+        },
+        "page.txt": {
+          "sha256": "6b7b2488f42d8f9345b5461e50889469e9d40f0a210815c1ddea696c30408b5e",
+          "bytes": 4731
+        },
+        "page.pdf": {
+          "sha256": "8a69f29b6480ca71ad1aaa439e380cdcd420b128d4a43a015c237fde6c1b0965",
+          "bytes": 1477853
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:08.114687+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-engine",
+        "id": "pricing",
+        "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:08.114911+00:00",
+      "path": "sources/official/google/agent-engine/pricing",
+      "requested_url": "https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/pricing",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+      "http_status": 200,
+      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "830b32557f1b8e2ca7f4e5b9c08e130d7ae181d9f145a8c989f666ef685ba8a1",
+          "bytes": 13845
+        },
+        "page.txt": {
+          "sha256": "d772af2c65992275952487d15b0038088674c86768b94815661759b36b57b3f2",
+          "bytes": 9025
+        },
+        "page.pdf": {
+          "sha256": "b8e87d2340c4796c3dfa07da15453eed0ea0dfe07eff1b8d9c6612f8ea1f2b8f",
+          "bytes": 2164706
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:15.542771+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gemini-api",
+        "id": "search-grounding",
+        "url": "https://ai.google.dev/gemini-api/docs/google-search",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:15.542823+00:00",
+      "path": "sources/official/google/gemini-api/search-grounding",
+      "requested_url": "https://ai.google.dev/gemini-api/docs/google-search",
+      "final_url": "https://ai.google.dev/gemini-api/docs/google-search",
+      "http_status": 200,
+      "title": "Grounding with Google Search - Interactions API | Google AI for Developers",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "2cbafc2ca1d4f574a0766f481cb8e6b4e8cccbcbe291d5914073d104794af6f5",
+          "bytes": 10130
+        },
+        "page.txt": {
+          "sha256": "16d8d12fbde6beb27599160e6f18ccbbf62ca190d505237ae23a1cb69848e6aa",
+          "bytes": 9567
+        },
+        "page.pdf": {
+          "sha256": "a61d395c99838555d8de1459f9f0afa27ebd9a0379d9492e1431fabf5c158554",
+          "bytes": 409821
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:19.296875+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gemini-api",
+        "id": "pricing",
+        "url": "https://ai.google.dev/gemini-api/docs/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:19.297098+00:00",
+      "path": "sources/official/google/gemini-api/pricing",
+      "requested_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "final_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "http_status": 200,
+      "title": "Gemini Developer API pricing  |  Gemini API  |  Google AI for Developers",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "7049778b71f53002944d51ae3d36e359c500621dda77c0c5b1b3099ef83e012c",
+          "bytes": 64379
+        },
+        "page.txt": {
+          "sha256": "5bbf31650fd12ad584201ff3a28f6a33e0acb817a959af1d83a6b9ccb7ffa8a7",
+          "bytes": 36302
+        },
+        "page.pdf": {
+          "sha256": "4dfae5920bdaf2ffae69a49270414ea3d60d95c04309392f3f6c7e11fced0b1e",
+          "bytes": 896268
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:22.168853+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry",
+        "id": "pricing",
+        "url": "https://azure.microsoft.com/en-us/pricing/details/ai-foundry/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:22.168901+00:00",
+      "path": "sources/official/microsoft/foundry/pricing",
+      "requested_url": "https://azure.microsoft.com/en-us/pricing/details/ai-foundry/",
+      "final_url": "https://azure.microsoft.com/en-us/pricing/details/microsoft-foundry/",
+      "http_status": 200,
+      "title": "Microsoft Foundry - Pricing | Microsoft Azure",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "d7cacd789c217d2589db07ad8ee2005b4ece5ab917830c146ed32ca535fbfb96",
+          "bytes": 7688
+        },
+        "page.txt": {
+          "sha256": "5942a9ba14692aae6fbef08eaa843b658831ea1427a96eaf83ef58e37cf88120",
+          "bytes": 6568
+        },
+        "page.pdf": {
+          "sha256": "412fce21a14a936cc37f0f7914c55cc3e52e0bcd9fcba8ec71388546b2be666a",
+          "bytes": 392088
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:31.378863+00:00"
+    },
+    {
+      "item": {
+        "vendor": "e2b",
+        "product": "sandbox",
+        "id": "overview",
+        "url": "https://e2b.dev/docs",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:31.378911+00:00",
+      "path": "sources/official/e2b/sandbox/overview",
+      "requested_url": "https://e2b.dev/docs",
+      "final_url": "https://docs.e2b.dev/",
+      "http_status": 200,
+      "title": "E2B Documentation - E2B Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "cc58bcd832beb42d3315b71f53c56b76600b3a158999fde3d4215707fa0d943f",
+          "bytes": 2933
+        },
+        "page.txt": {
+          "sha256": "650e6a5ab665a4a21e31714913b4ea959190ee9446b2fe48184e31b39eddee06",
+          "bytes": 2972
+        },
+        "page.pdf": {
+          "sha256": "b58e3393b7a6813c1fe7a3daa927d74c74105768a4d689e099f167b4d6d3881a",
+          "bytes": 125609
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:37.951767+00:00"
+    },
+    {
+      "item": {
+        "vendor": "e2b",
+        "product": "sandbox",
+        "id": "pricing",
+        "url": "https://e2b.dev/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:37.951824+00:00",
+      "path": "sources/official/e2b/sandbox/pricing",
+      "requested_url": "https://e2b.dev/pricing",
+      "final_url": "https://e2b.dev/pricing",
+      "http_status": 200,
+      "title": "Pricing | E2B — The AI Agent Cloud",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "54ceb31402d619245f2fb923044c204054b24b48abefe6a7cd6ae726b7440671",
+          "bytes": 5264
+        },
+        "page.txt": {
+          "sha256": "f12983ab5380a4766b02fe02a44055c82ef46ca440a24124a2a9c693d69c3678",
+          "bytes": 3293
+        },
+        "page.pdf": {
+          "sha256": "58f0154e5526c8b7e5814eb984dad608e957cedbf6ab035e63c385f1c1745787",
+          "bytes": 410615
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:41.967686+00:00"
+    },
+    {
+      "item": {
+        "vendor": "e2b",
+        "product": "sandbox",
+        "id": "persistence",
+        "url": "https://e2b.dev/docs/sandbox/persistence",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:41.967736+00:00",
+      "path": "sources/official/e2b/sandbox/persistence",
+      "requested_url": "https://e2b.dev/docs/sandbox/persistence",
+      "final_url": "https://docs.e2b.dev/sandbox/persistence",
+      "http_status": 200,
+      "title": "Sandbox persistence - E2B Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "c89034ead05c7e74dee75a1eb8c6f314d456de91700685e5aec70a5f1b74ae78",
+          "bytes": 11200
+        },
+        "page.txt": {
+          "sha256": "b6459fccbbe7308a3f1eb3cc29dc9910a8e409244cdf7b3f74af78aca10dd9ed",
+          "bytes": 10928
+        },
+        "page.pdf": {
+          "sha256": "acfb8ab0ed2e191d26934aac49d730d7263ee13bd87e196a00a84475f49fbdf2",
+          "bytes": 197136
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:45.757702+00:00"
+    },
+    {
+      "item": {
+        "vendor": "daytona",
+        "product": "sandbox",
+        "id": "overview",
+        "url": "https://www.daytona.io/docs/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:45.757754+00:00",
+      "path": "sources/official/daytona/sandbox/overview",
+      "requested_url": "https://www.daytona.io/docs/",
+      "final_url": "https://www.daytona.io/docs/",
+      "http_status": 200,
+      "title": "Documentation · Daytona",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "1fb03211849a3927b954bf9f843766126103e38304a64307ffd125f2d66fcccd",
+          "bytes": 3392
+        },
+        "page.txt": {
+          "sha256": "6a6f77e7a325a0389b6a53a8a6722b2bd5948a8f19cda4fb52e38ff01f0821de",
+          "bytes": 3775
+        },
+        "page.pdf": {
+          "sha256": "296ea3406277da71fd44ae2cf5659fe212f23852f0be50c4261a4a6bcdf6b418",
+          "bytes": 145005
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:48.597489+00:00"
+    },
+    {
+      "item": {
+        "vendor": "daytona",
+        "product": "sandbox",
+        "id": "pricing",
+        "url": "https://www.daytona.io/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:48.597536+00:00",
+      "path": "sources/official/daytona/sandbox/pricing",
+      "requested_url": "https://www.daytona.io/pricing",
+      "final_url": "https://www.daytona.io/pricing",
+      "http_status": 200,
+      "title": "Daytona - Secure Infrastructure for Running AI-Generated Code",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "38cf6772b65bd41506d2d42c809577183720636ca8e67984ae4171037d5823c8",
+          "bytes": 4225
+        },
+        "page.txt": {
+          "sha256": "09a505c21b3eda278b37e77f34723e0448c859fb72abe4cbf151aadbd5229353",
+          "bytes": 1820
+        },
+        "page.pdf": {
+          "sha256": "2eb94544f51072178c8eaecbd134d0488e70135c444be0ed8fa039a1c1efede1",
+          "bytes": 164071
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:52.645424+00:00"
+    },
+    {
+      "item": {
+        "vendor": "tavily",
+        "product": "search",
+        "id": "overview",
+        "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:04:52.645486+00:00",
+      "path": "sources/official/tavily/search/overview",
+      "requested_url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+      "final_url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+      "http_status": 200,
+      "title": "Tavily Search - Tavily Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "9081fdf3180efaa0fa9f026fca315744a55a50f811a8baf13f07072e8d45d464",
+          "bytes": 20317
+        },
+        "page.txt": {
+          "sha256": "4b9d90c98c1b8fa4a0aacbf3ecb91e574f172e3e3f9c4ca32f2ca02dbf813062",
+          "bytes": 15046
+        },
+        "page.pdf": {
+          "sha256": "8f346a1b4e7d106ae1e4d8c3c88330d1c305ed1eca7e998ed36328a9b63e5f31",
+          "bytes": 750452
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:09.421673+00:00"
+    },
+    {
+      "item": {
+        "vendor": "tavily",
+        "product": "search",
+        "id": "pricing",
+        "url": "https://docs.tavily.com/documentation/api-credits",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:05:09.421897+00:00",
+      "path": "sources/official/tavily/search/pricing",
+      "requested_url": "https://docs.tavily.com/documentation/api-credits",
+      "final_url": "https://docs.tavily.com/documentation/api-credits",
+      "http_status": 200,
+      "title": "Credits & Pricing - Tavily Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "b9d950483a26fadd735a923003156285a3bf9fadf67afd7a7b93942cbc6b0590",
+          "bytes": 6937
+        },
+        "page.txt": {
+          "sha256": "bb937e2b7f8da604d12951fcebfc348eb411f04c850bd29ffab0a8cdcd57da7a",
+          "bytes": 3924
+        },
+        "page.pdf": {
+          "sha256": "c2296456357a53b48e142962f0da98b7d378589dc9f8cd126c783b4b8283dccc",
+          "bytes": 280827
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:25.123702+00:00"
+    },
+    {
+      "item": {
+        "vendor": "exa",
+        "product": "search",
+        "id": "overview",
+        "url": "https://docs.exa.ai/reference/search",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:05:25.123742+00:00",
+      "path": "sources/official/exa/search/overview",
+      "requested_url": "https://docs.exa.ai/reference/search",
+      "final_url": "https://exa.ai/docs/reference/search",
+      "http_status": 200,
+      "title": "Search - Exa",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "e4c12a69d07a526f6ac350b9a65ddfad6d61ae7feed2fa2cc7ff975b31b4cc2f",
+          "bytes": 14803
+        },
+        "page.txt": {
+          "sha256": "8bd30fb08da23f3a2fc8640a4c850b93336a630eda4a890e8743a9b5ca7208d9",
+          "bytes": 13690
+        },
+        "page.pdf": {
+          "sha256": "4bf86334ca9a874aebb571a1cd136a709ef5c852bccd7566a3074c14b9b106e3",
+          "bytes": 565394
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:29.274844+00:00"
+    },
+    {
+      "item": {
+        "vendor": "exa",
+        "product": "search",
+        "id": "pricing",
+        "url": "https://docs.exa.ai/reference/pricing",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:05:29.274893+00:00",
+      "path": "sources/official/exa/search/pricing",
+      "requested_url": "https://docs.exa.ai/reference/pricing",
+      "final_url": "https://exa.ai/docs/admin/pricing",
+      "http_status": 200,
+      "title": "Pricing - Exa",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "003eb9386d9d3f155512d4a9871ed06ca95af7503322245b364b4f781df3c541",
+          "bytes": 6180
+        },
+        "page.txt": {
+          "sha256": "584be3d998974f5f3ba932803aea15dec76b9bdadf64ca6fa6a0210688112dbe",
+          "bytes": 4750
+        },
+        "page.pdf": {
+          "sha256": "7d099ffbc8d10f4d2e9056d607d678e543eb79930a2a4533206ab27fd1e90fb4",
+          "bytes": 300696
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:31.796919+00:00"
+    },
+    {
+      "item": {
+        "vendor": "vllm",
+        "product": "inference",
+        "id": "overview",
+        "url": "https://docs.vllm.ai/en/latest/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:05:31.796962+00:00",
+      "path": "sources/official/vllm/inference/overview",
+      "requested_url": "https://docs.vllm.ai/en/latest/",
+      "final_url": "https://docs.vllm.ai/en/latest/",
+      "http_status": 200,
+      "title": "vLLM",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "a099dc8bb10e8dbf97ff49e4fbf66c7fdcffcb7832841f652ae095ff74adfea3",
+          "bytes": 3957
+        },
+        "page.txt": {
+          "sha256": "3f8613d6fd313c676fce2e87a3f06ad3b1a2622eaf7073e4532ac0e1812cb078",
+          "bytes": 3311
+        },
+        "page.pdf": {
+          "sha256": "edda1a4f26e62df79d73c28a639fa4be61c5b9f869b4e99d799dd8da427c27e9",
+          "bytes": 290939
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:35.838373+00:00"
+    },
+    {
+      "item": {
+        "vendor": "sglang",
+        "product": "inference",
+        "id": "overview",
+        "url": "https://docs.sglang.ai/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:05:35.838421+00:00",
+      "path": "sources/official/sglang/inference/overview",
+      "requested_url": "https://docs.sglang.ai/",
+      "final_url": "https://docs.sglang.io/",
+      "http_status": 200,
+      "title": "Welcome to SGLang - SGLang Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "352868fb5f3a53b7a556bcead2b69e0cc17f67ae879365737c04b04b443a9405",
+          "bytes": 7804
+        },
+        "page.txt": {
+          "sha256": "59c85e621f6735bddec1927210af0c83bed34b7bdf23e3880798569aa1ee4b71",
+          "bytes": 5217
+        },
+        "page.pdf": {
+          "sha256": "8bfbca1691f8d61bd6fb554cbb6afdf4cae1377c8c7a7cf76a20fd413512e38c",
+          "bytes": 11299563
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:41.690507+00:00"
+    },
+    {
+      "item": {
+        "vendor": "ipads",
+        "product": "publications",
+        "id": "index",
+        "url": "https://ipads.se.sjtu.edu.cn/pub/publication",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:05:41.690734+00:00",
+      "path": "sources/official/ipads/publications/index",
+      "requested_url": "https://ipads.se.sjtu.edu.cn/pub/publication",
+      "final_url": "https://ipads.sjtu.edu.cn/pub/publication",
+      "http_status": 200,
+      "title": "Publications [IPADS]",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "72550716088f51568324a8eb633b17ec72162e75519c67b2314624a71e6e4dd3",
+          "bytes": 73073
+        },
+        "page.txt": {
+          "sha256": "7615b27aec462cedddf98261ffdcd15c857b9165e20a350944c9bf3b4ef6c45e",
+          "bytes": 67318
+        },
+        "page.pdf": {
+          "sha256": "d31e4bbeb8da65cfc149c572a1ae0bc0dd38138a5fa1bf48cbc287adc0e91081",
+          "bytes": 1209039
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:55.802052+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "vllm",
+        "arxiv": "2309.06180",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:05:55.802101+00:00",
+      "path": "sources/papers/model-serving/vllm",
+      "requested_url": "https://arxiv.org/abs/2309.06180",
+      "pdf_url": "https://arxiv.org/pdf/2309.06180",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "82f82c338a4df3a5548e0770da9ef2c7a6d3e8feddbfdfb744ecf12cde30c4f2",
+          "bytes": 850947
+        },
+        "paper.txt": {
+          "sha256": "7baa49d17361b6c789cded2bbbb83d72c322f43b057242c63a1d5d4348ea627e",
+          "bytes": 154352
+        },
+        "paper.pdf": {
+          "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+          "bytes": 1459631
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:56.567875+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "webarena",
+        "arxiv": "2307.13854",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:05:56.567936+00:00",
+      "path": "sources/papers/agent-evaluation/webarena",
+      "requested_url": "https://arxiv.org/abs/2307.13854",
+      "pdf_url": "https://arxiv.org/pdf/2307.13854",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "0efe45fc47277f4f157743b82e3136f92726644c9c404bf343c84b22739c8239",
+          "bytes": 9699248
+        },
+        "paper.txt": {
+          "sha256": "71ec1991cc4c4b8ae2b7ed11ce611abdfe3cf0d7ab9d575d530d5f9f6a0b9c4f",
+          "bytes": 89590
+        },
+        "paper.pdf": {
+          "sha256": "f9731b92bc3d29a2ea7b5f9cb46b48540c76bc3f84a57e0c48fc37ea73107f95",
+          "bytes": 9128123
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:05:59.167861+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "osworld",
+        "arxiv": "2404.07972",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:05:59.167926+00:00",
+      "path": "sources/papers/agent-evaluation/osworld",
+      "requested_url": "https://arxiv.org/abs/2404.07972",
+      "pdf_url": "https://arxiv.org/pdf/2404.07972",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "12a63525773d0e5143551e92e1936b68c6657ab6c4993ddf6ba723506b3f4de8",
+          "bytes": 41895276
+        },
+        "paper.txt": {
+          "sha256": "b64bf22fda07770e45a57d2361e2dc0044f83bff45125da588ed7024cd2fb35a",
+          "bytes": 209393
+        },
+        "paper.pdf": {
+          "sha256": "d4c6e20dd59467f005561b1e97199f9842fd3b0e9fdd93e66e06ba0ec09edfdb",
+          "bytes": 36863784
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:06:03.419071+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "tau-bench",
+        "arxiv": "2406.12045",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:06:03.419148+00:00",
+      "path": "sources/papers/agent-evaluation/tau-bench",
+      "requested_url": "https://arxiv.org/abs/2406.12045",
+      "pdf_url": "https://arxiv.org/pdf/2406.12045",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "f79e151800babed0f5440a7fced20999fd68b72f27360bc06b6f22756ae3c740",
+          "bytes": 662132
+        },
+        "paper.txt": {
+          "sha256": "e2780926d61f0b80a9a0ba14d61e6282673d3bf4809b704f0ca13105798c5232",
+          "bytes": 147962
+        },
+        "paper.pdf": {
+          "sha256": "0ce66a1763d698c61bb311c3c874bf593d1e9a5bfff11bb35f6f72b981f6da56",
+          "bytes": 663224
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:06:04.196872+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-systems",
+        "id": "swe-agent",
+        "arxiv": "2405.15793",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:06:04.197075+00:00",
+      "path": "sources/papers/agent-systems/swe-agent",
+      "requested_url": "https://arxiv.org/abs/2405.15793",
+      "pdf_url": "https://arxiv.org/pdf/2405.15793",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "3d2bafc2fd9e104fd204f7d4582260817c48b15133f7c1cf668dd081c2fbc1ab",
+          "bytes": 4825857
+        },
+        "paper.txt": {
+          "sha256": "3cde1e102396e1166e581264cb94db331ebfb215b47deefa874dfe3d50479398",
+          "bytes": 368630
+        },
+        "paper.pdf": {
+          "sha256": "d171e0693060b910ceb2cddd0fd4bc7cae302005d42d0d8059bfdbe056c3adba",
+          "bytes": 4963538
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:06:05.898461+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-tools",
+        "id": "toolllm",
+        "arxiv": "2307.16789",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:06:05.898522+00:00",
+      "path": "sources/papers/agent-tools/toolllm",
+      "requested_url": "https://arxiv.org/abs/2307.16789",
+      "pdf_url": "https://arxiv.org/pdf/2307.16789",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "78074835862d804f4bdb585ec960ff7c534ce629cb56b969414347a12035031c",
+          "bytes": 1512749
+        },
+        "paper.txt": {
+          "sha256": "ffd8ea1e9d1768e20a75a1d35049c019a2fff3d2802e162bde3a0f6d4af24dd2",
+          "bytes": 111512
+        },
+        "paper.pdf": {
+          "sha256": "295299721d67b250661fb6598bee86a2e9fe766241fdc08dd7cf389e984b4d1a",
+          "bytes": 2048075
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:06:06.516337+00:00"
+    }
+  ]
+}

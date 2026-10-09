@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "e2b",
+    "product": "sandbox",
+    "id": "overview",
+    "url": "https://e2b.dev/docs",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:04:31.378911+00:00",
+  "path": "sources/official/e2b/sandbox/overview",
+  "requested_url": "https://e2b.dev/docs",
+  "final_url": "https://docs.e2b.dev/",
+  "http_status": 200,
+  "title": "E2B Documentation - E2B Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "cc58bcd832beb42d3315b71f53c56b76600b3a158999fde3d4215707fa0d943f",
+      "bytes": 2933
+    },
+    "page.txt": {
+      "sha256": "650e6a5ab665a4a21e31714913b4ea959190ee9446b2fe48184e31b39eddee06",
+      "bytes": 2972
+    },
+    "page.pdf": {
+      "sha256": "b58e3393b7a6813c1fe7a3daa927d74c74105768a4d689e099f167b4d6d3881a",
+      "bytes": 125609
+    }
+  }
+}

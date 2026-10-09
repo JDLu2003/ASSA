@@ -1,0 +1,215 @@
+{
+  "run_at": "2026-10-09T12:10:52.248693+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gemini-enterprise-agent-platform",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:45.998500+00:00",
+      "path": "sources/official/google/gemini-enterprise-agent-platform/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:46.079641+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "managed-agents",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:46.079703+00:00",
+      "path": "sources/official/google/managed-agents/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.150431+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-runtime",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.150488+00:00",
+      "path": "sources/official/google/agent-runtime/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.193693+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.194390+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.253491+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "code-execution-overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.253567+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/code-execution-overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.284743+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "computer-use",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.284810+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/computer-use",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.312674+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-gateway",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.312727+00:00",
+      "path": "sources/official/google/agent-gateway/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.344677+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "codex-cloud",
+        "id": "overview",
+        "url": "https://developers.openai.com/codex/cloud",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.344961+00:00",
+      "path": "sources/official/openai/codex-cloud/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.422063+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "codex-cloud",
+        "id": "environments",
+        "url": "https://developers.openai.com/codex/environments/cloud-environments",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.422133+00:00",
+      "path": "sources/official/openai/codex-cloud/environments",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.476404+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "bedrock-managed-agents",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.476466+00:00",
+      "path": "sources/official/openai/agents-api/bedrock-managed-agents",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.532341+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "bedrock-agents",
+        "id": "overview",
+        "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.532415+00:00",
+      "path": "sources/official/aws/bedrock-agents/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.757644+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-browser",
+        "id": "overview",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.757719+00:00",
+      "path": "sources/official/aws/agentcore-browser/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.822126+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-code-interpreter",
+        "id": "overview",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.822199+00:00",
+      "path": "sources/official/aws/agentcore-code-interpreter/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:51.889711+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-gateway",
+        "id": "overview",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:51.889773+00:00",
+      "path": "sources/official/aws/agentcore-gateway/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:52.007493+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-agent-service",
+        "id": "overview",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:10:52.007569+00:00",
+      "path": "sources/official/microsoft/foundry-agent-service/overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:10:52.144235+00:00"
+    }
+  ]
+}

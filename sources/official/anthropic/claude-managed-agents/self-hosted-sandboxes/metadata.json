@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-managed-agents",
+    "id": "self-hosted-sandboxes",
+    "url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:04.374897+00:00",
+  "path": "sources/official/anthropic/claude-managed-agents/self-hosted-sandboxes",
+  "requested_url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+  "final_url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+  "http_status": 200,
+  "title": "Self-hosted sandboxes - Claude Platform Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "3d3d98537119e1c1916a4a385fd9047589e62c3a8b8a4f0ef1b4d58cc3af738e",
+      "bytes": 12892
+    },
+    "page.txt": {
+      "sha256": "f7b968a5ab999d6b763d9423d7c6dce5997bc054757f3f6c262eb1c7e773dd44",
+      "bytes": 10241
+    },
+    "page.pdf": {
+      "sha256": "0619764d334ca75e6fefb368f8a212e605354dc888e829709ea85a77d9e5dc71",
+      "bytes": 492971
+    }
+  }
+}

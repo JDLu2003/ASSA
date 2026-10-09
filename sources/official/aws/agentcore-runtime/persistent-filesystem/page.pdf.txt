@@ -1,0 +1,665 @@
+                                                               English         Contact us   AWS Marketplace       Support      My account
+
+
+
+      re:Invent          Discover AWS     Products      Solutions        Pricing    Resources            Search        Sign in to console   Create acco
+
+
+
+
+AWS Blogs         Home        Blogs       Editions
+
+
+
+
+       Artificial Intelligence
+
+       Persist session state with filesystem                                                    Resources
+       configuration and execute shell
+                                                                                                Getting Started
+       commands                                                                                 What's New
+       by Evandro Franco, Kosti Vasilakakis, Rui Cardoso, Abhimanyu Siwach,
+       Adarsh Srikanth, and Vignesh Somasundaram | on 02 APR 2026 | in
+       Amazon Bedrock AgentCore, Announcements, Generative AI | Permalink |
+        Comments |  Share |             Add AWS as a preferred source on search
+
+
+       AI agents have evolved significantly beyond chat. Writing code, persist
+       filesystem state, execute shell commands, and managing states throughout                 Blog Topics
+       the filesystem are some examples of things that they can do. As agentic
+                                                                                                Amazon Bedrock
+       coding assistants and development workflows have matured, the filesystem
+                                                                                                Amazon Comprehend
+       has become agents’ primary working memory, extending their capabilities
+                                                                                                Amazon Kendra
+       beyond the context window. This shift creates two challenges that every
+                                                                                                Amazon Lex
+       team that’s building production agents runs into:
+                                                                                                Amazon Polly
+            The filesystem is ephemeral. When your agent’s session stops,                       Amazon Q
+            everything that it created, like the installed dependencies, the                    Amazon Rekognition
+            generated code, or the local git history disappears.                                Amazon SageMaker
+                                                                                                Amazon Textract
+            When your workflow needs a deterministic operation like npm test
+            or git push , you’re forced to route it through the large language
+            model (LLM) or build custom tooling outside the runtime. Neither
+            option is good.
+
+       Amazon Bedrock AgentCore Runtime now addresses both challenges with
+       two capabilities: managed session storage for persistent agent filesystem
+                                                                                                Follow
+       state (public preview) and execute command (
+        InvokeAgentRuntimeCommand ) for running shell commands directly                            Twitter
+       inside the microVM associated with each active agent session. Each of them                Facebook
+       is useful on its own. Together, they unlock workflows that weren’t possible               LinkedIn
+       before.                                                                                   Twitch
+                                                                                                 Email Updates
+       In this post, we go through how to use managed session storage to persist
+       your agent’s filesystem state and how to execute shell commands directly in
+       your agent’s environment.
+
+
+       Inside an AgentCore Runtime session
+
+       AgentCore Runtime runs each session in a dedicated microVM with isolated
+       resources, including its own kernel, memory, and filesystem. This
+       architecture provides strong security boundaries, but it also means that
+       every session boots into a clean filesystem. When the microVM terminates,
+       whether through explicit stop or idle timeout, everything that the agent
+       created disappears.
+
+
+       Think about what that means in practice. Your coding agent spends twenty
+       minutes scaffolding a project: setting up directory structures, installing
+       dependencies, generating boilerplate code, configuring build tooling. You
+       step away for lunch, and when you come back and invoke the same session,
+       the agent starts from scratch. Every package re-installed, every file re-
+       generated. Twenty minutes of compute burned before the agent can do
+       useful work again. This limitation can be addressed by writing checkpoint
+       logic to upload files to Amazon Simple Storage Service (Amazon S3) before
+       stopping a session and downloading them on resume or to keep sessions
+       alive to avoid losing state. This workaround can work, but it doesn’t address
+       the limitations at the filesystem level and complexity is being added into
+       agent code.
+       The same friction exists for deterministic operations. When the agent
+       finishes a fix and you need to run tests, routing the command through the
+       LLM as a tool call adds token cost, latency, and non-determinism to a
+       predictable operation Another option is to build a separate orchestration
+       logic outside of the runtime, which requires you to connect to the agent’s
+       filesystem, adding complexity.
+
+
+        Managed
+AWS Blogs   Home session
+                   Blogs storage   (public preview): state
+                             Editions
+
+       that survives
+
+       The first challenge, ephemeral filesystems, is addressed by managed
+       session storage. It gives your agent a persistent directory that survives
+       stop/resume cycles. Persistence is built into the runtime and configured at
+       agent creation—everything written to that directory survives even when
+       the compute environment is replaced.
+
+       Configuring persistent storage
+
+       To configure persistent storage, do the following:
+
+
+       Add sessionStorage to your agent runtime’s
+       filesystemConfiguration :
+
+
+
+         aws bedrock-agentcore create-agent-runtime \
+           --agent-runtime-name "coding-agent" \
+           --role-arn "arn:aws:iam::111122223333:role/AgentExecut
+           --agent-runtime-artifact '{"containerConfiguration":
+             "containerUri": "123456789012.dkr.ecr.us-west-2.ama
+            }}' \
+            --filesystem-configurations '[{
+              "sessionStorage": {
+                "mountPath": "/mnt/workspace"
+              }
+            }]'
+
+
+
+       Or using the AWS SDK for Python (Boto3):
+
+
+
+         import boto3
+
+         # Use the control plane client for creating and managing
+         control_client = boto3.client('bedrock-agentcore-control
+
+
+         response = control_client.create_agent_runtime(
+             agentRuntimeName='coding-agent',
+             agentRuntimeArtifact={
+                 'containerConfiguration': {
+                     'containerUri': '123456789012.dkr.ecr.us-we
+                 }
+             },
+             roleArn='arn:aws:iam::111122223333:role/AgentExecuti
+             protocolConfiguration={
+                 'serverProtocol': 'HTTP'
+             },
+             networkConfiguration={
+                 'networkMode': 'PUBLIC'
+               },
+
+
+       Note: AgentCore uses two Boto3 service clients. The control plane client (
+       bedrock-agentcore-control ) handles runtime lifecycle operations
+       like CreateAgentRuntime , GetAgentRuntime , and
+       DeleteAgentRuntime . The data plane client ( bedrock-agentcore )
+       handles session operations like InvokeAgentRuntime and
+       InvokeAgentRuntimeCommand . The mount path must start with
+       /mnt followed by a folder name (for example, /mnt/workspace or
+       /mnt/data ). After configured, any file that your agent writes to this path
+       is automatically persisted to managed storage.
+
+       The stop/resume experience
+
+       You invoke your agent and ask it to set up a project:
+            aws bedrock-agentcore invoke-agent-runtime \
+              --agent-runtime-arn "arn:...:agent-runtime/coding-agen
+              --runtime-session-id "session-001" \
+              --payload '{"prompt": "Set up the project and install
+
+
+
+       The agent downloads the code, installs the packages and generates the
+AWS Blogs      Home       Blogs        Editions
+       configuration in the microVM that’s dedicated to that session. Then, you
+       stop the session or the idle timeout kicks in, and the microVM terminates.
+
+
+       You come back and invoke with the same runtime-session-id :
+
+
+
+            aws bedrock-agentcore invoke-agent-runtime \
+              --agent-runtime-arn "arn:...:agent-runtime/coding-agen
+              --runtime-session-id "session-001" \
+              --payload '{"prompt": "Run the tests and fix any failu
+
+
+
+       A new compute environment (microVM) spins up and mounts the same
+       storage. The agent sees /mnt/workspace exactly as it left it, including
+       source files, node_modules , build artifacts and .git history. The agent
+       picks up mid-thought, without the need to re-install and re-generate.
+
+       From the agent’s perspective, nothing special is happening. It reads and
+       writes files to a directory like it normally would. Your agent code doesn’t
+       need to change—no special APIs, no save/restore logic, no serialization.
+       Write a file to /mnt/workspace , stop the session, resume it, and the file
+       is there.
+
+       The session’s compute environment (microVM) from yesterday is gone, but
+       the filesystem survived.
+
+       Controlling how long the data lives
+
+       By default, session storage data is retained for 14 days of idle time. If the
+       session isn’t resumed within this window, the data is cleaned up. When the
+       agent endpoint is updated to a different version and the same
+        runtime-session-id is invoked, the session data is refreshed. This
+       gives the mounted directory a clean context for the new version.
+
+       A multi-day development workflow
+
+       Let’s walk through what this looks like in practice. Day 1 – You invoke your
+       coding agent and ask it to download a code base, inspect the files, and set
+       up the development environment:
+
+
+
+            aws bedrock-agentcore invoke-agent-runtime \
+              --agent-runtime-arn "arn:...:agent-runtime/coding-agen
+              --runtime-session-id "fefc1779-e5e7-49cf-a2c4-abaf4786
+              --payload '{"prompt": "Download the code from s3://amz
+
+
+
+       The agent downloads the repository to /mnt/workspace , extracts it, and
+       reports back:
+
+
+
+            Files in the fastapi-demo-main project:
+            - Dockerfile
+            - README.md
+            - main.py
+            - requirements.txt
+
+
+
+       You close your laptop and go home. Day 2 – You invoke with the same
+       session ID:
+
+
+
+            aws bedrock-agentcore invoke-agent-runtime \
+              --agent-runtime-arn "arn:...:agent-runtime/coding-agen
+              --runtime-session-id "fefc1779-e5e7-49cf-a2c4-abaf4786
+              --payload '{"prompt": "Add a new function called hello
+          The agent sees the project exactly as it left it. It modifies main.py
+          directly. No re-downloading, no re-extracting. When you ask the agent to
+          list the files, everything is there, including the modified main.py with the
+          new hello_world function. The compute environment (microVM) from
+          yesterday has already been terminated, but the work persists.
+
+          That addresses the first challenge, but now your agent has written new
+        code and
+AWS Blogs        you need Blogs
+               Home       to verify that it works. This is where the second
+                                         Editions
+          capability comes in.
+
+
+          Execute shell command: deterministic
+          operations, directly in the agent’s environment
+
+          The second challenge, running deterministic operations without routing
+          them through the LLM, is addressed by InvokeAgentRuntimeCommand .
+          You can execute shell commands directly inside a running AgentCore
+          Runtime session and stream the output back over HTTP/2.
+
+
+          The key insight is that agents and shell commands are good at different
+          things:
+
+
+
+            Use execute command                    Use the agent
+
+
+            The operation has a known              The operation requires reasoning
+            command ( npm test ,                   (“analyze this code and fix the
+             git push )                            bug”)
+
+
+            You want deterministic execution       You want the LLM to decide
+            —same command, same result             what to do
+
+
+            You need streaming output from         You need the agent to use tools
+            a long-running process                 in a loop
+
+
+            The operation is a validation gate     The operation is the creative or
+            in your workflow                       analytical work
+
+
+            You’re bootstrapping the
+                                                   You’re asking the agent to work
+            environment before the agent
+                                                   on a task
+            starts
+
+
+
+          When your agent finishes writing code and you need to run tests, you
+          shouldn’t need the LLM for that. npm test is npm test . The
+          command is known, the behavior should be deterministic, and you want the
+          raw output, not the LLM’s interpretation of it.
+
+
+          Running a command
+
+          Execute a command using the AWS SDK for Python (Boto3):
+
+
+
+            import boto3
+            import sys
+
+
+            client = boto3.client('bedrock-agentcore', region_name=
+
+            response = client.invoke_agent_runtime_command(
+                agentRuntimeArn='arn:aws:bedrock-agentcore:us-west-2
+                runtimeSessionId='session-id-at-least-33-characters
+                body={
+                    'command': '/bin/bash -c "npm test"',
+                    'timeout': 60
+                }
+            )
+
+            for event in response['stream']:
+                if 'chunk' in event:
+                    chunk = event['chunk']
+
+                       if 'contentStart' in chunk:
+       The response streams three event types in real time:
+
+
+
+            Event                 When            Contains
+
+
+            contentStart          First chunk     Confirms the command started
+
+
+AWS Blogs       Home    BlogsDuring Editionsstdout and/or stderr
+            contentDelta
+                             execution     output
+
+
+                                                   exitCode and status (
+            contentStop           Last chunk
+                                                   COMPLETED or TIMED_OUT )
+
+
+
+       As the output is streamed as it’s produced, you can detect a failure in the
+       first few seconds and react immediately, rather than waiting for the full run.
+
+       Container, same filesystem
+
+       This is the critical detail: commands run in the same container, filesystem,
+       and environment as your agent, not a sidecar, or a separate process talking
+       over a socket. A file that the agent wrote at /mnt/workspace/fix.py is
+       immediately visible to a command running
+        cat /mnt/workspace/fix.py . There’s no synchronization step, no file
+       transfer, and no shared volume to configure.
+
+
+       The AgentCore Runtime microVM doesn’t include developer tools by
+       default. This also means that any tools that your commands depend on,
+        git , npm , or language runtimes, must be added in your container image
+       or installed dynamically at runtime.
+
+       Design choices that shape how you use it
+
+             One-shot execution. Each command spawns a new bash process, runs to
+             completion (or time out), and returns. No persistent shell session
+             between commands. This matches how agent frameworks use command
+             execution, craft a command, run it, read the output, and decide what to
+             do next.
+             Non-blocking. Command execution doesn’t block agent invocations. You
+             can invoke the agent and run commands concurrently on the same
+             session.
+
+             Stateless between commands. Each command starts fresh, there’s no
+             shell history and environment variables from previous commands don’t
+             carry over. If you need state, encode it in the command:
+             cd /workspace && export NODE_ENV=test && npm test .
+
+
+       What people are building with it
+
+             Test automation — After the agent writes code, run npm test or
+             pytest as a command. Stream the output and feed specific failures
+             back to the agent for iteration.
+             Git workflows — Branching, committing, and pushing are deterministic.
+             Run them as commands, keeping version control logic out of the LLM.
+
+             Environment bootstrapping — Clone repos, install packages, set up
+             build tooling before the agent starts. This will be faster and more
+             reliable as direct commands.
+             Build pipelines — Anything with a known command that should run
+             exactly as specified, for example: cargo build --release ,
+             mvn package , go build.
+
+             Validation gates — Run linters, type checkers, security scanners as a
+             gate after the agent writes code, but before committing.
+
+             Debugging — Inspect the runtime environment: check installed
+             packages, disk usage, and running processes. These will be useful for
+             understanding agent failures.
+
+
+       Better together: the filesystem is the shared
+       context
+         Managed session storage (in public preview) addresses the ephemeral
+         filesystem challenge. Execute command addresses the deterministic
+         operations challenge. Each is valuable on its own, but they’re more
+         powerful when combined because they share the same filesystem that ties
+         the entire workflow together.
+
+
+         When your agent runtime has managed session storage configured at
+                        , everything operates
+                                     Editions on the same persistent directory:
+AWS Blogs/mnt/workspace
+              Home     Blogs
+
+              InvokeAgentRuntime writes code, generates artifacts, and manages
+             files in /mnt/workspace .
+
+              InvokeAgentRuntimeCommand runs tests, git operations, and builds
+             reading from and writing to the same /mnt/workspace .
+
+             Stop the session. Compute (microVM) spins down. /mnt/workspace
+             is persisted.
+             Resume the next day. New compute mounts the same storage. Both the
+             agent and execute command see the same files.
+
+         The filesystem becomes the shared context that connects agent reasoning,
+         deterministic operations, and time. Here’s what that looks like in code:
+
+
+
+            import boto3
+            import json
+
+            client = boto3.client('bedrock-agentcore', region_name=
+
+            AGENT_ARN = 'arn:aws:bedrock-agentcore:us-west-2:1111222
+            SESSION_ID = 'fefc1779-e5e7-49cf-a2c4-abaf478680c4'
+
+            def run_command(command, timeout=60):
+                """Execute a shell command and return the exit code
+                response = client.invoke_agent_runtime_command(
+                    agentRuntimeArn=AGENT_ARN,
+                    runtimeSessionId=SESSION_ID,
+                       contentType='application/json',
+                       accept='application/vnd.amazon.eventstream',
+                       body={'command': command, 'timeout': timeout}
+                 )
+                 for event in response.get('stream', []):
+                       if 'chunk' in event and 'contentStop' in event[
+
+
+         The agent writes the code while the platform runs the commands. Each
+         does what it’s designed for. Because /mnt/workspace is backed by
+         managed session storage, you can stop this session, come back the next
+         day, and the entire workspace is still there ready for the agent to continue
+         iterating.
+
+
+         This is the pattern: the agent reasons, execute command acts, and the
+         persistent filesystem remembers. The three capabilities form a loop that
+         doesn’t break when you close your laptop.
+
+
+         Getting started
+
+         Both capabilities are now available. Here’s how to start using them:
+
+
+         Managed session storage (public preview) — Add
+          filesystemConfigurations with sessionStorage when calling
+          CreateAgentRuntime . Specify a mount path starting with /mnt .
+         Everything your agent writes to that path persists across stop/resume
+         cycles. Maximum allowed data is 1 GB per session.
+
+
+         Execute command — Call InvokeAgentRuntimeCommand with a
+         command string and timeout on any active session. The command runs in
+         the same container as your agent, with access to the same filesystem.
+
+
+         To get started with tutorials and sample code:
+
+             Execute command tutorial and samples on GitHub
+
+             Managed session storage via FileSystem on GitHub
+             Execute shell commands in AgentCore Runtime sessions — API
+             documentation
+             Host agents with Amazon Bedrock AgentCore Runtime — Runtime
+             overview
+
+       It started with two challenges: agents that lose their work when sessions
+       stop, and deterministic operations that had to be routed through the LLM
+       or built outside the runtime. Managed session storage and execute
+       command addresses both of these challenges. The shared filesystem
+       between them creates a development loop where the agent reasons,
+AWS Blogs    Home       Blogs        Editions
+       commands execute, and the work persists across sessions. Try out the new
+       Amazon Bedrock AgentCore capabilities and let us know what you build.
+
+
+
+
+       About the Authors
+
+
+                                   Evandro Franco
+
+                                   Evandro Franco is a Sr. Data Scientist working on
+                                   Amazon Web Services. He is part of the Global
+                                   GTM team that helps AWS customers overcome
+                                   business challenges related to AI/ML on top of
+                                   AWS, mainly on Amazon Bedrock AgentCore and
+            Strands Agents. He has more than 18 years of experience working with
+            technology, from software development, infrastructure, serverless, to
+            machine learning. In his free time, Evandro enjoys playing with his son,
+            mainly building some funny Lego bricks.
+
+
+
+
+                                   Rui Cardoso
+
+                                   Rui Cardoso is a Sr. Partner Solutions Architect
+                                   at Amazon Web Services (AWS). He is focusing
+                                   on AI/ML and IoT. He works with AWS Partners
+                                   and supports them in developing solutions in
+                                   AWS. When not working, he enjoys cycling,
+            hiking and learning new things.
+
+
+
+
+                                   Kosti Vasilakakis
+
+                                   Kosti Vasilakakis is a Principal PM at AWS on the
+                                   Agentic AI team, where he has led the design
+                                   and development of several Bedrock AgentCore
+                                   services from the ground up, including Runtime,
+                                   Browser, Code Interpreter, and Identity. He
+            previously worked on Amazon SageMaker since its early days,
+            launching AI/ML capabilities now used by thousands of companies
+            worldwide. Earlier in his career, Kosti was a data scientist. Outside of
+            work, he builds personal productivity automations, plays tennis, and
+            enjoys life with his wife and kids.
+
+
+
+
+                                   Vignesh Somasundaram
+
+                                   Vignesh Somasundaram is a founding Software
+                                   Development Engineer at AWS on the Amazon
+                                   Bedrock AgentCore team, where he builds AI
+                                   infrastructure for deploying agents at scale.
+                                   With a Master’s in Computer Science from
+            Purdue University and a Bachelor’s from Anna University, he’s
+            passionate about building large-scale distributed systems and tackling
+            architectural challenges. When he’s not at work, you’ll find him
+            outdoors playing cricket, badminton, or exploring nature.
+
+
+
+
+                                   Adarsh Srikanth
+
+                                   Adarsh Srikanth is a founding Software
+                                   Development Engineer at Amazon Bedrock
+                                   AgentCore, where he architects and develops
+                                                   platforms that power AI agent services. He
+                                                   earned his master’s degree in computer science
+                          from the University of Southern California and has three years of
+                          professional software engineering experience. Outside of work, Adarsh
+                          enjoys exploring national parks, hiking, and playing racquet sports.
+
+
+
+
+            AWS Blogs          Home        Blogs           Editions
+                                                   Abhimanyu Siwach
+
+                                                   Abhimanyu Siwach is a founding Software
+                                                   Development Engineer at Amazon Bedrock
+                                                   AgentCore, where he drives the architecture and
+                                                   technical direction of the platform that enables
+                                                   customers to deploy and manage AI agents at
+                          scale. He holds a degree in Computer Science from BITS Pilani. With
+                          over eight years at Amazon spanning teams including Last Mile,
+                          Advertising and AWS, he brings deep experience in building large-scale
+                          distributed systems. Outside of work, Abhimanyu enjoys traveling,
+                          building AI-powered apps, and exploring new technologies.
+
+
+
+
+                       TAGS: AI/ML, Generative AI, machine-learning
+
+
+
+
+                             Like          Share
+
+
+
+
+                       Comments
+
+                                                       Log in to comment
+
+
+                                                            Log in
+
+
+
+
+    Create an AWS account                                                                              English
+
+
+
+
+Learn
+
+
+
+Resources
+
+
+
+Developers
+
+
+
+Help
+
+
+
+
+                                                                             Back to top
+
+
+
+Amazon is an Equal Opportunity Employer: Minority / Women / Disability / Veteran / Gender Identity /
+Sexual Orientation / Age.
+
+Privacy   Site terms    Cookie Preferences
+
+© 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+

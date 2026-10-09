@@ -1,0 +1,193 @@
+Configuring Agents
+Define an agent, reuse its configuration, and customize each session.
+      Copy Page
+
+
+
+An agent configuration defines how the agent behaves. You can supply it when creating a session or save it for reuse. The session
+holds the conversation and work, while the saved agent holds reusable settings.
+
+
+Define the agent’s behavior
+Start with the model and instructions, then add the tools and controls your task needs:
+
+      Model: Which model does the work.
+      Instructions: What the agent should do and how it should behave.
+      Tools: What actions the agent can take, such as searching the web or calling your functions.
+      Reasoning and output: How much reasoning the model uses and the format and detail of its responses.
+
+
+Pass these settings in agent when you create a session. This example supplies a model, instructions, and the first user message:
+
+
+  Configure an agent for one session                                                                                    Python
+
+  1     from openai import OpenAI
+  2
+  3     client = OpenAI()
+  4
+  5     session = client.beta.agents.sessions.create(
+  6         agent={
+  7             "model": "gpt-6-astra",
+  8             "instructions": "Answer the user clearly and concisely.",
+  9         },
+  10        environment={"type": "none"},
+  11        input=[
+  12            {
+  13                "role": "user",
+  14                "content": [{"type": "input_text", "text": "What can you help with?"}],
+  15            }
+  16        ],
+  17    )
+  18    print(session.to_json())
+
+
+
+See the Agents API reference for configuration fields and values. For setup, see Functions, Computer use, MCP connections, or
+Multi-agent delegation.
+
+
+Configuration size
+Keep the combined size of your instructions and tool configuration below 4 MiB (4,194,304 bytes), leaving a little room for Agents
+API metadata. If session startup fails because this configuration is too large, create a new session with smaller instructions and tool
+configuration.
+
+Files uploaded to the environment follow separate file limits.
+
+
+Reuse an agent across sessions
+Save an agent to reuse its configuration across sessions. Create it once, then pass its ID as agent_id when starting each session:
+
+
+  Reuse an agent                                                                                                        Python
+
+  1     from openai import OpenAI
+  2                                                                                                                                Ask AI
+  3     client = OpenAI()
+  4     agent = client.beta.agents.create(
+  5         model="gpt-6-astra",
+  6         instructions="Answer technical questions accurately.",
+  7         reasoning={"summary": "auto"},
+  8         timeout=360,
+  9     )
+  10    session = client.beta.agents.sessions.create(
+  11        agent_id=agent.id,
+  12        environment={"type": "none"},
+  13        input="Explain how an agent connects to an MCP server.",
+  14    )
+  15    print(session.to_json())
+
+
+
+Each session has its own conversation and work. See the Agents API reference to list, retrieve, update, or delete saved agents.
+Credentials stay in vaults, separate from the saved configuration.
+
+
+Update a saved agent
+Saved-agent updates apply only to new sessions. Each session copies the saved configuration when you create it and keeps those
+settings for later turns. To change an existing session, update its settings.
+
+When updating a saved agent:
+
+    Omitted fields keep their saved values. Changing only model preserves reasoning , service_tier , and text .
+    Supplied objects replace the whole field. Supplying reasoning with only effort also clears the saved summary .
+       null resets fields that accept it. For example, reasoning: null restores the model’s default effort.
+
+
+Change or reset any settings the new model does not support in the same request.
+
+
+Override settings for one session
+Include both agent_id and agent when creating a session to customize a saved agent’s configuration. The session copies
+omitted settings, including the model, from the saved agent at creation time.
+
+Replace the illustrative agent_123 value with the saved agent’s ID before running this example:
+
+
+  Override an agent for one session                                                                                  Python
+
+  1     # Replace the illustrative IDs and URLs below with your own resource values.
+  2     from openai import OpenAI
+  3
+  4     client = OpenAI()
+  5
+  6     agent_id = "agent_123"
+  7     session = client.beta.agents.sessions.create(
+  8         agent_id=agent_id,
+  9         agent={"instructions": "Answer this question in one concise paragraph."},
+  10        environment={"type": "none"},
+  11        input=[
+  12            {
+  13                "role": "user",
+  14                "content": [
+  15                    {
+  16                        "type": "input_text",
+  17                        "text": "Explain how an agent connects to an MCP server.",
+  18                    }
+  19                ],
+  20            }
+  21        ],
+  22    )
+  23    print(session.to_json())
+
+
+
+Overrides apply only to that session. They do not change the saved agent or other sessions. Supplied objects and arrays replace the
+entire field rather than merging with the saved value. For example, supplying tools replaces the saved tool list.
+
+See the Create session reference for request fields.
+Update settings for an existing session
+Send POST /v1/agents/sessions/{session_id} with an agent object to change model , reasoning.effort , or
+ service_tier for one session. These settings are available in the beta and GA API contracts. You can update metadata in the
+same request.
+
+Changes apply to new turns started by messages sent after the update completes. Messages already in flight can use the previous
+settings. An active turn keeps its settings, including when you send a steering message. The session keeps its conversation history.
+The selected model must support the resulting settings, or the update fails.
+
+    The agent and reasoning objects merge supplied fields into the current settings. Omitted fields stay unchanged, including
+    reasoning summary. Changing only model preserves the session’s reasoning effort and service tier.
+     reasoning.effort: null resets effort to the selected model’s default.
+     service_tier: null restores automatic tier selection.
+
+    A model must remain set, so you cannot supply model: null . The agent and reasoning objects also reject null .
+     metadata replaces the full map. Omit it to preserve metadata, or pass null or {} to clear it.
+
+
+For example, this request changes reasoning effort and lets the API select the service tier automatically:
+
+
+    1   {
+    2       "agent": {
+    3         "reasoning": { "effort": "low" },
+    4         "service_tier": null
+    5       }
+    6   }
+
+
+
+Updating a session does not change the saved agent or other sessions. Later saved-agent updates do not change the session.
+
+You cannot update reasoning.summary , text , tools , instructions , or multi_agent through this endpoint. Create a new
+session to change those settings.
+
+
+Environment settings
+Set environment alongside agent when creating a session. It determines where the agent runs commands and works with files.
+
+Choose none , openai_hosted , or self_hosted . Architecture explains when to use each option and who manages the
+environment.
+
+For an OpenAI-hosted environment, choose a container size and configure the packages, initial files, and network access the task
+needs. You can reuse an environment template across sessions. For a self-hosted environment, prepare your compute and connect
+an executor.
+
+See the Create session reference for environment fields and Plugins for skills, plugins, and templates. See Session artifacts for files
+you want to keep after execution.
+
+
+
+
+    Previous                                                                                                               Next
+    Architecture                                                                                                           Multi-agent
+

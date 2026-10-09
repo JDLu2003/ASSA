@@ -1,0 +1,260 @@
+Manage sessions using Google Cloud
+console or API calls content_copy
+                        arrow_drop_down
+
+This section describes how to use Agent Platform Sessions to manage sessions using the
+Google Cloud console or direct API calls. You can use the Google Cloud console or direct
+API calls if you don't want to use an ADK agent to manage sessions.
+
+To manage sessions using the ADK agent, see Manage sessions with Agent Development
+Kit (/gemini-enterprise-agent-platform/scale/sessions/manage-with-adk).
+
+
+
+
+Create an Agent Runtime instance
+To access Agent Platform Sessions, you first need use an Agent Runtime instance. You
+don't need to deploy any code to start using Sessions. If you've used Agent Runtime before,
+creating an Agent Runtime instance only takes a few seconds without code deployment. It
+may take longer if this is the first time you're using Agent Runtime.
+
+If you don't have an existing Agent Runtime instance, create one using the following code:
+
+
+
+
+import agentplatform
+
+client = agentplatform.Client(
+  project="PROJECT_ID edit",
+
+  location="LOCATION edit"
+)
+# If you don't have an Agent Runtime instance already, create an instance.
+remote_agent = client.runtimes.create()
+
+# Optionally, print out the Agent Runtime resource name. You will need the
+# resource name to interact with Sessions later on.
+print(remote_agent.api_resource.name)
+
+
+Replace the following:
+
+      PROJECT_ID: Your project ID.
+     LOCATION: Your region. See the supported regions
+      (/gemini-enterprise-agent-platform/resources/agent-locations) for Sessions.
+
+
+
+
+List sessions
+List sessions associated with your Agent Runtime instance.
+
+
+ConsolePython (#python)REST (#rest)
+   (#console)
+
+   For deployed agents, you can use the Google Cloud console to list sessions
+   associated with your agent:
+
+      1. In the Google Cloud console, go to the Agent Platform Deployments page.
+
+         Go to Deployments (https://console.cloud.google.com/agent-platform/runtimes)
+
+         Agent Engine instances that are part of the selected project appear in the list.
+         You can use the Filter field to filter the list by your specified column.
+
+      2. Click the name of your Agent Engine instance.
+
+      3. Click the Sessions tab. A list of sessions displays by ID.
+
+
+
+
+Create a session
+Create a session associated with a user ID.
+
+
+ConsolePython (#python)REST (#rest)
+   (#console)
+
+   For deployed agents, you can use the Google Cloud console to create sessions:
+
+      1. In the Google Cloud console, go to the Agent Platform Deployments page.
+
+         Go to Deployments (https://console.cloud.google.com/agent-platform/runtimes)
+
+         Agent Engine instances that are part of the selected project appear in the list.
+         You can use the Filter field to filter the list by your specified column.
+
+      2. Click the name of your Agent Engine instance.
+       3. Click the Playground tab.
+
+       4. Click New session to create a new session.
+
+
+
+
+Configure session time to live (TTL)
+All sessions must have an expiration time. You can define this expiration time when
+creating or updating a session. The session and its child events are automatically deleted
+after the expiration time elapses. You can either set the expiration time (expire_time)
+directly or set the time to live (ttl) in seconds. If neither is specified, the system applies a
+default TTL of 365 days.
+
+
+Time to liveExpiration time (#expiration-time)
+    (#time-to-live)
+
+   If you set the time to live, the server calculates the expiration time as create_time +
+   ttl for newly created sessions or update_time + ttl for updated sessions.
+
+
+
+   client.sessions.create(
+       name=remote_agent.api_resource.name,             # Required
+
+         user_id=USER_ID
+                             edit
+                            , # Required
+         config={
+             # Session will be deleted 10 days after creation time.
+             "ttl": f"{24 * 60 * 60 * 10}s"
+         }
+   )
+
+
+
+
+Get a session
+Get a specific session associated with your Agent Platform instance.
+
+
+ConsolePython (#python)REST (#rest)
+    (#console)
+
+   For deployed agents, you can use the Google Cloud console to create sessions:
+
+       1. In the Google Cloud console, go to the Agent Platform Deployments page.
+
+          Go to Deployments (https://console.cloud.google.com/agent-platform/runtimes)
+         Agent Engine instances that are part of the selected project appear in the list.
+         You can use the Filter field to filter the list by your specified column.
+
+      2. Click the name of your Agent Engine instance.
+
+      3. Click the Playground tab.
+
+      4. Click the Sessions tab. A list of sessions displays by ID.
+
+      5. Click the session you want to view in more detail.
+
+
+
+
+Delete a session
+Delete a session associated with your Agent Platform instance.
+
+
+ConsolePython (#python)REST (#rest)
+   (#console)
+
+   For deployed agents, you can use the Google Cloud console to delete sessions
+   associated with your agent:
+
+      1. In the Google Cloud console, go to the Agent Platform Deployments page.
+
+         Go to Deployments (https://console.cloud.google.com/agent-platform/runtimes)
+
+         Agent Engine instances that are part of the selected project appear in the list.
+         You can use the Filter field to filter the list by your specified column.
+
+      2. Click the name of your Agent Engine instance.
+
+      3. Click the Sessions tab. A list of sessions displays by ID.
+
+      4. Click the more actions menu (more_vert) of the session you want to delete.
+
+      5. Click Delete.
+
+      6. Click Delete session.
+
+
+
+
+List events in a session
+List events in a session associated with your Agent Platform instance.
+ConsolePython (#python)REST (#rest)
+   (#console)
+   For deployed agents, you can use the Google Cloud console to create sessions:
+
+      1. In the Google Cloud console, go to the Agent Platform Deployments page.
+
+        Go to Deployments (https://console.cloud.google.com/agent-platform/runtimes)
+
+        Agent Engine instances that are part of the selected project appear in the list.
+        You can use the Filter field to filter the list by your specified column.
+
+      2. Click the name of your Agent Engine instance.
+
+      3. Click the Playground tab.
+
+      4. Click the Sessions tab. A list of sessions displays by ID.
+
+      5. Click the session you want to view in more detail.
+
+      6. Click the Events tab to view the events associated with the session.
+
+
+
+
+Append an event to a session
+Append an event to a session associated with an Agent Platform instance.
+
+
+ConsolePython (#python)REST (#rest)
+   (#console)
+
+   For deployed agents, you can use the Google Cloud console to create sessions:
+
+      1. In the Google Cloud console, go to the Agent Platform Deployments page.
+
+        Go to Deployments (https://console.cloud.google.com/agent-platform/runtimes)
+
+        Agent Engine instances that are part of the selected project appear in the list.
+        You can use the Filter field to filter the list by your specified column.
+
+      2. Click the name of your Agent Engine instance.
+
+      3. Click the Playground tab.
+
+      4. Click the Sessions tab. A list of sessions displays by ID.
+
+      5. Click the session you want to view in more detail.
+
+      6. Click the Events tab to view the events associated with the session.
+         7. Type a message and press Enter to add a new event to the session.
+
+
+
+
+Clean up
+To clean up all resources used in this project, you can delete the Agent Platform instance
+along with its child resources:
+
+
+
+
+remote_agent.delete(force=True)
+
+
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0
+License (https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the Apache
+2.0 License (https://www.apache.org/licenses/LICENSE-2.0). For details, see the Google Developers Site
+Policies (https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its
+affiliates.
+
+
+Last updated 2026-10-07 UTC.
+

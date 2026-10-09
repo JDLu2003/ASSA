@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-10-09T12:12:12.458237+00:00",
+  "priority": "products first; paper discovery paused",
+  "captured_webpages": 57,
+  "captured_papers": 18,
+  "products_index": "catalog/PRODUCTS.md",
+  "git_upload_status": "not yet uploaded; GitHub proxy read operation returned HTTP 503",
+  "remaining": [
+    "Verify and capture product candidates when proxy upstream recovers",
+    "Verify product-specific pricing links redirected to generic documentation",
+    "Identify and obtain the user-mentioned IPADS paper; no identification claim made",
+    "Upload successfully collected material through Git LFS"
+  ],
+  "checks": {
+    "source_hashes": "275 file hashes verified; all PDFs parsed and all downloaded source archives listed successfully",
+    "browser_tls": "verification retained; NSS database write access required in sandbox",
+    "print_completeness": "OpenAI clipped originals reprinted; PDF/text length screening passed for captured documents"
+  },
+  "paper_source_archives": 17
+}

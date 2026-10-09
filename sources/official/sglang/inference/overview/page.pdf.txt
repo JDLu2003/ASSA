@@ -1,0 +1,179 @@
+    Get Started       Welcome to SGLang
+
+
+
+
+Get Started
+
+
+Welcome to SGLang                                                                         Copy page
+
+
+High-performance serving framework for large language and multimodal models.
+
+
+
+
+      ✦    FEATURED MODEL · NEW                                                       ‹               ›
+
+
+
+    Meet DeepSeek-V4.1 Flash on
+    SGLang
+    DeepSeek's sparse-attention Mixture-of-Experts model,
+    served through SGLang's `dsv4` backend — pairing multi-
+    ratio compressed KV pools behind FlashMLA with a learned
+    sparse index that picks a top-512 candidate set per query, an
+    mHC mixing stage, and Engram, an n-gram hash memory
+    whose two fp8 tables are roughly 40% of the checkpoint. It
+                                                                              DEEPSEEK-V4.1 FLASH
+    ships DSpark, its own three-stage speculative draft. Recipes
+                                                                               DEPLOYMENT GUIDE
+    cover GB300, H200, B200, B300 and AMD MI350X.
+
+      384 experts / top-6      Sparse index + Engram   NVIDIA + AMD
+
+
+       Open the DeepSeek-V4.1 Flash cookbook →
+
+
+
+
+    Star    36,921      Fork     9,403
+
+
+
+
+   Performance & Runtime                                      Models & Ecosystem
+   Designed for low-latency, high-                            Broad support for Llama, Qwen,
+   throughput inference with RadixAttention,                  DeepSeek, and more. Compatible with
+   prefix caching, and multi-GPU parallelism.                 Hugging Face and OpenAI APIs.
+   Extensive Hardware Support                               Community & Training
+   Native support across Hardware                           Open-source with widespread adoption,
+   Platforms including NVIDIA, AMD, Intel                   powering 400k+ GPUs and integrated
+   Xeon, Google TPU, Ascend NPU, and                        with major RL frameworks.
+   Moore Threads MUSA accelerators.
+
+
+
+
+SGLang powers large-scale production deployments, generating trillions of tokens each day across
+more than 400,000 GPUs worldwide. It is hosted under the non-profit open-source organization
+LMSYS.
+
+
+
+
+Get Started
+SGLang is an inference framework meant for production level serving. It is designed to deliver low-
+latency and high-throughput inference across a wide range of setups, from a single GPU to large
+distributed clusters.
+
+
+
+
+   Quickstart                                               Examples
+   Start a model server and send a request                  Stream replies, request tool calls, and
+   to verify it is running.                                 process multiple prompts from Python.
+
+
+
+For environment setup and other installation methods, see the Installation guide.
+
+
+
+News and latest blogs
+                                                                                      NVFP4 KV Cache in SGLang
+                                                                                          One shared memory pool, three attention paths
+
+
+                                                    Initial Prefill                                   Shared Memory System                                   02 Chunked Prefill
+                                                                                                                                                                 / Extend
+
+                                                     FP8 Prompt K/V                                   Request → Token → Slot
+                                                                                                        Page allocation & recycling                               FP8 Current Chunk K/
+                                                       No cached prefix
+                                                                                   quantize & store
+                                                                                                                                          quantize & store         (new tokens, not yet cached)
+                                                                                       NVFP4
+                                                                                                                                              NVFP4
+                                                                                                        NVFP4 Cache Write
+                                                      FP8 KV prefill
+
+
+                                                                                                          GPU KV Pool
+                                                                                                                                                                       FP8 KV prefill
+                                                    Decode                         quantize & store                                                                Attend to prefix + current chunk
+                                                                                       NVFP4             Packed E2M1 K/V
+                                                    FP8 New Token K/V
+                                                          (one step)                                        Block Scales
+                                                                                                         1 x E4M3 per 16 elements
+
+                                                                                                                                             Read NVFP4 &              Cached Prefix
+                                                     NVFP4 KV Decode        Read NVFP4 directly         Per-layer global scales                                       FP8 Workspace
+                                                                                                                                              dequantize
+                                                      Native FP4 + scales                                         FP32
+                                                                                                                                                                  Dequantized · reused across layer
+
+
+
+
+  Scaling JEV-like Decision Models with                 Accelerating Long-Context and Agentic
+  SGLang                                                Inference with NVFP4 KV Cache
+ September 25, 2026                              September 16, 2026
+
+
+
+
+ SGLang and Miles Add Day-0 Support for          Running DeepSeek-V4-Flash and Kimi-K3
+ DeepSeek-V4.1                                   on Consumer Hardware with SSD Expert
+                                                 Pack
+ September 10, 2026
+                                                 August 29, 2026
+
+
+
+
+ Infer-forge: Harness, Loop, and Graph           MiniMax-H3 on 8×H200: 1.95× Lossless, Up
+ Engineering Around SGLang                       to 6.24× at 0.76–0.91 SSIM
+ August 28, 2026                                 August 27, 2026
+
+
+
+
+Community and resources
+   Slack: Technical questions and development discussions.
+
+   Events: Meetups, workshops, and office hours | Developer meetings.
+
+   Updates: X | LinkedIn | LMSYS Blog.
+
+   Contribute: Contributor guide | Roadmap.
+
+   Release notes: Changes in each release.
+Was this page helpful?                           Yes           No
+
+
+
+
+                                                       Quickstart
+                                                           Next
+
+
+         Ask a question...
+
+
+
+
+                                                  Powered by
+
+
+
+
+   Assistant
+
+
+      Responses are generated using AI and may
+                 contain mistakes.
+Ask a question...
+

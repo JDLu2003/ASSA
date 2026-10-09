@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "e2b",
+    "product": "sandbox",
+    "id": "pricing",
+    "url": "https://e2b.dev/pricing",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:04:37.951824+00:00",
+  "path": "sources/official/e2b/sandbox/pricing",
+  "requested_url": "https://e2b.dev/pricing",
+  "final_url": "https://e2b.dev/pricing",
+  "http_status": 200,
+  "title": "Pricing | E2B — The AI Agent Cloud",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "54ceb31402d619245f2fb923044c204054b24b48abefe6a7cd6ae726b7440671",
+      "bytes": 5264
+    },
+    "page.txt": {
+      "sha256": "f12983ab5380a4766b02fe02a44055c82ef46ca440a24124a2a9c693d69c3678",
+      "bytes": 3293
+    },
+    "page.pdf": {
+      "sha256": "58f0154e5526c8b7e5814eb984dad608e957cedbf6ab035e63c385f1c1745787",
+      "bytes": 410615
+    }
+  }
+}

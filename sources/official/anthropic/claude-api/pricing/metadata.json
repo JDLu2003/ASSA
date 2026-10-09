@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-api",
+    "id": "pricing",
+    "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:31.267622+00:00",
+  "path": "sources/official/anthropic/claude-api/pricing",
+  "requested_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+  "final_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+  "http_status": 200,
+  "title": "Pricing - Claude Platform Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "5a7dfdb6b996d8aedc8447bc26c2d338589658fd5a66f8d4614df19f3af52830",
+      "bytes": 38260
+    },
+    "page.txt": {
+      "sha256": "97b4e2a7d30bff5daffb426ff48207cdcc614c0f515d8889d6a1a81d55ff20e8",
+      "bytes": 29339
+    },
+    "page.pdf": {
+      "sha256": "3d44e2141dbcceaa4b6a611aa0bbdd48c3f4ccdafb7c8acae9025c2ae967cfda",
+      "bytes": 766537
+    }
+  }
+}

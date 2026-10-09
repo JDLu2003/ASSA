@@ -1,0 +1,1721 @@
+                                             B LITZ S CALE: Fast and Live Large Model Autoscaling with O(1) Host Caching
+
+                                         Dingyan Zhang, Haotian Wang† , Yang Liu† , Xingda Wei                     1
+                                                                                                                       , Yizhou Shan2 , and Rong Chen, Haibo Chen1
+                                                1                                                                                                   2
+                                                    Institute of Parallel and Distributed Systems, Shanghai Jiao Tong University                        Huawei Cloud
+                                         Abstract                                                              is also unpredictable due to the auto-regressive nature of
+                                         Model autoscaling is the key mechanism to achieve server-             LLMs [45, 80, 29] (see also Figure 1 and §2.2).
+                                         less model-as-a-service, but it faces a fundamental trade-off            Model autoscaling is a promising solution [76, 11, 29, 3].
+                                         between scaling speed and storage/memory usage to cache               With autoscaling, a M AA S system only provisions the av-
+                                         parameters, and cannot meet frequent scaling requirements             erage number of instances required over the long term for
+arXiv:2412.17246v2 [cs.DC] 15 Jun 2025
+
+
+
+
+                                         across multiple hosts. The key problem is that data plane per-        each served model, which remains relatively stable [71]. This
+                                         formance is slow, and scaled instances remain stopped while           improves utilization. Upon bursts, the system automatically
+                                         parameters are loading.                                               scales new instances, avoiding SLO violations due to request
+                                            In this paper, we first show that the data plane can be            queueing caused by insufficient instances provisioned.
+                                         made fast with no or O(1) caching by loading parameters                  Autoscaling speed is critical in minimizing SLO violations
+                                         through the compute network between GPUs because: (1) its             because the queued requests are not served until the instances
+                                         speed is comparable to host cache and is underutilized, and           are scaled. For instance, the inference time of a Llama3-8B is
+                                         (2) scaling multiple instances requires no or O(1) caching            80-900 ms on commodity GPU (A800), while users expect a
+                                         with network-optimized multicast. Second, autoscaling can             tight response time (< 1 second) for scenarios like chatbot [12,
+                                         be made live by breaking the scaling abstraction for inference        81, 33]. Meeting such tight SLO requires less than 500 ms
+                                         from a coarse-grained instance-level to a fine-grained layer-         scaling time, but achieving this is challenging especially for
+                                         level. This allows us to offload the layer computation from           LLMs with 10-400 GB parameters. The key reason is the
+                                         the overloaded serving instances to the scaled ones without           slow data plane of autoscaling—the process of loading the
+                                         waiting for the parameters to be fully loaded.                        model parameters to instances’ GPUs. While high bandwidth
+                                            Under real-world workloads, our system B LITZ S CALE               SSDs are utilized in current work [29], the speed provided
+                                         achieves up to 94 % lower tail latency reductions compared to         by SSDs of GPU servers (2-10 Gbps per GPU [35, 9, 27])
+                                         state-of-the-art autoscaling system (ServerlessLLM), and it re-       is still far from ideal. For instance, loading Llama3-8 B to a
+                                         duces the GPU time used for serving by 49 % when compared             GPU takes 12.8 seconds with 10 Gbps SSD. Another factor
+                                         with serving systems that do not support autoscaling like Dist-       obstructing fast scaling is that existing scaling methods are
+                                         Serve and vLLM with the same service-level-agreement.                 stop-the-world: the scaled instances cannot serve requests
+                                                                                                               until all parameters are loaded. This implies that autoscaling
+                                         1    Introduction                                                     is directly bottlenecked by the data plane.
+                                                                                                                  To mitigate the above issues, state-of-the-art systems like
+                                         Recent years have seen rapid growth in applications pow-
+                                                                                                               ServerlessLLM further adopt a multi-tiered caching system
+                                         ered by deep learning models like large language models
+                                                                                                               by caching model parameters in the host (CPU) DRAM to
+                                         (LLMs) [13, 53, 34, 54, 61]. Due to the huge computation
+                                                                                                               accelerate the data plane [36, 41]. Under cache hit, they can
+                                         requirements, these models are typically served in model-
+                                                                                                               leverage the fast CPU-GPU link (e.g., 256 Gbps PCIe) to load
+                                         serving-as-a-service systems (M AA S) [63, 11, 23, 76, 20,
+                                                                                                               parameters. However, achieving a high hit rate is unfeasible:
+                                         10, 29], which manage a cluster of accelerators (e.g., GPUs)
+                                                                                                               ServerlessLLM reports a hit rate of 40–75 %, which is con-
+                                         and provision an appropriate number of serving instances
+                                                                                                               firmed by us (see §3). The root cause is that a M AA S typically
+                                         containing GPUs to each model deployed.
+                                                                                                               hosts many models, thus achieving a 100 % cache hit requires
+                                            An M AA S system has two design objectives: maximizing
+                                                                                                               caching all these models on the DRAM of each host, clearly
+                                         goodput—the number of requests that meet the service level
+                                                                                                               impractical. Vendors typically host many models because
+                                         objective (SLO), and minimizing instances provisioned to
+                                                                                                               there are hundreds of popular open-source model families
+                                         each model to improve hardware utilization. Achieving both
+                                                                                                               designed for different purposes [28]. Meanwhile, each model
+                                         is challenging due to the unpredictable short-term fluctua-
+                                                                                                               family has different scales for balancing the serving cost and
+                                         tions in a model’s instance demands, (5 × required within 2
+                                                                                                               accuracy [4]. Finally, developers can upload their customized
+                                         seconds), because the request arrival rate bursts at seconds-
+                                                                                                               fine-tuned models based on open-source models [10].
+                                         level [45, 80], where the memory usage of each request
+                                                                                                                  To achieve fast model scaling without relying on cache hit,
+                                         † These authors contributed equally to this work.
+                                                                                                               we make the following two key contributions:
+                                          Xingda Wei is the corresponding author (wxdwfc@sjtu.edu.cn).
+                                         Proceedings of the 19th OSDI Conference, Boston, MA, USA, 2025.       1. Data plane made fast with O(1) or no caching with
+
+
+                                                                                                           1
+compute network multicast. First, a M AA S is backed by                  multicast is non-trivial in our setup. Though the mechanism
+fast GPU-GPU/CPU compute fabrics [50], which are 100–                    of multicast is simple, i.e., simply forwarding parameters
+400 Gbps RDMA and even 16 Tbps NVLink [35, 9, 27]—                       between instances with the network, the challenges lie in
+much faster than SSD and comparable (or even faster than)                generating the multicast plan, i.e., determining how the data
+CPU-GPU PCIe. The compute fabric is used for data transfer               flows between instances. First, we need to quickly generate an
+during serving and we found it largely under-utilized, i.e., up          efficient plan online on diverse network topologies since our
+to 7.4 % of total bandwidth even in network-heavy workloads              sources and destinations are dynamically determined, but gen-
+like serving LLMs with prefill and decode disaggregation [55,            erating an optimal plan is NP-hard on heterogeneous networks
+81, 38, 19, 75] (§3). Thus, we can borrow such fast links for            in serving clusters [18]. Second, we need to avoid network
+accelerating the data plane of autoscaling.                              interference between the scaling and serving, otherwise, we
+   Second, network-based data plane requires no or minimal               observed a 1.5 × longer scale time and 50% degraded tail
+caching to achieve fast scaling. Specifically, if a model is             TBT (§4). Current solutions [22, 19, 32] mainly target of-
+already deployed on some instances, we can directly multicast            fline scenarios like training, so they can tolerate long plan
+the parameters from deployed instances through the network,              generation time and don’t need to consider interference from
+eliminating the need for caching. Such multicast is extremely            serving workloads. To address the issue, we propose a model-
+efficient because a serial forwarding multicast [66] can load            aware multicast planner, which leverages the key features of
+bulk data (e.g., model parameters), regardless of the number             compute network and the static data flow in model serving to
+of receivers. Even if no instance is deployed, multicast can             quickly generate a near-optimal, interference-free multicast
+be done with O(1) host caching by simply broadcasting the                plan for scaling (§5.1).
+parameters from the host with the cached model. This O(1)
+                                                                            Second, it is challenging to schedule how requests are exe-
+caching per-model allows us to avoid all cache misses since
+                                                                         cuted between deployed and live scaling instances, i.e., which
+the aggregated host memory of all machines is sufficient to
+                                                                         instance executes which layers. The challenge lies in the fact
+cache all models served by a M AA S.
+                                                                         that the serving capability of the scaling instances is limited—
+   Although fast networking can significantly accelerate the
+                                                                         it can only execute layers with parameters loaded, and this
+data plane with minimal caching, a stop-the-world loading
+                                                                         capability is dynamically changing. A naive best-effort scal-
+remains a bottleneck in cases when the networking is not fast
+                                                                         ing that executes as many layers as possible cannot balance
+enough. For example, to achieve at most 40 % SLO violations
+                                                                         the load because at the beginning of autoscaling, the new in-
+when serving a BurstGPT workload with Qwen2.5-72B, the
+                                                                         stances can only execute few layers, with requests still queued
+system needs to achieve a tight 500 ms stop time. Achieving
+                                                                         at the overloaded instances. A better solution is to adjust the
+so requires 576 Gbps per-GPU1 parameter transfer bandwidth,
+                                                                         load holistically by considering future incoming layers, and
+far exceeding the available bandwidth of typical compute
+                                                                         we realize this with a ZigZag pipeline scheduling and achieve
+network setups (e.g., 200 Gbps per-GPU) and even when
+                                                                         50% tail latency reduction under bursty workloads (§5.2).
+caching at the host (256 Gbps PCIe). Thus, we argue that
+an ideal parameter loading should be live: before the data
+                                                                         Demonstration with B LITZ S CALE. We built B LITZ S-
+loading finishes, the scaled instance should be able to serve
+                                                                         CALE , an M AA S system with the fastest autoscaling speed
+requests.
+                                                                         with O(1) caching. We adopted a global parameter pool to
+2. Data plane made live with fine-grained scaling abstrac-               cache the model parameters across all the machines, and inte-
+tion and cooperative execution. Model scaling cannot be                  grated the aforementioned interference-free multicast plan for
+live using traditional on-demand data loading techniques com-            scaling and efficient ZigZag scheduling-based live schedul-
+monly found in serverless computing [74, 69, 39] or inference            ing. To show the effectiveness of B LITZ S CALE, we evalu-
+loading overlap in PipeSwitch [15] (§4), because an instance             ated B LITZ S CALE by running real-world traces (i.e., Burst-
+can only emit results once all the parameters are loaded. This           GPT [71], AzureCode and AzureConv [14]) across a variety
+stop is rooted in the coarse-grained scaling abstraction of              of recent models with different sizes and architectures, in-
+existing systems: they can only scale and serve at the instance          cluding Llama3-8B, Mistral-24B, and Qwen2.5-72B. First,
+level. To realize live scaling, our key insight is that models           B LITZ S CALE has 47–75 % shorter time-to-first token, and has
+can be served in a fine-grained, layer-by-layer manner. With             up to 94 % shorter time-between-tokens than the state-of-the-
+this fine-grained layer-wise scaling, we can offload part of the         art work (ServerlessLLM [29]). Second, compared to serving
+layer’s computation from overloaded instances to scaled in-              systems without autoscaling support, i.e., vLLM [44] and
+stances with cooperative execution, thus improving the overall           DistServe [81], B LITZ S CALE reduces the GPU used for serv-
+serving throughput even before the scaled instance has loaded            ing a single model by 49 % with no SLO violations compared
+all the parameters.                                                      to an over-provisioning setup that provisions the GPUs based
+Challenges and solutions. First, utilizing network-based                 on the maximum request rate. B LITZ S CALE is open-sourced
+                                                                         at https://github.com/blitz-serving/blitz-
+1 72 B model requires at least four GPUs per-instance for serving.       scale.
+
+
+                                                                     2
+                          AzureConv req rate                                     3.5
+                                                                                              Computation required                                             GPU HBM required
+               20                                                                            Llama-2 7B                                              4.9     Llama-2 7B
+(normalized)
+
+
+
+
+                                                                  (normalized)
+
+
+
+
+                                                                                                                                      (normalized)
+                                                                                                                            3x instance
+ #Requests
+
+
+
+
+                                                                                                                                        Memory
+               15
+
+
+
+
+                                                                    FLOPS
+                                                                                 2.3                                                                                                       12x instance
+                                                                                                                            2x instance              3.3                                   9x instance
+               10                                                                                                                                                                          6x instance
+                5                                                                1.2                                        1x instance              1.6                                   3x instance
+                0 0                    150 300 450                               0.0 0         150     300                                           0.0 0     150     300
+                                                            600                                                450    600                                                      450   600
+                                        Time (seconds)                                            Time (seconds)                                                  Time (seconds)
+Figure 1: The timeline of request incoming rate of a real-world AzureConv [14] trace (a), its computation (b) and memory requirements (c)
+when serving this workload without SLO violation.
+                        A model serving system (e.g., BlitzScale)                   GPUs        e.g.,                until the model returns an end-of-sequence token. The auto-
+                                                         Spare
+                                                                                           Upload
+                                                                                                                     regressive phase is termed decode.
+                                                                                                           …
+                          Model reqs
+
+
+
+
+                                                    DCN
+     …                                              Deployed
+                                                                                                                        We noteXX.Xcm
+                                                                                                                                 two important features of LLMs. First, the perfor-
+        AI apps                           Gateway   model A GPU cluster                      Models from users       mance for prefill and decode is measured separately. Prefill
+                                                                                  Instance
+Figure 2: An illustration of Model as a Service (M AA S) system.                                                     is evaluated with the time-to-first-token (TTFT) while de-
+DCN states for data center network.                                                                                  code is evaluated using time-between-tokens (TBT). Second,
+                                                                                                                     the LLM query is stateful: the intermediate results—usually
+2              Background: M AA S and Autoscaling                                                                    termed as KVCache—are cached in GPU memory during the
+                                                                                                                                       Idle server
+                                                                                                                     auto-regressive phase    of a request for acceleration.
+2.1                 System setup: model-serving-as-a-service (M AA S)
+M AA S system setup and the serving instance. B LITZ S-                   Serving across instances: prefill and decode (PD) disag-
+CALE targets a M AA S scenario [63, 11, 23, 76, 20, 10, 29]:              gregated LLM serving. Observing the different computing
+                       M3
+the cloud allows the users to deploy their model serving on its           paradigms of prefill and decode, recent works propose sepa-
+managed hardware, and(a)    Training
+                          only       data users based on the num-
+                                charges                                   rating the instances for prefill and decode (PD disaggregation)
+                      (Needs fault tolerance)                             when processing serving requests [55, 81, 38]. Specifically,
+ber of requests processed  within SLO [10, 20]. The model      can
+               YY.Ycm
+
+
+
+
+                                                          Server assigned
+be popular open-source models like Qwen [4] or customized   for serving   for each request, one instance processes the prefill phase
+models uploaded by the users. Thanks to the above pricing                 (prefill instance ) and another instance (decode instance) pro-
+               trim = 0.25cm YY.Ycm XX.Xcm 0.25cm, clip                            setup-v1.pdf
+strategy, the cloud can dynamically adjust hardware resources             cesses the decode phase. This paradigm requires excessive
+to a specific model to maximize its hardware utilization. Fig-            data movement between the two instances because the pre-
+ure 2 shows a typical deployment of a M AA S system. For                  fill instance needs to transfer the KVCache to the decode
+each user-deployed model, the system dynamically allocates                instance. B LITZ S CALE works for both PD disaggregated and
+the required hardware resources (GPUs) to serve the inference             non-disaggregated LLM serving.
+requests of the model. Note that due to the diversity of AI
+applications, there would be hundreds or even thousands of                2.2 Dynamic hardware demands when serving a model
+models served simultaneously by a M AA S system [21].                     Determining the hardware requirements, i.e., the right number
+   In this paper, we use instance to denote a set of GPUs                 of instances for serving a model is challenging because the
+storing a complete copy of a model parameter for serving                  hardware demands are unpredictable and fluctuating. First,
+this model. An instance can have a single GPU or multiple                 the incoming request rate for a serving workload fluctuates
+GPUs when the parameter is large and sharded across them,                 over time and is hard to predict [29, 59, 80]. Figure 1 (a)
+e.g., with tensor parallelism [47]. Because each instance has             presents the number of requests sent to a single model service
+a maximal serving throughput, the cloud can deploy multiply               over time from a real-world trace—BurstGPT [71]: the in-
+instances of the same model by provisioning multiple sets of              coming inference requests increase 5 × within 2 seconds with
+GPUs, where the number of instances is dynamically scaled                 no predictable trend. Since the FLOPS of an instance is fixed,
+based on the incoming request rate. B LITZ S CALE supports                the unpredictable rate causes the computation requirement—
+autoscaling with all existing model serving methods at the                FLOPS required to finish the pending requests within SLO—
+instance level.                                                           unpredictable. Figure 1 (b) confirms this by measuring the
+Serving within an instance: non-LLM & LLM. Each                                                                      requirement of the prefill instances when serving the Burst-
+serving instance processes requests in the following workflow:                                                       GPT with Llama2-7B.
+it queries the model in a layer-by-layer computation paradigm                                                           Second, serving modern models like LLM has non-trivial
+(see Figure 9 (a)) and gets the final results. For simple models                                                     and unpredictable memory requirements. As shown in Fig-
+like vision models, the model is queried once with the input                                                         ure 1 (c), the KVCache usage of the decode instances is
+data (image). On the other hand, for large language models                                                           multiple times larger than the memory capacity of a single
+(LLMs) [65], the request queries the model multiple times:                                                           instance and fluctuates over time (3–12 ×) when serving the
+the model is first queried with input text (prompt) to produce a                                                     BurstGPT workload with Llama2-7B. The root cause is that
+result (token). This first query is typically termed prefill. The                                                    the KVCache of requests must be stationary in GPU memory
+token is then used to generate subsequent tokens iteratively                                                         during the decode phase. The KVCache of requests are large,
+
+
+                                                                                                                 3
+   100                SSD     100                SSD     100                SSD     100                SSD              Llama3-8B       Mistral 24B
+                                                                                                                1.0 AzureCode (e)      AzureConv (f)
+SLO violation (%)
+
+
+    80 Network                 80 Network                 80 Network                 80 Network
+
+
+
+
+                                                                                                             Normalized
+                                                                                                             Bandwidth
+    60 Host                    60 Host                    60 Host                    60 Host                                              DistServe
+    40                         40                         40                         40                         0.5
+    20          Llama3-8b 20               Llama3-8b 20             Qwen2.5-72B20              Qwen2.5-72B
+     0            TTFT (a) 0                  TBT (b) 0                 TTFT (c) 0                  TBT (d)     0.0
+       0      2500        5000 0         2500        5000 0         2500        5000 0         2500        5000    0:00 2:30 5:00 0:00 2:30 5:00
+       Scale stall time (ms)      Scale stall time (ms)      Scale stall time (ms)      Scale stall time (ms)         Time (mins:secs) Time (mins:secs)
+Figure 3: A characterization of SLO attainment for different inference cases (a)–(d) with varied duration of autoscaling stops on BurstGPT [71].
+(e) and (f): an analysis of compute network usage in serving workloads. The evaluation setup is in §6.
+
+
+e.g., 190–760 GB for Llama2-7B to serve BurstGPT, and the                                           9
+
+
+
+
+                                                                                       #instances
+                                                                                                                                    #Scaled     #Cache Miss
+stay time is unpredictable due to the auto-regressive nature                                        6
+of LLMs. To avoid performance losses when out of memory,                                            3
+a M AA S system must provision sufficient instances to hold                                         0
+KVCache from ongoing requests, so the number of instances                                               100000            120000      140000   160000
+                                                                                                                             Time (minutes)
+required by a model also unpredictably fluctuates.                                     Figure 4: An analysis of host cache misses when running Server-
+                                                                                       lessLLM [29] on BurstGPT [71].
+2.3                 Model autoscaling for handling dynamic demands
+Model autoscaling, which dynamically deploys2 serving in-                              that provisions models to all GPUs and applies manual delays
+stances on spare GPUs to scale up the serving capability, is                           based on the simulated speed for modeling different scaling
+a promising solution to handle fluctuated and unpredictable                            speeds. We set TTFT and TBT SLO based on inference speed
+computation and memory demands [29, 76, 11]. The rationale                             of different models following prior works [81]. Specifically,
+is that though a single model’s workload is unpredictable, the                         we use 450 ms and 150 ms for Llama3-8B model, and 1250 ms
+aggregated workloads of all models served by a platform are                            and 200 ms for Qwen2.5-72B model with tensor parallelism
+relatively stable [80]. Thus, when the load of a specific model                        degree of 4. §6 describes the detailed evaluation setup.
+service increases, we are able to find spare GPUs from other                              Figure 3 (a)–(d) shows the results: We can see that for
+models to scale up the serving capability of this model.                               a 72 B model, maintaining SLO violations below 60 % re-
+   Autoscaling an instance requires two basic steps: (1) ini-                          quires a minimum per-instance scaling speed of 220 Gbps
+tialize a proper execution context, e.g., create CUDA con-                             per-GPU3 , which is only achievable when the model param-
+texts (control plane) and (2) load the model parameters to the                         eters are loaded from the host memory. The scaling time
+GPUs’ memory (data plane). We focus on (2) because (1) can                             requirement correlates directly with inference time—our eval-
+be minimized with recent advances in GPU startup methods                               uated workload (BurstGPT [71]) has an average TTFT of
+like checkpoint and restore [40, 79] and our Rust/C++-based                            771 ms (with queueing time). Thus, to achieve 1250 ms SLO
+serving platform (see also §6.3). For (2), the state-of-the-art                        for all requests, the scale time must be below 500 ms, so a
+system—ServerlessLLM [29] optimizes the data plane with                                576 Gbps per-GPU network speed is required (measured by
+SSD-optimized parameter loading. Unfortunately, it does not                            dividing the parameter size by the scale time). This far ex-
+account for the scaling speed required by models. Our mea-                             ceeds what vendor-provided per-GPU SSDs bandwidth can
+surements in the next section show that SSD-based scaling                              deliver (2–10 Gbps per-GPU [35, 9, 27], detailed in §A.2).
+significantly lags behind applications’ requirements.
+                                                                                       Loading model parameters from host memory is not ef-
+                                                                                       fective due to misses. While caching the parameters on the
+3                   Characterizing Scaling Requirements and                            host CPU memory can meet the scaling speed requirement
+                    Compute Network between Instances                                  for some setups (e.g., 8 B, 24 B) with the fast host-GPU in-
+Model autoscaling requires fast data plane. If the data                                terconnects (256 Gbps PCIe 4.0), cache misses are common
+plane speed is not fast enough, during burst period, the re-                           in real-world traces, because the scarce host memory can-
+quests still violate the SLO due to increased queueing time.                           not support the caching all models deployed on the M AA S.
+Specifically, SLO defines the tolerable end-to-end latency                             Figure 4 presents the number of instances scaled and cache
+measured from the time a request is sent to the system to                              misses encountered in the BurstGPT workload using Server-
+the time the inference response is returned. Thus, the latency                         lessLLM [29]. Following its setup, we set a 5-minute keep-
+includes the queueing delays waiting for the scaled instance                           alive interval for caching models at the host. The miss rates
+to be ready for inference.                                                             range from 20–46%, depending on the time, which aligns
+   To characterize how different scaling speeds affect SLO                             with the numbers reported in ServerlessLLM’s paper (25–
+attainments, we implemented a simulator on DistServe [81]                              60%). Interestingly, many misses occur when scaling mul-
+2 It also stops a serving instance to scale down. Since scaling down is simpler,
+                                                                                       tiple instances, because involving more hosts increases the
+      we omit its details for brevity.                                                 3 72 B model uses four GPUs per-instance.
+
+
+
+
+                                                                                   4
+ GPU        GPU      …             GPU                       GPU      GPU       …        GPU
+                                                                                                                                          KVCache
+                                                                                                                                          transfer
+                                                                                                                                                                       Model
+                                                                                                                                                                       transfer      w/o interference                  P
+                                                                                                                                 P                          P                     Incast traffic Outcast traffic
+                       CPU memory                                               CPU memory
+
+
+
+
+                                                                                                              GPU servers
+       NIC                               Server 0                NIC                           Server 0                                                                           GPU
+                                                                                                                                                                      P                                                           P
+          RDMA: 200 Gbps                                            RDMA: 200 Gbps                                                                         XX.Xcm
+       NIC                               Server 1                NIC                           Server 1                                                                                w interference
+                                                                                                                                D                           D                                                          D
+                                                                                                                                                                Network
+ GPU             GPU      …        GPU NVLink                GPU          GPU       …    GPU                                                                    interference!
+                                                                                                                                                                                  GPU
+                                                                                                                                  P                         P                                                          P
+                                       (1.6Tbps)                          0 + 1 = PCIe: 256 Gbps
+             NVSwitch                                                                                                          (a) Goal: scale a          (b) Naïve scale           (c) The network                (d) Scale through D
+                                                                                                                                prefill instance             through P                  inference                        Is better
+                         (a) A800 SXM                  vs.         (b) A100 PCIe
+Figure 5: A illustration of networking in M AA S with NVLink (a)                                              Figure 7: (a) An illustration of scaling a prefill instance for LLM
+                                                                                                                                                                                                                                                           PP
+                                                                                                              PD disaggregated serving. (b) Naively scaling from a prefill instance                                                           P            act
+and without it. Note that the 256 Gbps PCIe is shared between two
+                                                                                                              imposes network interference. (c) Interference can be avoided by
+GPUs attached to it [48].                                                                                                                     Idle server
+                                                                                                              leveraging the bi-directional feature of modern DCN networking. (d)
+                                         3                            Cached on GPU server 3’s CPU            An improved scale plan with the bi-directional in mind.                                                                         D
+ Global parameter pool                             Model Sources                                                                                                                                                                                    Network
+
+ (§4, §5.3) Deployed on                                    N:0, 2:_         Local model cache                                   Network conflict analysis                                       Serving performance                            P
+                                                                                                                                                                                                                                                  interference!
+
+
+                                                           3:_                                                    32                                Done (w/o conflict)                         1.0                                      XX.Xcm
+                                                       …
+
+
+
+
+                                                                                                              #Layers loaded
+                     GPU0 on Server N                                                                                                                                                                                                     (d) Scale throug
+                   Scale (§5.1) Live exe. (§5.2)                                    Model executor                24                                                                                                                          w/ BlitzScale
+
+
+
+
+                                                                                                                                           YY.Ycm
+ Load monitor
+
+
+
+
+                                                                                                                                                                                          CDF
+                                                                                                                  16                                                                            0.5
+ & trigger (§5.3) planner       Scheduler                                                                                                                            w/ conflict
+                 1            2                4                                                                   8                                      Done (w/ conflict)
+                                                       …                                                                                                             wo/ conflict
+        YY.Ycm
+
+
+
+
+                                                                                N:0 N:1 N:2 N:3       Server assigned     Start                           0.0 XX.Xcm 0.25cm, clip
+                                                                                                                                       trim = 0.25cm YY.Ycm
+                                                                                        GPUs                       0
+   0             1        2         3        4               N                                          for serving 0    250 500 750 1000
+                                                                                                                                      -> C#1 (§4.1) -> C#3
+                                                                                                                                                                 50 100 150
+                                                                                                                                Time (ms)                          TBT (ms)
+   GPU servers managed by the BlitzScale                                                                      Figure 8: A characterization   of(§4.2)  (§4.3)
+                                                                                                                                                 network interference on (a) scaling
+Figure 6: Systemtrim   = 0.25cm
+                   architecture of YY.Ycm   XX.Xcm
+                                   B LITZ S CALE     0.25cm,
+                                                 . New modulesclip
+                                                               in-                                                                     -> C#2
+                                                                                                                                 gpotopo.pdf
+                                                                                                              speed and (b) serving performance.
+troduced by B LITZ S CALE are marked with     .
+                                                                                                                                                                                                                         P      P
+                                                                 System architecture and workflow. Figure 6 shows Switch
+                                                                      5                                                           our
+probability of scaling a model on a host without the cached pa-  system architecture. Like prior work [56, 29, 62], we    P   have
+                                                                                                                                D a
+rameters. Therefore, we still need accelerating scaling speed    load monitor (➀) tracking the serving load for each model
+when the model parameters are not cached at the host.            service, and deciding whether to scale and how many      D     Dnew
+                                                                            Serving requests
+                                         GPU servers
+
+
+
+
+                                                                 instances are  required (§5.3). On each machine, we further
+Opportunity: fast and underutilized compute network.                                                                      P
+                                                                 adopt off-the-shelf GPU     kernels FlashInfer [1] to queryP the
+                                                                                       Gateway
+First, compute networks between GPUs (and CPUs) have
+                                                                 model efficiently. The key differences are(e)twofold.
+                                                                                                                 Scale BlitScale
+                                                                                                                           First, our
+comparable or even faster speeds than host-to-GPU link. As                                                   (P)that
+                                                                                                                 + switch (P->D)
+                          YY.Ycm
+
+
+
+
+                                                                 scale planner (➁) will derive a scaling plan        guides   how to
+shown in Figure 5, the inter-GPU network (RDMA) operates
+                                                                 load parameters onto the scaled instances (§5.1) with compute
+at 200 Gbps, which is close to the host-to-GPU PCIe speed
+                                                                 network efficiently. The planner consults the global parame-
+(256 Gbps). With NVLink,trim the speed   is much
+                                   = 0.25cm       faster.XX.Xcm
+                                               YY.Ycm     More 0.25cm, clip                            arch-v2.pdf
+                                                                 ter manager (➂) to identify the sources    of model parameters.
+importantly, these networks are underutilized during serving.
+                                                                 In our example, the new instance can load the parameters
+Figure 3 (e) and (f) measure the peak network usage of Dist-
+                                                                 of model □ from the GPU0 on host N (N, 0), or from host
+Serve [81], a PD disaggregated serving system that heavily
+                                                                 2’s CPU memory (2, _). Second, during scaling, our live ex-
+utilizes the network due to KVCache transfers. To measure
+                                                                 ecution (exe.) scheduler (➃) will redirect requests between
+peak usage, we provisioned all the GPUs for serving, and
+                                                                 instances to fully utilize the scaled instances even before the
+evaluate a workload with the maximal request rate that our
+                                                                 parameters are fully loaded (§5.2).
+clusters can serve. Even under peak load, more than 40% of
+the network capacity is free, opening up the opportunity to      Challenges and approaches. Despite leveraging fast net-
+use the compute network for the scaling data plane.              working,  making autoscaling fast and live needs to address
+                                                                 the following challenges.
+                                                                    C#1. Online interference-free scale plan generation. Gen-
+4 System Overview of B LITZ S CALE
+                                                                 erating the scale plan is similar to generating a multicast
+B LITZ S CALE scales models through the compute network to       plan [18, 22, 32, 16, 17], i.e., how to quickly distribute data
+accelerate scaling even under cache misses on the host. We       (parameters) from some sources to targets. There are two
+achieve this by first managing model parameters—scattered        additional requirements for autoscaling. First, the plan must
+across GPUs behind serving instances (for deployed models)       be generated online on dynamically changing sources and
+and CPUs (cached at the host)—through a global param-            targets, but optimal plan generation is NP-hard [18] on a
+eter manager. The manager maintains a mapping between            heterogeneous network. Second, the plan needs to eliminate
+models and their sources. With the manager, we can quickly       interference between loading and the serving workload. Fig-
+read parameters from these sources with the fast RDMA or         ure 7 shows an example when a model is served via PD
+NVLink. Besides, we also offload computation from over-          disaggregation. In PD disaggregation serving workload KV-
+loaded instances to instances with partially loaded parameters   Cache is migrated from prefill to decode instances (a), and
+to achieve live scaling.                                         this migration overhead can be hidden [55]. However, sup-
+
+
+                                                                                                          5
+                                                 SLO violation                          SLO violation                              SLO violation                         Model layer e.g.,
+        Model
+
+
+
+
+                                       Thpt.
+
+
+
+
+                                                                            Thpt.
+
+
+
+
+                                                                                                                      Thpt.
+                                                                                                                                                                         Transformer
+                                                    Time                                      Time                                       Time                                                               XX.Xcm
+                                                                                                                                                                        Model serving
+      Reqs.                                    Overloaded reqs                      Overloaded reqs                             Overloaded reqs                         request (req)
+                                  Inst.0
+
+
+
+
+                                                                        Inst.0
+
+
+
+
+                                                                                                                 Inst.0
+                                                                                                                                                                        Model loading
+              …                            DCN                                   DCN                                      DCN                                           traffic
+      Resp.                                                      reqs                  reqs                                       reqs
+                                  Inst.1                                                                                                                                Activation
+
+
+
+
+                                                                        Inst.1
+
+
+
+
+                                                                                                                 Inst.1
+                                                                                                                                                                        transfer
+                                                   Scale      Req                                                                                   …
+      (a) Model basics                     (b) Scale through DCN                 (c) Scaling++ (PipeSwitch)                   (d) BlitzScale live scale       Instance (Inst.)
+
+Figure 9: (a) An overview of how model executes requests. (b) An illustration of naive model scale through DCN. (c) An illustration of an
+optimized scaling method with overlapped execution [15], but it still cannot be live. (d) How B LITZ S CALE scales models lively.
+
+
+pose we want to scale a prefill instance: if we naively select
+                                                                                                                    Spine network
+a prefill instance as the source (b), the scaling will compete
+                                                                                                                                                                              A GPU cluster
+the network bandwidth with the serving workload, leading to                                          LeafID:   L1                          L2
+1.5 × longer scale time as well as 50% tail TBT increase due
+                                                                                                                                                      BWi
+                         YY.Ycm
+
+
+
+
+                                                                                                                                                                                          NIC
+                                                                                                                                                            NIC
+
+                                                                                                                                                                  NIC
+
+                                                                                                                                                                        NIC
+
+                                                                                                                                                                              NIC
+
+                                                                                                                                                                                    NIC
+
+
+
+                                                                                                                                                                                                NIC
+
+                                                                                                                                                                                                      NIC
+to the amplified KVCache migration overhead (Figure 8 (b)).
+                                                                                                          Scale out network, e.g., RDMA
+   To this end, we design a serving-guided greedy plan gen-
+
+
+
+
+                                                                                                                                                            GPU
+
+                                                                                                                                                                  GPU
+
+                                                                                                                                                                        GPU
+
+                                                                                                                                                                              GPU
+
+                                                                                                                                                                                    GPU
+
+                                                                                                                                                                                          GPU
+
+                                                                                                                                                                                                GPU
+
+                                                                                                                                                                                                      GPU
+                                                                                                         Scalex
+eration method based on three observations (§5.1). First, the                                            Overview.pdf
+                                trim = 0.25cm YY.Ycm XX.Xcm 0.25cm, clip
+network heterogeneity mainly comes from NVLink, whose                                                        ScaleUp Network, e.g., NVLink
+                                                                      Node1     NodeM     NodeM+1
+speed is extremely fast, i.e., it can broadcast a Llama3 8B to 8     Figure 10: An illustration of how B LITZ S CALE models the network.
+GPUs within 120 ms. Thus, we can abstract instances linked
+with NVLink as a logical instance group to eliminate NVLink          becomes overloaded and inst.1 is under scaling, after inst.1
+from the network topology. Second, loading parameters from           has loaded the first layer, we redirect all requests from inst.0
+the network is bandwidth-intensive, so we can greedily con-                                             BWicompletes the first layer’s
+                                                                     to inst.1 for execution. Once inst.1
+struct serial forwarding chains [66] for multicast, which is                                                                                                                                                         Leaf
+                                                                     execution, it forwards the activation back to inst.0 to process
+optimal in the common case. Finally, the network (RDMA)              the remaining layers, and the system throughput increases
+between GPU servers is bi-directional [72, 52], meaning that         with reduced queued latencies, as queued requests are pro-
+the network flows of incast and outcast don’t interfere (c).         cessed faster. To see why the throughput              Leaf
+                                                                                                                       increases,       consider
+                                                                                                                  Src
+Thus, we can leverage this feature to avoid interference by          serving a 7-layer model. inst.0 alone will   Tgt    have     a throughput
+removing flows in the same direction on the same network                                               N: number
+                                                                     of 1/7. With our live scaling, after        of leaf one
+                                                                                                            loading      switches connected
+                                                                                                                               layer   on via spine switches
+                                                                                                                                            inst.1,
+                                                                                                       M: number of nodes connected to the same leaf switch
+link during plan generation. For example, we can load the            inst.0 only needs to execute 6 layers, so its throughput in-
+parameters from the decode instance to the prefill instance                                                      8cm                              (b)
+                                                                     creases to 1/6. The throughput continues          to improve as more
+(see Figure 7 (d)).                                                  layers are loaded, reaching the peak (doubled) after half of
+                                                                     the layers have been loaded—half of the scaling time. §5.2
+   C#2. Realizing live autoscale.              Live autoscaling—
+                                                                     describes our ZigZag scheduling for coordinating overloaded
+allowing the scaled instance to increase system throughput
+                                                                     and new instances during live autoscaling to achieve optimal
+before all parameters are fully loaded—is necessary because
+                                                                     performance for live autoscaling.
+SLO violations can still happen (Figure 3 (c)) even with
+fast networking. It is challenging to achieve this in existing
+systems. For example, PipeSwitch [15] and DeepPlan [42]              5 Detailed Design and Implementation
+leverage the layer-by-layer execution nature of models to per-
+                                                                     5.1 Online network-based scale plan generation
+form inference: As shown in Figure 9 (c), once the first layer
+is loaded on inst.1, they redirect the overloaded requests to it     When the planner is notified to scale the parameters onto n
+for execution. Meanwhile, inst.1 will load subsequent layers         new GPUs, it will get s sources from the parameter pool,
+concurrently. However, such overlapping is not live because,         find t spare GPUs as target and generate a plan on how to
+until all the layers are loaded, inst.1 still cannot finish requests send parameters from s sources to a subset of n GPUs in t
+to increase the system throughput.                                   targets. There are three metrics to minimize for the generation:
+                                                                     (1) the scale time, (2) the plan generation time, and (3) the
+   To this end, we propose a novel cooperative execution
+                                                                     interference with serving workloads.
+scheme for live autoscaling. The key observation is that
+though the scaled instance alone cannot finish the requests          Modeling the network between GPUs. Effectively generat-
+until all layers are loaded, it can alleviate the load of the over-  ing a plan requires a model of the network between sources
+loaded instance with its loaded layers, thus improving the           and targets, which is non-trivial due to the complexity of the
+serving throughput. Figure 9 (d) illustrates this. When inst.0       network topology in serving clusters. Our model assumes a
+
+
+                                                                                                6
+ Input:  Dsrc , source GPUs; Dtgt target GPUs; n: number of GPUs to scale;                                Layer transfer                                   KVCache transfer
+         BWi : return the scale out network bandwidth of GPU i ;
+                                                                                  S                                                        S0
+         Li : return the leaf switch ID of GPU i;                                                                Network
+         Scalei : the scaleup domain ID of GPU i.                                                    1         interference!
+                                                                                 T1                        P                           T1                           P
+ Output: Plan, a graph indicating how the parameters are loaded.
+                                                                                                      2
+ 1 Dsrc = Dsrc.prune().group_by(Li ).sorted_by(sum([BWi ] )).flatten()                                                                 S1
+ 2 Dtgt = Dtgt.group_by(Scalei).sorted_by(sum( [BWi ] ))
+              ⏵ sort Dtgt according to the order of Leaf ID in Dsrc               T2                            P                       T2                              P
+  2 Dtgt ← Dt .groupby(Li).sortby(Dsrc.index(Li).min()).flatten()
+ 3 m = 0; Plan = ∅                                                                    (a) Single chain w/ live scale                       (b) Multi-chain w/ live scale
+ 4 While not Dtgt.empty() and m < n:
+                                                                                 Figure 12: An illustration of why multiple chains are better espe-
+    ⏵ Gtgt: targets group connected by the scale up network                      cially under live scaling.
+        Ltgt: the leaf switch of these targets.
+ 5  Gtgt, Ltgt = Dtgt.pop_front()                                                          Scale time ~= 1 (|M|/B)        Links between nodes are 200                T1 T2 T3
+                                                                                                                          except for T1.                          S 100 200 200
+ 6  If Dsrc.filter(= Ltgt).sum([BWi ] ) ≥ Gtgt.sum([BWi ] )                       S                                                                  (c)
+                                                                                                               Layer
+       ⏵sources within the leaf have sufficient bandwidth for loading                                          transfer                         T3                      T1        XX.Xcm
+                                                                                  T1
+ 7      Dtmp = Dsrc.truncate(= Ltgt); Dsrc ++ Dtmp
+                                                                                                                                             T2        S0     |M|/ T3        S0          S1   S2
+
+
+
+
+                                                                                                                          Thpt
+ 8  Gsrc = Dsrc.truncate(sum([BWi ] ), ≥ Gtgt.sum([BWi ] ))                       T2                                             |M|/100             Time     200 T2              Time
+                                                                                                                                            T1
+ 9  Plan = Plan ++ (Gsrc, Gtgt); m = m + |Gtgt|                                                                                                               Benefit of multi-ring: live sc
+                                                                                  T3                                             S -> T1 -> T2 -> T3T2 S -> T2 -> T3 -> T1 interference
+ 10  Dsrc = Gtgt ++ Dsrc
+                                                                                       (a) Broadcast with a chain                   (b) The chain order affects scale effects
+ 11 𝐫𝐞𝐭𝐮𝐫𝐧 Plan                                                                                                                                        T3
+                                                                                 Figure 13: An illustration of (a) why chain is friendly to broadcast
+ Notation:                                                                       with huge bandwidth requirement and (b) why we               P
+                                                                                                                                 P chooses a specific P                                         P
+                                                                                                                                            T1     T2                                         T3
+   ++      ⏵join 2 data collections, e.g., [x, y] ++ [z, w] = [x, y, z, w]       chain order. |M | is the model size and B isT1the slowest network
+    [Func]i⏵apply Func to all elements of a data collection, e.g.,               bandwidth between nodes in a chain.
+           G.sum([BWi]) is the summation of bandwidth of all elements in G
+    Iter. index(value)⏵locations where a unique value first occurs in Iter
+                                                                                 algorithm as shown in Algorithm 11. First, we prune the
+   Iter.truncate(predicate)
+   ⏵pop front until the first remaining element satisfies predicate              sources to avoid any interference with serving workloads
+   Iter.truncate(flatMap, predicate)                                             (Line 1). Second, we group targets connected with scale-up
+   ⏵pop front and apply flatMap onto the popped elements                         networking like NVLink as a group (Line 2) such that we can
+     until the result satisfies predicate
+                                                                                 leverage the NVLink broadcast to efficiently realize parallel
+  Figure 11: The pseudocode of the plan generation algorithm.                    sharded parameter transfer, see Figure 14 and described be-
+                                                                                 low. Finally, we form multiple serial broadcast chains (Line
+                                                                                 3–10) to generate the plan.
+simplified scale-up and scale-out network hybrid networking,
+widely adopted for GPU clusters [25, 70, 50]. Figure 10 (a)                         Specifically, a serial broadcast chain is formed by a set of
+illustrates the modelling.                                                       source and target nodes, i.e., S → T1 → T2 → ... → Tn .
+                                                                                 Note that a node in a chain may have multiple GPUs. Such
+   First, we model the GPUs connected via fast scale-up net-
+                                                                                 a chain has a nice property that it is optimal   in bandwidth-
+                                                                                                                          scale-plan-algo.pdf
+working like NVLink as groups of GPUs. Such GPUs have
+                                                                                 intensive transfer like model scaling, because the overall trans-
+ultra-high interconnect bandwidth (1,600-3,600 Gbps) so scal-
+                                                                                 mission time is irrespective of the instances scaled with such
+ing within a group has negligible overhead. On the other hand,
+                                                                                 a chain. As shown in Figure 13 (a), when T1 receives the
+GPUs connected via slower scale-out networking like RDMA
+                                                                                 first layer, T1 immediately forwards it to T2. Meanwhile, S
+are more difficult to model due to a hierarchical structure.
+                                                                                 will continue to send the second layer to T1, so the time of
+To this end, we adopted a simple leaf-to-spine model that
+                                                                                 sending the first and second layer is overlapped.
+covers widely deployed topologies including Clos and Rail-
+                                                                                    While a serial chain is sufficient for efficient parameter
+optimized [70] with different subscription ratios: each GPU
+                                                                                 broadcasting for nodes that are connected with the same band-
+(i) has a BWi bandwidth connected to a leaf switch (LeafID),
+                                                                                 width links, multiple chains are necessary in a leaf-spine
+where GPUs within the same leaf switch have a full-mesh
+                                                                                 network where inter-leaf bandwidth may vary and in our
+connection, i.e., the bandwidth between GPUs (i) and (j) is
+                                                                                 live scale setup. This is because (1) multi-chain avoids rel-
+min(BWi , BWj ) with full bandwidth. Second, leaf switches
+                                                                                 atively slow inter-leaf communications if each leaf switch
+are connected to spine switches, with inter-leaf bandwidth
+                                                                                 has sources and targets (Line 6–7), and (2) it enables more
+equal to or smaller than the intra-leaf bandwidth. For simplic-
+                                                                                 interference-free live scaling especially in PD disaggregation
+ity, we don’t model the spine network and rely on upper-tier
+                                                                                 setting. Figure 12 illustrates the latter: suppose we want to
+protocols like Virtual Link Trunking (VLT [30]) and Equal-
+                                                                                 scale up two prefill instances in a live manner, the KVCache
+Cost Multi-Path (ECMP [37]). to support efficient inter-leaf
+                                                                                 will be transferred to the decode instances once prefill is done.
+networking.
+                                                                                 With a single chain, only T 2 can join the live scale without
+Multicast-chain-based greedily plan generation. To                               network interference, because at T 1, the KVCache transfer
+quickly generate the plan online, we use a three-step greedy                     (➀) interferes with the parameter forward traffic (➁). With
+
+
+                                                                             7
+                                                                                                             Req 6(      ) SLO violation: time = 32
+           Shard                                    AllGather via             Inst. 0
+
+                                                    ScaleUP                                   234567234567234567234567 234567234567                                 ...
+                                                                        ScaleInst. 1                                           Execute the 4th layer on Req 3               XX.Xcm
+                                                                                            111 111 . . .             SLO violation = 4 X normal latency (7)
+                                                   Broadcast
+    Dsrc              Dtgt        Parameter        via ScaleOut                 Load 2nd layer           Load 3rd layer     ...                                 A 7-layer
+                                                                                                                                            (a) Best-effort        model
+Figure 14: An illustration shareded parameter transfer with scale        (b) ZigZag
+up network.                                                                                                                                                       Req 1
+                                                                             Inst. 0                   Req 6 (    ) no SLO violation: time = 22
+                                                                                             234567 3456734567 4567567567 . . .
+                                                                                                                                                                  Req 2
+                                                                                                                                                                  Req 3
+two chains backed by two parameter sources (b), both T 1 and            ScaleInst. 1                                            Reqs 7
+T 2 can live scale without interference.                                                    1 1 1 1 1 1 2 2 2 22 2 1 3 3 3 2   ...                                Req 4
+                                                                                                                                                                  Req 5
+   Note that the order of nodes in the chain is important: we                   Load 2nd layer          Load 3rd layer     ...               Time                 Req 6
+chose a decreasing order with respect to the aggregated link
+                                                                        Figure 15: An illustration of the necessity of ZigZag scheduling.
+speed between nodes (Line 2, 5). This is because sending to
+                                                                        Note that the execution starts when the first layer has been loaded to
+nodes with higher bandwidth achieves a faster increase in               instance 1 (inst.1). Our example assumes the time of loading a layer
+the serving throughput. As shown in Figure 13 (b): suppose              can perform 6-layer computations.
+the source (S) sends parameters to T 2 twice as fast as T 1.
+
+
+
+
+                                                                                   YY.Ycm
+A chain order of S → T 2 → T 1 is better than S → T 1 →                 it begins executing the first layer of all requests. Note that
+T 2 because the downtime of T 2 is only half. Note that the             during the loading of the first layer, inst.0 remains active by
+source can be a group of GPUs because GPUs typically have                              trim = 0.25cm
+                                                                        processing its pending requests.YY.Ycm
+                                                                                                          Finally,XX.Xcm  0.25cm,
+                                                                                                                    when the model clip
+                                                                                                                                     has
+dedicated network cards in our setup.                                   completed loading on inst.1 (3), requests will be re-distributed
+Optimization: parallel sharded parameter transfer from                  evenly between both instances.
+                                                                                                Parallel-Chains.pdf
+multiple sources. For a broadcast chain where the source                The scheduling problem. A key issue to address in the
+and target contain GPUs with duplicated parameters, we fur-             above (3) is how to best utilize inst.1 to maximize the good-
+ther leverage the scale-up network to parallelize a transfer            put during live autoscaling. Specifically, we should decide a
+link. Figure 14 shows a concrete example. Suppose the source            pipeline configuration for each request batch, i.e., how many
+and target nodes have four GPUs each. For such a transfer,              layers to execute on inst.1 and inst.0, respectively. One naive
+each source GPU only needs to forward 1/4 of the sharded                policy is best-effort: for each batch, we execute as many lay-
+parameters to each target GPU, where the target GPUs can                ers as possible on inst.1 (not exceeding half) and execute
+use NVLink-based AllGather to get the full parameters. This             the rest on inst.0. While it adapts configurations with model
+reduces the scaling time to 1/4 as the NVLink AllGather time            loading, we found it is suboptimal because inst.1 has limited
+is negligible.                                                          serving capacity during initial loading, so most requests are
+                                                                        still queued at inst.0, causing SLO violations. Figure 15 (a)
+5.2   Efficient live autoscaling with ZigZag scheduling                 shows a concrete example of a 7-layer model executed with
+Selecting instances for live scaling. After getting the chains          the best-effort scheduling. The load time of one layer can
+from Algorithm 11, we select instances to participate in live           do 6-layer computations, a common setup (e.g., Llama2-7B
+autoscaling based on the following criteria: (1) the neces-             model with a moderate batch size of 2000 prefill tokens under
+sity of live autoscaling, i.e., when a stop-the-world scaling           200 Gbps RDMA network). Thus, before the second layer has
+will cause SLO violation and (2) the presence of overloaded             been loaded to inst.1, the current request batches (req 1–6)
+instance that can cooperate. Both are readily available: (1)            can only use a (1, 6) pipeline configuration. However, request
+we can profile the relationship between load speed and SLO              6 will suffer from SLO violation due to waiting for requests
+violation in Figure 3 for the judgement and (2) autoscaling             1–5 to be completed on inst.0, as their execution time has
+is typically triggered when the system is overloaded. Thus,             reduced a little due to the imbalanced loads.
+for each overloaded instance, we will identify an instance in
+                                                                        The ZigZag scheduling. To address this issue, our obser-
+the chain that satisfies (1), typically the tail instances in the
+                                                                        vation is that by delaying request scheduling on inst.0, inst.1
+chains as it has the slowest link.
+                                                                        will have more layers coming, opening opportunities to bal-
+Live autoscale protocol with paired instances. Suppose we               ance the workload between instances. Figure 15 (b) shows
+have selected a new instance (inst.1) to offload computations           this: After requests 2–5 have been executed on inst.1, we
+from an overloaded instance (inst.0). To begin live autoscal-           delay their execution on inst.0 and wait for the second layer
+ing, we use a three-step transition protocol: (1) Once inst.1           to come. This allows us to adopt a more aggressive pipeline
+starts loading parameters, we redirect all queued and new               configuration (2, 5) for them. Note that the delay won’t waste
+requests from inst.0 to it for execution. The redirection time          GPU because we can schedule pending requests (e.g., 6). Af-
+is negligible because the request payloads are much smaller             ter the second layer has been loaded, inst.1 can come back
+than the model. (2) After the first layer is loaded on inst.1,          (thus, in a ZigZag way) to execute the second layer of re-
+
+
+                                                                    8
+quests 2–5. Thus, the second layer execution of requests 3–6            Input: Q : an atomic distributed priority queue that stores the requests to be
+                                                                               scheduled. The priority is defined as follows: for req i and req j, the
+is overlapped with the execution of layers 3–6 for request 2.                  P(i) > P(j) if and only if i < j and i have loaded layers unexecuted.
+Thanks to this overlap, the overall inference time of request 7                The subscription (e.g., i) indicates the request’s arrival time.
+decreases from 32 to 22, now within the SLO.                            At New Instance (target instance)
+   The above ZigZag scheduling can be formulated as follows.            0 spawn(update_Q_when_layers_come) ⏵ Run in the background
+Assuming a first-come-first-serve (FCFS) scheduling policy,             1 while execute under live:
+the de facto for serving [44, 75, 77]. For ease of presentation,        2       q = Q.get_front()
+                                                                        3       forward_one_layer(q)
+we first assume non-LLM and then extend to LLM in §5.4.
+The scheduling has two parts:                                           At Old Instance (source instance)
+                                                                        4 while execute under live:
+   (1) Pipeline configuration. Given N request batches
+                                                                                ⏵Pull the pending requests with
+with equal execution time, we first determine the pipeline              5        If q, activation = pull_the_earlist_request(Q):
+configuration (Ti , Si ) for them, where Ti and Si are the              6           forward_all(q, activation)
+number of layers to be executed on the target and source
+                                                                         Figure 16: The pseudocode of the ILP-free ZigZag scheduling.
+GPU for request i, respectively. The goal is to minimize the
+average latency, which can be formulated with the following
+Integer Linear Program (ILP):                                              While solving this ILP is NP-hard, it remains manageable
+                                     X req
+                                     N X                                (less than 40 ms to solve for Llama3-8B) because models
+                Latencyavg = (                  Si )/N                  typically have only a few dozen layers. Additionally, we only
+                                    req=1 i=1                           need to configure the pipeline for the batches of requests
+                                                                        executed during parameter loading, which is a dozen of so in
+To see why such a formula holds, consider the example in
+                                                                        practice. Nevertheless, to further eliminate the solving time
+Figure 15 (b). Each request’s latency is the time the source
+                                                                        for models with more layers (e.g., 80 layers for Qwen-72B),
+instance finishes its part of the computation, which includes
+                                                                        we also derived an ILP-free method that we described below.
+its own execution time and the sum of its previous requests’
+                                                                           (2) Scheduling requests in an ILP-free ZigZag way. Specif-
+time (queueing time). We only need to consider previous
+                                                                        ically, we found that by delaying sending the requests on the
+requests because they are executed in a FIFO order. In our
+                                                                        source instance and letting the target instance execute the
+example, request 3’s latency is 17 (12 for requests 1 and 2’s
+                                                                        requests once it is free, we can achieve ZigZag scheduling
+execution and 5 for its own). For non-LLM, the execution
+                                                                        without solving the ILP. Figure 16 shows the pseudocode of
+time of each layer is the same if the batch size is the same.
+                                                                        how we schedule the requests on both instances. The new
+Note that we omit the activation transfer latency since it is
+                                                                        instance maintains a priority queue (that can be pulled by the
+negligible.
+                                                                        source instance via RPC) for all requests, where the priority
+   The problem has the following constraints:
+                                                                        is defined by (1) the FCFS order and (2) requests with next-
+min Latencyavg                                                          to-execute layer loaded coming first. Once the new instance
+s.t. Si + Ti = L,           ∀i    Pipeline limit (C1),                  has executed one layer (Line 3), we keep the executed request
+       i
+       X            i−1
+                    X                                                   in the queue so it can be scheduled back once more layers
+             Tj ≤         Sj , ∀i > 1   Pipeline dependency (C2),       are loaded. The requests are scheduled on the source instance
+       j=1          j=1                                                 only if it is not overloaded, i.e., has no pending requests (Line
+                          i−1                                           5). Thus, if the source instance is busy, the request will still
+                          X
+       Timel ∗ Ti ≤             Tj + (N − i + 1) × (Ti − 1),            be executed on the target instance.
+                          j=1
+                                                                        5.3   Global parameter pool and scaling policy
+       ∀i > 1    Load limit (C3)
+                                                             (1)        Global parameter pool and local memory cache. Our
+C1 ensures that the pipeline should be fully executed. C2               global parameter pool tracks the locations of the model pa-
+states pipeline dependency: when the source instance exe-               rameters across deployed GPUs and host CPUs with local
+cutes request i’s Si layers, the target instance must finish the        memory cache. To ensure at least one copy of the model pa-
+executionP of Ti . The start execution time of request i on the         rameters is available in the memory of GPU or host at the
+             i−1                                                        cluster scale, during system initialization, we distribute one
+source is j Sj . The finish time of i on the target instance
+   Pi−1                                  Pi                             copy of the model’s parameters evenly to the CPU hosts and
+is j Tj + Ti , which simplifies to j Tj . Finally, C3 en-
+                                                                        track their locations at a centralized manager. When a model
+sures that once the target instance request’s i’s Ti layers, all
+                                                                        is deployed to or reclaimed from a GPU, we further update the
+these layers must be loaded, where Timel is the time to load
+                                                                        locations in the manager, and reclaim/reload cached copies
+one layer normalized to the execution time of one layer in
+                                                                        on the host cache.
+pipeline. The term (N − i + 1) × (Ti − 1) indicates that the
+load time can be overlapped with executing of the succeeding            Scaling policy. Our paper focuses on the autoscaling mecha-
+requests of i.                                                          nism, which is orthogonal to the autoscaling policies, includ-
+
+
+                                                                    9
+ing collecting workload metrics with workload monitoring                                         Cluster A (m x g)    Cluster B (m x g)
+and determining how many new instances to scale based                        GPU                 A800 80 GB (4x8)     A100 80 GB (2x8)
+on these metrics. Our current implementation follows prior                   GPU-GPU (intra)      1.6 Tbps NVLink        256 Gbps PCIe
+works [62, 2] that first records the serving loads with tokens
+                                                                             GPU-GPU (inter)      100 Gbps RDMA        100 Gbps RDMA
+per second and KVCache usage globally.
+                                                                             Host-GPU               128 Gbps PCIe        128 Gbps PCIe
+   For scaling up, when the average monitored load surpasses
+                                                                             SSD-GPU                       10 Gbps             10 Gbps
+a pre-defined upper bound, we allocate sufficient instances
+to meet that demand. The upper bound can be derived by                   Table 1: Evaluation clusters. m is the number of hosts and g is the
+profiling the average serving load per-instance offline. We              number of GPUs per host.
+leave a more detailed explanation in another paper. For scal-
+ing down, we follow previous works’[56, 29] timeout-based                found we can pre-scale decode instance at zero cost, because
+policy: when the average monitored load falls below a lower              the need for scaling decode instances can be evidenced by the
+bound in a time window, we shut down some instances and                  requirement for scaling prefill instances. Specifically, once we
+revoke all GPUs assigned to them. Given B LITZ S CALE’s                  found a significant requirement for scaling prefill instances,
+rapid autoscaling capabilities, we adopt an extremely short              we will simultaneously scale decode instances. This effec-
+sub-second level timeout.                                                tively hides the scaling cost of decode instances, and is even
+                                                                         effective for other systems like ServerlessLLM [29], see §6.1.
+5.4   Specializations and optimizations for LLM
+While most techniques described above work for all models                6    Evaluation
+following a layer-by-layer architecture, the unique character-           System implementation. B LITZ S CALE is a M AA S system
+istics of LLMs especially for LLMs served with PD disaggre-              capable of serving both traditional models and LLMs with
+gation require several specializations and optimizations.                24,000 lines of Rust and C++ code. It builds upon widely
+Retrofitted live pipeline scheduling formulation. Our for-               applied LLM optimizations like PD disaggregation and con-
+mulas and constraints described in §5.2 cannot be directly               tinuous batching. We leverage existing highly-optimized serv-
+applied to LLMs because the prefill and decode time of a layer           ing system components (with no autoscaling support) wher-
+is approximately linear to the total batched token size [55, 75].        ever possible. For instance, all our GPU kernels for LLM
+For prefill-only live scheduling, e.g., autoscaling a prefill in-        come from FlashInfer [1]. We choose a native-language-based
+stance in PD disaggregation, we fix the formulation by adding            framework implementations because we found it is challeng-
+a regulation parameter for each request batch by profiling its           ing to implement fine-grained scheduling in Python. §A pro-
+execution time with the counts, similar to a priori work [75].           vides more implementation details.
+A more tricky case involves handling decoding, e.g., when                Testbed. Our evaluations are conducted on two testbeds listed
+scaling instances that combine prefill and decode, or scaling a          in Table 1. Cluster A can serve larger models (e.g., 72 B) with
+decode instance in PD disaggregation. The complexity arises              tensor parallelism [44] thanks to the NVLink while cluster B
+because decode batch size changes dynamically due to its                 is more suitable for serving single-GPU models.
+auto-regressive nature. Fortunately, our ILP-free scheduling
+                                                                         Evaluated traces and models. Because the scaling require-
+method can also work for decoding.
+                                                                         ments are closely related to the incoming request rates, we
+Supporting PD colocation. We seamlessly support PD colo-                 chose three typical real-world traces: BurstGPT [71], Azure-
+cation since a PD-colocated instance is a normal model in-               Code and AzureConv, both from Azure [55]. The detailed
+stance. Meanwhile, our ILP-free ZigZag scheduling also ap-               trace shapes are shown in the first column in Figure 17. Since
+plies to pipelined execution under PD colocation [5].                    the traces are collected from clusters with different serving ca-
+                                                                         pabilities, we follow the standard approach [46, 8, 36] to scale
+Live scaling decode instances in PD disaggregation. Live
+                                                                         the traces to fit our clusters. Specifically, we scale the trace
+scaling a decode instance in PD disaggregation without inter-
+                                                                         with temporal pattern preserved using TraceUpscaler [57],
+ference is impossible due to the incast bandwidth contention
+                                                                         and the scaled average request rate is half of the maximum
+of both parameter loading and KVCache transfer. Thus, we
+                                                                         serving capacity of our cluster.
+leverage the fact that the prefill and decode instances share
+                                                                            For models, we focus on evaluating LLMs because other
+the same model parameters, so we can live scale a decode
+                                                                         non-LLMs are much smaller and trivially scale efficiently
+instance by first mutating some prefill instances to decode
+                                                                         with B LITZ S CALE. Specifically, we choose Llama3-8B,
+instances, while concurrently live scaling the prefill instances
+                                                                         Mistral-24B and Qwen2.5-72B, all are popular LLM mod-
+to compensate for the prefill throughput.
+                                                                         els with high accuracy. Since B LITZ S CALE is only sensitive
+Optimized scaling policy for PD disaggregation. Pre-                     to the model size, we may omit the detailed model family
+scaling instances can hide the cost of scaling, but a too-early          name and only uses their sizes in the following description
+scaling wastes GPU resources. In PD disaggregation, we                   for simplicity. For small model (8B), it only needs one GPU
+
+
+                                                                    10
+                                                                   Serverless LLM          Serverless LLM (All Cache)         BlitzScale
+             BurstGPT x 72B x Cluster A 12000                                                                                                1.0                        1.0
+            100                                                                                  450
+
+
+
+
+                                                                                                                                Percentage
+                                        TTFT (ms)
+#requests
+
+
+
+
+                                                                                      TBT (ms)
+                                                     8000                                        300                                         0.5                        0.5
+            50                                       4000                                        150
+             000:00 01:40 03:20 05:00                   000:00 01:40 03:20 05:00                   000:00 01:40 03:20 05:00                  0.0                        0.0
+                                                                                                                                                      0    5000 10000              250 500     750
+                     Time (mins:secs)                           Time (mins:secs)                         Time (mins:secs)                                 TTFT (ms)                 TBT (ms)
+             AzureCode x 8B x Cluster B                                                                                                         1.0                      1.0
+                                                        3000                                      900
+
+
+
+
+                                                                                                                                   Percentage
+                                            TTFT (ms)
+#requests
+
+
+
+
+                                                                                       TBT (ms)
+            100
+                                                        2000                                      600                                           0.5                      0.5
+                                                        1000                                      300
+              000:00 01:40 03:20 05:00                     000:00 01:40 03:20 05:00                 000:00 01:40 03:20 05:00                    0.0                      0.0
+                                                                                                                                                      0       2000             0    1000 2000
+                     Time (mins:secs)                            Time (mins:secs)                         Time (mins:secs)                                TTFT (ms)                 TBT (ms)
+            AzureConv x 24B x Cluster A                                                          150                                           1.0                       1.0
+            50                                       3000
+
+
+
+
+                                                                                                                                  Percentage
+                                         TTFT (ms)
+#requests
+
+
+
+
+                                                                                      TBT (ms)
+                                                                                                 100                                           0.5                       0.5
+            25                                       1500                                         50
+             000:00 01:40 03:20 05:00                     0                                        000:00 01:40 03:20 05:00                    0.0                       0.0
+                                      00:00 01:40 03:20 05:00                                     0      2000            100 200 300
+              Time (mins:secs)              Time (mins:secs)             Time (mins:secs)             TTFT (ms)            TBT (ms)
+       Figure 17: End-to-end performance comparison between B LITZ S CALE and ServerlessLLM on various workloads, models and clusters.
+
+per instance while for 72 B models the minimal number of                                                 time window (1s), and the final two columns present the cu-
+GPUs used by one instance is 4.                                                                          mulative distribution function (CDF) of the TTFT and TBT
+Comparing targets. Without explicit mention, we compare                                                  during the evaluation period, respectively. We focus on com-
+B LITZ S CALE with the following baselines:                                                              paring with S-LLM and AllCache in this section and leave
+                                                                                                         the comparison with DistServe in the next section, as it does
+1. ServerlessLLM (S-LLM) [29] is the state-of-the-art                                                    not support autoscaling.
+   M AA S with a focus on accelerating autoscaling speed. It
+   utilizes host memory to cache recently loaded models                                                  Overall performance. First, we can see that B LITZ S CALE
+   with a time-to-live eviction policy. Under cache misses,                                              has the lowest TTFT and TBT in all workloads thanks to the
+   it loads parameters from SSD with SSD bandwidth fully                                                 fast autoscaling speed. Specifically, on BurstGPT, the TTFT is
+   utilized.                                                                                             75.5 % and 21.1 % shorter than S-LLM and AllCache, respec-
+                                                                                                         tively, and the TBT is 7.4 % and 5.1 % shorter, respectively.
+2. ServerlessLLM optimal (AllCache) is the autoscaling                                                   Nevertheless, the degrees of improvement are different across
+   speed optimal version of ServerlessLLM that always loads                                              metrics due to the unique characteristics of the prefill and de-
+   the parameters from the host cache.                                                                   code phases. Meanwhile, the behaviors of systems, especially
+3. DistServe [81] is the state-of-the-art LLM serving                                                    S-LLM, are different across workloads due to the different
+   system without autoscaling support. It leverages PD                                                   request arrival patterns (see the first column). We elaborate
+   disaggregation. We chose it because autoscaling is more                                               on the differences in the following.
+   challenging in PD disaggregation due to the complexity                                                TTFT vs. TBT. B LITZ S CALE is more effective in reduc-
+   of multiple instances scaling (prefill and decode) and the                                            ing the TTFT than TBT on all workloads. This is due to
+   need to avoid scaling interference. We compare with other                                             two reasons. First, the decode instance can be pre-scaled
+   common PD colocation systems like vLLM [44] in §6.4.                                                  thanks to our optimized policy (§5.4), which we apply to all
+For a fair comparison, we adopted the same scaling policy for                                            baselines. Specifically, when the prefill throughput increases,
+both B LITZ S CALE and variants of S-LLM.                                                                B LITZ S CALE (and its baselines) will simultaneously scale the
+                                                                                                         decode instances, yet no more decode instances are needed
+6.1               Autoscaling performance under real-world traces                                        at the scale time. Thus, the scaling time is overlapped with
+Due to space limitations, for each model, we choose one trace                                            the prefill time, which hides some scaling overheads. Sec-
+on one of the clusters to evaluate the performance. Figure 17                                            ond, decode scales less than prefill because as long as there
+presents the end-to-end performance when serving with a                                                  is sufficient memory on the decode instances, all systems
+prefill and decode disaggregation setup where the instances                                              can handle decoding with a slightly increased TBT due to
+for different phases are scaled independently. The first col-                                            no queueing. Since all models adopt modern LLM optimiza-
+umn shows the request rate of the trace, the second and third                                            tion group query attention [6] with low memory footprint,
+columns show the mean TTFT and TBT, respectively, where                                                  decoding instances are more sufficient than prefill instances.
+each point is the average latency measured during a small                                                Nevertheless, B LITZ S CALE still achieves a 5.1–7.4 %, 88.3–
+
+
+                                                                                                    11
+                                                DistServe(Full)       DistServe(Half)                       Serverless LLM       BlitzScale
+             1.0                         1.0                              40                                 GPU Time: 71.08%   40                   GPU Time: 51.62%
+                                                                          30                                                    30
+Percentage
+
+
+
+
+                                                                  #GPUs
+             0.5                         0.5                              20                                                    20
+                                                                          10                                                    10
+             0.0       SLO (5X)          0.0       SLO (5X)
+                   0 2000 4000 26000             100 200                   0 0:00        1:40       3:20                   5:00 0 0:00        1:40       3:20      5:00
+                        TTFT (ms)                P95 TBT (ms)                            Time(mins:secs)                                      Time(mins:secs)
+                                       Figure 18: A comparison between GPU usage under AzureConv with Mistral 24B.
+94.1 % and 0.7–1.8 % shorter TBT than S-LLM and AllCache
+on three workloads, respectively.
+                                                                                                          S-LLM GPU Time        S-LLM Cache Usage Bltiz Cache Usage
+                                                                                                            BurstGPT            AzureCode        AzureConv
+
+
+
+
+                                                                                         Cache usage (%)
+                                                                                                       100                                                     100
+
+
+
+
+                                                                                                                                                                   GPU Time (%)
+Comparisons between different workloads results.
+B LITZ S CALE always outperforms AllCache thanks to fast                                                   50                                                    50
+network-based autoscaling as well as live scaling, but S-LLM
+has different behaviors compared to AllCache in these work-                                                 0                                                 0
+                                                                                                             0:00 2:30 5:00 0:00 2:30 5:00 0:00 2:30 5:00
+loads. On BurstGPT, S-LLM first has a sharp TTFT spike                                                        Time(mins:secs) Time(mins:secs) Time(mins:secs)
+at the first burst (time 0:05), while it is close to AllCache                             Figure 19: A comparison of host cache usage on S-LLM and
+                                                                                          B LITZ S CALE under the evaluated workloads.
+in future bursts, because future bursts can benefit from host
+cache. In comparison, on AzureCode, S-LLM has spikes un-
+                                                                                         (half), and this time is 50 % smaller than DistServe (full),
+der both bursts (time 0:05 and time 03:25), because the gap
+                                                                                         which we elaborate next.
+between two bursts makes the host cache evicted due to a
+time-to-live policy. Finally, on AzureConv, since the bursts
+                                                                                         GPU time used. The last two columns of Figure 18 show the
+continuously arrive, S-LLM always hits the host cache, so the
+                                                                                         GPU time used by S-LLM and B LITZ S CALE, respectively.
+performance—see the CDF graphs—is similar to AllCache.
+                                                                                         For S-LLM and B LITZ S CALE, we collected the aggregated
+6.2            Performance and resource usage                                            GPU usage at each time point for both prefill and decode
+                                                                                         instances, and the overall time is calculated by integrating the
+Comparison with non-autoscaling systems. We first com-                                   area under the curve. For variants of DistServe, their GPU
+pare B LITZ S CALE with DistServe. Since DistServe does not                              time is constant across the evaluation period. We can see
+support autoscaling, its performance is highly dependent on                              that B LITZ S CALE has 19.46 % lower GPU time than S-LLM
+the number of provisioned instances. Therefore, we evalu-                                thanks to the fast autoscaling capability: with low scaling
+ate two setups: DistServe (full) uses all GPUs in our cluster                            speed, there would be more queued requests, so the system
+and represents an optimal performance at the cost of GPU                                 would trigger more scaling operations that use more GPU
+waste. On the other hand, DistServe (half) uses GPUs with                                time. This is unnecessary with B LITZ S CALE. Even with less
+the average number of instances required to handle all the                               GPU time used, B LITZ S CALE has a 48.1 % and 1.8 % shorter
+workloads within the evaluation period. For simplicity, we                               TTFT and TBT than S-LLM, respectively.
+only present the results on AzureConv on 24B models, the
+overall trends are similar. We have carefully calibrated Dist-                            Host cache usage. Compared to ServerlessLLM, B LITZ S-
+Serve’s performance, such that when autoscaling is disabled                               CALE also consumes less host memory for parameter caching.
+in B LITZ S CALE, DistServe has the same performance as                                   Figure 19 reports the host memory usage for different sys-
+B LITZ S CALE in all setups.                                                              tems. We omit AllCache and DistServe, as AllCache always
+   The first two columns of Figure 18 present the latency re-                             fully replicates parameters to all hosts while DistServe does
+sults. First, it can be observed that DistServe (full) has the                            not need caching. We normalize the host cache usage as dif-
+best performance, because the GPU is over-provisioned so it                               ferent workloads use different clusters. The results deliver
+doesn’t suffer from queueing or scaling overhead. Neverthe-                               two messages. First, B LITZ S CALE only needs minimal host
+less, B LITZ S CALE still achieves the same service level ob-                             caching (less than one) to achieve fast autoscaling: this is as
+jective (SLO) as DistServe (full) while S-LLM incurs 18.7 %                               expected by our design because we prefer to load parameters
+SLO violations. We follow the traditional 5 × SLO [81] since                              from GPUs of instances that serve the model, and even when
+all our workloads (chat and code generation) are latency-                                 no serving instance is available, we only need one host copy
+sensitive. Specifically, if a request’s end-to-end (TTFT or                               due to the network-based multicast. Second, the memory us-
+TBT) latency is exceeds 5 × the average latency, it violates the                          age of ServerlessLLM is proportional to the number of hosts
+SLO. Finally, DistServe (half) has the poorest performance:                               involved in the serving, so a model can quickly “pollute” the
+on average, B LITZ S CALE has a 95.8 % and 1 % shorter TTFT                               host cache. This is non-optimal for an M AA S system because
+and TBT than DistServe (half). B LITZ S CALE achieves this by                             it can simultaneously serve many models while the host cache
+using the same GPU time for serving this model as DistServe                               is limited.
+
+
+                                                                                    12
+                                                                                                    Serverless LLM                                             +Network                                          +Multicast (fast)                                                   +ZigZag (live)
+                                                                                                                                                                                                                                                                                                                                            200
+                                       72.9\%
+                                                73.7\%
+                                                         75.5\%
+
+
+
+
+                                                                                                                                                               10.6\%
+                                                                                                                                                                        11.1\%
+                                                                                                                                                                                 47.3\%
+
+
+
+
+                                                                                                                                                                                                                                                                                              33.0\%
+                                                                                                                                                                                                                                                                                                       45.8\%
+                                                                                                                                                                                                                                                                                                                48.1\%
+                                                                                     600
+
+
+
+
+                                                                                                                                                                                                                             93.8\%
+                                                                                                                                                                                                                                        93.8\%
+                                                                                                                                                                                                                                                 94.1\%
+                               0.0\%
+
+
+
+
+                                                                                            0.0\%
+                                                                                                    3.8\%
+                                                                                                            7.1\%
+                                                                                                                    7.4\%
+
+
+
+
+                                                                                                                                                       0.0\%
+
+
+
+
+                                                                                                                                                                                                                                                                                      0.0\%
+
+
+
+
+                                                                                                                                                                                                                                                                                                                                                   0.0\%
+                                                                                                                                                                                                                                                                                                                                                           1.3\%
+                                                                                                                                                                                                                                                                                                                                                                   1.5\%
+                                                                                                                                                                                                                                                                                                                                                                           1.8\%
+                   10000                                                                                                                       2000                                                                                                                          3000
+
+
+
+
+                                                                                                                                                                                                                   0.0\%
+P95 Latency (ms)
+
+
+
+
+                                                                  P95 Latency (ms)
+
+
+
+
+                                                                                                                            P95 Latency (ms)
+
+
+
+
+                                                                                                                                                                                                                                                          P95 Latency (ms)
+
+
+
+
+                                                                                                                                                                                                                                                                                                                         P95 Latency (ms)
+                                                                                                                                                                                                         1600                                                                                                                               150
+
+
+
+
+                                                                                                                                                                                          Latency (ms)
+                     7500                                                            400                                                       1500                                                                                                                          2000
+                     5000                                                                                                                                                                                1200                                                                                                                               100
+                                                                                                                                               1000
+                                                                                     200                                                                                                                                                                                     1000
+                     2500                                                                                                                       500                                                       400                                                                                                                                50
+                          0                                                            0                                                          0                                                          0                                                                  0                                                             0
+                              BurstGPT TTFT (72B)                                          BurstGPT TBT (72B)                                         AzureCode TTFT (8B)                                        AzureCode TBT (8B)                                              AzureConv TTFT (24B)                                             AzureConv TBT (24B)
+                                                                                           Figure 20: An ablation study on the effectiveness of our proposed techniques.
+  Throughput (token/s)
+
+
+
+
+                                                                                                    AllCache                                   BlitzScale                                                                             BurstGPT x 72B                                   AzureCode x 8B                                       AzureConv x 24B
+                         20000                                                                                                                                                                                         1.0
+                                                Auto scale start                                                                                                                                                                                                                                                                                               Blitz
+
+
+
+
+                                                                                                                                                                                                          Normalized
+                                                                                                                                                                                                          Bandwidth
+                                                                                                                                                                                                                                                                                                                                                               S-LLM
+                         10000                                                                                                                                                                                         0.5
+                                                             BlitzScale Done AllCache Done
+                                                                                                                                                                                                              0.0 0:00     2:30    5:00 0:00     2:30    5:00 0:00     2:30    5:00
+                               00                500              1000                      1500            2000               2500                    3000                                                          Time (mins:secs)      Time (mins:secs)      Time (mins:secs)
+                                                                                           Time (ms)                                                                                                     Figure 22: A profile of the network usage of B LITZ S CALE (Blitz).
+Figure 21: A detailed look at how B LITZ S CALE and AllCache                                                                                                                                                                                                                                                                                       Runtime init
+scale a 24 B model to 6 prefill instances on cluster A.                                                                                                                                                                                                                                                                                            GPU ctx init
+                                                                                                                                                                                                             Blitz
+                                                                                                                                                                                                                                                                                                                                                   model loading
+                                                                                                                                                                                                                                    + Native
+6.3                       Detailed performance analysis                                                                                                                                                                           framework                                         + ctx pool             + Network-based load
+
+A detailed look at the live scale. Figure 21 shows a through-                                                                                                                                               vLLM
+put timeline when using B LITZ S CALE and AllCache to scale                                                                                                                                                                     Python dlopen                                         cuContextCreate                                        SSD load
+six 24 B prefill instances. B LITZ S CALE utilizes two broadcast                                                                                                                                                                                                                                                                                       Time (ms)
+chains (each involving 3 instances), while the end instances                                                                                                                                                                                       1,400                              7,500                                                                13,800
+involve a live autoscale. The start instances are the decode                                                                                                                                             Figure 23: A comparison of init time of B LITZ S CALE and vLLM
+instances. For AllCache, it directly loads the parameters from
+the host memory of the scaled instances. We can see that                                                                                                                                                 sufficient in most cases, which we have discussed in §6.1.
+first, even with a few loaded layers (e.g., at time 500 ms),                                                                                                                                             One exception is AzureCode: in this workload, the prefill
+B LITZ S CALE can gradually emit tokens as a result of live                                                                                                                                              throughput increases slower than others (see the first column
+execution. Second, B LITZ S CALE can scale faster even com-                                                                                                                                              of Figure 17), so the decode instances are triggered later. As
+pared with AllCache, thanks to our NVLink-based fused link                                                                                                                                               a result, the slow scale of ServerlessLLM’s SSD cannot be
+transmission protocol: it can finish scaling in 1,200 ms while                                                                                                                                           hidden, making a faster scaling more beneficial.
+AllCache takes about 2,000 ms.
+                                                                                                                                                                                                         Network usage. Figure 22 shows the network usage of
+Ablation study. Figure 20 conducts an ablation study on the                                                                                                                                              B LITZ S CALE and S-LLM: we can see that though B LITZ S-
+                                                                                                                                                                                                                             YY.Ycm
+
+
+
+
+effectiveness of our proposed techniques. We measured the                                                                                                                                                CALE leverages compute network for autoscaling and the          S
+effectiveness by incrementally enabling different techniques                                                                                                                                             scale frequency is high (see the last column of Figure 18), the
+and reporting the results on the three workloads: “+Network”                                                                                                                                             additional network usage is negligible.
+leverages fast computing network instead of SSD for autoscal-                                                                                                                                                                trim = 0.25cm YY.Ycm XX.Xcm 0.25cm, cl
+ing, “+Multicast (fast)” further applies our optimized param-                                                                                                                                            Control plane vs. data plane of model autoscaling. Fig-
+eter broadcast protocol described in §5.1, while “+ZigZag                                                                                                                                                ure 23 compares the control plane and data plane overhead
+(live)” enables live autoscaling of §5.2.                                                                                                                                                                during model autoscaling with vLLM. We can see that with
+   First, we can see that all techniques are effective in improv-                                                                                                                                        proper optimizations, the control plane overhead is negligible.
+ing the end-to-end serving performance, but the degrees differ
+                                                                                                                                                                                                         6.4           Performance under LLM PD colocation
+across workloads. First, “+Network” improves the scaling
+performance in all workloads thanks to the higher bandwidth                                                                                                                                              Finally, Figure 24 compares the performance of B LITZ S CALE
+for the autoscaling data plane. Second, “+Multicast (fast)” is                                                                                                                                           and vLLM where the serving is conducted in PD coloca-
+effective in AzureCode and AzureConv, but it is less effec-                                                                                                                                              tion on BurstGPT workloads with Llama2-7B model. The
+tive in BurstGPT due to the limitations of our cluster (up to                                                                                                                                            general trend is similar to PD disaggregation: B LITZ S CALE
+8 instances can be scaled on 72 B model), so there are no                                                                                                                                                has comparable performance with over-provisioned vLLM,
+cases to simultaneously scale multiple instances, which is the                                                                                                                                           while compared with an average provisioning, B LITZ S CALE
+targeted case for this technique. Live autoscaling is mostly                                                                                                                                             has a 0.24 × shorter P99 TTFT. Interestingly, we found
+effective in AzureCode because it is evaluated on a cluster                                                                                                                                              B LITZ S CALE has even shorter tail TTFT compared with
+with slow networking (Cluster B). Finally, our techniques are                                                                                                                                            over-provisioned vLLM, because our scheduling framework
+not such effective on decoding because decode instances are                                                                                                                                              is optimized for cluster serving.
+
+
+                                                                                                                                                                                      13
+                                     vLLM(Half)              vLLM(Full)                      BlitzScale               Accelerating coldstart in serverless computing. Accelerat-
+                                                                           1                                          ing model scaling builds upon coldstart acceleration in server-
+
+
+
+
+                                                              Percentage
+TTFT (ms)
+
+
+            18000
+            12000                                                                                                     less computing [51, 7, 60, 26, 64, 58, 67], which focuses on
+             6000
+                0 00:00                                                    0                                          starting general-purpose computing instances like containers.
+                                        00:40        01:20                     0      5000 10000 15000 20000
+                                  Time (mins:secs)                                       TTFT (ms)                    We built upon these works, e.g., for accelerating container
+                        40                                                         GPU Time: 49.85%                   startup time, yet designed efficient network-based live au-
+            #Instance
+
+
+
+
+                        30
+                        20                                                                                            toscale tailored for model scaling with the domain-specific
+                        10                                                                                            knowledge of model serving.
+                         0 0:00                              0:40                                         1:20
+                                                     Time(mins:secs)
+Figure 24: A comparison of B LITZ S CALE and vLLM on the Burst-
+GPT workload.
+                                                                                                                      8   Conclusion and Future Work
+                                                                                                                      Autoscaling is the key to achieving both high goodput and
+7                 Related work                                                                                        hardware utilization in model as a service systems, but the
+Optimizing model serving without autoscaling. Serving                                                                 performance overhead introduced by current slow and stop-
+models at scale is non-trivial. A significant body of research                                                        the-world autoscaling significantly limits its effectiveness.
+focuses on how to efficiently utilize GPUs to accelerate                                                              In this paper, we first show that the data plane of model au-
+model serving [81, 75, 44, 45, 77, 55, 31, 68], e.g., Orca [77]                                                       toscaling can be made fast with less than O(1) caching by
+proposes iterative-scheduling and selective batching. Al-                                                             leveraging network-based model-aware multicast. We next
+phaServe [45] employs pipeline parallelism to better handle                                                           show that the data plane can be made live through model-
+load spikes, but it cannot adjust pipeline instances dynami-                                                          aware remote execution. Equipped with these two techniques,
+cally. These systems assume running on a fixed pool of GPUs,                                                          our system B LITZ S CALE has at most 94.1 % better perfor-
+and we have shown the necessity of dynamically adjusting                                                              mance and 19.46 % better resource utilization compared to
+pool size and how to achieve so efficiently with B LITZ S CALE.                                                       state-of-the-art serving systems with and without autoscaling,
+B LITZ S CALE complements these single-instance model serv-                                                           respectively. We believe our work demonstrates the poten-
+ing systems with fast autoscaling mechanisms: we build upon                                                           tial and practicability of autoscaling-empowered model as a
+them for fast model serving on a single instance, and addi-                                                           service systems.
+tionally provide ultra-fast scaling when the system needs to                                                             While fast and live autoscaling of B LITZ S CALE takes
+change the number of serving instances.                                                                               a key step toward modern elastic serving systems, several
+Dynamic scaling serving instances. Dynamically scaling                                                                challenges remain. First, during our investigations, we found
+serving instances is challenging, mainly because the size of                                                          scaling policies—determining when and how to scale—may
+model weights is huge and still increasing, so loading them                                                           also impact system efficiency. The policy depends heavily
+to the accelerators (data plane) is time-consuming. Some                                                              on workload characteristics, which we leave as future work.
+existing works accelerate the loading [15, 41, 46, 62]: For                                                           Second, B LITZ S CALE currently focuses on instance-level
+example, both PipeSwitch [15] and DeepPlan [41] leverage                                                              scaling, whereas modern models can scale by changing the
+the layer-by-layer character of models to overlap the infer-                                                          parallel configuration within an instance, e.g., scaling experts
+ence and parameter loading to hide the loading cost. They                                                             in mixture-of-experts (MoE) models. While B LITZ S CALE
+only focus on host-to-device loading and such overlap is not                                                          in principle works for such a setup, we leave the detailed
+live especially when the models are large. SpotServe [46] and                                                         exploration in the future work.
+Llumnix [62] realize live migration but migration cannot fully
+unleash the computing capabilities of both instances. B LITZ S-                                                       Acknowledgment
+CALE provides a new mechanism to scale serving instances
+lively during parameter loading, resulting in throughput in-                                                          We would like to thank OSDI reviewers and our shepherd for
+crease even with unfinished loading, which we have shown                                                              their insightful feedback. We sincerely thank Qinwei Yang,
+critical in reducing latencies under bursty workloads.                                                                Xinhao Luo, and Mingcong Han for giving us feedback on
+   A concurrent work λScale [78] also focuses on using net-                                                           GPU communication library, kernel, driver and runtime. We
+work to accelerate model autoscaling. The key difference is                                                           also thank Xiating Xie, Chenhan Wang, Sundi Guan for
+that λScale scatters the parameters scaling on multiple in-                                                           refining the presentation of this paper. We thank Alibaba
+stances to reduce the time for scaling at the cost of decreased                                                       Tongyi Lab for providing the testbed during the early stage
+serving throughput, while B LITZ S CALE seamlessly scales                                                             of this work. This work was supported in part by the Na-
+full parameters on all instances with a similar speed, yet does                                                       tional Key Research & Development Program of China (No.
+not sacrifice the throughput thanks to our multicast-chain-                                                           2022YFB4500700), the Fundamental Research Funds for the
+based scaling. Moreover, during scaling B LITZ S CALE has                                                             Central Universities, the National Natural Science Foundation
+a gradually increasing throughput thanks to our live scaling                                                          of China (No. 62202291, 62272291), as well as a research
+while λScale is still a stop-the-world approach.                                                                      grant from Huawei Cloud.
+
+
+                                                                                                                 14
+References                                                                         Implementation (OSDI 20) (Nov. 2020), USENIX Association,
+ [1] FlashInfer: Kernel Library for LLM Serving. https://                          pp. 499–514.
+     github.com/flashinfer-ai/flashinfer, 2024.                              [16] BANIKAZEMI , M., M OORTHY, V., AND PANDA , D. K. Ef-
+ [2] Kubernetes horizontal pod autoscaling. https://                              ficient collective communication on heterogeneous networks
+     kubernetes.io/docs/tasks/run-application/                                    of workstations. In 1998 International Conference on Paral-
+     horizontal-pod-autoscale, 2024.                                              lel Processing (ICPP ’98), 10-14 August 1998, Minneapolis,
+                                                                                  Minnesota, USA, Proceedings (1998), IEEE Computer Society,
+ [3] Standardized serverless ml inference platform on kubernetes.                 pp. 460–467.
+     https://github.com/kserve/kserve, 2024.
+                                                                             [17] B EHRENS , J., J HA , S., B IRMAN , K., AND T REMEL , E.
+ [4] Qwen series. https://github.com/QwenLM/Qwen,                                 RDMC: A reliable RDMA multicast for large objects. In
+     2025.                                                                        48th Annual IEEE/IFIP International Conference on Depend-
+ [5] AGRAWAL , A., K EDIA , N., PANWAR , A., M OHAN , J., K WA -                  able Systems and Networks, DSN 2018, Luxembourg City, Lux-
+     TRA , N., G ULAVANI , B., T UMANOV, A., AND R AMJEE , R.                     embourg, June 25-28, 2018 (2018), IEEE Computer Society,
+     Taming Throughput-Latency tradeoff in LLM inference with                     pp. 71–82.
+     Sarathi-Serve. In 18th USENIX Symposium on Operating Sys-
+                                                                             [18] B HAT, P. B., R AGHAVENDRA , C. S., AND P RASANNA , V. K.
+     tems Design and Implementation (OSDI 24) (Santa Clara, CA,
+                                                                                  Efficient collective communication in distributed heteroge-
+     July 2024), USENIX Association, pp. 117–134.
+                                                                                  neous systems. J. Parallel Distributed Comput. 63, 3 (2003),
+ [6] A INSLIE , J., L EE -T HORP, J., DE J ONG , M., Z EMLYANSKIY,                251–263.
+     Y., L EBRÓN , F., AND S ANGHAI , S. GQA: training general-
+                                                                             [19] C AI , Z., L IU , Z., M ALEKI , S., M USUVATHI , M., M YTKOW-
+     ized multi-query transformer models from multi-head check-
+                                                                                  ICZ , T., N ELSON , J., AND S AARIKIVI , O. Synthesizing opti-
+     points. In Proceedings of the 2023 Conference on Empirical
+                                                                                  mal collective algorithms. In PPoPP ’21: 26th ACM SIGPLAN
+     Methods in Natural Language Processing, EMNLP 2023, Sin-
+                                                                                  Symposium on Principles and Practice of Parallel Program-
+     gapore, December 6-10, 2023 (2023), H. Bouamor, J. Pino,
+                                                                                  ming, Virtual Event, Republic of Korea, February 27- March 3,
+     and K. Bali, Eds., Association for Computational Linguistics,
+                                                                                  2021 (2021), J. Lee and E. Petrank, Eds., ACM, pp. 62–75.
+     pp. 4895–4901.
+                                                                             [20] C LOUD , A.    Build with generative ai on alibaba
+ [7] A KKUS , I. E., C HEN , R., R IMAC , I., S TEIN , M., S ATZKE ,
+                                                                                  cloud.      https://www.alibabacloud.com/zh/
+     K., B ECK , A., A DITYA , P., AND H ILT, V. SAND: towards
+                                                                                  solutions/generative-ai/build, 2024.
+     high-performance serverless computing. In 2018 USENIX
+     Annual Technical Conference, USENIX ATC 2018, Boston,                   [21] C LOUD , A.     The model list. https://help.
+     MA, USA, July 11-13, 2018 (2018), H. S. Gunawi and B. Reed,                  aliyun.com/zh/model-studio/getting-
+     Eds., USENIX Association, pp. 923–935.                                       started/models?spm=a2c4g.11186623.help-
+                                                                                  menu-2400256.d_0_2.4bb8b0a8ClhJuI&scm=
+ [8] A LI , A., P INCIROLI , R., YAN , F., AND S MIRNI , E. Opti-
+                                                                                  20140722.H_2840914._.OR_help-T_cn%23DAS%
+     mizing inference serving on serverless platforms. Proc. VLDB
+                                                                                  23zh-V_1, 2024.
+     Endow. 15, 10 (2022), 2071–2084.
+                                                                             [22] C OWAN , M., M ALEKI , S., M USUVATHI , M., S AARIKIVI , O.,
+ [9] A MAZON.   Amazon ec2 accelerated computing in-
+                                                                                  AND X IONG , Y. Mscclang: Microsoft collective communica-
+     stances. https://docs.aws.amazon.com/ec2/
+                                                                                  tion language. In Proceedings of the 28th ACM International
+     latest/instancetypes/ac.html.
+                                                                                  Conference on Architectural Support for Programming Lan-
+[10] A MAZON. Amazon bedrock. https://aws.amazon.                                 guages and Operating Systems, Volume 2, ASPLOS 2023, Van-
+     com/bedrock/, 2024.                                                          couver, BC, Canada, March 25-29, 2023 (2023), T. M. Aamodt,
+[11] A NYSCALE. Ray serve: Scalable and programmable serv-                        N. D. E. Jerger, and M. M. Swift, Eds., ACM, pp. 502–514.
+     ing.  https://docs.ray.io/en/latest/serve/                              [23] D EEPINFRA. Custom llms. https://deepinfra.com/
+     index.html, 2024.                                                            docs/advanced/custom_llms, 2024.
+[12] A RAPAKIS , I., BAI , X., AND C AMBAZOGLU , B. B. Impact                [24] D EEPSEEK.  Deepep.     https://github.com/
+     of response latency on user behavior in web search. In The                   deepseek-ai/DeepEP, 2025.
+     37th International ACM SIGIR Conference on Research and
+     Development in Information Retrieval, SIGIR ’14, Gold Coast             [25] D ELL.     Ai fabrics.    https://infohub.
+     , QLD, Australia - July 06 - 11, 2014 (2014), S. Geva, A. Trot-              delltechnologies.com/en-us/l/dell-
+     man, P. Bruza, C. L. A. Clarke, and K. Järvelin, Eds., ACM,                  technologies-ai-fabrics-overview-1/ai-
+     pp. 103–112.                                                                 fabrics-3/3/. 2025.
+
+[13] AWS. Amazon rekognition. https://aws.amazon.                            [26] D U , D., Y U , T., X IA , Y., Z ANG , B., YAN , G., Q IN , C., W U ,
+     com/en/rekognition/, 2024.                                                   Q., AND C HEN , H. Catalyzer: Sub-millisecond startup for
+                                                                                  serverless computing with initialization-less booting. In ASP-
+[14] A ZURE. Azure llm inference traces. https://github.                          LOS ’20: Architectural Support for Programming Languages
+     com/Azure/AzurePublicDataset, 2024.                                          and Operating Systems, Lausanne, Switzerland, March 16-20,
+[15] BAI , Z., Z HANG , Z., Z HU , Y., AND J IN , X. PipeSwitch: Fast             2020 (2020), J. R. Larus, L. Ceze, and K. Strauss, Eds., ACM,
+     pipelined context switching for deep learning applications. In               pp. 467–481.
+     14th USENIX Symposium on Operating Systems Design and
+
+
+                                                                        15
+[27] E NGINE , V.  Volcano engine accelerated computing                       [40] H UANG , Z., W EI , X., H AO , Y., C HEN , R., H AN , M., G U , J.,
+     instances. https://www.volcengine.com/docs/                                   AND C HEN , H. PARALLELGPUOS: A concurrent os-level
+     6459/72363.                                                                   GPU checkpoint and restore system using validated specula-
+[28] FACE , H. The ai community building the future. https:                        tion. CoRR abs/2405.12079 (2024).
+     //huggingface.co, 2024.                                                  [41] J EONG , J., BAEK , S., AND A HN , J. Fast and efficient model
+[29] F U , Y., X UE , L., H UANG , Y., B RABETE , A., U STIUGOV,                   serving using multi-gpus with direct-host-access. In Proceed-
+     D., PATEL , Y., AND M AI , L. Serverlessllm: Locality-                        ings of the Eighteenth European Conference on Computer
+     enhanced serverless inference for large language models.                      Systems, EuroSys 2023, Rome, Italy, May 8-12, 2023 (2023),
+     CoRR abs/2401.14351 (2024).                                                   G. A. D. Luna, L. Querzoni, A. Fedorova, and D. Narayanan,
+[30] G., C. N., ET AL . Virtual link trunking for network con-                     Eds., ACM, pp. 249–265.
+     figuration and resource optimization. U.S. Patent Applica-               [42] J EONG , J., BAEK , S., AND A HN , J. Fast and efficient model
+     tion US20160301608A1, oct 2016. https://patents.                              serving using multi-gpus with direct-host-access. In Proceed-
+     google.com/patent/US20160301608A1/en.                                         ings of the Eighteenth European Conference on Computer Sys-
+[31] G AO , B., H E , Z., S HARMA , P., K ANG , Q., J EVDJIC , D.,                 tems (New York, NY, USA, 2023), EuroSys ’23, Association
+     D ENG , J., YANG , X., Y U , Z., AND Z UO , P. Cost-Efficient                 for Computing Machinery, pp. 249–265.
+     large language model serving for multi-turn conversations with           [43] K ALIA , A., K AMINSKY, M., AND A NDERSEN , D. G. Fasst:
+     CachedAttention. In 2024 USENIX Annual Technical Confer-                      Fast, scalable and simple distributed transactions with two-
+     ence (USENIX ATC 24) (Santa Clara, CA, July 2024), USENIX                     sided (RDMA) datagram rpcs. In 12th USENIX Symposium on
+     Association, pp. 111–126.                                                     Operating Systems Design and Implementation, OSDI 2016,
+[32] G HAZIMIRSAEED , S. M., Z HOU , Q., RUHELA , A., AND                          Savannah, GA, USA, November 2-4, 2016 (2016), K. Keeton
+     BAYATPOUR , M. A hierarchical and load-aware design for                       and T. Roscoe, Eds., USENIX Association, pp. 185–201.
+     large message neighborhood collectives. In Proceedings of the            [44] K WON , W., L I , Z., Z HUANG , S., S HENG , Y., Z HENG , L.,
+     International Conference for High Performance Computing,                      Y U , C. H., G ONZALEZ , J., Z HANG , H., AND S TOICA , I. Ef-
+     Networking, Storage and Analysis, SC 2020, Virtual Event / At-                ficient memory management for large language model serving
+     lanta, Georgia, USA, November 9-19, 2020 (2020), C. Cuicchi,                  with pagedattention. In Proceedings of the 29th Symposium on
+     I. Qualters, and W. T. Kramer, Eds., IEEE/ACM, p. 34.                         Operating Systems Principles, SOSP 2023, Koblenz, Germany,
+[33] GIGASPACES. Amazon found every 100ms of latency                               October 23-26, 2023 (2023), J. Flinn, M. I. Seltzer, P. Druschel,
+     cost them 1% in sales. https://www.gigaspaces.                                A. Kaufmann, and J. Mace, Eds., ACM, pp. 611–626.
+     com/blog/amazon-found-every-100ms-of-                                    [45] L I , Z., Z HENG , L., Z HONG , Y., L IU , V., S HENG , Y., J IN ,
+     latency-cost-them-1-in-sales, 2024.                                           X., H UANG , Y., C HEN , Z., Z HANG , H., G ONZALEZ , J. E.,
+[34] G IT H UB. Accelerate your development speed with copilot.                    AND S TOICA , I. AlpaServe: Statistical multiplexing with
+     https://copilot.github.com, 2024.                                             model parallelism for deep learning serving. In 17th USENIX
+[35] G OOGLE.   Google accelerator-optimized machine fam-                          Symposium on Operating Systems Design and Implementation
+     ily. https://cloud.google.com/compute/docs/                                   (OSDI 23) (Boston, MA, July 2023), USENIX Association,
+     accelerator-optimized-machines.                                               pp. 663–679.
+[36] G UJARATI , A., K ARIMI , R., A LZAYAT, S., H AO , W., K AUF -           [46] M IAO , X., S HI , C., D UAN , J., X I , X., L IN , D., C UI , B.,
+     MANN , A., V IGFUSSON , Y., AND M ACE , J. Serving dnns                       AND J IA , Z. Spotserve: Serving generative large language
+     like clockwork: Performance predictability from the bottom                    models on preemptible instances. In Proceedings of the 29th
+     up. In 14th USENIX Symposium on Operating Systems Design                      ACM International Conference on Architectural Support for
+     and Implementation, OSDI 2020, Virtual Event, November 4-6,                   Programming Languages and Operating Systems, Volume 2,
+     2020 (2020), USENIX Association, pp. 443–462.                                 ASPLOS 2024, La Jolla, CA, USA, 27 April 2024- 1 May 2024
+[37] H OPPS , C. Analysis of an equal-cost multi-path algorithm.                   (2024), R. Gupta, N. B. Abu-Ghazaleh, M. Musuvathi, and
+     Request for Comments 2992, Internet Engineering Task Force                    D. Tsafrir, Eds., ACM, pp. 1112–1127.
+     (IETF), nov 2000. Accessed: 2025-05-16.                                  [47] NARAYANAN , D., S HOEYBI , M., C ASPER , J., L E G RES -
+[38] H U , C., H UANG , H., X U , L., C HEN , X., X U , J., C HEN ,                LEY, P., PATWARY, M., KORTHIKANTI , V., VAINBRAND , D.,
+     S., F ENG , H., WANG , C., WANG , S., BAO , Y., S UN , N.,                    K ASHINKUNTI , P., B ERNAUER , J., C ATANZARO , B., ET AL .
+     AND S HAN , Y. Inference without interference: Disaggre-                      Efficient large-scale language model training on gpu clusters
+     gate LLM inference for mixed downstream workloads. CoRR                       using megatron-lm. In Proceedings of the International Confer-
+     abs/2401.11181 (2024).                                                        ence for High Performance Computing, Networking, Storage
+[39] H UANG , J., Z HANG , M., M A , T., L IU , Z., L IN , S., C HEN ,             and Analysis (2021), pp. 1–15.
+     K., J IANG , J., L IAO , X., S HAN , Y., Z HANG , N., L U , M.,          [48] NVIDIA. Doubling all2all Performance with NVIDIA
+     M A , T., G ONG , H., AND W U , Y. Trenv: Transparently share                 Collective Communication Library 2.12.    https:
+     serverless execution environments across different functions                  //developer.nvidia.com/blog/doubling-
+     and nodes. In Proceedings of the ACM SIGOPS 30th Sympo-                       all2all-performance-with-nvidia-
+     sium on Operating Systems Principles, SOSP 2024, Austin, TX,                  collective-communication-library-2-12/,
+     USA, November 4-6, 2024 (2024), E. Witchel, C. J. Rossbach,                   2024.
+     A. C. Arpaci-Dusseau, and K. Keeton, Eds., ACM, pp. 421–
+     437.
+                                                                         16
+[49] NVIDIA. Nvidia collective communications library (nccl).                [61] STABILITY. AI. Activating humanity’s potential through gener-
+     https://developer.nvidia.com/nccl, 2024.                                     ative ai. https://stability.ai, 2024.
+[50] NVIDIA.              Nvidia dgx superpod: Next gen-                     [62] S UN , B., H UANG , Z., Z HAO , H., X IAO , W., Z HANG , X.,
+     eration     scalable      infrastructure     for   ai   leader-              L I , Y., AND L IN , W. Llumnix: Dynamic scheduling for large
+     ship.                 https://docs.nvidia.com/dgx-                           language model serving. In 18th USENIX Symposium on Oper-
+     superpod/reference-architecture/scalable-                                    ating Systems Design and Implementation, OSDI 2024, Santa
+     infrastructure-h200/latest/_downloads/                                       Clara, CA, USA, July 10-12, 2024 (2024), A. Gavrilovska and
+     bbd08041e98eb913619944ead1f92373/RA-                                         D. B. Terry, Eds., USENIX Association, pp. 173–191.
+     11336-001-DSPH200-ReferenceArch.pdf#
+                                                                             [63] TOGETHER . AI. Inference that’s fast, simple, and scales as
+     page=8.10, 2024.
+                                                                                  you grow. https://www.together.ai/products#
+[51] OAKES , E., YANG , L., Z HOU , D., H OUCK , K., H ARTER , T.,                inference, 2024.
+     A RPACI -D USSEAU , A., AND A RPACI -D USSEAU , R. SOCK:
+     Rapid task provisioning with serverless-optimized containers.           [64] U STIUGOV, D., P ETROV, P., KOGIAS , M., B UGNION , E.,
+     In 2018 USENIX Annual Technical Conference (USENIX ATC                       AND G ROT, B. Benchmarking, analysis, and optimization
+
+     18) (Boston, MA, July 2018), USENIX Association, pp. 57–70.                  of serverless function snapshots. In ASPLOS ’21: 26th ACM
+                                                                                  International Conference on Architectural Support for Pro-
+[52] O LUMIDE O LUSANYA AND M UNIRA H USSAIN. Need
+                                                                                  gramming Languages and Operating Systems, Virtual Event,
+     for Speed: Comparing FDR and EDR InfiniBand
+                                                                                  USA, April 19-23, 2021 (2021), T. Sherwood, E. D. Berger,
+     (Part 1).      https://dl.dell.com/manuals/all-
+                                                                                  and C. Kozyrakis, Eds., ACM, pp. 559–572.
+     products/esuprt_software/esuprt_it_ops_
+     datcentr_mgmt/high-computing-solution-                                  [65] VASWANI , A., S HAZEER , N., PARMAR , N., U SZKOREIT, J.,
+     resources_white-papers77_en-us.pdf, 2022.                                    J ONES , L., G OMEZ , A. N., K AISER , L., AND P OLOSUKHIN ,
+[53] O PENAI. Chatgpt. https://chatgpt.com, 2024.                                 I. Attention is all you need. In Advances in Neural Information
+                                                                                  Processing Systems 30: Annual Conference on Neural Infor-
+[54] O PENAI. Creating video from text. https://openai.
+                                                                                  mation Processing Systems 2017, December 4-9, 2017, Long
+     com/index/sora/, 2024.
+                                                                                  Beach, CA, USA (2017), I. Guyon, U. von Luxburg, S. Ben-
+[55] PATEL , P., C HOUKSE , E., Z HANG , C., S HAH , A., G OIRI , Í.,             gio, H. M. Wallach, R. Fergus, S. V. N. Vishwanathan, and
+     M ALEKI , S., AND B IANCHINI , R. Splitwise: Efficient gener-                R. Garnett, Eds., pp. 5998–6008.
+     ative LLM inference using phase splitting. In 51st ACM/IEEE
+                                                                             [66] V ERSTOEP, K., L ANGENDOEN , K., AND BAL , H. E. Ef-
+     Annual International Symposium on Computer Architecture,
+                                                                                  ficient reliable multicast on myrinet. In Proceedings of the
+     ISCA 2024, Buenos Aires, Argentina, June 29 - July 3, 2024
+                                                                                  1996 International Conference on Parallel Processing, ICCP
+     (2024), IEEE, pp. 118–132.
+                                                                                  1996, Bloomingdale, IL, USA, August 12-16, 1996. Volume
+[56] ROMERO , F., L I , Q., YADWADKAR , N. J., AND KOZYRAKIS ,                    3: Software (1996), K. Pingali, Ed., IEEE Computer Society,
+     C. Infaas: Automated model-less inference serving. In Pro-                   pp. 156–165.
+     ceedings of the 2021 USENIX Annual Technical Conference,
+     USENIX ATC 2021, July 14-16, 2021 (2021), I. Calciu and                 [67] WANG , A., C HANG , S., T IAN , H., WANG , H., YANG , H.,
+     G. Kuenning, Eds., USENIX Association, pp. 397–411.                          L I , H., D U , R., AND C HENG , Y. Faasnet: Scalable and
+                                                                                  fast provisioning of custom serverless container runtimes at
+[57] S AJAL , S. M., Z HU , T., U RGAONKAR , B., AND S EN , S.
+                                                                                  alibaba cloud function compute. In 2021 USENIX Annual
+     Traceupscaler: Upscaling traces to evaluate systems at high
+                                                                                  Technical Conference, USENIX ATC 2021, July 14-16, 2021
+     load. In Proceedings of the Nineteenth European Conference
+                                                                                  (2021), I. Calciu and G. Kuenning, Eds., USENIX Association,
+     on Computer Systems, EuroSys 2024, Athens, Greece, April
+                                                                                  pp. 443–457.
+     22-25, 2024 (2024), ACM, pp. 942–961.
+[58] S AXENA , D., J I , T., S INGHVI , A., K HALID , J., AND                [68] WANG , J., H AN , J., W EI , X., S HEN , S., Z HANG , D., FANG ,
+     A KELLA , A. Memory deduplication for serverless computing                   C., C HEN , R., Y U , W., AND C HEN , H. Kvcache cache in the
+     with medes. In EuroSys ’22: Seventeenth European Confer-                     wild: Characterizing and optimizing kvcache cache at a large
+     ence on Computer Systems, Rennes, France, April 5 - 8, 2022                  cloud provider. In 2025 USENIX Annual Technical Conference
+     (2022), Y. Bromberg, A. Kermarrec, and C. Kozyrakis, Eds.,                   (USENIX ATC 25) (July 2025), USENIX Association.
+     ACM, pp. 714–729.                                                       [69] WANG , K. A., H O , R., AND W U , P. Replayable execution
+[59] S HAHRAD , M., F ONSECA , R., G OIRI , I., C HAUDHRY, G.,                    optimized for page sharing for a managed runtime environment.
+     BATUM , P., C OOKE , J., L AUREANO , E., T RESNESS , C.,                     In Proceedings of the Fourteenth EuroSys Conference 2019,
+     RUSSINOVICH , M., AND B IANCHINI , R. Serverless in the                      Dresden, Germany, March 25-28, 2019 (2019), G. Candea,
+     wild: Characterizing and optimizing the serverless workload                  R. van Renesse, and C. Fetzer, Eds., ACM, pp. 39:1–39:16.
+     at a large cloud provider. In 2020 USENIX Annual Techni-                [70] WANG , W., G HOBADI , M., S HAKERI , K., Z HANG , Y., AND
+     cal Conference, USENIX ATC 2020, July 15-17, 2020 (2020),                    H ASANI , N. Rail-only: A low-cost high-performance network
+     A. Gavrilovska and E. Zadok, Eds., USENIX Association,                       for training llms with trillion parameters. In IEEE Symposium
+     pp. 205–218.                                                                 on High-Performance Interconnects, HOTI 2024, Albuquerque,
+[60] S HILLAKER , S., AND P IETZUCH , P. FAASM: Lightweight                       NM, USA, August 21-23, 2024 (2024), IEEE, pp. 1–10.
+     Isolation for Efficient Stateful Serverless Computing. USENIX
+     Association, USA, 2020.
+
+
+                                                                        17
+[71] WANG , Y., C HEN , Y., L I , Z., K ANG , X., TANG , Z., H E ,              [77] Y U , G., J EONG , J. S., K IM , G., K IM , S., AND C HUN , B.
+     X., G UO , R., WANG , X., WANG , Q., Z HOU , A. C., AND                         Orca: A distributed serving system for transformer-based gen-
+     C HU , X. Burstgpt: A real-world workload dataset to optimize                   erative models. In 16th USENIX Symposium on Operating Sys-
+     llm serving systems. https://arxiv.org/abs/2401.                                tems Design and Implementation, OSDI 2022, Carlsbad, CA,
+     17644, 2024.                                                                    USA, July 11-13, 2022 (2022), M. K. Aguilera and H. Weath-
+[72] W EI , X., C HENG , R., YANG , Y., C HEN , R., AND C HEN , H.                   erspoon, Eds., USENIX Association, pp. 521–538.
+     Characterizing off-path SmartNIC for accelerating distributed              [78] Y U , M., YANG , R., J IA , C., S U , Z., YAO , S., L AN , T.,
+     systems. In 17th USENIX Symposium on Operating Systems                          YANG , Y., C HENG , Y., WANG , W., WANG , A., AND C HEN ,
+     Design and Implementation (OSDI 23) (Boston, MA, July                           R. lambdascale: Enabling fast scaling for serverless large
+     2023), USENIX Association, pp. 987–1004.                                        language model inference, 2025.
+[73] W EI , X., L U , F., C HEN , R., AND C HEN , H. KRCORE: A                  [79] Z ENG , S., X IE , M., G AO , S., C HEN , Y., AND L U , Y. Medusa:
+     microsecond-scale RDMA control plane for elastic computing.                     Accelerating serverless LLM inference with materialization.
+     In 2022 USENIX Annual Technical Conference (USENIX ATC                          In Proceedings of the 30th ACM International Conference on
+     22) (Carlsbad, CA, July 2022), USENIX Association, pp. 121–                     Architectural Support for Programming Languages and Op-
+     136.                                                                            erating Systems, Volume 1, ASPLOS 2025, Rotterdam, The
+[74] W EI , X., L U , F., WANG , T., G U , J., YANG , Y., C HEN , R.,                Netherlands, 30 March 2025 - 3 April 2025 (2025), L. Eeck-
+     AND C HEN , H. No provisioned concurrency: Fast rdma-                           hout, G. Smaragdakis, K. Liang, A. Sampson, M. A. Kim, and
+     codesigned remote fork for serverless computing. In 17th                        C. J. Rossbach, Eds., ACM, pp. 653–668.
+     USENIX Symposium on Operating Systems Design and Im-
+                                                                                [80] Z HANG , H., TANG , Y., K HANDELWAL , A., AND S TOICA , I.
+     plementation (OSDI 23) (Boston, MA, July 2023), USENIX
+                                                                                     SHEPHERD: serving dnns in the wild. In 20th USENIX Sympo-
+     Association.
+                                                                                     sium on Networked Systems Design and Implementation, NSDI
+[75] W U , B., L IU , S., Z HONG , Y., S UN , P., L IU , X., AND                     2023, Boston, MA, April 17-19, 2023 (2023), M. Balakrishnan
+     J IN , X. Loongserve: Efficiently serving long-context large                    and M. Ghobadi, Eds., USENIX Association, pp. 787–808.
+     language models with elastic sequence parallelism. CoRR
+                                                                                [81] Z HONG , Y., L IU , S., C HEN , J., H U , J., Z HU , Y., L IU , X.,
+     abs/2404.09526 (2024).
+                                                                                     J IN , X., AND Z HANG , H. Distserve: Disaggregating prefill
+[76] YANG , Y., Z HAO , L., L I , Y., Z HANG , H., L I , J., Z HAO , M.,             and decoding for goodput-optimized large language model
+     C HEN , X., AND L I , K. Infless: a native serverless system                    serving. In 18th USENIX Symposium on Operating Systems
+     for low-latency, high-throughput inference. In ASPLOS ’22:                      Design and Implementation, OSDI 2024, Santa Clara, CA,
+     27th ACM International Conference on Architectural Support                      USA, July 10-12, 2024 (2024), A. Gavrilovska and D. B. Terry,
+     for Programming Languages and Operating Systems, Lau-                           Eds., USENIX Association, pp. 193–210.
+     sanne, Switzerland, 28 February 2022 - 4 March 2022 (2022),
+     B. Falsafi, M. Ferdman, S. Lu, and T. F. Wenisch, Eds., ACM,
+     pp. 768–781.
+
+
+
+
+                                                                           18
+                                                       Local SSD       Remote SSD         Network
+  Instance type                 Accelerators                                                             Has NVLink        Price
+                                                       BW/GPU           BW/GPU            BW/GPU
+  a2-ultragpu-8g [35]           8 x A100(80 GB)        2.58 Gbps       0.29 Gbps          12.5 Gbps      ✓                 40.44 USD/h
+  p4d.24xlarge[9]               8 x A100(40 GB)        2.31 Gbps       -                  100 Gbps       ✓                 45.039 USD/h
+  ml.hpcpni2.28xlarge[27]       8 x A100(80 GB)        4 Gbps          -                  100 Gbps       ✗                 48.23 USD/h
+  p4de.24xlarge[9]              8 x A100(80 GB)        2.31 Gbps       -                  100 Gbps       ✓                 56.328 USD/h
+  a3-highgpu-8g[35]             8 x H100               6.09 Gbps       0.97 Gbps          100 Gbps       ✓                 88.25 USD/h
+  a3-megagpu-8g[35]             8 x H100               6.09 Gbps       0.97 Gbps          200 Gbps       ✓                 Unavailable
+  p5.48xlarge [9]               8 x H100               9.8 Gbps        -                  400 Gbps       ✓                 Unavailable
+                                Table 2: A survey of M AA S hardware configurations from GPU vendors.
+
+
+A     Appendix                                                             non-negligible in serving instance autoscaling. To mitigate such an
+                                                                           overhead, B LITZ S CALE preserves a small CUDA context pool with
+A.1   Notable implementation details                                       pre-loaded kernels and transfers parameters to GPU within one of
+Network library We implement a communication library that                  the existing CUDA contexts, similar to an existing work [40]. Fur-
+abstracts both NVLink and RDMA to holistically transfer param-             thermore, B LITZ S CALE is built using C++ and native CUDA APIs,
+eters, similar to DeepEP [24]. During our implementation, we               eliminating the overhead of initializing PyTorch (e.g. dlopen).
+found establishing communication group between machines is slow
+                                                                           Fault tolerance. When machine failures occur, we will autoscale
+(e.g., 100 ms) when using off-the-shelf group communicators (e.g.,
+                                                                           new instances using our scaling mechanism. One problem is that
+NCCL [49]), which significantly limit the effectiveness of network-
+                                                                           cached parameters on the failed machine are lost, so we need to
+based scaling. Fortunately, we found that our plan only requires
+                                                                           redistribute these parameters to other machines to maintain our
+P2P communication between each pair of nodes. Therefore, we pre-
+                                                                           global parameter pool invariant. For other components in the system
+create a connection pool that supports full-mesh connections on
+                                                                           like scheduler or monitor failures, we follow the same procedure in
+each. While the compute network (RDMA) has potential scalability
+                                                                           existing work for recovery [56, 29].
+issue [43], it only occurs when transferring small payloads and can
+be addressed using advanced RDMA transport like DCT [73].                  A.2   Hardware configurations for M AA S
+Native serving engine with CUDA context pool. Before execution,            Table 2 lists the hardware configurations backed by typical M AA S
+a CUDA context with loaded kernels (cuModule) must be created              systems.
+on GPU. Creating such a CUDA context takes about 500 ms, and is
+
+
+                                                                      19
+

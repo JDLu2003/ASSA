@@ -1,0 +1,59 @@
+{
+  "papers": [
+    {
+      "topic": "agent-environments",
+      "id": "deltabox",
+      "arxiv": "2605.22781v2",
+      "kind": "arxiv-paper",
+      "title": "DeltaBox: Scaling Stateful AI Agents with Millisecond-Level Sandbox Checkpoint/Rollback",
+      "discovered_by": "all:DeltaBox",
+      "landing_url": "https://arxiv.org/abs/2605.22781v2"
+    },
+    {
+      "topic": "model-serving",
+      "id": "blitzscale",
+      "arxiv": "2412.17246v2",
+      "kind": "arxiv-paper",
+      "title": "BLITZSCALE: Fast and Live Large Model Autoscaling with O(1) Host Caching",
+      "discovered_by": "all:BlitzScale",
+      "landing_url": "https://arxiv.org/abs/2412.17246v2"
+    },
+    {
+      "topic": "agent-services",
+      "id": "aaas-agent-network",
+      "arxiv": "2505.08446v1",
+      "kind": "arxiv-paper",
+      "title": "Agent-as-a-Service based on Agent Network",
+      "discovered_by": "all:\"agent as a service\"",
+      "landing_url": "https://arxiv.org/abs/2505.08446v1"
+    },
+    {
+      "topic": "agent-services",
+      "id": "openaaas",
+      "arxiv": "2605.13618v1",
+      "kind": "arxiv-paper",
+      "title": "OpenAaaS: An Open Agent-as-a-Service Framework for Distributed Materials-Informatics Research",
+      "discovered_by": "all:\"agent as a service\"",
+      "landing_url": "https://arxiv.org/abs/2605.13618v1"
+    },
+    {
+      "topic": "agent-services",
+      "id": "conversational-interoperability",
+      "arxiv": "2407.19438v1",
+      "kind": "arxiv-paper",
+      "title": "Conversational AI Multi-Agent Interoperability, Universal Open APIs for Agentic Natural Language Multimodal Communications",
+      "discovered_by": "all:\"agent as a service\"",
+      "landing_url": "https://arxiv.org/abs/2407.19438v1"
+    },
+    {
+      "topic": "agent-services",
+      "id": "agentic-services-computing",
+      "arxiv": "2509.24380v3",
+      "kind": "arxiv-paper",
+      "title": "Agentic Services Computing",
+      "discovered_by": "all:\"agent as a service\"",
+      "landing_url": "https://arxiv.org/abs/2509.24380v3"
+    }
+  ],
+  "official": []
+}

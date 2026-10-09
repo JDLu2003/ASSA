@@ -1,0 +1,68 @@
+{
+  "item": {
+    "topic": "model-serving",
+    "id": "serverlessllm",
+    "arxiv": "2401.14351",
+    "kind": "arxiv-paper"
+  },
+  "capture_started_at": "2026-10-09T11:59:44.556965+00:00",
+  "path": "sources/papers/model-serving/serverlessllm",
+  "requested_url": "https://arxiv.org/abs/2401.14351",
+  "pdf_url": "https://arxiv.org/pdf/2401.14351",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "d874e025daeb6619f52c82c266f5b11bdf7228b262752e4927add49f10eabd02",
+      "bytes": 15860562
+    },
+    "paper.txt": {
+      "sha256": "f1574340d41a4dcac86efe52d90859a65a4584d04a6c22b76cd9e909279c7cd5",
+      "bytes": 161416
+    },
+    "paper.pdf": {
+      "sha256": "7b39c246c79218277ac1d1e1af213345721ed7977bb7643ad878ed58b8fc4424",
+      "bytes": 798652
+    },
+    "landing.html": {
+      "sha256": "5d4c3890ef22c06f036b00ad5f38ac0dc4f7aa52a0af67215bd9b0ff768a4489",
+      "bytes": 43353
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2401.14351",
+    "retrieved_at": "2026-10-09T12:06:39.242420+00:00",
+    "fields": {
+      "citation_title": [
+        "ServerlessLLM: Low-Latency Serverless Inference for Large Language Models"
+      ],
+      "citation_author": [
+        "Fu, Yao",
+        "Xue, Leyang",
+        "Huang, Yeqi",
+        "Brabete, Andrei-Octavian",
+        "Ustiugov, Dmitrii",
+        "Patel, Yuvraj",
+        "Mai, Luo"
+      ],
+      "citation_date": [
+        "2024/01/25"
+      ],
+      "citation_online_date": [
+        "2024/07/25"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2401.14351"
+      ],
+      "citation_arxiv_id": [
+        "2401.14351"
+      ],
+      "citation_abstract": [
+        "This paper presents ServerlessLLM, a distributed system designed to support low-latency serverless inference for Large Language Models (LLMs). By harnessing the substantial near-GPU storage and memory capacities of inference servers, ServerlessLLM achieves effective local checkpoint storage, minimizing the need for remote checkpoint downloads and ensuring efficient checkpoint loading. The design of ServerlessLLM features three core contributions: (i) \\emph{fast multi-tier checkpoint loading}, featuring a new loading-optimized checkpoint format and a multi-tier loading system, fully utilizing the bandwidth of complex storage hierarchies on GPU servers; (ii) \\emph{efficient live migration of LLM inference}, which enables newly initiated inferences to capitalize on local checkpoint storage while ensuring minimal user interruption; and (iii) \\emph{startup-time-optimized model scheduling}, which assesses the locality statuses of checkpoints on each server and schedules the model onto servers that minimize the time to start the inference. Comprehensive evaluations, including microbenchmarks and real-world scenarios, demonstrate that ServerlessLLM dramatically outperforms state-of-the-art serverless systems, reducing latency by 10 - 200X across various LLM inference workloads."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

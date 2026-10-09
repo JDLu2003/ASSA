@@ -1,0 +1,393 @@
+{
+  "run_at": "2026-10-09T11:54:02.968620+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.167176+00:00",
+      "path": "sources/official/openai/agents-api/overview",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://developers.openai.com/api/docs/guides/agents-api/overview\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/overview\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.183956+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "architecture",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.184016+00:00",
+      "path": "sources/official/openai/agents-api/architecture",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://developers.openai.com/api/docs/guides/agents-api/architecture\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/architecture\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.487227+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "configuration",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.487623+00:00",
+      "path": "sources/official/openai/agents-api/configuration",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://developers.openai.com/api/docs/guides/agents-api/configuration\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/configuration\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.572722+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "hosted-sandbox",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.572778+00:00",
+      "path": "sources/official/openai/agents-api/hosted-sandbox",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.590390+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "self-hosted-sandbox",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.590440+00:00",
+      "path": "sources/official/openai/agents-api/self-hosted-sandbox",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.601631+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-sdk",
+        "id": "overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.601686+00:00",
+      "path": "sources/official/openai/agents-sdk/overview",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://developers.openai.com/api/docs/guides/agents-sdk\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-sdk\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.613554+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "product-blog",
+        "url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.613606+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/product-blog",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://claude.com/resources/articles/building-with-claude-managed-agents\nCall log:\n  - navigating to \"https://claude.com/resources/articles/building-with-claude-managed-agents\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.626078+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "self-hosted-sandboxes",
+        "url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.626142+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/self-hosted-sandboxes",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes\nCall log:\n  - navigating to \"https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.641117+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "updates",
+        "url": "https://claude.com/blog/claude-managed-agents-updates",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.641177+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/updates",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://claude.com/blog/claude-managed-agents-updates\nCall log:\n  - navigating to \"https://claude.com/blog/claude-managed-agents-updates\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.652334+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "runtime",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.652391+00:00",
+      "path": "sources/official/aws/agentcore-runtime/runtime",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html\nCall log:\n  - navigating to \"https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.666885+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "shell-commands",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.666952+00:00",
+      "path": "sources/official/aws/agentcore-runtime/shell-commands",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html\nCall log:\n  - navigating to \"https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.675828+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "instances",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.675890+00:00",
+      "path": "sources/official/aws/agentcore-runtime/instances",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html\nCall log:\n  - navigating to \"https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.685869+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "deep-research-blog",
+        "url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.685925+00:00",
+      "path": "sources/official/aws/agentcore-runtime/deep-research-blog",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/\nCall log:\n  - navigating to \"https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.697060+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "persistent-filesystem",
+        "url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.697112+00:00",
+      "path": "sources/official/aws/agentcore-runtime/persistent-filesystem",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/\nCall log:\n  - navigating to \"https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.708738+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "hosted-agents",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.708790+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/hosted-agents",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents\nCall log:\n  - navigating to \"https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.722252+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "runtime-contract",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.722307+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/runtime-contract",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract\nCall log:\n  - navigating to \"https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.735114+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "networking",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.735177+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/networking",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive\nCall log:\n  - navigating to \"https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.746079+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "management",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.746132+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/management",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent\nCall log:\n  - navigating to \"https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.758247+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "overview",
+        "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.758311+00:00",
+      "path": "sources/official/google/vertex-agent-engine/overview",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview\nCall log:\n  - navigating to \"https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.769164+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "pricing-update",
+        "url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.769207+00:00",
+      "path": "sources/official/google/vertex-agent-engine/pricing-update",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/\nCall log:\n  - navigating to \"https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.782506+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "evaluation",
+        "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.782904+00:00",
+      "path": "sources/official/google/vertex-agent-engine/evaluation",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate\nCall log:\n  - navigating to \"https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.793594+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "cloud-run-sandboxes",
+        "id": "announcement",
+        "url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.793653+00:00",
+      "path": "sources/official/google/cloud-run-sandboxes/announcement",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/\nCall log:\n  - navigating to \"https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.804569+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gke-agent-sandbox",
+        "id": "pod-snapshot-blog",
+        "url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.804625+00:00",
+      "path": "sources/official/google/gke-agent-sandbox/pod-snapshot-blog",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots\nCall log:\n  - navigating to \"https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.818412+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "session-management",
+        "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.818471+00:00",
+      "path": "sources/official/google/vertex-agent-engine/session-management",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api\nCall log:\n  - navigating to \"https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:54:02.837620+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "agentbench",
+        "arxiv": "2308.03688",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.837674+00:00",
+      "path": "sources/papers/agent-evaluation/agentbench",
+      "status": "failed",
+      "error": "Command '['curl', '--fail', '--location', '--retry', '2', '--max-time', '120', '--output', '/tmp/tmpkuaskz_5/paper.pdf', 'https://arxiv.org/pdf/2308.03688']' returned non-zero exit status 22.",
+      "capture_finished_at": "2026-10-09T11:54:02.856111+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "swe-bench",
+        "arxiv": "2310.06770",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.856172+00:00",
+      "path": "sources/papers/agent-evaluation/swe-bench",
+      "status": "failed",
+      "error": "Command '['curl', '--fail', '--location', '--retry', '2', '--max-time', '120', '--output', '/tmp/tmpbvf7rgnd/paper.pdf', 'https://arxiv.org/pdf/2310.06770']' returned non-zero exit status 22.",
+      "capture_finished_at": "2026-10-09T11:54:02.869742+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "sglang",
+        "arxiv": "2312.07104",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.869793+00:00",
+      "path": "sources/papers/model-serving/sglang",
+      "status": "failed",
+      "error": "Command '['curl', '--fail', '--location', '--retry', '2', '--max-time', '120', '--output', '/tmp/tmps7q14k5y/paper.pdf', 'https://arxiv.org/pdf/2312.07104']' returned non-zero exit status 22.",
+      "capture_finished_at": "2026-10-09T11:54:02.880480+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "serverlessllm",
+        "arxiv": "2401.14351",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T11:54:02.880531+00:00",
+      "path": "sources/papers/model-serving/serverlessllm",
+      "status": "failed",
+      "error": "Command '['curl', '--fail', '--location', '--retry', '2', '--max-time', '120', '--output', '/tmp/tmpldyi02uj/paper.pdf', 'https://arxiv.org/pdf/2401.14351']' returned non-zero exit status 22.",
+      "capture_finished_at": "2026-10-09T11:54:02.890019+00:00"
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+Documentation Index
+
+Fetch the complete documentation index at: /llms.txt
+
+Use this file to discover all available pages before exploring further.
+
+Skip to main content
+SGLang Documentation home page
+Search...
+Ctrl K
+Ask Assistant
+CTRLI
+Get Started
+User Guide
+Hardware
+Cookbook
+SGLang Diffusion
+Get Started
+Welcome to SGLang
+Quickstart
+Installation
+Examples
+Get Started
+Welcome to SGLang
+Copy page
+
+High-performance serving framework for large language and multimodal models.
+
+✦
+FEATURED MODEL · NEW
+‹
+›
+Meet DeepSeek-V4.1 Flash on SGLang
+DeepSeek's sparse-attention Mixture-of-Experts model, served through SGLang's `dsv4` backend — pairing multi-ratio compressed KV pools behind FlashMLA with a learned sparse index that picks a top-512 candidate set per query, an mHC mixing stage, and Engram, an n-gram hash memory whose two fp8 tables are roughly 40% of the checkpoint. It ships DSpark, its own three-stage speculative draft. Recipes cover GB300, H200, B200, B300 and AMD MI350X.
+384 experts / top-6
+Sparse index + Engram
+NVIDIA + AMD
+Open the DeepSeek-V4.1 Flash cookbook →
+DEEPSEEK-V4.1 FLASH DEPLOYMENT GUIDE
+Meet Qwen3.8-Flash-Next on SGLang
+Qwen's early preview of the Qwen4 architecture — 176B total parameters with 6B active, three of every four layers Gated DeltaNet and the fourth global attention running Qwen Sparse Attention, over an ultra-sparse MoE with an in-checkpoint MTP head. The cookbook covers single-node TP4 serving on H200 / B200 / B300 / GB300 and TP8 on MI350X / MI355X.
+176B / 6B active
+262K context
+Single-node
+Open the Qwen3.8-Flash-Next cookbook →
+QWEN3.8-FLASH-NEXT DEPLOYMENT GUIDE
+Meet GLM-5.3-Flash on SGLang
+Z.ai's natively multimodal Mixture-of-Experts model — 320B total parameters with 18B active, 45 text layers combining MLA, DSA sparse, and KDA linear attention, a 24-layer vision encoder for image and video input, and a native MTP draft layer for speculative decoding. Recipes cover H100 / H200 / B200 / B300 / GB200 / GB300 and AMD MI300X / MI325X / MI355X.
+320B / 18B active
+1M context
+Text + image + video
+Open the GLM-5.3-Flash cookbook →
+GLM-5.3-FLASH DEPLOYMENT GUIDE
+Meet MiniMax-H3 on SGLang
+MiniMax's video-and-audio diffusion model — one request returns an MP4 carrying 24 fps video and a synchronized stereo audio track. SGLang Diffusion serves all three task profiles — text, first/last frame, and image / video / audio reference conditioning — with Ulysses × Ring sequence parallelism and recipes across B200, B300, H200, H100, AMD MI300X / MI355X, and 2× RTX 5090.
+Video + synced audio
+4–15 s at 24 fps
+8× B200 → 2× RTX 5090
+Open the MiniMax-H3 cookbook →
+MINIMAX-H3 DEPLOYMENT GUIDE
+Meet Kimi-K3 on SGLang
+SGLang natively implements and deeply optimizes K3's new architecture with fused KDA decode kernels, DP attention, MTP, PD disaggregation, and KDA-aware prefix caching. Kimi-K3 is supported on both NVIDIA and AMD GPUs.
+2.8T parameters
+Fused KDA decode
+NVIDIA + AMD
+Open the Kimi-K3 cookbook →
+KIMI-K3 DEPLOYMENT GUIDE
+ 
+
+Performance & Runtime
+Designed for low-latency, high-throughput inference with RadixAttention, prefix caching, and multi-GPU parallelism.
+Models & Ecosystem
+Broad support for Llama, Qwen, DeepSeek, and more. Compatible with Hugging Face and OpenAI APIs.
+Extensive Hardware Support
+Native support across Hardware Platforms including NVIDIA, AMD, Intel Xeon, Google TPU, Ascend NPU, and Moore Threads MUSA accelerators.
+Community & Training
+Open-source with widespread adoption, powering 400k+ GPUs and integrated with major RL frameworks.
+SGLang powers large-scale production deployments, generating trillions of tokens each day across more than 400,000 GPUs worldwide. It is hosted under the non-profit open-source organization LMSYS.
+​
+Get Started
+SGLang is an inference framework meant for production level serving. It is designed to deliver low-latency and high-throughput inference across a wide range of setups, from a single GPU to large distributed clusters.
+Quickstart
+Start a model server and send a request to verify it is running.
+Examples
+Stream replies, request tool calls, and process multiple prompts from Python.
+For environment setup and other installation methods, see the Installation guide.
+​
+News and latest blogs
+
+Scaling JEV-like Decision Models with SGLang
+
+September 25, 2026
+
+Accelerating Long-Context and Agentic Inference with NVFP4 KV Cache
+
+September 16, 2026
+
+SGLang and Miles Add Day-0 Support for DeepSeek-V4.1
+
+September 10, 2026
+
+Running DeepSeek-V4-Flash and Kimi-K3 on Consumer Hardware with SSD Expert Pack
+
+August 29, 2026
+
+Infer-forge: Harness, Loop, and Graph Engineering Around SGLang
+
+August 28, 2026
+
+MiniMax-H3 on 8×H200: 1.95× Lossless, Up to 6.24× at 0.76–0.91 SSIM
+
+August 27, 2026
+
+​
+Community and resources
+Slack: Technical questions and development discussions.
+Events: Meetups, workshops, and office hours | Developer meetings.
+Updates: X | LinkedIn | LMSYS Blog.
+Contribute: Contributor guide | Roadmap.
+Release notes: Changes in each release.
+
+Was this page helpful?
+
+Yes
+No
+Quickstart
+Next
+github
+x
+linkedin
+slack
+discord
+Powered by
+This documentation is built and hosted on Mintlify, a developer documentation platform

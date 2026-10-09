@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "tools",
+    "id": "code-interpreter",
+    "url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:22.845762+00:00",
+  "path": "sources/official/openai/tools/code-interpreter",
+  "requested_url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+  "final_url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+  "http_status": 200,
+  "title": "Code Interpreter | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "5fb62b191ff268440e2859dace288e3671a7608aa07764d2674338de9cbba5d1",
+      "bytes": 2143
+    },
+    "page.txt": {
+      "sha256": "ae73eb35445c33337830e884082faac9d8ff6426f081111733ea4435df4d5261",
+      "bytes": 8766
+    },
+    "page.pdf": {
+      "sha256": "9fdb88a3c07ee08cc62900809bf9a8f0da31da1220e9fc5a16ba57321b5a5939",
+      "bytes": 118706
+    },
+    "page.html": {
+      "sha256": "a037999f044e2774a3b7e77512da98d4ad35c59b98192585c185e805feb08fb3",
+      "bytes": 457046
+    },
+    "page.complete.pdf": {
+      "sha256": "f7d1d189d65cd1917c2332c61151bce18000abffbfec3c1226b46fc9b3994987",
+      "bytes": 334647
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "c5acf482e079e2ff0c9650970ef4a14a33244fe2d2c6e4c3dee2f0cac0effa63",
+      "bytes": 9988
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

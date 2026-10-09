@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "gemini-api",
+    "id": "search-grounding",
+    "url": "https://ai.google.dev/gemini-api/docs/google-search",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:04:15.542823+00:00",
+  "path": "sources/official/google/gemini-api/search-grounding",
+  "requested_url": "https://ai.google.dev/gemini-api/docs/google-search",
+  "final_url": "https://ai.google.dev/gemini-api/docs/google-search",
+  "http_status": 200,
+  "title": "Grounding with Google Search - Interactions API | Google AI for Developers",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "2cbafc2ca1d4f574a0766f481cb8e6b4e8cccbcbe291d5914073d104794af6f5",
+      "bytes": 10130
+    },
+    "page.txt": {
+      "sha256": "16d8d12fbde6beb27599160e6f18ccbbf62ca190d505237ae23a1cb69848e6aa",
+      "bytes": 9567
+    },
+    "page.pdf": {
+      "sha256": "a61d395c99838555d8de1459f9f0afa27ebd9a0379d9492e1431fabf5c158554",
+      "bytes": 409821
+    }
+  }
+}

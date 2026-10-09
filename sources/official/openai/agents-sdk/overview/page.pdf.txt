@@ -1,0 +1,47 @@
+Agents
+Choose a runtime, connect tools, and manage multi-step work.
+     Copy Page
+
+
+
+Agents can plan and complete tasks using tools, work with other agents, and maintain context
+across steps. Choose a runtime based on where you want orchestration to run and who should
+manage the state between tasks.
+
+
+Choose your starting point
+You want to                                                                                      Start here
+
+Run an agent with the Codex harness managed by OpenAI                                            Agents API
+
+Control the agent loop in your application with reusable agents, tools, and handoffs             Agents SDK
+
+Work directly with model responses and control your integration                                  Responses API
+
+Add an embedded chat experience                                                                  ChatKit
+
+
+
+Compare agent runtime options
+                  Agents API                          Agents SDK                       Responses API
+
+Use for           Long-running tasks where            Building agents with custom      Calling models directly or
+                  OpenAI manages the agent and        tools and workflows in your      building an agent from
+                  saves its progress                  application                      scratch
+
+Where the         OpenAI runs a managed Codex         The SDK runs inside your         Your application, with
+agent runs        harness                             application                      optional hosted
+                                                                                       orchestration
+
+Agent             Low                                 Medium                           High
+integration
+effort
+
+State between     Saved session configuration,        Your storage and SDK             Manual history, response
+tasks             turns, and items                    sessions, or Responses           chaining, or Conversations
+                                                      conversation state
+
+Tool execution    Service-connected tools,            Tools and integrations           Hosted tools and tools
+                  application function handlers,      configured in your               your application runs
+                  and an optional sandbox             application                                          Ask AI
+

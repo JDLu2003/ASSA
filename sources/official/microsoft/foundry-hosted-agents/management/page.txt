@@ -1,0 +1,470 @@
+Skip to main content
+Skip to Ask Learn chat experience
+Microsoft Ignite
+
+November 17–20, 2026
+
+Register now
+Dismiss alert
+Learn
+Documentation
+Training & Labs
+Q&A
+Topics
+Sign in
+Azure
+Products
+Architecture
+Migration
+Develop
+Learn Azure
+Troubleshooting
+Resources
+Open Microsoft Foundry Portal
+Get started with Azure
+Search
+What is Microsoft Foundry?
+Product and capability map
+Capability reference
+Get started
+Developer tools and integrations
+Models
+Agents
+Overview
+Concepts
+Prompt agents
+Hosted agents
+Text agents
+Concepts
+Quickstarts
+Develop
+Run, test, and debug
+Build long-running agents (preview)
+Deploy and operate
+Deploy
+Add hosted agent guardrails
+Manage lifecycle
+Sessions
+Migrate
+Ship to production
+Reference
+Voice agents
+Autopilots
+Publish and share
+Reference
+Toolboxes
+Observability
+Evaluation
+Optimization
+Trust and safety
+Manage and operate
+Download PDF
+LearnAzureMicrosoft Foundry
+Ask Learn
+Manage hosted agents
+Summarize this article for me
+Choose a management method
+REST API
+Python SDK
+C# SDK
+JavaScript/TypeScript SDK
+Azure Developer CLI
+
+This article shows you how to manage Hosted agents in Foundry Agent Service. After you deploy a Hosted agent, you can view its status, create new versions, select the version served by the agent endpoint, monitor logs, and delete agents when they're no longer needed.
+
+The platform automatically manages the container lifecycle. It provisions compute when a request arrives and deprovisions it after the configured idle timeout. Set the timeout from 2 through 60 minutes when you create an agent version. The default is 15 minutes. This automatic compute scaling is separate from the agent's endpoint state. You don't start or stop the compute manually, but you can disable an agent's endpoint to take it offline and enable it again later.
+
+If you use a coding agent like GitHub Copilot, the Microsoft Foundry Skill can help you manage versions, endpoints, logs, and lifecycle operations from your project context.
+
+Prerequisites
+A deployed Hosted agent.
+Azure CLI version 2.80 or later, authenticated with az login.
+Set up variables
+
+The REST API examples in this article use az rest to call the Foundry Agent Service endpoints directly. Set the following variables before running the commands:
+
+Bash
+Copy
+ACCOUNT_NAME="<your-foundry-account-name>"
+PROJECT_NAME="<your-project-name>"
+AGENT_NAME="<your-agent-name>"
+BASE_URL="https://${ACCOUNT_NAME}.services.ai.azure.com/api/projects/${PROJECT_NAME}"
+API_VERSION="v1"
+RESOURCE="https://ai.azure.com"
+
+
+ Important
+
+The --resource parameter is required for all az rest calls to Foundry Agent Service data-plane endpoints. Without it, az rest can't derive the correct Azure AD audience from the URL and authentication fails.
+
+View agents and versions
+
+Use the following commands to list agents and inspect version details.
+
+List all agents in a project
+Bash
+Copy
+az rest --method GET \
+    --url "${BASE_URL}/agents?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}"
+
+Get agent details
+Bash
+Copy
+az rest --method GET \
+    --url "${BASE_URL}/agents/${AGENT_NAME}?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}"
+
+
+The response includes the agent's latest version, status, and definition.
+
+Get a specific version
+Bash
+Copy
+az rest --method GET \
+    --url "${BASE_URL}/agents/${AGENT_NAME}/versions/1?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}"
+
+List all versions of an agent
+Bash
+Copy
+az rest --method GET \
+    --url "${BASE_URL}/agents/${AGENT_NAME}/versions?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}"
+
+
+By default, the list excludes draft versions (preview). To include them, add the include_drafts=true query parameter:
+
+Bash
+Copy
+az rest --method GET \
+    --url "${BASE_URL}/agents/${AGENT_NAME}/versions?api-version=${API_VERSION}&include_drafts=true" \
+    --resource "${RESOURCE}"
+
+Create a new version
+
+Create a new agent version when you need to update the container image, change resource allocation, or modify environment variables.
+
+Bash
+Copy
+az rest --method POST \
+    --url "${BASE_URL}/agents/${AGENT_NAME}/versions?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}" \
+    --body '{
+        "definition": {
+            "kind": "hosted",
+            "container_configuration": {
+                "image": "myregistry.azurecr.io/my-agent:v2"
+            },
+            "cpu": "1",
+            "memory": "2Gi",
+            "protocol_versions": [
+                {"protocol": "responses", "version": "2.0.0"}
+            ]
+        }
+    }'
+
+
+Replace responses with invocations if your agent uses the Invocations protocol, or include both to expose both protocols. For details on protocol selection, see Deploy a Hosted agent.
+
+Create a draft version (preview)
+
+ Note
+
+Draft versions are in preview. Preview features are provided without a service-level agreement and aren't recommended for production workloads. Behavior can change. Draft creation must be enabled for your subscription; until it's enabled, a request with draft set to true creates a normal release version instead.
+
+A draft version is an experimental version that you can create and test without affecting how your agent serves production traffic. Drafts let you iterate on a new image, resource allocation, or configuration before you promote the change to a regular release version.
+
+Draft versions differ from regular release versions in the following ways:
+
+Separate version identifier: A draft is assigned a draft-{timestamp} version string (for example, draft-1719600000000) instead of an auto-incremented integer, so it never advances your release version numbering.
+Excluded from default listings: Drafts don't appear when you list versions unless you pass include_drafts=true.
+Excluded from implicit routing: A draft is never resolved as the agent's latest version, so it doesn't receive traffic automatically.
+Can't be a traffic-routing target: You can't pin a traffic-routing rule to a draft version. Requests to route traffic to a draft are rejected.
+
+To create a draft version, set draft to true in the request body:
+
+Bash
+Copy
+az rest --method POST \
+    --url "${BASE_URL}/agents/${AGENT_NAME}/versions?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}" \
+    --body '{
+        "draft": true,
+        "definition": {
+            "kind": "hosted",
+            "container_configuration": {
+                "image": "myregistry.azurecr.io/my-agent:experimental"
+            },
+            "cpu": "1",
+            "memory": "2Gi",
+            "protocol_versions": [
+                {"protocol": "responses", "version": "2.0.0"}
+            ]
+        }
+    }'
+
+
+The response version field contains the assigned draft-{timestamp} identifier. Use that identifier to get or delete the draft, or to test it directly. When you're satisfied with the change, promote it by creating a new version with the same image and configuration but with draft omitted (or set to false). The new version receives a regular auto-incremented version number and becomes eligible for traffic routing.
+
+Version status values
+
+After you create or update an agent version, poll the version endpoint until the status reaches active:
+
+Expand table
+Status	Description
+creating	Infrastructure is being provisioned (typically 2-5 minutes).
+active	Agent is ready to serve requests.
+failed	Provisioning failed. Check the error field in the response for details.
+deleting	Version is being cleaned up.
+deleted	Version has been fully removed.
+Disable or enable an agent
+
+Disable an agent to take its endpoint offline without deleting the agent or any of its versions. While disabled, the agent rejects requests, but its configuration and versions remain intact. Enable the agent again whenever you're ready to resume serving requests. Disabling is reversible, which makes it the preferred way to take an agent out of service temporarily.
+
+Disable an agent
+Bash
+Copy
+az rest --method POST \
+    --url "${BASE_URL}/agents/${AGENT_NAME}:disable?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}"
+
+Enable an agent
+Bash
+Copy
+az rest --method POST \
+    --url "${BASE_URL}/agents/${AGENT_NAME}:enable?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}"
+
+Delete an agent
+
+You can delete a specific version or an entire agent with all its versions.
+
+Delete a specific version
+Bash
+Copy
+az rest --method DELETE \
+    --url "${BASE_URL}/agents/${AGENT_NAME}/versions/1?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}"
+
+Delete an agent and all versions
+
+ Warning
+
+This action permanently deletes the agent and all its versions. Active sessions are terminated. This operation can't be undone.
+
+Bash
+Copy
+az rest --method DELETE \
+    --url "${BASE_URL}/agents/${AGENT_NAME}?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}"
+
+View logs and monitor
+
+Access container logs for debugging provisioning and runtime issues.
+
+Stream logs from a specific agent session:
+
+Bash
+Copy
+AGENT_VERSION="<version>"
+SESSION_ID="<session-id>"
+
+az rest --method GET \
+    --url "${BASE_URL}/agents/${AGENT_NAME}/versions/${AGENT_VERSION}/sessions/${SESSION_ID}:logstream?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}" \
+    --headers "Accept=text/event-stream"
+
+
+The logstream endpoint returns Server-Sent Events (SSE) with event: log frames. Each frame contains a JSON payload with timestamp, stream (stdout, stderr, or status), and message fields.
+
+Timeouts:
+
+Maximum connection duration: 30 minutes
+Idle timeout: 2 minutes
+Example log output
+text
+Copy
+2026-04-09T08:43:48.72656  Connecting to the container 'agent-container'...
+2026-04-09T08:43:48.75451  Successfully connected to container: 'agent-container'
+2026-04-09T08:43:59.0671054Z stdout F INFO: 127.0.0.1:42588 - "GET /readiness HTTP/1.1" 200 OK
+
+Configure agent endpoint routing
+
+An agent endpoint routes 100% of its traffic to one agent version. Use the version selector to choose the version that the endpoint serves.
+
+ Important
+
+Traffic splitting between agent versions isn't supported. Configure one FixedRatio rule with traffic_percentage set to 100, even though version_selection_rules is an array.
+
+Endpoint routing is configured by patching the agent object. Use PATCH /agents/{agent_name} with Content-Type: application/merge-patch+json:
+
+Bash
+Copy
+az rest --method PATCH \
+    --url "${BASE_URL}/agents/${AGENT_NAME}?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}" \
+    --headers "Content-Type=application/merge-patch+json" \
+    --body '{
+        "agent_endpoint": {
+            "version_selector": {
+                "version_selection_rules": [
+                    {"agent_version": "1", "traffic_percentage": 100, "type": "FixedRatio"}
+                ]
+            },
+            "protocol_configuration": {
+                "responses": {}
+            }
+        }
+    }'
+
+
+Set protocol_configuration to {"invocations": {}} or {"responses": {}, "invocations": {}} to match the protocols your agent exposes.
+
+Release a version without changing production
+
+Pin your production endpoint before deploying a candidate version. The default routing policy follows the latest version, so creating a version without first pinning production can change what consumers receive.
+
+This workflow separates deployment from promotion. Use it with azd CI/CD or standalone Terraform deployment.
+
+Record and pin production. Read the agent's current endpoint configuration and record the version that production serves. Select that concrete version with one FixedRatio rule at 100%. Keep its identifier and container image available for rollback.
+
+Create the candidate. Deploy the new image or configuration without changing the production selector. Capture the candidate's concrete version identifier from your deployment tool. Don't resolve latest again after testing or while waiting for approval.
+
+For azd, review configured endpoint settings and deployment hooks before azd deploy. For Terraform, coordinate all writers to the named agent: Terraform's state lock doesn't prevent a separate API client from creating a version.
+
+Verify readiness and identity. Get the candidate version and wait for its status to become active. Confirm that its image and configuration match the artifact you intend to release. A failed deployment, timeout, or unexpected candidate must stop the release without changing production.
+
+Test a candidate-specific session. Create a fresh session pinned to the candidate by using a version_indicator with type set to version_ref. Pass the captured version as agent_version.
+
+Invoke using the returned session ID. For Responses, put agent_session_id in the request body. For Invocations, use the agent_session_id query parameter. Check successful protocol completion and expected response content; nonempty logs or an HTTP connection alone aren't a passing test.
+
+Approve and promote. Before promotion, confirm that the candidate is still active and production still points to the recorded version. If another release changed the selector, stop and reconcile the change. After approval, update the endpoint selector to the tested candidate at 100%, preserving unrelated protocol and authorization settings.
+
+Verify production and retain rollback. Create a new session without a version override and verify that it uses the selected version. If the release fails its production checks, restore the previous concrete selector and verify new-session behavior again.
+
+An existing session is bound to its version when it's created. Changing the endpoint selector doesn't migrate those sessions. Retain previous versions and images while sessions or rollback requirements still depend on them. Deleting the agent or a version isn't a rollback operation.
+
+Retrieve the agent identity for role assignments
+
+Each Hosted agent has an instance identity — a Microsoft Entra ID service principal that the agent uses at runtime to authenticate to downstream resources. To grant the agent access to services such as Azure Storage or Azure Cosmos DB, you need the identity's principal ID so you can create RBAC role assignments.
+
+For more information on how agent identities work, see Agent identity concepts.
+
+Extract the agent identity principal ID
+
+Use the --query parameter to extract the instance_identity.principal_id directly from the agent details:
+
+Bash
+Copy
+AGENT_IDENTITY=$(az rest --method GET \
+    --url "${BASE_URL}/agents/${AGENT_NAME}?api-version=${API_VERSION}" \
+    --resource "${RESOURCE}" \
+    --query "instance_identity.principal_id" \
+    --output tsv)
+
+echo "Agent identity principal ID: ${AGENT_IDENTITY}"
+
+Assign roles to the agent identity
+
+After you have the principal ID, assign RBAC roles to the agent identity at the appropriate resource scope. Use --assignee-object-id with --assignee-principal-type ServicePrincipal to avoid Microsoft Graph lookup issues with agent identity service principals.
+
+The agent identity works with any Azure resource that supports RBAC. The following examples show two common scenarios: granting access to the Foundry project and granting access to a storage account.
+
+Assign a role on the Foundry project (for example, to allow the agent to use project resources):
+
+Bash
+Copy
+az role assignment create \
+    --assignee-object-id "$AGENT_IDENTITY" \
+    --assignee-principal-type ServicePrincipal \
+    --role "Azure AI Developer" \
+    --scope "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<account-name>/projects/<project-name>"
+
+
+Assign a role on a storage account (for example, to allow the agent to read and write blobs):
+
+Bash
+Copy
+az role assignment create \
+    --assignee-object-id "$AGENT_IDENTITY" \
+    --assignee-principal-type ServicePrincipal \
+    --role "Storage Blob Data Contributor" \
+    --scope "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Storage/storageAccounts/<storage-account>"
+
+Verify role assignments
+
+List the roles assigned to the agent identity on the Foundry project:
+
+Bash
+Copy
+az role assignment list \
+    --assignee "$AGENT_IDENTITY" \
+    --scope "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<account-name>/projects/<project-name>" \
+    --output table
+
+
+List the roles assigned to the agent identity on a storage account:
+
+Bash
+Copy
+az role assignment list \
+    --assignee "$AGENT_IDENTITY" \
+    --scope "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Storage/storageAccounts/<storage-account>" \
+    --output table
+
+Next steps
+
+Agent applications
+
+Related content
+What are Hosted agents?
+Deploy a Hosted agent
+Agent identity concepts
+Evaluate your AI agents
+Note: The author created this article with assistance from AI. Learn more
+Reading mode disabled
+Additional resources
+
+Documentation
+
+Deploy a hosted agent - Microsoft Foundry
+
+Deploy your containerized agent code to Foundry Agent Service using the Python, .NET, or JavaScript/TypeScript SDK, or the REST API.
+
+Manage hosted agent sessions - Microsoft Foundry
+
+Create, invoke, and manage sessions for hosted agents in Foundry Agent Service by using the REST API, Python SDK, JavaScript/TypeScript SDK, or Azure Developer CLI.
+
+Hosted agents in Foundry Agent Service - Microsoft Foundry
+
+Deploy and manage containerized agents on Foundry Agent Service with managed hosting, scaling, and observability.
+
+Show 5 more
+Last updated on 09/30/2026
+In this article
+Prerequisites
+Set up variables
+View agents and versions
+Disable or enable an agent
+Delete an agent
+View logs and monitor
+Configure agent endpoint routing
+Release a version without changing production
+Retrieve the agent identity for role assignments
+Show 2 more
+
+Was this page helpful?
+
+English (United States)
+Your Privacy Choices
+Theme
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

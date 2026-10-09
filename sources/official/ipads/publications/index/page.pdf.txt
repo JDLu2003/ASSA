@@ -1,0 +1,946 @@
+                                                                                                         Log In
+
+                                                                          Search
+
+                                                                      Recent Changes   Media Manager   Sitemap
+
+
+
+
+IPADS
+   Index
+   News
+   Members
+   Projects
+   Publications
+   Courses
+      Life @ IPADS
+      Wiki
+       中文主页
+
+                                                                                               pub:publication
+
+Table of Contents
+  Publications
+       2027
+       2026
+       2025
+       2024
+       2023
+       2022
+       2021
+       2020
+       2019
+       2018
+       2017
+       2016
+       2015
+       2014
+       2013
+       2012
+       Prior
+
+
+
+Publications
+2027
+
+       [Nature] An AI-native experimental laboratory for autonomous biomolecular operations. Mingyu Wu,
+       Zhaoguo Wang, Jiabin Wang, Zhiyuan Dong, Jingkai Yang, Qingting Li, Tianyu Huang, Chi Zhang,
+       Ping Song, Lei Zhao, Mingqiang Li, Xiaolei Zuo, Fei Wang, Chunhai Fan, Haibo Chen. Nature.
+       (Accepted in Setempber, 2026).
+       [SIGMOD] Efficient K-generalizable Learned Search. Yifan Peng, Jiafei Fan, Xingda Wei, Sijie Shen,
+       Rong Chen, Jianning Wang, Xiaojian Luo, Wenyuan Yu, Jingren Zhou, and Haibo Chen. 2027 ACM
+       SIGMOD International Conference on Management of Data, Huntington Beach, CA, USA, June 2027.
+       [EuroSys] Characterizing CPU-GPU Memory Sharing over Unified Memory Architecture. Jinrong
+       Yang, Zimeng Wang, Rong Chen, and Haibo Chen. The 22th ACM SIGOPS European Conference on
+       Computer Systems, Rabat, Morocco, April 2027.
+
+2026
+[ATC] Jinze Si, Yuchen Sun, Mingyu Wu, Haibo Chen. EvoFuzz: IR-Aware Fuzzing for JIT Compilers
+through the Lens of Node Evolution. Proceedings of the 2026 ACM SIGOPS Annual Technical
+Conference, Shatin, Hong Kong, China, November 2026.
+[ATC] Jinze Si, Xiaoqian Ma, Mingyu Wu, Haibo Chen. Understanding and Detecting Performance
+Regressions in Modern Open-Source Server Applications. Proceedings of the 2026 ACM SIGOPS
+Annual Technical Conference, Shatin, Hong Kong, China, November 2026.
+[ATC] Yixin Song, Jianxiang Gao, Shuhuai Zhang, Zeyu Mi, Haibo Chen. HeadFlow: Scaling Long-
+Context Training with Head-Group Activation Residency. Proceedings of the 2026 ACM SIGOPS
+Annual Technical Conference, Shatin, Hong Kong, China, November 2026.
+[ATC] Yunpeng Dong, Jingkai He, Shiqi Liu, Yuze Hou, Dong Du, Zhonghu Xu, Si Yu, Baochuan Yang,
+Yubin Xia, Haibo Chen. DeltaBox: Millisecond-Scale Checkpoint and Rollback for Stateful AI Agents.
+Proceedings of the 2026 ACM SIGOPS Annual Technical Conference, Shatin, Hong Kong, China,
+November 2026.
+[ATC] Yinpeng Wu, Yitong Cheng, Lixiang Wang, Jinyu Gu, Zhichao Hua, Yubin Xia. RS-Infer: A Fast
+and Secure LLM Inference System for Mobile Devices with Recallable Resource Isolation.
+Proceedings of the 2026 ACM SIGOPS Annual Technical Conference, Shatin, Hong Kong, China,
+November 2026.
+[MICRO] Sheng Qiang, Shulin Fan, Jinyu Gu, Zhichao Hua, Yubin Xia. HSMEM: Heterogeneous
+Secure Memory with Scalable an Energy-Efficient Data Transfer. The 59th IEEE/ACM International
+Symposium on Microarchitecture, Athens, Greece, October 2026.
+[SOSP] StarfishOS: Revisiting Single System Image on CXL with State-Partitioned
+Microkernel. Fangnuo Wu, Jingsheng Yan, Mingkai Dong, Wenjun Cai, Jingwei Xu, Tong Xin, Haibo
+Chen. Proceedings of the 32nd ACM Symposium on Operating Systems Principles (SOSP'26).
+September, 2026.
+[SOSP] Skill VM: Write Once, Run Everywhere Efficiently. Le Chen, Erhu Feng, Yubin Xia, Haibo
+Chen. Proceedings of the 32nd ACM Symposium on Operating Systems Principles (SOSP'26).
+September, 2026.
+[SOSP] ProbeFS: Hierarchical DNA File Systems via Biochemical Content Addressability and
+Parallelism. Ruihan Li, Yuankun Zhang, Mingkai Dong, Yaya Hao, Fei Wang, Chunhai Fan, Haibo
+Chen. Proceedings of the 32nd ACM Symposium on Operating Systems Principles (SOSP'26).
+September, 2026.
+[SOSP] Taming Dynamism on GPUs: Cross-SM Kernel Fusion via SM Cooperation and Just-in-Time
+Reduction. Jingkai He, Guangda Sun, Tianjian Li, Dong Du, Yubin Xia, Haibo Chen. Proceedings of
+the 32nd ACM Symposium on Operating Systems Principles (SOSP'26). September, 2026.
+[IROS] SOMA: Strategic Orchestration and Memory-Augmented System for Vision-Language-Action
+Model Robustness via In-Context Adaptation. Zhuoran Li*, Zhiyang Li*, Kaijun Zhou, Jinyu
+Gu. IEEE/RSJ International Conference on Intelligent Robots and Systems, 2026.
+[ICML] Characterizing Vision-Language-Action Models across XPUs: Constraints and Acceleration for
+On-Robot Deployment. Kaijun Zhou, Qiwei Chen, Da Peng, Zhiyang Li, Xijun Li, Jinyu Gu.
+International Conference on Machine Learning, 2026.
+[ISCA] CHIME: A Case for Efficient Long-context Attention-FC Disaggregated Inference with DIMM-
+PIM. Qingyuan Liu*, Liyan Chen*, Haocheng Wang, Yanning Yang, Dong Du, Zhigang Mao, Naifeng
+Jing, Yubin Xia, Haibo Chen. The 53rd International Symposium on Computer Architecture (ISCA'26),
+2026.
+[VLDB] SIDLE: Tree-structure Aware Indexes for CXL-based Heterogeneous Memory. Haoru Zhao,
+Mingkai Dong, Fangnuo Wu, and Haibo Chen. 52nd International Conference on Very Large Data
+Bases (VLDB 2026). Boston, MA, USA.
+[OSDI] Virtualizing eBPF with Late-Binding. Jing Zhang, Xiaguannan Song, Dong Du, Yubin Xia, Binyu
+Zang, and Haibo Chen. 20th USENIX Symposium on Operating Systems Design and Implementation
+(OSDI '26). Seattle, WA, USA.
+[OSDI] Disentangling Graph Dependencies for Efficient Billion-Scale GPU Vector Search. Haoru
+Zhao*, Jingkai He*, Jingyao Zeng, Mingkai Dong, and Dong Du. 20th USENIX Symposium on
+Operating Systems Design and Implementation (OSDI '26). Seattle, WA, USA.
+[OSDI] Simple is Better: Multiplication May Be All You Need for LLM Request Scheduling. Dingyan
+Zhang, Jinbo Han, Kaixi Zhang, Xingda Wei, Sijie Shen, Chenguang Fang, Wenyuan Yu, Jingren
+Zhou, Rong Chen. The 16th USENIX Symposium on Operating Systems Design and Implementation,
+Seattle, WA, USA, July, 2026.
+[OSDI] Stop Pretending to be Busy: A Case for Serverless Paradigms in Co-located Batch Workloads.
+Xiaohu Chai, Jianfeng Tan, Congsi Yuan, Bowen Yang, Hao Dai, Tongkai Yang, Chao Huang, Dong
+Du, Yu Chen. The 16th USENIX Symposium on Operating Systems Design and Implementation,
+Seattle, WA, USA, July, 2026.
+[OSDI] Shaving the Peaks: Taming Tail Latency for Managed Workloads via Disaggregated Garbage
+Collection. Hongtao Lyu, Yuhan Li, and Mingyu Wu. The 16th USENIX Symposium on Operating
+Systems Design and Implementation, Seattle, WA, USA, July, 2026.
+[OSDI] SDCs in the Wild: Characterizing and Diagnosing SDC-Defective GPUs in Production LLM
+Training. Wenxin Zheng, Wenxiao Wang, Yun Zhang, and Mingcong Han, Bin Xu, Jinyu Gu, Xingda
+Wei, and Haibo Chen, Zuquan Song, Gaohong Liu, Yucheng Nie, Zhe Nan, Zhuolin Zheng, Huan Yu,
+Shuguang Wang, Ziming Zhou, Hang Zhu, Wencong Xiao, and Xin Liu. The 16th USENIX Symposium
+on Operating Systems Design and Implementation, Seattle, WA, USA, July, 2026.
+[OSDI] Inference in the Shadows: Taming Memory Bandwidth Contention in Mobile LLM Inference with
+Sereno. Tong Xin, Xinrui Shi, Mingkai Dong, and Zeyu Mi. The 16th USENIX Symposium on Operating
+Systems Design and Implementation, Seattle, WA, USA, July, 2026.
+[OSDI] jwmalloc: A Verified Memory Allocator for Mobile Devices. Jiawei Wang, Ming Fu, Ruixian
+Wang, Chao Xu, Jonas Oberhauser, and Haibo Chen. The 16th USENIX Symposium on Operating
+Systems Design and Implementation, Seattle, WA, USA, July, 2026. [Best Paper Nominee]
+[VLDB] Efficient, Scalable, and Fair Locking on Disaggregated Memory with Decentralized
+Coordination. Hanze Zhang, Ke Cheng, Rong Chen, Xingda Wei, and Haibo Chen. The 52nd
+International Conference on Very Large Databases, Boston, US, August 2026.
+[EuroSys] On-device Semantic Selection Made Low Latency and Memory Efficient with Monolithic
+Forwarding. Jiahao Zhou, Chengliang Lin, Dingji Li, Mingkai Dong, and Haibo Chen. The 21th ACM
+SIGOPS European Conference on Computer Systems, Edinburgh, UK, April 2026.
+[EuroSys] Accurate and Ultra-Fast Launch-Time Validation of Idempotency for GPU Kernels.
+Mingcong Han, Weihang Shen, Rong Chen, and Haibo Chen. The 21th ACM SIGOPS European
+Conference on Computer Systems, Edinburgh, UK, April 2026.
+[ICDE] DIndex: An Efficient On-Disk Learned Index for Memory-Constrained Environments. Jiahuan
+Shen, Chuzhe Tang, Haoning Lan, Ren Ren, Zhaoguo Wang. The 42nd IEEE International
+Conference on Data Engineering, Canada, May, 2026.
+[FAST] “Range as a Key” is the Key! Fast and Compact Cloud Block Store Index with RASK. Haoru
+Zhao, Mingkai Dong, Erci Xu, Zhongyu Wang, Haibo Chen. The 24th USENIX Conference on File and
+Storage Technologies, Santa Clara, CA, USA, February, 2026.
+[FAST] Sharpen the Spec, Cut the Code: A Case for Generative File System with SYSSPEC.
+Qingyuan Liu, Mo Zou, Hengbin Zhang, Dong Du, Yubin Xia, Haibo Chen. The 24th USENIX
+Conference on File and Storage Technologies, Santa Clara, CA, USA, February, 2026. (Best Paper
+Award and Distinguished Artifact Award)
+[FAST] SolidAttention: Low-Latency SSD-based Serving on Memory-Constrained PCs. Xinrui Zheng,
+Dongliang Wei, Jianxiang Gao, Yixin Song, Zeyu Mi, Haibo Chen. The 24th USENIX Conference on
+File and Storage Technologies, Santa Clara, CA, USA, February, 2026.
+[FAST] Fast Cloud Storage for AI Jobs via Grouped I/O API with Transparent Read/Write
+Optimizations. Yingyi Hao, Ting Yao, Xingda Wei, Dingyan Zhang, Tianle Sun, Yiwen Zhang, Zhiyong
+Fu, Huatao Wu, Rong Chen. The 24th USENIX Conference on File and Storage Technologies, Santa
+Clara, CA, USA, February, 2026.
+[PPoPP] MetaAttention: A Unified and Performant Attention Framework Across Hardware
+Backends. Feiyang Chen, Yu Cheng, Lei Wang, Yuqing Xia, Ziming Miao, Lingxiao Ma, Fan Yang,
+Jilong Xue, Zhi Yang, Mao Yang, Xingda Wei, Haibo Chen. Proceedings of the 31st ACM SIGPLAN
+Symposium on Principles and Practice of Parallel Programming (PPoPP'26). Jan, 2026.
+[ASPLOS] DIP: Efficient Large Multimodal Model Training with Dynamic Interleaved
+Pipeline. Zhenliang Xue, Hanpeng Hu, Xing Chen, Yimin Jiang, Yixin Song, Zeyu Mi, Yibo Zhu, Daxin
+Jiang, Yubin Xia, Haibo Chen. Proceedings of the 31st ACM International Conference on Architectural
+Support for Programming Languages and Operating Systems (ASPLOS'26), March 2026.
+[ASPLOS] History Doesn't Repeat Itself but Rollouts Rhyme: Accelerating Reinforcement Learning
+with HistoRL. Jingkai He, Tianjian Li, Erhu Feng, Dong Du, Qian Liu, Tao Liu, Yubin Xia, Haibo Chen.
+Proceedings of the 31st ACM International Conference on Architectural Support for Programming
+Languages and Operating Systems (ASPLOS'26), March 2026.
+       [EuroSys] TZ-LLM: Protecting On-Device Large Language Models with Arm TrustZone. Xunjie Wang*,
+       Jiacheng Shi*, Zihan Zhao, Yang Yu, Zhichao Hua, Jinyu Gu. The 21st ACM SIGOPS European
+       Conference on Computer Systems, Edinburgh, UK, April, 2026.
+       [EuroSys] LLMFolder: Revisiting Constant Folding in Large Language Models. Gansen Hu, Zhaoguo
+       Wang, Wei Huang, Jinglin Wei, and Haibo Chen. Proceedings of the 21st European Conference on
+       Computer Systems, Edinburgh, UK, April, 2026.
+       [EuroSys] KunServe: Parameter-centric Memory Management for Efficient Memory Throttling
+       Handling in LLM Serving. Rongxin Cheng, Yuxin Lai, Xingda Wei, Rong Chen, Haibo Chen.
+       Proceedings of the 21st European Conference on Computer Systems, Edinburgh, UK, April, 2026.
+       [EuroSys] SwitchFS: Asynchronous Metadata Updates for Distributed Filesystems with In-Network
+       Coordination. Jingwei Xu, Mingkai Dong, Qiulin Tian, Ziyi Tian, Tong Xin, Haibo Chen. Proceedings of
+       the 21st European Conference on Computer Systems, Edinburgh, UK, April, 2026.
+       [NSDI] OneSidedMW: Managing Disaggregated Memory Efficiently, Flexibly, and Securely with RNIC
+       Offloading. Zixuan Wang, Jinyu Gu, Xingda Wei, Yubin Xia. Proceedings of the 23rd USENIX
+       Symposium on Networked Systems Design and Implementation (NSDI'26). Renton, WA, USA, May 4–
+       6, 2026.
+       [NSDI] FalconFS: Distributed File System for Large-Scale Deep Learning Pipeline. Jingwei Xu, Junbin
+       Kang, Mingkai Dong, Mingyu Liu, Lu Zhang, Shaohong Guo, Ziyan Qiu, Mingzhen You, Ziyi Tian, Anqi
+       Yu, Tianhong Ding, Xinwei Hu, and Haibo Chen. Proceedings of the 23rd USENIX Symposium on
+       Networked Systems Design and Implementation (NSDI'26). Renton, WA, USA, May 4–6, 2026.
+       [SIGCSE TS] Experiences with the ChCore Experimental Operating System Kernel. Haibo Chen,
+       Yubin Xia and Jinyu Gu. Proceedings of ACM Computer Science Education Technical Symposium
+       (SIGCSE TS'26). Missouri, USA, February 18-21 2026.
+       [SIGCSE TS] miniK8s: A Pedagogical Cloud-Native System. Dong Du, Mingyu Wu, Haibo Chen and
+       Binyu Zang. Proceedings of ACM Computer Science Education Technical Symposium (SIGCSE
+       TS'26). Missouri, USA, February 18-21 2026.
+
+2025
+
+       [NeurIPS] ASDSV: Multimodal Generation Made Efficient with Approximate Speculative Diffusion and
+       Speculative Verification. Kaijun Zhou, Xingyu Yan, Xingda Wei, Xijun Li, Jinyu Gu. Advances in Neural
+       Information Processing Systems (NeurIPS'25), December, 2025.
+       [SoCC] Offloading Cloud-Native Infrastructure with XpuPod. Bicheng Yang, Jingkai He, Dong Du,
+       Yubin Xia, Haibo Chen. ACM Symposium on Cloud Computing 2025.
+       [SOSP] PhoenixOS: Concurrent OS-level GPU Checkpoint and Restore with Validated Speculation.
+       Xingda Wei*, Zhuobin Huang*, Tianle Sun, Yingyi Hao, Rong Chen, Mingcong Han, Jinyu Gu, Haibo
+       Chen. Proceedings of the 31th ACM Symposium on Operating Systems Principles (SOSP'25). Seoul,
+       Republic of Korea, October 13 – 16, 2025.
+       [SOSP] Characterizing Mobile SoC for Accelerating Heterogeneous LLM Inference. Le Chen*, Dahu
+       Feng*, Erhu Feng, Yingrui Wang, Rong Zhao, Yubin Xia, Pinjie Xu, Haibo Chen. Proceedings of the
+       31th ACM Symposium on Operating Systems Principles (SOSP'25). Seoul, Republic of Korea,
+       October 13 – 16, 2025.
+       [SOSP] How to Copy Memory? Coordinated Asynchronous Copy as a First-Class OS Service. Jingkai
+       He, Yunpeng Dong, Dong Du, Mo Zou, Zhitai Yu, Yuxin Ren, Ning Jia , Yubin Xia, Haibo Chen.
+       Proceedings of the 31th ACM Symposium on Operating Systems Principles (SOSP'25). Seoul,
+       Republic of Korea, October 13 – 16, 2025.(Best Paper Award)        preprint
+       [SOSP] DiffKV: Differentiated Memory Management for Large Language Models with Parallel KV
+       Compaction. Yanqi Zhang, Yuwei Hu, Runyuan Zhao, John C. S. Lui, Haibo Chen. Proceedings of the
+       31th ACM Symposium on Operating Systems Principles (SOSP'25). Seoul, Republic of Korea,
+       October 13 – 16, 2025.
+       [VLDB] Sonata: Multi-Database Transactions Made Fast and Serializable. Chuzhe Tang, Zhaoguo
+       Wang, Jinyang Li, and Haibo Chen. The 51st International Conference on Very Large Data Bases
+       London, United Kingdom, September 1-5, 2025.
+       [VLDB] GRewriter: Practical Query Rewriting with Automatic Rule Set Expansion in GaussDB. Zhe
+       Jiang, Zhaoguo Wang, Haoning Lan, Chuzhe Tang, Haoran Ding, Lefeng Wang, Songyun Zou,
+       Zhuoran Wei, Yongcun Liu, Xiang Yu, Yang Ren, Guoliang Li, Haibo Chen. The 51st International
+       Conference on Very Large Data Bases London, United Kingdom, September 1-5, 2025.
+       [CACM] Many Faces of Ad Hoc Transactions. Chuzhe Tang, Zhaoguo Wang, Xiaodong Zhang,
+       Qianmian Yu, Binyu Zang, Haibing Guan, and Haibo Chen. Communications of the ACM (Research
+       Highlight & Cover Article) 68, 4, 2025.
+       [USENIX ATC] SAVE: Software-Implemented Fault Tolerance for Model Inference against GPU
+       Memory Bit Flips. Wenxin Zheng, Bin Xu, Jinyu Gu, Haibo Chen. USENIX Annual Technical
+       Conference, Boston, MA, USA, July 2025.
+       [USENIX ATC] μEFI: A Microkernel-Style UEFI with Isolation and Transparency. Le Chen, Yiyang Wu,
+       Jinyu Gu, Yubin Xia, Haibo Chen. USENIX Annual Technical Conference, Boston, MA, USA, July
+       2025.
+       [USENIX ATC] Colocating ML Inference and Training with Fast GPU Memory Handover. Jiali Wang,
+       Yankui Wang, Mingcong Han, and Rong Chen. USENIX Annual Technical Conference, Boston, MA,
+       US, July 2025.
+       [USENIX ATC] KVCache Cache in the Wild: Characterizing and Optimizing KVCache Cache at a
+       Large Cloud Provider. Jiahao Wang, Jinbo Han, Xingda Wei, Sijie Shen, Dingyan Zhang, Chenguang
+       Fang, Rong Chen, Wenyuan Yu, and Haibo Chen. USENIX Annual Technical Conference, Boston,
+       MA, US, July 2025.
+       [OSDI] XSched: Preemptive Scheduling for Diverse XPUs. Weihang Shen, Mingcong Han, Jialong Liu,
+       Rong Chen, and Haibo Chen. The 19th USENIX Symposium on Operating Systems Design and
+       Implementation, Boston, MA, US, July 2025.
+       [OSDI] BlitzScale: Fast and Live Large Model Autoscaling with O(1) Host Caching. Dingyan Zhang,
+       Haotian Wang, Yang Liu, Xingda Wei, Yizhou Shan, Rong Chen, and Haibo Chen. The 19th USENIX
+       Symposium on Operating Systems Design and Implementation, Boston, MA, US, July 2025.
+       [OSDI] OS Rendering Service Made Parallel with Out-of-Order Execution and In-Order Commit.
+       Yuanpei Wu, Dong Du, Chao Xu, Yubin Xia, Ming Fu, Yang Yu, Binyu Zang, Haibo Chen. The 19th
+       USENIX Symposium on Operating Systems Design and Implementation, Boston, MA, US, July 2025.
+       [OSDI] Fork in the Road: Reflections and Optimizations for Cold Start Latency in Production
+       Serverless Systems. Xiaohu Chai, Tianyu Zhou, Keyang Hu, Jianfeng Tan, Tiwei Bie, Anqi Shen,
+       Dawei Shen, Qi Xing, Shun Song, Tongkai Yang, Le Gao, Feng Yu, Zhengyu He, Dong Du, Yubin Xia,
+       Kang Chen, Yu Chen. The 19th USENIX Symposium on Operating Systems Design and
+       Implementation, Boston, MA, US, July 2025.
+       [SIGMOD] Automated Validating and Fixing of Text-to-SQL Translation with Execution Consistency.
+       Yicun Yang, Zhaoguo Wang, Yu Xia, Zhuoran Wei, Haoran Ding, Ruzica Piskac, Haibo Chen, Jinyang
+       Li. In Proceedings of the 2025 ACM SIGMOD International Conference on Management of Data.
+       [EuroSys] A Hardware-Software Co-Design for Efficient Secure Containers. Jiacheng Shi, Yang Yu,
+       Jinyu Gu, Yubin Xia. Proceedings of the 20th European Conference on Computer Systems,
+       Rotterdam, Netherlands, April, 2025.
+       [USENIX Security] Jiacheng Shi, Jinyu Gu, Yubin Xia, Haibo Chen. Serverless Functions Made
+       Confidential and Efficient with Split Containers. The 34th USENIX Security Symposium, Seattle, WA,
+       USA, 2025.
+       [FAST] Liquid-State Drive: A Case for DNA Block Device for Enormous Data. Jiahao Zhou, Mingkai
+       Dong, Fei Wang, Jingyao Zeng, Lei Zhao, Chunhai Fan, Haibo Chen. The 23rd USENIX Conference
+       on File and Storage Technologies, February, 2025.
+       [ASPLOS] PipeLLM: Fast and Confidential Large Language Model Services with Speculative
+       Pipelined Encryption. Yifan Tan, Cheng Tan, Zeyu Mi, Haibo Chen. The 30th ACM International
+       Conference on Architectural Support for Programming Languages and Operating Systems, March
+       2025.
+       [ASPLOS] D-VSync: Decoupled Rendering and Displaying for Smartphone Graphics. Yuanpei Wu,
+       Dong Du, Chao Xu, Yubin Xia, Ming Fu, Binyu Zang, Haibo Chen. The 30th ACM International
+       Conference on Architectural Support for Programming Languages and Operating Systems, March
+       2025.
+       [NSDI] ODRP: On-Demand Remote Paging with Programmable RDMA. Zixuan Wang, Xingda Wei,
+       Jinyu Gu, Hongrui Xie, Rong Chen, and Haibo Chen. The 22nd USENIX Symposium on Networked
+       Systems Design and Implementation, Philadelphia, PA, US, April 2025.
+
+2024
+[SoCC] On-demand and Parallel Checkpoint/Restore for GPU Applications. Yanning Yang, Dong Du,
+Haitao Song, Yubin Xia. The 15th ACM Symposium on Cloud Computing (SoCC'24), Redmond, WA,
+USA. Nov 2024. paper
+[SOSP] PowerInfer: Fast Large Language Model Serving with a Consumer-grade GPU. Yixin Song,
+Zeyu Mi, Haotong Xie, Haibo Chen. The 30th ACM Symposium on Operating Systems Principles,
+Texas, USA, November 2024. paper ppt
+[SOSP] VPRI: Optimized I/O Page Fault in Public IaaS. Kaijie Guo, Dingji Li, Ben Luo, Yibin Shen,
+Kaihuan Peng, Ning Luo, Shengdong Dai, Chen Liang, Jianming Song, Hang Yang, Xiantao Zhang,
+Zeyu Mi. The 30th ACM Symposium on Operating Systems Principles, Texas, USA, November
+2024. paper
+[USENIX ATC] Harmonizing Efficiency and Practicability: Optimizing Resource Utilization in Serverless
+Computing with Jiagu. Qingyuan Liu, Yanning Yang, Dong Du, Yubin Xia, Ping Zhang, Jia Feng,
+James Larus, Haibo Chen. USENIX Annual Technical Conference, Santa Clara, CA, USA, July
+2024. paper
+[USENIX ATC] Flexible, Secure and Efﬁcient CVM Maintenance with Conﬁdential Procedure Calls.
+Jiahao Chen, Zeyu Mi, Yubin Xia, Haibing Guan, Haibo Chen. USENIX Annual Technical Conference,
+Santa Clara, CA, USA, July 2024.      paper
+[OSDI] Microkernel Goes General: Performance and Compatibility in the HongMeng Production
+Microkernel. Haibo Chen, Xie Miao, Ning Jia, Nan Wang, Yu Li, Nian Liu, Yutao Liu, Fei Wang, Qiang
+Huang, Kun Li, Hongyang Yang, Hui Wang, Jie Yin, Yu Peng, and Fengwei Xu. The 18th USENIX
+Symposium on Operating Systems Design and Implementation, Santa Clara, CA, US, July
+2024. paper
+[OSDI] Using Dynamically Layered Definite Releases for Verifying the RefFS File System. Mo Zou,
+Dong Du, Mingkai Dong, Haibo Chen. The 18th USENIX Symposium on Operating Systems Design
+and Implementation, Santa Clara, CA, US, July 2024. paper
+[OSDI] Fast and Scalable In-network Lock Management Using Lock Fission. Hanze Zhang, Ke Cheng,
+Rong Chen, and Haibo Chen. The 18th USENIX Symposium on Operating Systems Design and
+Implementation, Santa Clara, CA, US, July 2024. paper
+[ISCA] sNPU: Trusted Execution Environments on Integrated NPUs. Erhu Feng, Dahu Feng, Dong Du,
+Yubin Xia, Haibo Chen. The 51st International Symposium on Computer Architecture (ISCA'24),
+2024. paper
+[EuroSys] Jade: A High-throughput Concurrent Copying Garbage Collector. Mingyu Wu, Liang Mao,
+Yude Lin, Yifeng Jin, Zhe Li, Hongtao Lyu, Jiawei Tang, Xiaowei Lu, Hao Tang, Denghui Dong, Haibo
+Chen, Binyu Zang. Proceedings of the 19th European Conference on Computer Systems, Athens,
+Greece, April, 2024. paper
+[VLDB] XGNN: Boosting Multi-GPU GNN Training via Global GNN Memory Store. Dahai Tang, Jiali
+Wang, Rong Chen, Lei Wang, Wenyuan Yu, Jingren Zhou, and Kenli Li. The 50th International
+Conference on Very Large Databases, Guangzhou, China, August 2024. paper
+[ASPLOS] sIOPMP: Scalable and Efficient I/O Protection for TEEs. Erhu Feng, Dahu Feng, Dong Du,
+Yubin Xia, Wenbin Zheng, Siqi Zhao, Haibo Chen. The 29th ACM International Conference on
+Architectural Support for Programming Languages and Operating Systems, April 2024. paper
+[EuroSys] Characterization and Reclamation of Frozen Garbage in Managed FaaS Workloads. Ziming
+Zhao, Mingyu Wu, Haibo Chen, Binyu Zang. Proceedings of the 19th European Conference on
+Computer Systems, Athens, Greece, April, 2024. paper
+[EuroSys] Serialization/Deserialization-free State Transfer in Serverless Workflows. Fangming Lu,
+Xingda Wei, Zhuobin Huang, Rong Chen, Mingyu Wu, Haibo Chen. Proceedings of the 19th European
+Conference on Computer Systems (Best Paper Award), Athens, Greece, April, 2024. paper
+[SIGMOD] WeBridge: Synthesizing Stored Procedures for Large-Scale Real-World Web Applications.
+Gansen Hu, Zhaoguo Wang, Chuzhe Tang, Jiahuan Shen, Zhiyuan Dong, Sheng Yao, and Haibo
+Chen. In Proceedings of the 2024 ACM SIGMOD International Conference on Management of Data.
+2024. paper
+[SIGMOD] Proving Query Equivalence Using Linear Integer Arithmetic. Haoran Ding, Zhaoguo Wang,
+Yicun Yang, Dexin Zhang, Zhenglin Xu, Haibo Chen, Ruzica Piskac, Jinyang Li. In Proceedings of the
+2024 ACM SIGMOD International Conference on Management of Data. 2024. paper
+[FAST] Optimizing File Systems on Heterogeneous Memory by Integrating DRAM Cache with Virtual
+Memory Management. Yubo Liu, Yuxin Ren, Mingrui Liu, Hongbo Li, Hanjun Guo, Xie Miao, Xinwei
+       Hu, and Haibo Chen. The 22nd USENIX Conference on File and Storage Technologies, February,
+       2024. paper
+       [ASPLOS] CPS: A Cooperative Para-virtualized Scheduling Framework for Manycore Machines.
+       Yuxuan Liu, Tianqiang Xu, Zeyu Mi, Zhichao Hua, Binyu Zang, Haibo Chen. The 29th ACM
+       International Conference on Architectural Support for Programming Languages and Operating
+       Systems, April 2024. paper
+
+2023
+
+       [Nature] DNA-based programmable gate arrays for general-purpose DNA computing. Hui Lv, Nuli Xie,
+       Mingqiang Li, Mingkai Dong, Chenyun Sun, Qian Zhang, Lei Zhao, Jiang Li, Xiaolei Zuo, Haibo Chen,
+       Fei Wang & Chunhai Fan. Nature (2023). September, 2023. paper
+       [SoCC] The Gap Between Serverless Research and Real-world Systems. Qingyuan Liu, Dong Du,
+       Yubin Xia, Ping Zhang, Haibo Chen. ACM Symposium on Cloud Computing, 2023. paper
+       [MICRO] Accelerating Extra Dimensional Page Walks for Confidential Computing. Dong Du, Bicheng
+       Yang, Yubin Xia, Haibo Chen. The 56th IEEE/ACM International Symposium on Microarchitecture
+       (MICRO), Toronto, Canada. 2023. paper-preprint
+       [SOSP] TreeSLS: A Tree-structured Microkernel with Efficient Whole-system Persistence on NVM.
+       Fangnuo Wu, Mingkai Dong, Gequan Mo, Haibo Chen. The 29th ACM Symposium on Operating
+       Systems Principles (Best Paper Award), Koblenz, Germany, October 2023. paper
+       [SOSP] UGACHE: A Unified GPU Cache for Embedding-based Deep Learning Systems. Xiaoniu
+       Song, Yiwen Zhang, Rong Chen, and Haibo Chen. The 29th ACM Symposium on Operating Systems
+       Principles, Koblenz, Germany, October 2023.
+       [USENIX ATC] Analysis and Optimization of Network I/O Tax in Confidential Virtual Machines. Dingji
+       Li, Zeyu Mi, Chenhui Ji, Yifan Tan, Binyu Zang, Haibing Guan, Haibo Chen. USENIX Annual Technical
+       Conference, Boston, MA, USA, July 2023. paper
+       [USENIX ATC] Bridging the Gap between Relational OLTP and Graph-based OLAP. Sijie Shen,
+       Zihang Yao, Lin Shi, Lei Wang, Longbin Lai, Qian Tao, Li Su, Rong Chen, Wenyuan Yu, Haibo Chen,
+       Binyu Zang, Jingren Zhou. USENIX Annual Technical Conference, Boston, MA, USA, July 2023.
+           paper
+       [OSDI] Security and Performance in the Delegated User-level Virtualization. Jiahao Chen, Dingji Li,
+       Zeyu Mi, Yuxuan Liu, Binyu Zang, Haibing Guan, Haibo Chen. The 17th USENIX Symposium on
+       Operating Systems Design and Implementation, Boston, MA, US, July 2023. paper
+       [OSDI] Characterizing Off-path SmartNIC for Accelerating Distributed Systems. Xingda Wei, Rongxin
+       Cheng, Yuhan Yang, Rong Chen, Haibo Chen. The 17th USENIX Symposium on Operating Systems
+       Design and Implementation, Boston, MA, US, July 2023. paper
+       [OSDI] Automated Verification of Idempotence for Stateful Serverless Applications. Haoran Ding,
+       Zhaoguo Wang, Zhuohao Shen, Rong Chen, Haibo Chen. The 17th USENIX Symposium on
+       Operating Systems Design and Implementation, Boston, MA, US, July 2023. paper
+       [OSDI] Encrypted Databases Made Secure Yet Maintainable. Mingyu Li, Xuyang Zhao, Le Chen,
+       Cheng Tan, Huorong Li, Sheng Wang, Zeyu Mi, Yubin Xia, Feifei Li, Haibo Chen. The 17th USENIX
+       Symposium on Operating Systems Design and Implementation, Boston, MA, US, July 2023. paper
+       [OSDI] BWoS: Formally Verified Block-based Work Stealing for Parallel Processing. Jiawei Wang,
+       Bohdan Trach, Ming Fu, Diogo Behrens, Jonathan Schwender, Yutao Liu, Jitang Lei, Viktor Vafeiadis,
+       Hermann Härtig and Haibo Chen. The 17th USENIX Symposium on Operating Systems Design and
+       Implementation, Boston, MA, US, July 2023. paper
+       [OSDI] No Provisioned Concurrency: Fast RDMA-codesigned Remote Fork for Serverless Computing.
+       Xingda Wei, Fangming Lu, Tianxia Wang, Jinyu Gu, Yuhan Yang, Rong Chen, and Haibo Chen. 17th
+       USENIX Symposium on Operating Systems Design and Implementation, Boston, MA, US, July 2023.
+           preprint
+       [VLDB] Fine-Grained Re-Execution for Efficient Batched Commit of Distributed Transactions. Zhiyuan
+       Dong, Zhaoguo Wang, Xiaodong Zhang, Xian Xu, Changgeng Zhao, Haibo Chen, Aurojit Panda,
+       Jinyang Li. The 49th International Conference on Very Large Data Bases, Vancouver, Canada,
+       2023. paper
+       [SIGMOD Record] Ad Hoc Transactions: What They Are and Why We Should Care. Chuzhe Tang,
+       Zhaoguo Wang, Xiaodong Zhang, Qianmian Yu, Binyu Zang, Haibing Guan, and Haibo Chen. ACM
+       SIGMOD Record 52, no. 1, 2023 (ACM SIGMOD Research Highlight Award).               Paper
+       [ICDE] Database Deadlock Diagnosis for Large-scale ORM-based Web Applications. Zhiyuan Dong,
+       Zhaoguo Wang, Chuanwei Yi, Xian Xu, Jinyuan Zhang, Jinyang Li, Haibo Chen. The 39th IEEE
+       International Conference on Data Engineering. Anaheim, CA, USA, April, 2023.         paper
+       [ISCA] ISA-grid: Architecture of Fine-grained Privilege Control for Instructions and Registers. Shulin
+       Fan, Zhichao Hua, Yubin Xia, Haibo Chen, and Binyu Zang. The 50th International Symposium on
+       Computer Architecture, 2023. paper
+       [HPCA] Efficient Distributed Secure Memory with Migratable Merkle Tree. Erhu Feng, Dong Du, Yubin
+       Xia, Haibo Chen. The 29th IEEE International Symposium on High-Performance Computer
+       Architecture, February, 2023.     paper
+       [IEEE TC] Jinyu Gu, Jiacheng Shi, Haoran Su, Wentai Li, Binyu Zang, Haibin Guan, Haibo Chen.
+       Understanding and Mitigating Twin Function Misuses in Operating System Kernel[J]. IEEE
+       Transactions on Computers, 2023.
+       [ASPLOS] BeeHive: Sub-second elasticity for web services with Semi-FaaS execution. Ziming Zhao,
+       Mingyu Wu, Jiawei Tang, Binyu Zang, Zhaoguo Wang, Haibo Chen. The 28th ACM International
+       Conference on Architectural Support for Programming Languages and Operating Systems, March,
+       2023. paper
+       [ASPLOS] AtoMig: Automatically Migrating Millions Lines of Code from TSO to WMM. Martin Beck,
+       Koustubha Bhat, Lazar Stričević, Geng Chen, Diogo Behrens, Ming Fu, Viktor Vafeiadis, Haibo Chen
+       and Hermann Härtig. The 28th ACM International Conference on Architectural Support for
+       Programming Languages and Operating Systems, March, 2023. paper
+
+2022
+
+       [USENIX ATC] Zero-Change Object Transmission for Distributed Big Data Analytics. Mingyu Wu,
+       Shuaiwei Wang, Haibo Chen and Binyu Zang. USENIX Annual Technical Conference, Carlsbad, CA,
+       USA, July 2022.     paper
+       [USENIX ATC] KRCORE: a microsecond-scale RDMA control plane for elastic computing. Xingda Wei,
+       Fangming Lu, Rong Chen and Haibo Chen. USENIX Annual Technical Conference, Carlsbad, CA,
+       USA, July 2022.     paper
+       [USENIX ATC] EPK: Scalable and Efficient Memory Protection Key. Jinyu Gu, Hao Li, Wentai Li, Yubin
+       Xia, Haibo Chen. USENIX Annual Technical Conference, Carlsbad, CA, USA, July 2022.        paper
+       [USENIX ATC] BBQ: A Block-based Bounded Queue for Exchanging Data and Profiling. Jiawei Wang,
+       Diogo Behrens, Ming Fu, Lilith Oberhauser, Jonas Oberhauser, Jitang Lei, Geng Chen, Hermann
+       Härtig, Haibo Chen. USENIX Annual Technical Conference, Carlsbad, CA, USA, July 2022.       paper
+       [ACM TOCS] Boosting Inter-Process Communication with Architectural Support. Yubin Xia, Dong Du,
+       Zhichao Hua, Binyu Zang, Haibo Chen, Haibing Guan. ACM Transactions on Computer Systems.
+       Accepted. 2022.
+       [OSDI] Microsecond-scale Preemption for Concurrent GPU-accelerated DNN Inferences. Mingcong
+       Han, Hanze Zhang, Rong Chen, and Haibo Chen. The 16th USENIX Symposium on Operating
+       Systems Design and Implementation, Carlsbad, CA, US, July 2022.        paper
+       [USENIX Security] Jinyu Gu, Bojun Zhu, Mingyu Li, Wentai Li, Yubin Xia, and Haibo Chen. A
+       Hardware-Software Co-design for Efficient Intra-Enclave Isolation. The 31st USENIX Security
+       Symposium, Boston, MA, USA, 2022.
+       [IEEE TDSC] Zeyu Mi, Zhi Guo, Fuqian Huang, Haibo Chen.Hawkeye: Eliminating Kernel Address
+       Leakage in Normal Data Flows. IEEE Transactions on Dependable and Secure Computing. 2022.
+       (Early Access)   link
+       [SIGMOD] WeTune: Automatic Discovery and Verification of Query Rewrite Rules. Zhaoguo Wang,
+       Zhou Zhou, Yicun Yang, Haoran Ding, Gansen Hu, Ding Ding, Chuzhe Tang, Haibo Chen, Jinyang Li.
+       ACM SIGMOD International Conference on Management of Data. 2022.            paper
+       [SIGMOD] Ad Hoc Transactions in Web Applications: The Good, the Bad, and the Ugly. Chuzhe Tang,
+       Zhaoguo Wang, Xiaodong Zhang, Qianmian Yu, Binyu Zang, Haibing Guan, Haibo Chen. ACM
+       SIGMOD International Conference on Management of Data (Best Paper Honorable Mention). 2022.
+          paper
+       [ACM TOS] The Concurrent Learned Indexes for Multicore Data Storage. Zhaoguo Wang, Haibo
+       Chen, Youyun Wang, Chuzhe Tang, and Huan Wang. ACM Trans. Storage 18, 1.( paper,            code)
+       [IEEE TPDS] DrTM+B: Replication-driven Live Reconfiguration for Fast and General Distributed
+       Transaction Processing. Sijie Shen, Xingda Wei, Rong Chen, Haibo Chen, and Binyu Zang. IEEE
+       Transactions on Parallel and Distributed Systems, 33(10), pp. 2628-2643, October 2022.    paper
+       [EuroSys] GNNLab: A Factored System for Sample-based GNN Training over GPUs. Jianbang Yang,
+       Dahai Tang, Xiaoniu Song, Lei Wang, Qiang Yin, Rong Chen, Wenyuan Yu and Jingren Zhou. The
+       17th ACM SIGOPS European Conference on Computer Systems, Rennes, France, April 2022.
+           paper
+       [PPoPP] Asymmetry-aware Scalable Locking. Nian Liu, Jinyu Gu, Dahai Tang, Kenli Li, Binyu Zang,
+       Haibo Chen. The 27th ACM SIGPLAN Annual Symposium on Principles and Practice of Parallel
+       Programming (PPoPP 2022), April 2-6, 2022 in Seoul, Korea. [ pdf]
+       [FAST] MT^2: Memory bandwidth Regulation on Hybrid NVM/DRAM Platforms. Jifei Yi, Benchao
+       Dong, Mingkai Dong, Ruizhe Tong, Haibo Chen. The 20th USENIX Conference on File and Storage
+       Technologies (FAST '22). February 22–24, 2022, in Santa Clara, CA, USA.     pdf
+       [FAST] HTMFS: Strong Consistency Comes for Free with Hardware Transactional Memory in
+       Persistent Memory File Systems. Jifei Yi, Mingkai Dong, Fangnuo Wu, Haibo Chen. The 20th USENIX
+       Conference on File and Storage Technologies (FAST '22). February 22–24, 2022, in Santa Clara, CA,
+       USA.      pdf
+       [ASPLOS] Serverless Computing on Heterogeneous Computers. Dong Du, Qingyuan Liu, Xueqiang
+       Jiang, Yubin Xia, Binyu Zang, Haibo Chen. The 27th International Conference on Architectural Support
+       for Programming Languages and Operating Systems (ASPLOS'22).          pdf
+       [IEEE TC] General and Fast Inter-Process Communication via Bypassing Privileged Software. Zeyu
+       Mi, Haoqi Zhuang, Binyu Zang, Haibo Chen. To appear in IEEE Transactions on Computers. 2021.
+           link
+       [IEEE TPDS] Wukong+G: Fast and Concurrent RDF Query Processing Using RDMA-assisted GPU
+       Graph Exploration. Zihang Yao, Rong Chen, Binyu Zang, and Haibo Chen. IEEE Transactions on
+       Parallel and Distributed Systems, 33(7), pp. 1619-1635, July 2022.   paper
+
+2021
+
+       [SOCC] Fast and Accurate Optimizer for Query Processing over Knowledge Graphs. Jingqi Wu, Rong
+       Chen, Yubin Xia. The 12th ACM Symposium on Cloud Computing, November 2021. [ pdf]
+       [SOSP] TwinVisor: Hardware-isolated Confidential Virtual Machines for ARM. Dingji Li, Zeyu Mi, Yubin
+       Xia, Binyu Zang, Haibo Chen, Haibing Guan. The 28th ACM Symposium on Operating System
+       Principles. October 25-28, 2021. [ pdf]
+       [SOSP] CLoF: A Compositional Lock Framework for Multi-level NUMA Systems. Rafael Chehab,
+       Antonio Paolillo, Diogo Behrens, Ming Fu, Hermann Härtig, Haibo Chen. The 28th ACM Symposium
+       on Operating System Principles. October 25-28, 2021. [ pdf]
+       [ACM TOS] XStore: A Fast RDMA-based Ordered Key-Value Store with Remote Learned Cache.
+       Xingda Wei, Rong Chen, Haibo Chen, and Binyu Zang. ACM Transactions on Storage, 17(3), Article
+       No. 18, August 2021.      paper
+       [ACM SIGOPS OSR] Wukong: A Distributed Framework for Fast and Concurrent Graph Querying.
+       Rong Chen and Haibo Chen. ACM SIGOPS Operating Systems Review, 55(1), pp. 77-83, July 2021.
+          paper
+       [USENIX ATC] Characterizing and Optimizing Remote Persistent Memory with RDMA and NVM.
+       Xingda Wei, Xiating Xie, Rong Chen, Haibo Chen, Binyu Zang. 2021 USENIX Annual Technical
+       Conference, July 2021.
+       [OSDI] Erhu Feng, Xu Lu, Dong Du, Bicheng Yang, Xueqiang Jiang, Yubin Xia, Binyu Zang, Haibo
+       Chen. Scalable Memory Protection in the PENGLAI Enclave. The 15th USENIX Symposium on
+       Operating Systems Design and Implementation, 2021.
+       [OSDI] Sijie Shen, Rong Chen, Haibo Chen, Binyu Zang. Retrofitting High Availability Mechanism to
+       Tame Hybrid Transaction/Analytical Processing. The 15th USENIX Symposium on Operating Systems
+       Design and Implementation, 2021. [ paper]
+       [OSDI] Mingyu Li, Tianxu Zhang, Jinhao Zhu, Cheng Tan, Yubin Xia, Sebastian Angel, Haibo Chen.
+       Bringing Decentralized Search to Decentralized Services. 15th USENIX Symposium on Operating
+       Systems Design and Implementation, 2021.
+       [OSDI] Jiachen Wang, Ding Ding, Huan Wang, Conrad Christensen, Zhaoguo Wang, Haibo Chen,
+       Jinyang Li. Polyjuice: High-Performance Transactions via Learned Concurrency Control. The 15th
+       USENIX Symposium on Operating Systems Design and Implementation, 2021.
+       [ISCA] PIE: Confidential Serverless Made Efficient with Plug-In Enclaves. Mingyu Li, Yubin Xia, Haibo
+       Chen. The IEEE/ACM International Symposium on Computer Architecture. 2021.
+       [EuroSys] Bridging the Performance Gap for Copy-based Garbage Collectors atop Non-Volatile
+       Memory. Yanfei Yang, Mingyu Wu, Haibo Chen, Binyu Zang. 2021 ACM European Conference on
+       Computer Systems. Edinburgh, Scotland, UK, April 2021.
+       [EuroSys] FlexGraph: A flexible and efficient distributed framework for GNN training. Lei Wang, Qiang
+       Yin, Chao Tian, Jianbang Yang, Rong Chen, Wenyuan Yu, Zihang Yao, and Jingren Zhou. The 16th
+       ACM SIGOPS European Conference on Computer Systems, Edinburgh, Scotland, UK, April 2021.
+           paper
+       [ASPLOS] VSync: Push-Button Verification and Optimization for Synchronization Primitives on Weak
+       Memory Models. J. Oberhauser, R. Chehab, D. Behrens, M. Fu, A. Paolillo, L. Oberhauser, K. Bhat, Y.
+       Wen, H. Chen, J. Kim, V. Vafeiadis. The 26th ACM International Conference on Architectural Support
+       for Programming Languages and Operating Systems (Distinguished Paper Award), April, 2021.
+       [NSDI] Unifying Timestamp with Transaction Ordering for MVCC with Decentralized Scalar Timestamp.
+       Xingda Wei, Rong Chen, Haibo Chen, Zhaoguo Wang, Zhenhan Gong, and Binyu Zang. Proceedings
+       of 18th USENIX Symposium on Networked Systems Design and Implementation, Boston, MA, US,
+       April 2021. [ paper]
+       [JCST] Jinyu Gu, Hao Li, Yubin Xia, Haibo Chen, Cheng-gang Qin, and Zheng-yu He. Unified Enclave
+       Abstraction and Secure Enclave Migration on Heterogeneous TEE Architectures. Journal of Computer
+       Science and Technology, 2021.
+
+2020
+
+       [IEEE TC] Jinyu Gu, Xinyue Wu, Bojun Zhu, Yubin Xia, Binyu Zang, Haibing Guan, and Haibo Chen.
+       Enclavisor: A Hardware-software Co-design for Enclaves on Untrusted Cloud. IEEE Transactions on
+       Computers, 2020.
+       [OSDI] Fast RDMA-based Ordered Key-Value Store using Remote Learned Cache. Xingda Wei, Rong
+       Chen, and Haibo Chen. 14th USENIX Symposium on Operating Systems Design and Implementation,
+       Banff, Alberta, Canada, November 2020. [ paper]
+       [APSys] On the precision of precise event based sampling. Jifei Yi, Benchao Dong, Mingkai Dong,
+       Haibo Chen. APSys 2020: 98-105. [ pdf]
+       [SoCC] Characterizing Serverless Platforms with ServerlessBench. Tianyi Yu, Qingyuan Liu, Dong Du,
+       Yubin Xia, Binyu Zang, Ziqian Lu, Pingchao Yang, Chenggang Qin, Haibo Chen. ACM Symposium on
+       Cloud Computing, October 19-21, 2020. [ preprint]
+       [Usenix ATC] Platinum: A CPU-Efficient Concurrent Garbage Collector for Tail-Reduction of Interactive
+       Services. Mingyu Wu, Ziming Zhao, Yanfei Yang, Haoyu Li, Haibo Chen, Binyu Zang, Haibing Guan,
+       Sanhong Li, Chuansheng Lu, Tongbao Zhang. USENIX Annual Technical Conference, Boston, MA,
+       USA, July 2020. [ pdf]
+       [Usenix ATC] Harmonizing Performance and Isolation in Microkernels with Efficient Intra-kernel
+       Isolation and Communication. Jinyu Gu, Xinyue Wu, Wentai Li, Nian Liu, Zeyu Mi, Yubin Xia, Haibo
+       Chen. USENIX Annual Technical Conference, Boston, MA, USA, July 2020. [ pdf]
+       [Usenix Security] Zeyu Mi, Dingji Li, Haibo Chen, Binyu Zang, Haibing Guan. (Mostly) Exitless VM
+       Protection from Untrusted Hypervisor through Disaggregated Nested Virtualization. In Proceedings of
+       29th Usenix Security Symposium. Boston, MA, USA. August 12–14, 2020. [ pdf]
+       [VEE] GCPersist: an efficient GC-assisted lazy persistency framework for resilient Java applications
+       on NVM. Mingyu Wu, Haibo Chen, Hao Zhu, Binyu Zang, Haibo Chen. Proceedings of ACM
+       SIGPLAN/SIGOPS International Conference on Virtual Execution Environments (VEE), 2020. [ pdf]
+       [ASPLOS] Catalyzer: Sub-millisecond Startup for Serverless Computing with Initialization-less
+       Booting. Dong Du, Tianyi Yu, Yubin Xia, Binyu Zang, Guanglu Yan, Chenggang Qin, Qixuan Wu,
+       Haibo Chen. The 25th ACM International Conference on Architectural Support for Programming
+       Languages and Operating Systems (Accepted), Lausanne, Switzerland, March, 2020. [ pdf]
+       [PPoPP] Nian Liu, Binyu Zang, Haibo Chen. No Barrier in the Road: A Comprehensive Study and
+       Optimization of ARM Barriers. In The 25th ACM SIGPLAN Annual Symposium on Principles and
+       Practice of Parallel Programming (PPoPP 2020), San Diego, USA, Feburary, 2020. [ pdf]
+       [PPoPP] Chuzhe Tang, Youyun Wang, Gansen Hu, Zhiyuan Dong, Zhaoguo Wang, Minjie Wang,
+       Haibo Chen. XIndex: A Scalable Learned Index for Multicore Data Storage. In The 25th ACM
+       SIGPLAN Annual Symposium on Principles and Practice of Parallel Programming (PPoPP 2020), San
+       Diego, USA, February, 2020. [ pdf]
+       [IEEE TC] Secure and Efficient Control Data Isolation with Register-based Data Cloaking. Xiayang
+       Wang, Fuqian Huang, Haibo Chen. IEEE Transactions on Computer. Volume 69, Issue 2, Pages 226 -
+       238, 2020. [ link]
+
+2019
+
+       [SOSP] Using Concurrent Relational Logic with Helper for Verifying the AtomFS File System. Mo Zou,
+       Haoran Ding, Dong Du, Ming Fu, Ronghui Gu, Haibo Chen. The 27th ACM Symposium on Operating
+       System Principles. Deerhurst Resort, Huntsville, Ontario, Canada, October 27-30, 2019. [ pdf]
+       [SOSP] Performance and Protection in the ZoFS User-space NVM File System. Mingkai Dong, Heng
+       Bu, Jifei Yi, Benchao Dong, Haibo Chen. The 27th ACM Symposium on Operating System Principles.
+       Deerhurst Resort, Huntsville, Ontario, Canada, October 27-30, 2019. [ pdf]
+       [PODC] On the parallels between Paxos and Raft. Zhaoguo Wang, Changgeng Zhao, Shuai Mu,
+       Haibo Chen and Jinyang Li. 38th Annual ACM Symposium on Principles of Distributed Computing.
+       July 29–August 2, 2019, Toronto, Canada. [ pdf]
+       [Usenix ATC] EROFS: A Compression-friendly Readonly File System for Resource-scarce Device.
+       Xiang Gao, Mingkai Dong, Xie Miao, Wei Du, Chao Yu, Haibo Chen. 2019 USENIX Annual Technical
+       Conference, Renton, WA, USA, July 2019. [ pdf]
+       [Usenix ATC] Pisces: A Scalable and Efficient Persistent Transactional Memory. Jinyu Gu, Qianqian
+       Yu, Xiayang Wang, Zhaoguo Wang, Binyu Zang, Haibing Guan, Haibo Chen. 2019 USENIX Annual
+       Technical Conference, Renton, WA, USA, July 2019. [ pdf][ proof]
+       [Usenix ATC] Pragh: Locality-preserving Graph Traversal with Split Live Migration. Xiating Xie, Xingda
+       Wei, Rong Chen, Haibo Chen. 2019 USENIX Annual Technical Conference, Renton, WA, USA, July
+       2019. [ pdf]
+       [ISCA] XPC: Architectural Support for Secure and Efficient Cross Process Call. Dong Du, Zhichao
+       Hua, Yubin Xia, Binyu Zang, Haibo Chen. Proceedings of the 46th ACM/IEEE International
+       Symposium on Computer Architecture, Phoenix, Arizona, USA. June 22-26, 2019. [ pdf]
+       [VEE] ScissorGC: Scalable and Efficient Compaction for Java Full Garbage Collection. Haoyu Li,
+       Mingyu Wu, Binyu Zang, and Haibo Chen. Proceedings of ACM SIGPLAN/SIGOPS International
+       Conference on Virtual Execution Environments (VEE), Providence, RI, USA, April 2019. [ pdf]
+       [VEE] TEEv: Virtualizing Trusted Execution Environments on Mobile Platforms. Wenhao Li, Yubin Xia,
+       Long Lu, Haibo Chen, Binyu Zang. Proceedings of ACM SIGPLAN/SIGOPS International Conference
+       on Virtual Execution Environments (Best Paper Award), Providence, RI, USA, April 2019. [ pdf]
+       [EuroSys] SkyBridge: Fast and Secure Inter-Process Communication for Microkernels. Zeyu Mi, Dingji
+       Li, Zihan Yang, Xinran Wang, and Haibo Chen. In Proceedings of 14th ACM European Conference on
+       Computer Systems, Dresden, Germany, March, 2019. [ pdf]
+       [ACM TOPC] PowerLyra: Differentiated Graph Computation and Partitioning on Skewed Graphs. Rong
+       Chen, Jiaxin Shi, Yanzhe Chen, Haibing Guan, Binyu Zang and Haibo Chen. ACM Transactions on
+       Parallel Computing, 5(3), Article No. 13, January 2019.    paper
+
+2018
+
+       [OSDI] Deconstructing RDMA-enabled Transaction Processing: Hybrid is Better!, Xingda Wei, Zhiyuan
+       Dong, Rong Chen, and Haibo Chen, 2018 Usenix Symposium on Operating System Design and
+       Implementation, Carlsbad, CA, USA, October, 2018. [ pdf]
+       [APSys] Analysis and Optimization of Java Full Garbage Collection, Haoyu Li, Mingyu Wu, and Haibo
+       Chen, Proceedings of 9th ACM Asia-Pacific Workshop on Systems (Best Paper Runner-up Award),
+       Jeju Island, South Korea, Aug 2018. [ pdf]
+       [USENIX ATC] Fast and Concurrent RDF Queries using RDMA-assisted GPU Graph Exploration,
+       Siyuan Wang, Chang Lou, Rong Chen, and Haibo Chen, 2018 USENIX Annual Technical Conference,
+       Boston, MA, USA, July 2018. [ pdf]
+       [USENIX ATC] EPTI: Efficient Defence against Meltdown Attack for Unpatched VMs. Zhichao Hua,
+       Dong Du, Yubin Xia, Haibo Chen, and Binyu Zang, 2018 USENIX Annual Technical Conference,
+       Boston, MA, USA, July 2018 [ pdf]
+       [MobiSys] VButton: Practical Attestation of User-driven Operations in Mobile Apps. Wenhao Li, Shiyu
+       Luo, Zhichuang Sun, Yubin Xia, Long Lu, Haibo Chen, Binyu Zang, and Haibing Guan, The 16th
+       Annual International Conference on Mobile Systems, Applications, and Services, Munich, Germany,
+       Jun 2018. [ pdf]
+       [ASPLOS] Espresso: Brewing Java For More Non-Volatility. Mingyu Wu, Ziming Zhao, Haoyu Li,
+       Heting Li, Haibo Chen, Binyu Zang and Haibing Guan. The 23rd ACM International Conference on
+       Architectural Support for Programming Languages and Operating Systems, Williamsburg, VA, USA,
+       March 2018. [ pdf]
+       [HPCA] Comprehensive VM Protection against Untrusted Hypervisor through Retrofitted AMD Memory
+       Encryption. Yuming Wu, Yutao Liu, Ruifeng Liu, Haibo Chen, Binyu Zang and Haibing Guan. The 24th
+       IEEE International Symposium on High-Performance Computer Architecture, Vienna, Austria. Feb
+       2018. [ pdf]
+
+2017
+
+       [SOSP] Sub-millisecond Stateful Stream Querying over Fast-evolving Linked Data. Yunhao Zhang,
+       Rong Chen, and Haibo Chen. Proceedings of the 26th ACM Symposium on Operating Systems
+       Principles, Shanghai, China, October, 2017. [ pdf]
+       [APSys] Extracting More Intra-transaction Parallelism with Work Stealing for OLTP Workloads.
+       Xiaozhou Zhou, Zhaoguo Wang, Rong Chen, Haibo Chen, and Jinyang Li. Proceedings of 8th ACM
+       Asia-Pacific Workshop on Systems (Best Paper Award). Bombay, India, Sep, 2017. [ pdf]
+       [IEEE TPDS] Scaling Concurrent Index Structures under Contention Using HTM. Weihua Zhang, Xin
+       Wang, Shiyu Ji, Ziyun Wei, Zhaoguo Wang, Haibo Chen. IEEE Transactions on Parallel and
+       Distributed Systems. Accepted, 2017. [ pdf]
+       [Usenix Security] vTZ: Virtualizing ARM TrustZone. Zhichao Hua, Jinyu Gu, Yubin Xia, Haibo Chen,
+       Binyu Zang and Haibing Guan. Usenix Security Symposium 2017. Vancouver, Canada, August, 2017.
+       [ pdf]
+       [IEEE TPDS] Replication-based Fault-tolerance for Large-scale Graph Processing. Rong Chen,
+       Youyang Yao, Peng Wang, Kaiyuan Zhang, Zhaoguo Wang, Haibing Guan, Binyu Zang, Haibo Chen.
+       IEEE Transactions on Parallel and Distributed Systems. Accepted, 2017. [ pdf]
+       [ACM TOCS] Fast In-memory Transaction Processing using RDMA and HTM. Haibo Chen, Rong
+       Chen, Xingda Wei, Jiaxin Shi, Yanzhe Chen, Zhaoguo Wang, Binyu Zang, Haibing Guan. ACM
+       Transactions on Computer Systems, Vol. 35, No. 1, Article 3, July, 2017. [ pdf]
+       [Usenix ATC] Soft Updates Made Simple and Fast for Non-volatile Memories. Mingkai Dong, Haibo
+       Chen. In Proceedings of Usenix Annual Technical Conference, Santa Clara, CA, USA. July, 2017.
+       [ pdf]
+       [Usenix ATC] Replication-driven Live Reconfiguration for Fast Distributed Transaction Processing.
+       Xingda Wei, Sijie Shen, Rong Chen, Haibo Chen. In Proceedings of Usenix Annual Technical
+       Conference, Santa Clara, CA, USA. July, 2017. [ pdf]
+       [ACM ToS] Efficient and Available In-memory KV-Store with Hybrid Erasure Coding and Replication.
+       Haibo Chen, Heng Zhang, Mingkai Dong, Zhaoguo Wang, Yubin Xia, Haibing Guan, and Binyu Zang.
+       ACM Transactions on Storage, Volume 13, Issue 3, Article No. 25, Oct. 2017. [ pdf]
+       [DSN] Secure Live Migration of SGX Enclaves on Untrusted Cloud. Jinyu Gu, Zhichao Hua, Yubin Xia,
+       Haibo Chen, Binyu Zang, Haibing Guan, Jinming Li. The 47th IEEE/IFIP International Conference on
+       Dependable Systems and Networks, June 26-29, 2017. Denver, CO, USA. [ pdf]
+       [IEEE TPDS] Fence-Free Synchronization with Dynamically Serialized Synchronization Variables.
+       Yang Hong, Yang Zheng, Haibing Guan, Binyu Zang, Haibo Chen. IEEE Transactions on Parallel and
+       Distributed Systems, Volume 28, Issue 12, Page(s) 3486-3500, Dec. 2017. [ pdf]
+       [NDSS] Deconstructing Xen. Lei Shi, Yuming Wu, Yubin Xia, Nathan Dautenhahn, Haibo Chen, Binyu
+       Zang, Haibing Guan, Jingming Li. The Network and Distributed System Security Symposium 2017.
+       San Diego, California. March, 2017. [ pdf]
+       [IEEE TPDS] Scalable Adaptive NUMA-aware Lock. Mingzhe Zhang, Haibo Chen, Luwei Cheng,
+       Francis C.M. Lau, and Cho-Li Wang. IEEE Transactions on Parallel and Distributed Systems, 2017.
+       [ pdf]
+       [PPoPP] Eunomia: Scaling Concurrent Search Trees under Contention Using HTM. Xin Wang, Weihua
+       Zhang, Zhaoguo Wang, Ziyun Wei, Haibo Chen, Wenyun Zhao. The 22nd ACM SIGPLAN Symposium
+       on Principles and Practice of Parallel Programming, Austin, TX, USA, Feb 2017. [ pdf]
+       [HPCA] Transparent and Efficient CFI Enforcement with Intel Processor Trace. Yutao Liu, Peitao Shi,
+       Xinran Wang, Haibo Chen, Binyu Zang and Haibing Guan. The 23rd IEEE Symposium on High
+       Performance Computer Architecture, Austin, TX, USA, Feb 2017. [     pdf]
+
+2016
+
+       [OSDI] Fast and Concurrent RDF Queries with RDMA-based Distributed Graph Exploration. Jiaxin Shi,
+       Youyang Yao, Rong Chen, Haibo Chen and Feifei Li. 2016 Usenix Symposium on Operating System
+       Design and Implementation. [ pdf]
+       [SoCC] A Case for Virtualizing Persistent Memory. Liang Liang, Rong Chen, Haibo Chen, Yubin Xia,
+       Haibing Guan, and Binyu Zang. 2016 ACM Symposium on Cloud Computing (ACM SoCC 2016).
+       [ pdf]
+       [APSys] Rethinking Benchmarking for NVM-based File Systems. Mingkai Dong, Qianqian Yu,
+       Xiaozhou Zhou, Yang Hong, Haibo Chen, and Binyu Zang. ACM APSys 2016. [ pdf]
+       [SIGMOD] Scaling Multicore Databases via Constrained Parallel Execution. Zhaoguo Wang, Yang Cui,
+       Han Yi, Shuai Mu, Haibo Chen, Jinyang Li. ACM SIGMOD 2016. [ pdf]
+       [JPDC] Parallelizing Image Feature Extraction Algorithms on Multi-core Platforms. Yunping Lu, Bo
+       Song, Yi Li, Weihua Zhang, Haibo Chen, Lu Peng, Wenyun Zhao. Journal of Parallel and Distributed
+       Computing (Accepted), 2016. [ pdf]
+       [TPDS] Fast Consensus Using Bounded Staleness for Scalable Read-mostly Synchronization. Haibo
+       Chen, Heng Zhang, Ran Liu, Binyu Zang, and Haibing Guan. IEEE Transactions on Parallel and
+       Distributed Systems (Accepted), 2016. [ pdf]
+       [TPDS] Performance Analysis of Multimedia Retrieval Workloads Running on Multicore. Yunping Lu,
+       Xin Wang, Weihua Zhang, Haibo Chen, Lu Peng, Wenyun Zhao. IEEE Transactions on Parallel and
+       Distributed Systems (Accepted), 2016. [ pdf]
+       [PPoPP] Scalable adaptive NUMA-aware lock: combining local locking and remote locking for efficient
+       concurrency. Mingzhe Zhang, Francis C. M. Lau, Cho-Li Wang, Luwei Cheng, Haibo Chen.
+       Proceedings of the 21st ACM SIGPLAN Symposium on Principles and Practice of Parallel
+       Programming (Poster), Feburary, 2016. [ pdf]
+       [VEE] Performance Analysis and Optimization of Full Garbage Collection in Memory-hungry
+       Environments. Yang Yu, Tianyang Lei, Weihua Zhang, Haibo Chen, Binyu Zang. 12th ACM
+       SIGPLAN/SIGOPS International Conference on Virtual Execution Environments. Atlanta, GA, USA.
+       April 2016. [ pdf]     patch
+       [EuroSys] Fast and General Distributed Transactions Using RDMA and HTM. Yanzhe Chen, Xinda
+       Wei, Jiaxin Shi, Rong Chen and Haibo Chen. In Proceedings of 11th ACM European Conference on
+       Computer Systems, London UK, April, 2016.[ pdf]
+       [IEEE TC] Hardware Support for Concurrent Detection of Multiple Concurrency Bugs on Fused CPU-
+       GPU Architectures. Weihua Zhang, Shiqiang Yu, Haojun Wang, Zhuofang Dai, Haibo Chen. To appear
+       in IEEE Transactions on Computers. [ pdf]
+       [FAST] Efficient and Available In-memory KV-Store with Hybrid Erasure Coding and Replication. Heng
+       Zhang, Mingkai Dong, Haibo Chen. 14th USENIX Conference on File and Storage Technologies,
+       Santa Clara, CA, February, 2016.[ pdf]
+       [FAST] Mitigating Sync Amplification for Copy-on-write Virtual Disk. Qingshu Chen, Liang Liang, Yubin
+       Xia, Haibo Chen. 14th USENIX Conference on File and Storage Technologies, Santa Clara, CA,
+       February, 2016. [ pdf]
+
+2015
+
+       [IEEE TCC] Secure Outsourcing of Virtual Appliance. Yubin Xia, Yutao Liu, Haibing Guan, Yunji Chen,
+       Tianshi Chen, Binyu Zang, Haibo Chen. IEEE Transactions on Cloud Computing. Accepted, 2015.
+       [ pdf]
+       [IEEE TPDS] A Loosely-Coupled Full-System Multicore Simulation Framework. Weihua Zhang, Haojun
+       Wang, Yunping Lu, Haibo Chen, Wenyun Zhao. IEEE Transactions on Parallel and Distributed
+       Systems. Accepted, 2015. Doi. 10.1109/TPDS.2015.2455499. [ pdf]
+       [CCS] Thwarting Memory Disclosure with Efficient Hypervisor-enforced Intra-domain Isolation. Yutao
+       Liu, Tianyu Zhou, Kexin Chen, Haibo Chen, Yubin Xia. Proceedings of the 22th ACM Conference on
+       Computer and Communications Security, Denver, Colorado, US, October, 2015. [ pdf]
+       [SOSP] Fast In-memory Transaction Processing using RDMA and HTM. Xingda Wei, Jiaxin Shi,
+       Yanzhe Chen, Rong Chen, Haibo Chen. In Proceedings of 2015 ACM Symposium on Operating
+       System Principles (to appear), Monterey, CA, October 2015. [ pdf]
+       [Usenix Security] You Shouldn't Collect My Secrets: Thwarting Sensitive Keystroke Leakage in
+       Mobile IME Apps. Jin Chen, Haibo Chen, Erick Bauman, Zhiqiang Lin, Binyu Zang, Haibing Guan.
+       USENIX Security Symposium, Washington DC, USA, July, 2015. [ pdf]
+       [ISCA] Reducing World Switches in Virtualized Environment with Flexible Cross-world Calls. Wenhao
+       Li, Yubin Xia, Haibo Chen, Binyu Zang, Haibing Guan. In the 42nd International Symposium on
+       Computer Architecture, Portland, Oregon, USA. June 2015. [ pdf]
+       [MobiSys] AdAttester: Secure Online Advertisement Attestation on Mobile Devices Using TrustZone.
+       Wenhao Li, Haibo Li, Haibo Chen, Yubin Xia. In Proceedings of the 13th International Conference on
+       Mobile Systems, Applications, and Services, Florence, Italy. May 2015. [ pdf]
+       [EuroSys] PowerLyra: Differentiated Graph Computation and Partitioning on Skewed Graphs. Rong
+       Chen, Jiaxin Shi, Yanzhe Chen, Haibo Chen. In Proceedings of the 10th European Conference on
+       Computer Systems (Best Paper Award), Bordeaux, France, April 2015. [ pdf][ slides]
+       [EuroSys] TinMan: Eliminating Confidential Mobile Data Exposure with Security-oriented Offloading.
+       Yubin Xia, Yutao Liu, Cheng Tan, Mingyang Ma, Haibing Guan, Binyu Zang, Haibo Chen. In
+       Proceedings of the 10th European Conference on Computer Systems, France, April 2015.[ pdf]
+       [PPoPP] Kaiyuan Zhang, Rong Chen and Haibo Chen. NUMA-aware Graph-structured Analytics. ACM
+       SIGPLAN Symposium on Principles and Practice of Parallel Programming, Bay Area, California, USA,
+       February, 2015. [ pdf]
+       [PPoPP] Chenning Xie, Rong Chen, Haibing Guan, Binyu Zang and Haibo Chen. SYNC or ASYNC:
+       Time to Fuse for Distributed Graph-parallel Computation. ACM SIGPLAN Symposium on Principles
+       and Practice of Parallel Programming, Bay Area, California, USA, February, 2015. [ pdf][ poster]
+       [JCST] Bipartite-oriented Distributed Graph Partitioning for Big Learning. Rong Chen, Jiaxin Shi, Haibo
+       Chen and Binyu Zang. Journal of Computer Science and Technology. 30(1), pp. 20-29. January, 2015.
+       [ pdf]
+       [IEEE CAL] Persistent Transactional Memory. Zhaoguo Wang, Han Yi, Ran Liu, Mingkai Dong and
+       Haibo Chen. IEEE Computer Architecture Letters. VOL. 14, NO. 1, JANUARY-JUNE 2015. [ pdf]
+
+2014
+
+       [SIGSPATIAL Cup]Greedy Map Generalization by Iterative Point Removal, Yanzhe Chen, Yin Wang,
+       Rong Chen, Haibo Chen and Binyu Zang. ACM SIGSPATIAL Cup 2014. [ pdf]
+       [APSys] Building Trusted Path on Untrusted Device Drivers for Mobile Devices. Wenhao Li, Mingyang
+       Ma, Jinchen Han, Yubin Xia, Binyu Zang, Cheng-Kang Chu, Tieyan Li. Asia-Pacific Workshop on
+       Systems, Beijing, China, June, 2014.
+       [APSys] Bipartite-oriented Distributed Graph Partitioning for Big Learning. Rong Chen, Jiaxin Shi,
+       Binyu Zang and Haibing Guan. Asia-Pacific Workshop on Systems, Beijing, China, June, 2014.
+       [ pdf][ poster]
+       [Usenix ATC] Ran Liu, Heng Zhang and Haibo Chen.Scalable Read-mostly Synchronization Using
+       Passive Reader-Writer Locks. In Proceedings of Usenix Annual Technical Conference, Philadelphia,
+       PA, USA. June, 2014. [ pdf]       Linux Weekly News
+       [HPDC] Computation and Communication Efficient Graph Processing with Distributed Immutable View.
+       Rong Chen, Xin Ding, Peng Wang, Haibo Chen and Binyu Zang. ACM Symposium on High-
+       Performance Parallel and Distributed Computing, Vancouver, Canada, June, 2014. [ pdf]
+       [DSN] Replication-based Fault-tolerance for Large-scale Graph Processing. Peng Wang, Kaiyuan
+       Zhang, Rong Chen, Haibo Chen, Haibing Guan. The Annual IEEE/IFIP International Conference on
+       Dependable Systems and Networks, Atlanta, Georgia USA, June 2014. [ pdf]
+       [EuroSys]Using Restricted Transactional Memory to Build a Scalable In-Memory Database. Zhaoguo
+       Wang, Hao Qian, Jinyang Li, Haibo Chen. The European Conference on Computer Systems,
+       Amsterdam, The Netherlands, 2014. [ pdf]
+       [HPCA] Concurrent and Consistent Virtual Machine Introspection with Hardware Transactional
+       Memory. Yutao Liu, Yubin Xia, Haibing Guan, Binyu Zang, Haibo Chen. In Proceedings of the 20th
+       IEEE International Symposium On High Performance Computer Architecture (Best Paper Nominee),
+       Orlando, Florida, 2014. [ pdf]
+       [ParCo]] X10-FT: Transparent Fault Tolerance for APGAS Language and Runtime. Zhijun Hao,
+       Chenning Xie, Haibo Chen. Parallel Computing, 2014. [ paper]
+
+2013
+       [SIGSPATIAL Cup] Point-Polygon Topological Relationship Query Using Hierarchical Indices. Tianyu
+       Zhou, Hong Wei, Heng Zhang, Yin Wang, Yanmin Zhu, Haibing Guan, Haibo Chen. ACM SIGSPATIAL
+       Cup 2013. [ pdf]
+       [HPCC] X10-PM: Transparent and Efficient Place Migration for APGAS Language. Zhijun Hao,
+       Chenning Xie and Haibo Chen. 15th IEEE International Conference on High Performance Computing
+       and Communications (HPCC 2013).
+       [IEEE CAL] Architecting Flash-based Solid-State Drive for High-performance I/O Virtualization. Xiang
+       Song, Jian Yang, Haibo Chen. IEEE Computer Architecture Letter. Issue No.02 - July-Dec. (2014
+       vol.13). pp: 61-64.
+       [APsys] Schedule Processes, Not VCPUs. Xiang Song, Jicheng Shi, Haibo Chen, Binyu Zang. In
+       Proceedings of Asia-Pacific Workshop on Systems (Best Paper Award), Singapore, 2013. [ pdf]
+       [APsys] Opportunities and pitfalls of multi-core scaling using Hardware Transaction Memory. Zhaoguo
+       Wang, Hao Qian, Haibo Chen, Jinyang Li. In Proceedings of Asia-Pacific Workshop on Systems,
+       Singapore, 2013. [ pdf]
+       [VEE] Parallelizing Live Migration of Virtual Machines. Xiang Song, Jicheng Shi, Ran Liu, Jian Yang,
+       Haibo Chen. In Proceedings of 2013 ACM International Conference on Virtual Execution
+       Environments, March, 2013. [ pdf]
+       [HPCA] Architecture Support for Guest-Transparent VM Protection from Untrusted Hypervisor and
+       Physical Attacks. Yubin Xia, Yutao Liu and Haibo Chen. In Proceedings of 2013 Internal Symposium
+       on High Performance Computer Architecture, February, 2013. [ pdf]
+       [PPoPP] Scalable Deterministic Replay in a Parallel Full-system Emulator. Yufei Chen and Haibo
+       Chen. In Proceedings of 2013 ACM Symposium on Principles and Practice of Parallel Programming,
+       February, 2013. [ pdf (fix some mistakes)] [ pdf]
+       [ACM TACO] Rong Chen and Haibo Chen. Tiled-MapReduce: Efficient and Flexible MapReduce
+       Processing on Multicore with Tiling. ACM Transactions on Architecture and Code Optimization. Volume
+       10, Issue 1, Article No.3. April, 2013. [ pdf]
+       [JNSM] Security-preserving Live Migration of Virtual Machines in the Cloud. Fengzhe Zhang and
+       Haibo Chen. Journal of Network and Systems Management, December 2013, Volume 21, Issue 4, pp
+       562-587.
+
+2012
+
+       [APSys] SSMalloc: A Low-latency, Locality-conscious Memory Allocator with Stable Performance
+       Scalability. Ran Liu and Haibo Chen. In Proceedings of 3rd ACM SIGOPS Asia-Pacific Workshop on
+       Systems, Seoul, Korea. [ pdf]
+       [ICPP] Adaptive Pipeline Parallelism for Image Feature Extraction Algorithms. Peng Chen, Donglei
+       Yang, Weihua Zhang, Yi Li, Haibo Chen and Binyu Zang. The 41st International Conference on
+       Parallel Processing. PA, USA, September, 2012.
+       [LCTES] Improving Dynamic Prediction Accuracy Through Multi-level Phase Analysis. Zhenman Fang,
+       Jiaxin Li, Weihua Zhang, Yi Li, Haibo Chen, Binyu Zang. In Proceedings of the 2012 ACM
+       SIGPLAN/SIGBED Conference on Languages, Compilers, and Tools for Embedded Systems. Beijing,
+       China, June, 2012.
+       [Usenix ATC] Revisiting Software Zero-Copy for Web-caching Applications with Twin Allocators. Xiang
+       Song, Jicheng Shi, Haibo Chen and Binyu Zang. Proceedings of 2012 Usenix Annual Technical
+       Conference (short paper). Boston, Massachusetts USA, June, 2012.        pdf
+       [DSN] CFIMon: Detecting Violation of Control Flow Integrity using Performance Counters. Yubin Xia,
+       Yutao Liu, Haibo Chen and Binyu Zang. In Proceedings of The 42nd Annual IEEE/IFIP International
+       Conference on Dependable Systems and Networks, Boston, Massachusetts USA, June, 2012.
+       [ pdf]
+       [DAC] Transformer: An Extensible, Fast and Cycle-Accurate Full-system Multi-core Simulator.
+       Zhenman Fang, Qinghao Min, Yibin Hu, Yi Lu, Keyong Zhou, Weihua Zhang, Haibo Chen, Binyu Zang
+       and Jian Li. In the 49th Design Automation Conference . San Francisco, USA, June, 2012.
+       [GPGPU] A GPU-based High-throughput Image Retrieval Algorithm. Feiwen Zhu, Peng Chen, Donglei
+       Yang, Weihua Zhang, Haibo Chen, Binyu Zang. In the Fifth Workshop on General Purpose Processing
+       on Graphics Processing Units, collocated with ASPLOS 2012. London, United Kingdom.
+       [PMAM] A Case for Secure and Scalable Hypervisor using Safe Language. Haibo Chen, Binyu Zang.
+       International Workshop on Programming Models and Applications for Multicores and Manycores,
+        February, 2012, New Orleans, Louisiana, USA. [ pdf]
+        [JCST] Mercury: Combining Performance with Dependability Using Self-Virtualization. Haibo Chen,
+        Fengzhe Zhang, Rong Chen, Binyu Zang and Pen-chung Yew. Journal of Computer Science and
+        Technology. Volume 27, Issue 1. Pages 92-104. [ pdf]
+
+Prior
+
+        [SOSP] CloudVisor: Retrofitting Protection of Virtual Machines in Multi-tenant Cloud with Nested
+        Virtualization. Fengzhe Zhang, Jin Chen, Haibo Chen and Binyu Zang. In 23rd ACM Symposium on
+        Operating Systems Principles. [ pdf].
+        [IEEE TSE]Dynamic Software Updating Using a Relaxed Consistency Model. Haibo Chen, Jie Yu,
+        Chengqun Hang, Binyu Zang and Pen-chung Yew. IEEE Transactions on Software Engineering, 2011.
+        [ pdf]
+        [APSys] Security Breaches as PMU Deviation: Detecting and Identifying Security Attacks Using
+        Performance Counters. Liwei Yuan, Weichao Xing, Haibo Chen, and Binyu Zang. 2011 ACM SIGOPS
+        Asia-pacific Workshop on Systems ([ pdf]).
+        [HotDep] Limiting Cache-based Side-Channel in Multi-tenant Cloud using Dynamic Page Coloring.
+        Jichen Shi, Xiang Song, Haibo Chen, Binyu Zang. In the 7th Workshop on Hot Topics in System
+        Dependability ([ pdf]).
+        [PACT] A Hierarchical Approach to Maximizing MapReduce Efficiency. Zhiwei Xiao, Haibo Chen, Binyu
+        Zang. The 20th International Conference on Parallel Architectures and Compilation Techniques
+        (POSTER), Page 167-168, Galveston Island, Texas, USA, 2011. [ pdf]
+        [USENIX ATC] Zhemin Yang, Min Yang, Lvcai Xu, Haibo Chen, Binyu Zang. ORDER: Object centRic
+        DEterministic Replay for Java. The 2011 USENIX Annual Technical Conference. Portland, Oregon,
+        USA, June 2011. [ pdf]
+        [EuroSys] A Case for Scaling Applications to Many-core Platforms with OS Clustering. Xiang Song,
+        Haibo Chen, Rong Chen, Yuanxun Wang, Binyu Zang. In 2011 ACM SIGOPS European Conference
+        on Computer Systems. Salzburg, Austria. April, 2011. [ pdf]
+        [ISPASS] A Comprehensive Analysis and Parallelization of an Image Retrieval Algorithm. Zhenman
+        Fang, Donglei Yang, Weihua Zhang, Haibo Chen, Binyu Zang. In IEEE International Symposium on
+        Performance Analysis of Systems and Software. Austin TX, USA, April, 2011.
+        [PPoPP] COREMU: a Scalable and Portable Parallel Full-system Emulator. Zhaoguo Wang, Ran Liu,
+        Yufei Chen, Xi Wu, Haibo Chen, Weihua Zang, Binyu Zang. In ACM SIGPLAN Symposium on
+        Principles and Practice of Parallel Programming. San Antonio, USA, February, 2011. [ pdf]
+        [PACT]Tiled MapReduce: Optimizing Resource Usages of Data-parallel Applications on Multicore with
+        Tiling. Rong Chen, Haibo Chen, Binyu Zang. The Nineteenth International Conference on Parallel
+        Architectures and Compilation Techniques. Vienna, Austria, September, 2010. [ pdf][ slides]
+        [DSN] Why Software Hangs and What can be done with it? Xiang Song, Haibo Chen, Binyu Zang. In
+        The 40th Annual IEEE/IFIP International Conference on Dependable Systems and Networks (Practical
+        Experience Report). pp. 311-316. Chicago, Illinois, USA, June, 2010. [ pdf]
+        [VEE] Optimizing Crash Dump in Virtualized Environments. Yijian Huang, Haibo Chen, Binyu Zang. In
+        The 2010 ACM SIGPLAN/SIGOPS International Conference on Virtual Execution Environments. pp.
+        25–36. Pittsburgh, PA, USA. March, 2010. [ pdf]
+        [MICRO] Control Flow Obfuscation with Information Flow Tracking. Haibo Chen, Liwei Yuan, Xi Wu,
+        Bo Huang, Pen-chung Yew and Binyu Zang. In 42nd international Conference on Microarchitecture.
+        pp. 391-400. New York, USA. December, 2009.[ pdf]
+        [APPT] Evaluating SPLASH-2 benchmarks using Hadoop MapReduce. Shengkai Zhu, Zhiwei Xiao,
+        Haibo Chen, Rong Chen, Weihua Zhang and Binyu Zang. In the 8th international Conference on
+        Advanced Parallel Processing Technologies. Rapperswil, Switzerland. August, 2009. [ pdf]
+        [OSDI]Corey: An Operating System for Many Cores. Silas Boyd-Wickizer, Haibo Chen, Rong Chen,
+        Yandog Mao, Frans Kashoek, Robert Morris, Aleksey Pesterev, Lex Stein, Ming Wu, Yuehua Dai, Yang
+        Zhang, Zheng Zhang. In 8th USENIX Symposium on Operating Systems Design and Implementation.
+        San Diego, CA, USA. December, 2008.[ pdf]
+        [IWVT] Heterogenous Live Migration of Virtual Machines. Pengcheng Liu, Ziye Yang, Xiang Song,
+        Yixun Zhou, Haibo Chen and Binyu Zang. In the 2008 International Workshop on Virtualization
+        Techniques (Co-located with ISCA'08). Beijing China, June, 2008. [ pdf]
+       [SPW] TPM-Performance Sensible Key Management Protocols for Service Provisioning in Cloud
+       Computing. Haibo Chen, Jun Li and Wenbo Mao. In the 16th International Workshop on Security
+       Protocols. Cambridge England,April,2008. [ pdf]
+       [ISCA] Practical and Efficient Information Flow Tracking Using Speculative Hardware. Haibo Chen, Xi
+       Wu, Liwei Yuan, Binyu Zang, Pen-chung Yew and Frederic Chong. In Proceedings of 35th
+       International Symposium on Computer Architecture, Beijing China, June, 2008. [ pdf]
+       [TR] VMM-based Process Shepherding.Haibo Chen, Pengcheng Liu, Rong Chen and Binyu Zang.
+       Parallel Processing Institute Technical Report, Number: FDUPPITR-2007-08002, Fudan University,
+       August, 2007. [ pdf]
+       [TR] Tamper-Resistant Execution in an Untrusted Operating System Using A Virtual Machine Monitor.
+       Haibo Chen, Fengzhe Zhang, Cheng Chen, Ziye Yang, Rong Chen, Binyu Zang, Pen-chung Yew and
+       Wenbo Mao. Parallel Processing Institute Technical Report, Number: FDUPPITR-2007-08001, Fudan
+       University, August, 2007. [ pdf]
+       [ICPP] Mercury: Combining Performance with Dependability Using Self-virtualization. Haibo Chen,
+       Rong Chen, Fengzhe Zhang, Binyu Zang and Pen-chung Yew. In Proceedings of 36th International
+       Conference on Parallel Processing (Best Paper Award), XiAn China, September, 2007. [ pdf]
+       [ICSE]POLUS: A POwerful Live Updating System. Haibo Chen, Jie Yu, Rong Chen, Binyu Zang, and
+       Pen-chung Yew. In Proceedings of 29th International Conference on Software Engineering, pp. 271-
+       281. Minneapolis, MN, USA, May 2007. [ pdf]
+       [ISTR] Daonity-Grid Security from Two Levels of Virtualization. Haibo Chen Jieyun Chen, Wenbo Mao,
+       and Fei Yan. Elsevier Information Security Technical Report. (Invited Paper), Volumn 12, Issue 3, pp.
+       123–138. June 2007. [ pdf]
+       [VEE] Live Updating Operating Systems Using Virtualization. Haibo Chen, Rong Chen, Fengzhe
+       Zhang, Binyu Zang and Pen-chung Yew. In SIGPLAN/SIGOPS International Conference on Virtual
+       Execution Environments, pp. 35-44, Ottawa, Canada, June 2006. [ pdf]
+
+
+
+                                                                pub/publication.txt · Last modified: 2026/10/06 18:25 by hbchen
+
+
+Except where otherwise noted, content on this wiki is licensed under the following license:   CC Attribution-Share Alike 4.0
+                                                         International
+
+
+                                                    沪交ICP备20250065
+

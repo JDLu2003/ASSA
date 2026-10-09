@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "microsoft",
+    "product": "foundry-hosted-agents",
+    "id": "networking",
+    "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:39.964513+00:00",
+  "path": "sources/official/microsoft/foundry-hosted-agents/networking",
+  "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+  "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+  "http_status": 200,
+  "title": "Deep dive into Foundry Agent Service networking - Microsoft Foundry | Microsoft Learn",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "9e1852c1ca1601a4c4cf8cfa1d0b5da1bf9b37e5b942657b5b5dd13c4e295f02",
+      "bytes": 19552
+    },
+    "page.txt": {
+      "sha256": "adae84d2e74f077bd8d53042264e9c122aef4d26c7069489c77bee0ba6ea4be9",
+      "bytes": 17027
+    },
+    "page.pdf": {
+      "sha256": "53770243b001cb19c8e3b89e40823530dd9ad7f639b2ff57dc710a2ec6270948",
+      "bytes": 695879
+    }
+  }
+}

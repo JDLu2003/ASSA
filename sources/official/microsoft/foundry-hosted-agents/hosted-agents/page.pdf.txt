@@ -1,0 +1,729 @@
+Microsoft Ignite                                  Register now Ｔ
+November 17–20, 2026
+
+
+
+           Learn         Documentation Ｓ Training & Labs Ｓ Q&A Ｓ Topics Ｓ                                               Sign in
+
+
+Azure       Products Ｓ Architecture Ｓ Migration More Ｓ                  Open Microsoft Foundry Portal   Get started with Azure
+
+                                    ﾝ
+                                          Learn     Azure      Microsoft Foundry                           󿄐 Ask Learn       
+ 󿄓 Find by title
+
+
+  What is Microsoft Foundry?             What are hosted agents?
+  Product and capability map
+  Capability reference                   ﾃ     Summarize this article for me
+
+  Get started                            In this article
+  Developer tools and integrations          Key concepts
+                                            Security and data handling
+  Models
+                                            Platform details
+  Agents                                    Limits, pricing, and availability
+    Overview                                Show 2 more
+
+    Concepts
+                                         When you build agentic applications by using open-source frameworks, you
+    Prompt agents                        typically manage many cross-cutting concerns: containerization, web server
+    Hosted agents                        setup, security, memory persistence, scaling, instrumentation, and version
+                                         rollbacks. These tasks become even more challenging in heterogeneous cloud
+        Text agents
+                                         environments.
+           Concepts
+                                         Hosted agents in Foundry Agent Service solve these challenges for Microsoft
+             Overview
+                                         Foundry users. Hosted agents call models from the Foundry model catalog to
+             Runtime components          perform reasoning while your custom code handles orchestration. By using this
+             Runtime contract            managed platform, you can deploy and operate AI agents securely and at
+             Long-running agent          scale. You can use your custom agent code or a preferred agent framework
+             resilience (preview)        with streamlined deployment and management.
+
+             Durable state store         If you're exploring hosted agents with an AI coding agent, the Microsoft
+             (preview)                   Foundry Skill can help connect these concepts to implementation, deployment,
+             Long-running agent          and operations tasks.
+             API reference (preview)
+           Quickstarts                   When to use hosted agents
+           Develop                       Choose Hosted agents over prompt-based agents when you need to:
+ Download PDF
+     Bring your own code - use any framework (Agent Framework,
+     LangGraph, Semantic Kernel, or custom code) rather than prompt-only
+     definitions.
+     Use custom protocols - accept webhooks or non-OpenAI payloads via
+     the Invocations protocol.
+     Control compute resources - specify CPU and memory for your agent's
+     sandbox.
+     Run stateful workloads - persist files and state across turns via $HOME
+     and the /files endpoint.
+     Run long-lived work resiliently - preserve in-progress agent work across
+     process interruptions and replay streamed results to reconnecting clients.
+
+How it works
+You package your agent as a container image and push it to Azure Container
+Registry. When you deploy, Agent Service pulls the image, assigns a dedicated
+Microsoft Entra ID (agent identity), and exposes a dedicated endpoint for the
+agent.
+
+At runtime, Agent Service provisions compute for the session and routes
+requests to your container. Your agent code handles those requests and can
+call Foundry models, Toolbox tools, and downstream Azure services using its
+agent identity. The platform handles scaling, session state persistence,
+observability, and lifecycle management.
+
+The following diagram shows how responsibility is divided. You own the code
+that runs inside the sandbox. The platform owns the endpoint, identity, scaling,
+and session state around it.
+                              Hosted agents in Microsoft Foundry
+ YOUR CLIENTS
+
+    Apps and SDKs                  Foundry portal            Teams and Microsoft 365             Webhooks, voice
+
+
+             Responses or                                                     Activity                       Invocations
+                                            Responses
+             Invocations                                                      bridged                        (WebSocket)
+
+
+                              Dedicated agent endpoint, created at deploy time
+                                      authenticated with Microsoft Entra ID
+
+
+ FOUNDRY AGENT SERVICE, MANAGED FOR YOU
+
+   Container image                 Agent versions                  Agent identity                 Conversations
+   pulled from Azure                 immutable                     its own Entra ID                durable history
+   Container Registry                snapshots                     created at deploy              outlives compute
+     Python or C#                one served at a time                      time
+
+
+                                                             starts or resumes a session
+
+ HOSTED AGENT RUNTIME
+
+       Per-session, VM-isolated sandbox                                           Session lifecycle
+                                                                             15 min               new call
+              runs your container code
+              $HOME and /files persist                            Active                 Idle                Resumed
+            across turns and idle periods
+            isolated from other sessions                                 $HOME and /files survive the idle gap
+
+
+                  agent identity                             MCP                                       agent identity
+
+
+            Models                                      Toolbox                           Your Azure services
+        from the Foundry                         one MCP endpoint                           databases and APIs
+          model catalog                          for the whole project                      your virtual network
+       reachable by default                       all tools live here                     RBAC on agent identity
+                                                                                                                     
+               Plus a dedicated Entra agent identity and OpenTelemetry traces in Application Insights
+
+
+
+
+） Important
+
+When you use Hosted Agents with other Microsoft products and services,
+you must read all relevant documentation for such products and services
+and understand related risks and compliance considerations.
+
+If you use Hosted Agent with any third-party servers, agents, code, or
+non-Azure Direct models ("Third-Party Systems"), you do so at your own
+risk. Third-Party Systems are Non-Microsoft Products under the Microsoft
+Product Terms and are governed by their own third-party license terms.
+You're responsible for any usage and associated costs.
+
+We recommend reviewing all data being shared with and received from
+Third-Party Systems and being cognizant of third-party practices for
+handling, sharing, retention, and location of data. Similarly, if you connect
+to or integrate with non-Foundry Microsoft services and features, it is
+important to review their data practices. It is your responsibility to manage
+whether your data will flow outside of your organization's compliance and
+geographic boundaries and any related implications, and that appropriate
+permissions, boundaries, and approvals are provisioned.
+
+You're responsible for carefully reviewing and testing applications you
+build in the context of your specific use cases and making all appropriate
+  decisions and customizations. This includes implementing your own
+  responsible AI mitigations, such as metaprompts, content filters, or other
+  safety systems, and ensuring your applications meet appropriate quality,
+  reliability, security, and trustworthiness standards. See the Foundry Agent
+  Service transparency note.
+
+
+Key concepts
+Hosted agents
+Hosted agents are containerized agentic AI applications that run on Agent
+Service. Unlike prompt-based agents—which are defined entirely through
+prompts and tool configuration in the Foundry portal—Hosted agents are your
+own code packaged as a container image. You choose the framework, control
+the runtime behavior, and deploy the image to Microsoft-managed
+infrastructure.
+
+The platform automatically manages the container lifecycle based on activity,
+provisioning resources when you create a version and deprovisioning when the
+idle timeout is reached.
+
+Isolation model
+Hosted agents run in per-session VM-isolated sandboxes. Each session gets a
+dedicated sandbox with a persistent filesystem ( $HOME and /files ), enabling
+scale-to-zero with stateful resume and predictable cold starts. Sessions are
+isolated from each other, and state is automatically restored when a session
+resumes after going idle.
+
+Protocols: Responses, Invocations, and
+Invocations (WebSocket)
+Hosted agent containers can expose one or more protocols. Each protocol is
+provided by a lightweight library that handles the HTTP or WebSocket server,
+health checks, and OpenTelemetry integration. The Responses, Invocations, and
+Invocations (WebSocket) protocols are available in all regions that support
+Hosted agents.
+
+Which protocol should I use?
+                                                                 ﾉ   Expand table
+
+ Scenario                 Protocol       Why
+
+ Conversational chatbot   Responses      The platform manages conversation
+ or assistant                            history, streaming events, and session
+                                              lifecycle—use any OpenAI-compatible
+                                              SDK as the client.
+
+ Multi-turn Q&A with            Responses     Built-in conversation ID threading and
+ RAG or tools                                 tool result handling.
+
+ Background / async             Responses     background: true with platform-
+ processing                                   managed polling and cancellation. Opt in
+                                              separately when the handler must
+                                              recover after a process interruption.
+
+ Agent published to             Responses +   The Responses protocol powers the
+ Teams or Microsoft 365         Activity      agent logic; the platform automatically
+                                              bridges Responses to the Activity
+                                              protocol for channel delivery.
+
+ Webhook receiver               Invocations   The external system sends its own
+ (GitHub, Stripe, Jira, etc.)                 payload format—you can't change it to
+                                              match /responses.
+
+ Non-conversational          Invocations      The input is structured data, not a chat
+ processing (classification,                  message. Arbitrary JSON in, arbitrary
+ extraction, batch)                           JSON out.
+
+ Custom streaming               Invocations   AG-UI and other agent-UI protocols
+ protocol (AG-UI, etc.)                       aren't OpenAI-compatible—you need
+                                              raw SSE control.
+
+ Protocol bridge (GitHub        Invocations   The caller has its own protocol that
+ Copilot, proprietary                         doesn't map to /responses.
+ systems)
+
+ Real-time voice agent          Invocations   Bidirectional streaming over a single
+ (microphone in, speech         (WebSocket)   persistent connection. Pair with Pipecat,
+ out)                                         LiveKit, or Voice Live in your container.
+                                              See Build a voice agent.
+
+
+   Tip
+
+  Not sure? Start with Responses. You can always add an Invocations
+  endpoint later—a Hosted agent can support both protocols
+  simultaneously.
+
+The protocol you choose determines the payload your container receives, and
+how much of the session, streaming, and background lifecycle the platform
+manages for you. A single agent can support more than one protocol, so this
+choice isn't permanent. Use the following decision tree to pick a starting point.
+                        Which protocol should my hosted agent use?
+
+                                      How does your client call the agent?
+
+
+
+                                                                 Yes                  Responses
+                  Chat-style conversation?
+                                                                              platform manages the session
+
+                                 No
+
+                                                                 Yes          Invocations (WebSocket)
+            Real-time voice or two-way streaming?
+                                                                                 one persistent connection
+
+                                 No
+
+                         Invocations                                                     Activity
+             webhooks, batch work, custom payloads                            bridged automatically when you
+                                                                             publish to Teams or Microsoft 365
+
+
+
+                                        Not sure? Start with Responses.
+                 A hosted agent can expose more than one protocol, so you can add Invocations later.             
+
+
+
+Protocol comparison
+                                                                                              ﾉ        Expand table
+
+                       Responses                                                 Invocations
+
+ Best for              Most agents—the platform manages                          Agents that need full HTTP
+                       conversation history, streaming                           control, custom payloads,
+                       lifecycle, and background execution                       or long-running async
+                                                                                 workflows
+
+ Payload               OpenAI-compatible /responses                              Arbitrary JSON via
+                       contract                                                  /invocations—you define
+                                                                                 the schema
+
+ Client SDK            Any OpenAI-compatible SDK (Python,                        Custom client—you define
+                       JS, C#) works out of the box                              the contract
+
+ Session history Platform-managed via conversation ID                            You manage sessions (in-
+                                                                                 memory, Cosmos DB, etc.)
+
+ Streaming             Platform-managed                                          Raw SSE—you format and
+                       ResponseEventStream with lifecycle                        write events directly
+                       events
+
+ Background /          Built-in background mode and polling; Resilient tasks in the
+ long-running          optional resilient recovery for stored AgentServer SDK; you
+                       background responses                   define polling or streaming
+                                                              endpoints
+
+Background mode and resilient execution solve different problems.
+Background mode lets work continue after the initiating request returns.
+Resilient execution preserves work after the hosting process stops. For the
+recovery model and application responsibilities, see Resilience for long-running
+hosted agents.
+
+Additional protocols
+Hosted agents also support the Activity protocol for Teams and Microsoft 365
+channel integration. When you use the Responses protocol for agent logic and
+publish to Microsoft 365 channels such as Teams, the platform automatically
+bridges Responses to the Activity protocol for channel delivery—no separate
+wiring is required. The A2A protocol supports agent-to-agent delegation.
+Supported protocols can be combined in a single agent.
+
+Agent identity and endpoint
+Every Hosted agent deployed to a Foundry project gets its own dedicated
+Microsoft Entra ID (agent identity) and dedicated endpoint—both created
+automatically at deploy time. You don't need to configure managed identities
+or routing manually.
+
+The endpoint is available immediately after deployment—publishing isn't
+required for programmatic access:
+
+     Responses:
+     {project_endpoint}/agents/{name}/endpoint/protocols/openai/responses
+     Invocations:
+     {project_endpoint}/agents/{name}/endpoint/protocols/invocations
+     Invocations (WebSocket):
+     wss://{account}.services.ai.azure.com/api/projects/{project}/agents/{name}
+     /endpoint/protocols/invocations_ws?api-version=v1
+     A2A v1.0 (GA) and v0.3 (preview):
+     {project_endpoint}/agents/{name}/endpoint/protocols/a2a
+
+Which endpoints are active depends on the protocols declared in the agent
+version definition. Set this definition in the azure.ai.agent service in
+azure.yaml when using azd , or via protocol_versions when using the SDK.
+
+
+Two identities are involved:
+
+                                                                  ﾉ   Expand table
+
+ Identity          Scope              Purpose
+
+ Microsoft Entra   Created            The identity the agent container
+ ID (agent         automatically at   authenticates with at runtime. Used for
+ identity, per-    deploy time        model invocation, tool access, and
+ agent)                               downstream Azure services.
+
+ Project managed System-assigned      Used by the platform for infrastructure
+ identity (project- on the Foundry    operations (for example, Container Registry
+ wide)              project           Repository Reader on the container registry).
+                                      Not the agent's runtime identity.
+
+The agent identity can access model inferencing through the project endpoint
+and session storage by default. For external resources (for example, your own
+Azure Storage), assign RBAC roles manually to the agent's Microsoft Entra ID.
+For more information, see Agent access beyond defaults.
+
+When integrated via Microsoft 365 channels (for example, Teams), hosted
+agents can operate in two identity modes depending on how they're invoked:
+
+     User-invoked scenarios (interactive): If a user token is present, the
+     platform supports OAuth 2.0 On-Behalf-Of (OBO) flows. In this case, the
+     agent can call downstream services on behalf of the user using the user's
+     delegated permissions, subject to Microsoft Entra ID tenant policies.
+
+     Autonomous or background scenarios: If no user token is available, the
+     agent authenticates using its own Microsoft Entra ID (agent identity),
+     typically via managed identity, to access downstream services.
+
+In both cases, the agent retains its dedicated Microsoft Entra ID for
+authentication, authorization, and auditability.
+
+For user delegation with MCP and other tools, connect those tools through a
+Foundry toolbox. When you add the toolbox to a hosted agent built with
+Microsoft Agent Framework, use FoundryToolbox in Python or
+AddFoundryToolboxes in .NET. See Toolbox in Foundry.
+
+
+For more information, see Agent applications and Agent identity concepts.
+
+Sessions, conversations, and the state store
+Hosted agents use sessions, conversations, and the state store to manage
+state. How they work depends on the protocol.
+
+Sessions
+A session ID identifies a logical session with persisted state, including $HOME
+and files uploaded via the /files endpoint. The platform provisions compute on
+demand and restores persisted state onto it.
+
+     State persistence: $HOME and /files content are persisted across turns
+     and across idle periods. When compute goes idle and is brought back (on
+     new or existing infrastructure), the session's state is automatically
+     restored.
+     Isolation: Each session is isolated from other sessions.
+     Automatic lifecycle: Sessions are created on first use. The platform
+     provisions and deprovisions compute automatically.
+     Session lifetime: You can configure the idle timeout per agent version
+     from 2 through 60 minutes, with a 15-minute default. If no request arrives
+     within that window, the platform deprovisions the compute and persists
+     the session state. The platform permanently deletes a session after 30
+     days of inactivity.
+     Session management APIs: List sessions, terminate sessions, and upload
+     or download files per session.
+
+Conversations
+A conversation ID is a durable record of conversation history (messages, tool
+calls, and responses) stored in Foundry.
+
+     Persistence: Conversation history is stored in Foundry and persists
+     independently of compute state.
+     Cross-channel access: Users can access the same conversation from the
+     playground, API, Teams, or other published channels.
+
+State store
+The state store is a durable, server-backed key-value store for application state
+that the platform doesn't manage for you. A store holds keyed JSON items and
+is addressed by a caller-chosen store name.
+
+     Persistence: Foundry stores items and persists them independently of
+     compute state, so they survive container crashes, restarts, and idle
+     eviction.
+     Isolation: Each store name is an independent partition. A store can also
+     partition its items per end user, so one store name is safe to share across
+     the users of a multitenant agent.
+     Item lifetime: A store-level idle window ages out items, with a default of
+     30 days. Writes renew the window, and you can configure a store to never
+     expire its items.
+     Any framework: Because the store is a general-purpose key-value API, an
+     agent can use it to hold framework checkpoints for a bring-your-own
+     framework such as LangGraph or Microsoft Agent Framework, alongside
+     its own application state.
+
+For more information, see Durable state store for hosted agents.
+
+How sessions and conversations work with
+each protocol
+Responses protocol: conversation ID is the primary concept. The platform
+manages conversation history automatically and associates a session ID with
+each conversation. The platform returns the session ID to the client, which can
+use it to upload files via the /files endpoint, making those files available to the
+conversation's compute.
+Invocations protocol: session ID is the primary concept. The client manages
+the session ID directly to maintain state across interactions. The client can
+upload content via the /files endpoint using the session ID to make it available
+for the session. There's no platform-managed conversation history—you
+manage state in your own code.
+
+Session compute lifecycle
+                                                                                                    ﾉ        Expand table
+
+ State             What happens
+
+ Active            Compute is running. Requests are routed to it. $HOME and /files content
+                   are available.
+
+ Idle              No requests for the configured idle timeout. The platform deprovisions
+                   compute and persists session state ($HOME, /files ).
+
+ Resumed Same session ID is referenced again. Platform provisions new compute and
+         restores persisted state.
+
+Compute follows the session, not the individual request. The platform
+provisions a sandbox when a session starts and releases it when the configured
+idle timeout elapses after the most recent request. When the session resumes,
+the platform restores $HOME and /files , so your code finds the files it wrote
+earlier. The following diagram shows how a request moves through these
+states.
+
+                             How a request flows through a hosted agent
+
+          Client                           Agent endpoint                  Your code in sandbox         Models and Toolbox
+
+                     request + session ID
+
+                              authenticate with Microsoft Entra ID
+
+                                                    provision sandbox, restore state
+
+                                                                              loop: model and tool calls
+                                                                                               call model
+
+                                                                                               completion
+
+                                                                                           call tool over MCP
+
+                                                                                               tool result
+
+                                                               response
+
+                      response to client
+
+
+
+                                              After 15 minutes with no requests
+                                compute is deprovisioned, and $HOME and /files are persisted
+
+
+                                                     On the next request
+                             new compute starts, and your files are restored where you left them
+                                                                                                                    
+
+
+
+Security and data handling
+Treat a Hosted agent like production application code.
+  ） Important
+
+  Use third-party systems at your own risk, and always implement
+  appropriate responsible AI mitigations. You're responsible for managing
+  all data that might flow outside of your organization's compliance and
+  geographic boundaries. Learn more.
+
+     Don't put secrets in container images or environment variables. Use
+     managed identities and connections, and store secrets in a managed
+     secret store. For guidance, see Set up a Key Vault connection.
+     Be careful with non-Microsoft tools and servers. If your agent calls tools
+     backed by non-Microsoft services, some data might flow to those
+     services. Review data sharing, retention, and location policies for any non-
+     Microsoft service you connect.
+
+Platform details
+Versioning
+Each call to create a version produces an immutable agent version. The
+version is a snapshot of the container image, resource allocation, environment
+variables, and protocol configuration. To update your agent, create and deploy
+a new version.
+
+An agent endpoint serves one version at a time and routes 100% of its traffic to
+that version. Traffic splitting between versions isn't supported.
+
+Environment variables are the primary mechanism for passing configuration to
+your container at runtime (for example, the project endpoint, model
+deployment name, and custom settings). They're set per version and are
+immutable once the version is created.
+
+Observability
+Hosted agents provide built-in observability. The platform automatically injects
+an Application Insights connection string into your agent container via
+environment variables. Agents that use the protocol libraries emit
+OpenTelemetry traces by default, which appear in the linked Application
+Insights resource under Investigate > Transaction search or Performance.
+
+For configuration and analysis guidance, see Enable tracing in your project.
+
+Toolbox in Foundry
+Hosted agents have full access to Foundry-managed tools, including Code
+Interpreter, Web Search (with Grounding with Bing Custom Search), Azure AI
+Search, OpenAPI, MCP, A2A, Skills, and more. You connect these tools through
+a Toolbox MCP endpoint provisioned in your Foundry project rather than by
+adding them directly to the agent definition. The toolbox gives you
+consolidated authentication across OAuth identity passthrough, agent identity,
+key-based auth, and more. When adding a toolbox to a Microsoft Agent
+Framework hosted agent, use FoundryToolbox in Python or
+ AddFoundryToolboxes in .NET instead of a generic MCP client. Other runtimes
+
+connect by using standard MCP client libraries. For details, see Curate intent-
+based toolbox in Foundry.
+
+Language support
+Hosted agents support Python and C#. You can use any agent framework—the
+protocol libraries are framework-agnostic. For samples using Microsoft Agent
+Framework, LangGraph, and custom code, see the foundry-samples repo .
+
+Sandbox sizes
+Hosted agent sandboxes support the following CPU and memory
+combinations:
+
+                                                              ﾉ   Expand table
+
+ CPU                                    Memory
+
+ 0.5 vCPU                               1 GiB
+
+ 1 vCPU                                 2 GiB
+
+ 2 vCPU                                 4 GiB
+
+
+Session storage
+Each session has a persistent $HOME . The platform preserves its contents when
+it deprovisions compute after the configured idle timeout. The platform
+restores the contents when the session resumes, so files written under $HOME
+survive idle periods. The platform writes files uploaded via the /files
+endpoint into $HOME , where they share the same storage. Each session has a
+total disk budget of up to 20 GiB at 1 vCPU or larger, which scales down
+proportionally for smaller CPU tiers. The platform reserves about 20% of that
+budget for system use, and it isn't visible or available to your agent. The
+remainder is shared between your container image, $HOME , and any other
+writable locations in your container.
+
+Scaling and right-sizing
+Hosted agents scale per session, not per replica. The platform creates a new
+VM-isolated sandbox for each session on demand and keeps its compute
+active while requests continue. Each request resets the idle timer. When the
+configured idle timeout elapses after the most recent request, the platform
+deprovisions the sandbox compute and persists the session state.
+
+The idle timeout can be 2 through 60 minutes and defaults to 15 minutes. The
+platform permanently deletes a session after 30 days of inactivity. There's no
+replica count to configure and no warm pool to size.
+
+Because every session runs in its own sandbox, the cpu and memory values you
+set on an agent version describe a single session, not the aggregate footprint
+of the agent. Billing is based on cpu + memory consumed across all active
+sessions, so oversizing multiplies cost by your concurrency.
+
+To right-size, run a representative workload and inspect resource usage in the
+linked Application Insights resource:
+
+   1. Open the App Insights resource in the Azure portal and select Investigate
+      > Performance.
+   2. Review CPU, available memory, request rate, and average request
+      duration over the time range you tested.
+
+Compare the observed peaks against the cpu and memory you allocated. If
+sustained peaks exceed roughly 70% of allocation, raise the next agent
+version's allocation; if peaks stay well below, lower it to reduce cost. Always
+retest after a change, because each new version is immutable.
+
+Private networking
+Hosted agents support deployment within network-isolated Foundry resources
+and can use a customer-provided Azure Virtual Network for outbound traffic.
+This enables agents in network-isolated Foundry deployments to reach private
+resources such as databases or internal APIs. For more information, see
+Configure virtual networks.
+
+  ７ Note
+
+  Foundry projects created after June 25, 2026 support a private (network-
+  secured) Azure Container Registry for your agent image. Projects created
+  before that date require the registry to remain reachable over its public
+  endpoint. Existing projects aren't affected. For more information, see
+  Limitations.
+
+
+Limits, pricing, and availability
+Pricing
+Managed hosting runtime billing is based on consumption of CPU and memory
+resources during active sessions. For current rates, see the Foundry pricing
+page .
+
+Region availability
+Hosted agents are currently available in the following regions:
+
+     Australia East
+     Brazil South
+     Canada Central
+     Canada East
+     Central US
+     East US
+     East US 2
+     France Central
+     Germany West Central
+     Italy North
+     Japan East
+     Japan West
+     Korea Central
+     North Central US
+     Norway East
+     Poland Central
+     South Africa North
+     South Central US
+     South India
+     Southeast Asia
+     Spain Central
+     Sweden Central
+     Switzerland North
+     Switzerland West
+     UAE North
+     UK South
+     UK West
+     West Central US
+     West Europe
+     West US
+     West US 3
+
+  ７ Note
+                                             This list will be updated as additional regions become available.
+
+
+                                           Next steps
+                                                                                                                   ﾉ    Expand table
+
+                                            Task                                         Link
+
+                                            Build and deploy your first Hosted agent     Quickstart: Deploy your first Hosted agent
+
+                                            Deploy using the Foundry SDK                 Deploy a Hosted agent by using the
+                                                                                         Foundry SDK
+
+                                            Update, delete, invoke, or stream logs       Manage Hosted agents
+
+                                            Set up tracing and monitoring                Enable tracing in your project
+
+                                            Optimize agent instructions automatically    Agent optimizer overview
+
+                                            Evaluate agent performance                   Agent evaluators
+
+                                            Publish to Teams, Microsoft 365, or          Agent applications
+                                            custom apps
+
+                                            Browse code samples                          Python samples       and C# samples
+
+
+                                           Related content
+                                                   Agent runtime components
+                                                   Agent development lifecycle
+                                                   Agent identity concepts in Microsoft Foundry
+                                                   What is Toolbox in Foundry?
+                                                   Azure Container Registry documentation
+                                           ）Note: The author created this article with assistance from AI. Learn more
+
+
+
+
+                                           Feedback
+                                           Was this page helpful?         Yes     No
+
+
+
+
+                                            Last updated on 09/11/2026
+
+
+
+  English (United States)            Your Privacy Choices          ０ Theme Ｓ
+
+
+AI Disclaimer   Previous Versions   Blog       Contribute     Privacy        Consumer Health Privacy        Terms of Use
+Trademarks      © Microsoft 2026
+

@@ -1,0 +1,286 @@
+  Claude Platform Docs                                                                               
+Managed Agents  Self-hosted sandboxes
+
+Self-hosted sandboxes
+Run Claude Managed Agents sessions in self-hosted sandboxes, keeping tool execution, files,
+and network egress in your own infrastructure.
+
+ Copy page 
+  Managed Agents                                                                                    Beta
+
+  Beta header
+  managed-agents-2026-04-01
+
+
+
+By default, Managed Agents executes tools and code inside Anthropic-managed cloud sandboxes. Self-
+hosted sandboxes keep the orchestration on Anthropic's side but move tool execution into infrastructure
+you control. The agent's files, processes, and network traffic stay in your environment.
+
+Self-hosting is a good fit when the agent needs to:
+
+     Operate on data that cannot leave your network boundary
+     Reach internal services that are not publicly routable
+     Run under your organization's own compliance and audit controls
+
+
+How it works
+A self_hosted environment acts as a work queue. You run an environment worker, a process on your
+own infrastructure that serves that queue:
+
+ 1. You create a session that targets the environment. Anthropic enqueues the session as a work item.
+ 2. Your worker claims the work item and downloads the agent's skills and the session's memory stores.
+ 3. Claude runs on Anthropic's side and requests tool calls. Your worker runs each call locally and posts
+    the result back.
+
+Tool inputs and outputs still flow to Anthropic's control plane, so the model can see results and determine
+what to do next. Anthropic stores skills and memory stores. Your sandbox holds a copy for the session. See
+Security model for the full data-flow boundary.
+
+Self-hosted sandboxes support every Claude model available in Managed Agents. The model is configured
+on the agent, not the environment.
+
+The ant CLI and the Python, TypeScript, and Go SDKs ship pre-built workers. Sandbox providers such as
+Cloudflare, Daytona, and Modal also publish their own platform guides.                Ask Docs      
+Quickstart
+ Claude Platform Docs
+This quickstart runs one always-on worker with the ant CLI, sends it a session, and confirms that the
+agent's tool calls ran on your host.
+
+Prerequisites
+     An agent: If you don't have one, complete Get started with Claude Managed Agents first and note
+     the agent ID.
+     A Linux host: The host needs /bin/bash at that exact path. The worker needs only outbound HTTPS.
+     A Claude API key: You use it from your own machine to create sessions and read queue stats. Keep it
+     off the worker host, where agent tool calls could read it.
+     The ant CLI on your own machine: The session and stats commands in this quickstart run there, not
+     on the worker host. Install it the same way the install step does for the worker.
+
+
+  On Claude Platform on AWS, the worker authenticates with AWS IAM (SigV4) or an API key
+   generated in the AWS Console, not an environment key. Attach the
+      AnthropicSelfHostedEnvironmentAccess managed policy to the IAM principal your worker runs
+     as. Environment keys generated in the Claude Console don't work with the Claude Platform on
+     AWS endpoint.
+
+
+Run your first session
+ 1    Create a self-hosted environment
+      In the Console: Workspace > Environments > New > Self-hosted
+
+      Or through the API:
+
+          cURL    CLI   Python   TypeScript   C#    Go    Java   PHP    Ruby                        
+        ant apply environment.yaml
+
+          environment.yaml                                                                      
+          # yaml-language-server: $schema=https://platform.claude.com/schemas/ant/beta/environ
+          name: self-hosted
+          config:
+            type: self_hosted
+
+
+
+ 2    Generate an environment key
+      In the Console, open the environment and click Generate environment key. The environment key
+      authenticates the worker to its queue. You can generate one only in the Console, even for an
+      environment you created through the API.
+
+      Export the environment ID and key on the worker host:
+Claude Platform
+    export         Docs
+           ANTHROPIC_ENVIRONMENT_KEY="sk-ant-oat01-..."
+      export ANTHROPIC_ENVIRONMENT_ID="env_..."
+
+
+
+3   Install the ant CLI
+    Run this on the worker host.
+
+     curl (Linux/WSL)   Homebrew (macOS)
+
+    For Linux environments, download the release binary directly.
+
+      VERSION=1.39.1
+      OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+      case $(uname -m) in
+        x86_64) ARCH=amd64 ;;
+        aarch64) ARCH=arm64 ;;
+      esac
+      curl -fsSL "https://github.com/anthropics/anthropic-cli/releases/download/v${VERSION}/an
+        | sudo tar -xz -C /usr/local/bin ant
+
+
+    You can find all releases on the GitHub releases page.
+
+4   Start the worker
+    Create the working directory, then start the worker. --workdir defaults to the current directory, so
+    pass /workspace to match the system default.
+
+      sudo mkdir -p /workspace && sudo chown "$USER" /workspace
+      ant beta:worker poll --workdir /workspace
+
+
+    The worker reads the two variables you exported and polls until you stop it.
+
+5   Verify the worker is connected
+    On your own machine, set ANTHROPIC_API_KEY to your Claude API key (not the environment key)
+    and ANTHROPIC_ENVIRONMENT_ID to the environment ID. Confirm that workers_polling is at least 1:
+
+      ant beta:environments:work stats --environment-id "$ANTHROPIC_ENVIRONMENT_ID"
+
+
+    If workers_polling stays at 0, see Troubleshooting.
+
+6   Start a session
+    Set AGENT_ID to your agent's ID. Create a session that targets the environment, then send it a task:
+  Claude Platform Docs
+      SESSION_ID=$(ant beta:sessions create \
+             --agent "$AGENT_ID" \
+             --environment-id "$ANTHROPIC_ENVIRONMENT_ID" \
+             --transform id --raw-output)
+
+        ant beta:sessions:events send --session-id "$SESSION_ID" <<'YAML'
+        events:
+          - type: user.message
+             content:
+               - type: text
+                 text: Write the output of "uname -a" to hello.txt in your working directory.
+        YAML
+
+
+      The session waits in the environment's queue until a worker claims it. If no worker is connected, the
+      session stays queued rather than failing.
+
+ 7    Confirm the tools ran on your host
+      On the worker host, read the file the agent wrote:
+
+        cat /workspace/hello.txt
+
+
+      The file describes your own host's kernel, so the agent's tool calls ran there. To follow the agent's
+      work as it happens, see Session event stream.
+
+
+How it differs from cloud environments
+                              Cloud environment                   Self-hosted sandbox
+ Where tools run              Anthropic-managed                   Your infrastructure
+                              sandboxes
+ Network reach                Anthropic's egress controls         Your network policy
+ File and GitHub repo         Managed by Anthropic                Managed by you
+ mounting
+ Memory stores                Mounted by Anthropic at             Downloaded to /mnt/memory/ and
+                               /mnt/memory/                       synced by the worker
+ Lifecycle                    Managed by Anthropic                Managed by you
+
+
+For Zero Data Retention and HIPAA BAA eligibility, see API and data retention.
+
+Session resources
+Self-hosted sandboxes support memory_store resources only. A session on a self-hosted environment
+that includes a file or github_repository resource is rejected with a 400 error:
+  Claude   Platform
+  Environment         Docs
+              env_... is a self-hosted environment. `resources` are not supported with
+  self-hosted environments.
+
+
+Deployments that target a self-hosted environment follow the same rule. To give a session its own input
+files, see Stage files for a session.
+
+
+Self-hosted sandboxes and MCP tunnels
+Self-hosting controls where the agent's code executes. MCP tunnels control how Anthropic reaches MCP
+servers in your network. The two are independent:
+
+     A session in Anthropic's cloud sandboxes can reach private MCP servers through a tunnel.
+     A self-hosted session can use either tunneled or public MCP servers.
+
+Use both when you want execution and tool access to stay inside your boundary. To skip the tunnel, wrap
+the MCP server as custom tools that your worker serves.
+
+
+Platform guides
+These pages describe how to build a worker on any sandboxing platform. Platform-specific guides are also
+available:
+
+     AWS Lambda MicroVMs
+     Blaxel
+     Cloudflare
+     Daytona
+     E2B
+     Fly.io
+     GKE Agent Sandbox
+     Modal
+     Namespace
+     Superserve
+     Vercel
+
+
+Next steps
+
+                                                       
+ Deploy workers                                         Memory stores
+ Run the SDK worker, trigger workers from               Prepare the host, configure sync, and handle read-
+ webhooks, or give each session its own sandbox.        only stores and conflicts.
+
+
+
+                                                       
+ Custom tools and MCP servers                           Monitor and troubleshoot
+  Serve your own tools from the worker, including              Read queue depth, stop sessions and workers
+  Claude
+  tools      Platform
+        from an MCP serverDocs
+                           inside your network.                cleanly, and fix common failures.
+
+
+
+                                                              
+  Worker reference                                             Security model
+  CLI flags, environment variables, filesystem paths,          Shared responsibility model for self-hosted
+  and SDK helper options.                                      sandbox environments.
+
+
+
+
+Was this page helpful?
+
+ 
+
+
+        Claude Platform Docs                            Solutions            Learn               Help and security
+                                                        AI agents            Blog                Availability
+                                                        Code                 Courses             Status
+                                                        modernization        Use cases           Support
+
+                                                      Coding
+                                                        Customer
+                                                                             Connectors
+                                                                             Customer stories
+                                                                                                 Discord
+
+                                                        support
+                                                                             Engineering at      Terms and
+                                                        Financial services   Anthropic           policies
+                                                        Government           Events              Privacy policy
+                                                        Higher education     Powered by          Responsible
+                                                        K-12 teachers        Claude              disclosure policy
+                                                        Life sciences        Service partners    Terms of service:
+                                                                             Startups program    Commercial
+
+                                                        Partners                                 Terms of service:
+                                                                                                 Consumer
+                                                        Claude on AWS        Company
+                                                                                                 Usage policy
+                                                        Claude on Google     Anthropic
+                                                        Cloud                Careers
+                                                                             Economic Futures
+                                                                             Research
+                                                                             News
+                                                                             Responsible
+                                                                             Scaling Policy
+                                                                             Security and
+                                                                             compliance
+                                                                             Transparency
+

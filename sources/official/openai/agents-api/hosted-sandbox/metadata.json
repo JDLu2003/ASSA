@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-api",
+    "id": "hosted-sandbox",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:01:57.610519+00:00",
+  "path": "sources/official/openai/agents-api/hosted-sandbox",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+  "http_status": 200,
+  "title": "OpenAI-hosted sandboxes",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "1005eeedb7682955d167be7cd2327e3bf35add6ab5e814b34a1b4c66f07874c1",
+      "bytes": 1799
+    },
+    "page.txt": {
+      "sha256": "51fdee6e923e4da0a4ec6df66362c0f6be6b6daf6872c35063e6b191774da392",
+      "bytes": 7899
+    },
+    "page.pdf": {
+      "sha256": "3778ebac353722507beecf573f554b7d61f14d97f251d14e2c402c2829454ea6",
+      "bytes": 78872
+    },
+    "page.html": {
+      "sha256": "1a39e59c747c5294abc2f6d42529c0ee93794bea01f03708bdfe99399d8c9907",
+      "bytes": 453112
+    },
+    "page.complete.pdf": {
+      "sha256": "174c7417eb63bdaab6e431781d7bf5c3a266dfb7246c15413694abcb10a136ca",
+      "bytes": 268073
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "be84d6ea2b500dc5cce3c992b9580a2d753aa118a088a94098f0a45411795277",
+      "bytes": 8116
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

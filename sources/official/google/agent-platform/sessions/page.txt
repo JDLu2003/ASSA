@@ -1,0 +1,157 @@
+Skip to main content
+Documentation
+/
+Console
+Sign in
+Gemini Enterprise Agent Platform
+Start free
+Overview
+Studio
+Agents
+Models
+Notebooks
+API reference
+Pricing
+Engineering Blog
+Overview
+Get an API key
+Get started
+Build an agent with ADK and Agents CLI
+Build
+Overview
+Create agents
+Skill Registry
+Authentication
+RAG Engine
+Tokenizer
+Multimodal datasets
+Use Agent Search
+Perform vector similarity searches
+Agent Retrieval (formerly Vector Search 2.0) - Intelligent Retrieval for AI Applications
+Scale
+Overview
+Agent Runtime
+Sessions
+Overview
+Manage sessions with Agent Development Kit
+Manage sessions using the console or API calls
+Control access to sessions with IAM Conditions
+Feedback service
+Memory Bank
+Sandbox
+Autonomous agent scheduling
+Govern
+Overview
+Safety (Responsible AI)
+Share an agent
+Agent Identity
+Agent Registry
+Topology graphs
+Policies
+Agent Gateway
+Guides
+Security
+Agent Audit
+Optimize
+Overview
+Observability
+Evaluation
+Example Store
+Troubleshooting
+Overview
+Agent Platform Runtime environment setup
+Create an agent
+Agent deployment
+Agent Gateway connectivity
+IAM access policies
+Manage deployed agents
+Code Execution
+Memory Bank
+On this page
+Core concepts
+Core functionalities
+What's next
+Home
+Documentation
+AI and ML
+Gemini Enterprise Agent Platform
+Agents
+Was this helpful?
+Send feedback
+Agent Platform Sessions overview
+
+Agent Platform Sessions maintains the history of interactions between a user and agents. Sessions provide definitive sources for long-term memory and conversation context.
+
+You have several options to use Agent Platform Sessions:
+
+Agent Development Kit: Once you deploy your Agent Development Kit (ADK) agent to Gemini Enterprise Agent Platform, session management is handled automatically.
+
+API calls: You can make direct API calls to Agent Platform Sessions if you don't want to manage sessions using an ADK agent.
+
+Core concepts
+
+Session: A session represents the chronological sequence of messages and actions (events) for a single, ongoing interaction between a user and your agent system.
+
+Event: An event stores the content of the conversation, as well as the actions taken by the agents such as function calls. Events support a flexible schema to accommodate custom data and different frameworks.
+
+State: A state holds temporary data relevant only during the current conversation.
+
+Memory: Memory is personalized information that can be accessed across multiple sessions for a particular user. The agent can use memories to personalize responses to the user and ensure cross-session continuity.
+
+Core functionalities
+
+The core functionalities of Agent Platform Sessions include the following:
+
+Starting new conversations: Create new sessions when a user begins an interaction with an agent.
+
+Resuming existing conversations: Retrieving a specific session so the agent can resume a conversation that has been paused.
+
+Saving progress: Append new interactions (events) to a session's history to update the session.
+
+Listing conversations: Find the active session threads for a particular user and application.
+
+Cleaning up: Delete session objects and their associated data when conversations are finished or no longer needed.
+
+What's next
+Manage sessions using ADK.
+Manage sessions using API calls
+Was this helpful?
+Send feedback
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+
+Products and pricing
+See all products
+Google Cloud pricing
+Google Cloud Marketplace
+Contact sales
+Support
+Community forums
+Support
+Release Notes
+System status
+Resources
+GitHub
+Getting Started with Google Cloud
+Code samples
+Cloud Architecture Center
+Training and Certification
+Engage
+Blog
+Events
+X (Twitter)
+Google Cloud on YouTube
+Google Cloud Tech on YouTube
+Android
+Chrome
+Firebase
+Google AI
+About Google
+Privacy
+Site terms
+Google Cloud terms
+Our third decade of climate action: join us
+Sign up for the Google Cloud newsletter
+Subscribe

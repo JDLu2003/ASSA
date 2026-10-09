@@ -1,0 +1,48 @@
+Agents API
+Build durable cloud agents with a managed Codex harness.
+       Copy Page
+
+
+
+The Agents API gives your application access to the Codex harness through an OpenAI-managed
+API.
+
+OpenAI manages sessions, orchestration, context compaction, and recovery while your
+application provides tools and chooses its execution environment.
+
+Agents can operate in a sandbox where they can execute code, edit files, connect to MCP servers,
+and produce artifacts.
+
+See the API reference for endpoints, request parameters, and response fields.
+
+
+Pricing
+Model usage is billed at the selected model’s API rates. OpenAI tools use their standard rates, and
+OpenAI-hosted sandboxes use standard container rates.
+
+
+Try an example
+Try these complete examples:
+
+       Create and run a directory-tree script in an OpenAI-hosted sandbox.
+       Compare release notes with subagents and combine their findings into one answer.
+
+
+Explore complete applications:
+
+       Incident response agent: investigate alerts and request approval for recovery actions.
+       Slack bot: investigate requests using connected workplace tools.
+       Data analyst: answer warehouse questions with read-only SQL.
+       Use the GitHub issue investigator to reproduce reported bugs and share findings on GitHub.
+       Use the document reviewer to review documents with policy skills and specialist agents.
+
+
+Core concepts
+The Agents API is built around four main concepts:
+
+       Agent: The model, instructions, tools, and MCP servers available to the agent.
+       Environment: An optional sandbox or computer where the agent accesses files, loads skills,
+                                                                                                 Ask AI
+       and runs commands.
+       Session: A durable instance of an agent that works on tasks and responds to input.
+

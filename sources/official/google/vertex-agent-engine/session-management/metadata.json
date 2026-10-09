@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "vertex-agent-engine",
+    "id": "session-management",
+    "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:31.066843+00:00",
+  "path": "sources/official/google/vertex-agent-engine/session-management",
+  "requested_url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+  "http_status": 200,
+  "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "04cd71e4256e5af6b36c49e8debab7b53345cd642e29b09d3298f55e2784a451",
+      "bytes": 13845
+    },
+    "page.txt": {
+      "sha256": "d772af2c65992275952487d15b0038088674c86768b94815661759b36b57b3f2",
+      "bytes": 9025
+    },
+    "page.pdf": {
+      "sha256": "a2e73c4f8d0526ecea46062eb8a5e4a8263937e4e30e706b560bf8e04db176e4",
+      "bytes": 2165397
+    }
+  }
+}

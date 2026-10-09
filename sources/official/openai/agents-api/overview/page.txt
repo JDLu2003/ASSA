@@ -1,0 +1,209 @@
+For the complete documentation index, see llms.txt. Markdown versions of documentation pages are available by appending .md to the page URL.
+API Dashboard
+Home
+API
+ChatGPT
+Resources
+Overview
+Models
+Agents
+Tools
+Audio & voice
+Production
+API reference
+Overview
+Agents API
+Overview
+Quickstart
+Architecture
+Configuring Agents
+Sessions
+Environments and sandboxes
+Tools and integrations
+Multi-agent
+Observability and usage
+Tracing
+Errors and recovery
+API reference
+Bedrock Managed Agents
+Agents SDK
+Overview
+Quickstart
+Agent definitions
+Models and providers
+Running agents
+Sandbox agents
+Orchestration
+Guardrails
+Results and state
+Integrations and observability
+Evaluate agent workflows
+ChatKit
+Overview
+Customize
+Widgets
+Actions
+Advanced integrations
+Pricing
+Try an example
+Core concepts
+What the managed harness provides
+Copy Page
+Agents API
+
+Build durable cloud agents with a managed Codex harness.
+
+The Agents API gives your application access to the Codex harness through an OpenAI-managed API.
+
+OpenAI manages sessions, orchestration, context compaction, and recovery while your application provides tools and chooses its execution environment.
+
+Agents can operate in a sandbox where they can execute code, edit files, connect to MCP servers, and produce artifacts.
+
+See the API reference for endpoints, request parameters, and response fields.
+
+Pricing
+
+Model usage is billed at the selected model’s API rates. OpenAI tools use their standard rates, and OpenAI-hosted sandboxes use standard container rates.
+
+Try an example
+
+Try these complete examples:
+
+Create and run a directory-tree script in an OpenAI-hosted sandbox.
+Compare release notes with subagents and combine their findings into one answer.
+
+Explore complete applications:
+
+Incident response agent: investigate alerts and request approval for recovery actions.
+Slack bot: investigate requests using connected workplace tools.
+Data analyst: answer warehouse questions with read-only SQL.
+Use the GitHub issue investigator to reproduce reported bugs and share findings on GitHub.
+Use the document reviewer to review documents with policy skills and specialist agents.
+Core concepts
+
+The Agents API is built around four main concepts:
+
+Agent: The model, instructions, tools, and MCP servers available to the agent.
+Environment: An optional sandbox or computer where the agent accesses files, loads skills, and runs commands.
+Session: A durable instance of an agent that works on tasks and responds to input.
+Events and items: The inputs sent to an agent and the output produced during a session.
+A session from start to finish
+
+Start with an OpenAI-hosted sandbox in the quickstart:
+
+Create a session. Configure the agent; OpenAI provisions its environment.
+Give it a task. User input starts a turn of work once the environment is ready.
+Follow progress. Stream output or use webhooks to learn when the agent finishes or needs input.
+Continue or steer. Send another task to the same session, or guide the agent during its current turn.
+
+With an OpenAI-hosted session, your application sends input and receives events, while OpenAI runs the agent and provisions and manages its sandbox. See environment options for setup and limitations.
+
+What the managed harness provides
+
+The managed Codex harness supports:
+
+Running commands and code in a sandbox.
+Applying relevant skills and instructions.
+Connecting to external data through tools or MCP.
+Steering the agent while it works.
+Summarizing previous work to manage its context window.
+Breaking work into subtasks and delegating to subagents.
+Resuming a session where it left off.
+
+Check the quickstart prerequisites for API-key permissions and SDK setup. Configure these capabilities when you create a session:
+
+Configure managed-harness capabilities
+Python
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+from openai import OpenAI
+
+client = OpenAI()
+
+session = client.beta.agents.sessions.create(
+    agent={
+        "model": "gpt-6-astra",
+        "instructions": "Use the OpenAI documentation MCP and web search to answer technical questions accurately. Delegate independent research tasks to subagents when useful.",
+        "tools": [
+            {"type": "programmatic_tool_calling"},
+            {
+                "type": "mcp",
+                "server_label": "openai_docs",
+                "transport": {
+                    "type": "http",
+                    "server_url": "https://developers.openai.com/mcp",
+                },
+            },
+            {"type": "web_search"},
+        ],
+        "multi_agent": {"enabled": True, "max_concurrent_subagents": 4},
+    },
+    environment={
+        "type": "self_hosted",
+        "workspace_directory": "/workspace",
+        "capability_directories": ["/workspace/capabilities/skills"],
+    },
+    input=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "input_text",
+                    "text": "Research how to connect an MCP server to an OpenAI agent, check for recent updates, and summarize the recommended setup.",
+                }
+            ],
+        }
+    ],
+)
+print(session.id)
+
+For a runtime comparison, see the Agents overview.
+
+For the AWS service built on the Agents API, see Bedrock Managed Agents.
+
+The Agents API retains session state so you can continue work across turns without rebuilding the conversation context. You can delete sessions and published artifacts when you no longer need them. The Agents API currently supports data residency only in the United States and does not support Zero Data Retention (ZDR). Choosing a self-hosted sandbox does not make the Agents API ZDR-eligible. See Data controls in the OpenAI platform for details on data residency and retention.
+
+Next
+Quickstart
+Ask AI
+Docs agent
+
+Loading docs agent...

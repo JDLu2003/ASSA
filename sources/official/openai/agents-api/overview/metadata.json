@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-api",
+    "id": "overview",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:01:53.804905+00:00",
+  "path": "sources/official/openai/agents-api/overview",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+  "http_status": 200,
+  "title": "Agents API | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "2259918f29dc99552875d6edd7ec1c83211119190ca64d8bd5aaacbedd2aa97e",
+      "bytes": 1846
+    },
+    "page.txt": {
+      "sha256": "803d7d4c533f0fc789907dc92febf162dd7939ee843bf098ae366cf6f6405bfe",
+      "bytes": 5850
+    },
+    "page.pdf": {
+      "sha256": "e8ef497a337b23e077eab93645b65253d4205abaf17b0f06a0cfdf097b7382b1",
+      "bytes": 50047
+    },
+    "page.html": {
+      "sha256": "34b6ae093e55b8c47266edbb0a4f7c080322b0ee703012576c78d9f6e877104b",
+      "bytes": 443815
+    },
+    "page.complete.pdf": {
+      "sha256": "b1e5413b48d689bab3b9244df47c19ac8fa959bfd08d1bf76686c00f5d786057",
+      "bytes": 217334
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "7d5a51d31a2a94374dc339599066ccc7504679c790a0c949c6566f1675c0a1ba",
+      "bytes": 5768
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

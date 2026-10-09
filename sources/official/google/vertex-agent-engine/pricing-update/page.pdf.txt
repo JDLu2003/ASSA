@@ -1,0 +1,408 @@
+Cloud   Blog   Contact sales   Get started for free
+Cloud   Blog   Contact sales   Get started for free
+Cloud      Blog                      Contact sales        Get started for free
+
+
+
+                    AI & Machine Learning
+
+
+  Announcing advanced
+governance capabilities for
+  Vertex AI Agent Builder
+                     December 19, 2025
+
+
+
+
+      Michael Vakoc                     John Murray
+  Product Manager, Google          Group Product Manager,
+           Cloud                       Google Cloud
+
+
+
+ At Google Cloud, we continue to make critical
+ investments to Vertex AI Agent Builder, our
+ comprehensive and open platform, enabling you to build
+ faster, scale efficiently, and govern with enterprise-
+ grade security.
+ Today, with the integration of the Cloud API Registry,
+Cloud      Blog                      Contact sales
+ we’re excited to bring enhanced tool governance
+                                                        Get started for free
+
+ capabilities to Vertex AI Agent Builder. With this latest
+ update, administrators can now manage available tools
+ for developers across your organization directly in Vertex
+ AI Agent Builder Console, and developers can leverage
+ tools managed by the registry with a new
+  ApiRegistry .
+
+ With this, organizations can anchor agents in the
+ embedded security and operational controls that they
+ already use, enabling deploying and managing agents as
+ a digital workforce.
+
+ Following last month's expansion of our Agent Builder
+ platform, we are also introducing new capabilities across
+ the entire agent lifecycle to help developers build faster
+ using new ADK capabilities and visual tools, and scale
+ with high performance through the expansion of Agent
+ Engine services, including the general availability of
+ support for sessions and memory. Read more below.
+
+
+
+ 1. Govern your tools with
+ confidence
+ Building a useful agent requires the agent to have
+ access to the necessary tools. However, developers
+ today spend a significant amount of time building their
+ tools for each agent, resulting in duplicate work. This
+ approach also presents challenges for administrators
+ who want to control what data and tools agents can
+ access.
+
+ We are bringing enhanced tool governance with the
+ integration of Cloud API Registry in the Vertex AI Agent
+ Builder Console. This acts as a private registry that
+ administrators can use to curate and govern a set of
+ approved tools for developers to use across their
+Cloud      Blog
+ organization, providing:
+                                   Contact sales            Get started for free
+
+   Pre-built tools for Google services: We recently
+   announced MCP support for Google services like
+   BigQuery and Google Maps, which will be available
+   for use in Vertex AI Agent Builder.
+   Support for custom MCP servers: Unlock your
+   entire API estate for the agentic age. Apigee now
+   empowers you to transform your existing managed
+   APIs into custom MCP servers, bridging your
+   established digital assets with modern AI workflows.
+   Additionally, by bringing these tools from multiple
+   clouds into Apigee API hub, you help ensure your
+   agent developers have instant and secure access to
+   a curated catalog through the Cloud API Registry.
+   Enhanced tool management: Administrators using
+   the new experience in Vertex AI Agent Builder to
+   view, govern, and manage tools can now ensure the
+   right tools are available to developers in their
+   organization.
+   Simplified tool access: For developers, Agent
+   Development Kit (ADK) introduces support of Cloud
+   API Registry, introducing a new ApiRegistry
+   object to easily leverage managed tools.
+
+
+
+
+     The demo above showcases the new user journey for
+   managing and governing tools directly within the Vertex AI
+                   Agent Builder Console
+
+
+
+
+ 2. Build your AI agents faster
+ Last month, we released Gemini 3 Pro, our most
+ intelligent model, to every developer and enterprise
+ team. It’s the best model in the world for multimodal
+ understanding, and our most powerful agentic model
+ yet. With full compatibility with ADK, you can now build,
+ test, and deploy powerful AI agents with greater
+Cloud        Blog                    Contact sales
+ reliability and confidence. We are introducing new
+                                                           Get started for free
+
+ capabilities to help you move from concept to interactive
+ product:
+
+   Full ADK support of Gemini 3 Pro and Flash: ADK
+   now fully supports Gemini 3 Pro and Flash, allowing
+   you to build reliable, production-ready agents.
+
+   ADK for TypeScript: We are extending ADK support
+   for TypeScript, ensuring you can leverage the latest
+   capabilities in ADK directly in whatever language you
+   choose.
+   State management in ADK: We've made significant
+   improvements to our agentic state management
+   within ADK, which is the system for an AI agent to
+   maintain context and memory during and across
+   conversations. New improvements include:
+
+     Recovery from failure: If a conversation
+     crashes due to an error, ADK now restores the
+     state natively, requiring no additional work from
+     the developer.
+     Continue with human-in-the-loop: You can
+     now pause for human input anywhere, even
+     inside complex workflows. ADK automatically
+     remembers exactly where the agent stopped
+     and resumes immediately after approval, so you
+     don't have to write extra code to track progress.
+     Rewind state and context: Developers can now
+     rewind to any point in the conversation and
+     invalidate all interactions after that point so the
+     user can remove the “polluted” context rather
+     than send a new message. This allows users to
+     try different approaches to solving a problem
+     without having to open new sessions.
+
+   Interactions API integration: ADK and the
+   Agent2Agent protocol (A2A) now support the new
+   Interactions API, providing a consistent way to
+   manage multimodal input/output (text, audio, visual)
+   across your agents, simplifying integration with
+Cloud       Blog
+   client applications.
+                                    Contact sales                   Get started for free
+
+   A2UI: Built on top of A2A protocol, A2UI is an early-
+   stage UI toolkit to facilitate LLM-generated UIs for
+   remote agents. This allows you to enable agents to
+   pass shared UI widgets and components directly to
+   user-facing applications without the security risks
+   and overhead of iframes or sending executable
+   code, allowing you to build rich user experiences
+   securely.
+
+
+
+
+ Above is a demo showcasing A2UI in action where the user uploads a
+ photo, a remote agent uses Gemini to understand it, and dynamically
+ generates a custom form using A2UI for the specific needs of the
+ customer.
+
+
+
+
+ You can start building today with adk-samples on GitHub
+ or on Vertex AI Agent Garden, a growing repository of
+ curated agent samples, solutions, and tools designed to
+ accelerate your development and support one-click
+ deployment of your agents built with ADK. Access our
+ Agent Starter Pack, a template collection that provides a
+ production-ready foundation for building, testing, and
+ deploying AI agents.
+
+
+
+ 3. Scale your AI agents
+ effectively
+ Once you’ve built your agent, the next challenge is going
+Cloud      Blog                     Contact sales
+ into a production environment. That’s why we continue
+                                                        Get started for free
+
+ to expand the managed services available in Agent
+ Engine to provide the core capabilities needed to scale
+ your agents.
+
+   Manage context with confidence: We are moving
+   Agent Engine sessions and memory bank to General
+   Availability (GA). You can now use Agent Engine to
+   manage both short-term and long-term memory for
+   your production workloads. This allows your agents
+   to maintain context across different interactions,
+   which is critical for delivering helpful, personalized
+   responses at scale. This product is powered by
+   Google Cloud AI Research’s novel research method
+   (accepted by ACL 2025), using a topic-based
+   approach that sets a new standard for how agents
+   learn and recall information.
+
+   Expanded regional support for Agent Engine
+   services: All Agent Engine services are now
+   available in seven additional regions worldwide. To
+   learn more, refer to the documentation.
+
+   Pricing updates for Agent Engine: We lowered
+   pricing for the Agent Engine runtime and will begin
+   billing for additional Agent Engine services starting
+   on January 28, 2026. You can review the Agent
+   Engine pricing documentation for additional detail
+   and hypothetical agent cost scenarios.
+
+
+
+    Product       Resource         SKU      Prior           New
+                                            pricing
+
+
+
+    Runtime       vCPU /           8A55-    $0.0994         $0.
+                  hour             0B95-
+                                   B7DC
+Cloud     Blog Memory /          Contact
+                              0B45-      sales
+                                      $0.0105         Get started for free
+                                                     $0.
+                GB-hr         6103-
+                              6EC1
+
+
+  Code          vCPU /        448F-     Free         $0.
+  Execution     hour          9419-
+                              C2EE
+
+
+                Memory /      AC0F-     Free         $0.
+                GB-hr         52B0-
+                              CE44
+
+
+  Sessions      Stored        0D5A-     Free         $0.
+                session       FCD2-                  eve
+                events        CB63
+
+
+  Memory        Memories      E954-     Free         $0.
+  Bank          stored        622B-                  mem
+                per           C859
+                month                                (LLM
+                                                     sep
+
+
+                Memories      6DEC-     Free         $0.
+                retrieved     3026-                  mem
+                              DDFF
+
+
+ The table above shows updated pricing for Agent Engine
+ services and when the changes take place.
+
+
+
+ How customers are achieving
+ more with Agent Builder
+     "Burns & McDonnell uses Vertex AI Agent Builder to
+     transform how organizational knowledge is applied
+     across the enterprise. With Experience IQ, we are
+     building an AI agent using ADK that turns decades
+     of project data and employee experience into real-
+Cloudtime, Blog                     Contact sales        Get started for free
+           actionable intelligence. Vertex AI enables this
+       innovation to scale responsibly by combining
+       deterministic business rules with probabilistic
+       reasoning, making AI a trusted operational
+       capability — not just a productivity tool. This agent
+       helps teams quickly identify the right experience,
+       reduce manual effort in staffing and planning, and
+       make higher-confidence decisions grounded in
+       verified data. With Vertex AI, Burns & McDonnell
+       isn’t just managing knowledge — we are activating
+       experience to drive faster, more confident
+       decisions." - Matt Olson, Chief Innovation Officer,
+       Burns & McDonnell
+
+       “Payhawk uses Vertex AI Agent Builder to transform
+       agents into financial assistants that truly ‘know’ our
+       customers. Leveraging Memory Bank, we moved
+       from stateless interactions to long-term context
+       retention, allowing agents to recall user constraints
+       and historical patterns with continuity. For example,
+       our Financial Controller Agent now remembers
+       habits like expensing small meals and auto-submits
+       them, reducing submission time by over 50%.
+       Similarly, our Travel Agent proactively applies
+       preferences like aisle seats. This significantly drops
+       cognitive load, allowing agents to anticipate needs
+       based on past behavior rather than just reacting to
+       prompts.” - Diyan Bogdanov, Principal Applied AI
+       Engineer, Payhawk
+
+       "Gurunavi uses Vertex AI Agent Builder to power
+       'UMAME!', an AI restaurant discovery app that
+       leverages Agent Engine's Memory Bank to
+       overcome a significant challenge: achieving a deep
+       understanding of user context. Unlike conventional
+       prompt-based systems, our agent leverages
+       memory bank to remember a user's past actions,
+       preferences, and temporal patterns to proactively
+       present the best options. This eliminates the need
+     for manual searches, creating a seamless
+Cloudexperience.
+          Blog We project this context-aware
+                                  Contact sales            Get started for free
+
+      capability will improve user experience by 30% or
+      more. We view this memory function as a non-
+      negotiable feature for helping everyone forge new
+      culinary experiences together with AI.” - Toshiaki
+      Iwamoto, CTO, Gurunavi
+
+      “SeaArt Entertainment uses Vertex AI Agent Builder
+      to personalize the creative experience for digital
+      artists. Before Memory Bank, our AI agents could
+      not reliably remember users’ preferences. For
+      example, when users worked on complex
+      multimodal art projects, they had to repeatedly
+      explain the same details — like their favorite
+      character styles or model choices — across
+      sessions. After integrating Memory Bank, our
+      agents are now able to recall past conversations,
+      actions, and user preferences. We especially like
+      that the agent can seamlessly remember context
+      across sessions, making interactions feel more
+      natural and personal." - Aleksei Savin, Lead of
+      Multimodal AI Platform, SeaArt Entertainment
+
+
+
+ Get started
+ Vertex AI Agent Builder provides the unified platform to
+ manage the entire agent lifecycle, helping you close the
+ gap from prototype to a production-ready agent. To
+ explore these new features, visit the updated Agent
+ Builder documentation and release notes.
+
+ If you’re a startup and you’re interested in learning more
+ about building and deploying agents, download the
+ Startup Technical Guide: AI Agents. This guide provides
+ the knowledge needed to go from an idea to prototype
+ to scale, whether your goals are to automate tasks,
+ enhance creativity, or launch entirely new user
+ experiences for your startup.
+               Cloud
+                Posted in AIBlog
+                             & Machine Learning—APIContact sales
+                                                    Management           Get started for free
+
+
+
+
+Related articles
+
+
+
+
+            AI & Machine Learning                               Customers
+
+ Welcome to Gemini at Work 2026:                 Innovation in Ireland: How Irish
+  Introducing the Gemini agent                 brands scale with Gemini Enterprise
+       By Thomas Kurian • 29-minute read             By Sandeep Khanna • 5-minute read
+
+
+
+
+              AI infrastructure                          AI & Machine Learning
+
+What’s new in AI infrastructure and               Empower your agents with the
+  orchestration in September                      Google Cloud CLI remote MCP
+        By Alex Barrett • 19-minute read                     server
+                                                     By Prosper Nwankpa • 6-minute read
+
+
+
+
+Follow us
+           Cloud       Blog                    Contact sales   Get started for free
+       Google Cloud   Google Cloud Products   Privacy Terms
+
+
+Help      ‪English‬
+

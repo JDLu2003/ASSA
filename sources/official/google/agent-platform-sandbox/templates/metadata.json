@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform-sandbox",
+    "id": "templates",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:08:27.575706+00:00",
+  "path": "sources/official/google/agent-platform-sandbox/templates",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
+  "http_status": 200,
+  "title": "Manage sandbox templates  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "148abead85acff9be4350004c4c6e6fec170e9e3dbfee0eb431ef5a8797e07c3",
+      "bytes": 4500
+    },
+    "page.txt": {
+      "sha256": "7d323645843916d061cf848f1458ccfdd035da186e99c369831f107e0070b1ac",
+      "bytes": 6097
+    },
+    "page.pdf": {
+      "sha256": "bf47ef5fbeeb276232cffea12d6b753c92934d0d0649d5698fccc752c89eba03",
+      "bytes": 161438
+    },
+    "page.html": {
+      "sha256": "e28f15a9e73955d10640bfd7abae78710178911efdc7cee68b94b81dd0219531",
+      "bytes": 245177
+    }
+  }
+}

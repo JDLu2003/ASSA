@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "tavily",
+    "product": "search",
+    "id": "pricing",
+    "url": "https://docs.tavily.com/documentation/api-credits",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:05:09.421897+00:00",
+  "path": "sources/official/tavily/search/pricing",
+  "requested_url": "https://docs.tavily.com/documentation/api-credits",
+  "final_url": "https://docs.tavily.com/documentation/api-credits",
+  "http_status": 200,
+  "title": "Credits & Pricing - Tavily Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "b9d950483a26fadd735a923003156285a3bf9fadf67afd7a7b93942cbc6b0590",
+      "bytes": 6937
+    },
+    "page.txt": {
+      "sha256": "bb937e2b7f8da604d12951fcebfc348eb411f04c850bd29ffab0a8cdcd57da7a",
+      "bytes": 3924
+    },
+    "page.pdf": {
+      "sha256": "c2296456357a53b48e142962f0da98b7d378589dc9f8cd126c783b4b8283dccc",
+      "bytes": 280827
+    }
+  }
+}

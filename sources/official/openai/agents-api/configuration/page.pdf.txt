@@ -1,0 +1,50 @@
+Configuring Agents
+Define an agent, reuse its configuration, and customize each session.
+    Copy Page
+
+
+
+An agent configuration defines how the agent behaves. You can supply it when creating a session
+or save it for reuse. The session holds the conversation and work, while the saved agent holds
+reusable settings.
+
+
+Define the agent’s behavior
+Start with the model and instructions, then add the tools and controls your task needs:
+
+    Model: Which model does the work.
+    Instructions: What the agent should do and how it should behave.
+    Tools: What actions the agent can take, such as searching the web or calling your functions.
+    Reasoning and output: How much reasoning the model uses and the format and detail of its
+    responses.
+
+
+Pass these settings in agent when you create a session. This example supplies a model,
+instructions, and the first user message:
+
+
+  Configure an agent for one session                                               Python
+
+  1    from openai import OpenAI
+  2
+  3    client = OpenAI()
+  4
+  5    session = client.beta.agents.sessions.create(
+  6        agent={
+  7            "model": "gpt-6-astra",
+  8            "instructions": "Answer the user clearly and concisely.",
+  9        },
+  10       environment={"type": "none"},
+  11       input=[
+  12           {
+  13               "role": "user",
+  14               "content": [{"type": "input_text", "text": "What can you help with?
+  15           }
+  16       ],
+  17   )
+  18   print(session.to_json())
+
+
+                                                                                              Ask AI
+See the Agents API reference for configuration fields and values. For setup, see Functions,
+

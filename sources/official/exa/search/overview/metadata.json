@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "exa",
+    "product": "search",
+    "id": "overview",
+    "url": "https://docs.exa.ai/reference/search",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:05:25.123742+00:00",
+  "path": "sources/official/exa/search/overview",
+  "requested_url": "https://docs.exa.ai/reference/search",
+  "final_url": "https://exa.ai/docs/reference/search",
+  "http_status": 200,
+  "title": "Search - Exa",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "e4c12a69d07a526f6ac350b9a65ddfad6d61ae7feed2fa2cc7ff975b31b4cc2f",
+      "bytes": 14803
+    },
+    "page.txt": {
+      "sha256": "8bd30fb08da23f3a2fc8640a4c850b93336a630eda4a890e8743a9b5ca7208d9",
+      "bytes": 13690
+    },
+    "page.pdf": {
+      "sha256": "4bf86334ca9a874aebb571a1cd136a709ef5c852bccd7566a3074c14b9b106e3",
+      "bytes": 565394
+    }
+  }
+}

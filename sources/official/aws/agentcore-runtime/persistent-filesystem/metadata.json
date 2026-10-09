@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore-runtime",
+    "id": "persistent-filesystem",
+    "url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:26.875278+00:00",
+  "path": "sources/official/aws/agentcore-runtime/persistent-filesystem",
+  "requested_url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+  "final_url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+  "http_status": 200,
+  "title": "Persist session state with filesystem configuration and execute shell commands | Artificial Intelligence",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "fb9887ec2bb5ee81516a9640078fad51364f2c3ebe90c7603ec1365fee9fa1d4",
+      "bytes": 28278
+    },
+    "page.txt": {
+      "sha256": "34b05157b7f78aeb915332afa85a9d0aa8d5123c709c7bc62ee089f42a1c9494",
+      "bytes": 23027
+    },
+    "page.pdf": {
+      "sha256": "63b0f7c414fb891f6a791a6a9a7106eb80a46586b6675a05ee8ba5d3884f1044",
+      "bytes": 301114
+    }
+  }
+}

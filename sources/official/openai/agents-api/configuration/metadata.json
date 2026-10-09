@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-api",
+    "id": "configuration",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:01:56.502023+00:00",
+  "path": "sources/official/openai/agents-api/configuration",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+  "http_status": 200,
+  "title": "Configuring Agents | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "9efdb087b21c6e8e19d2a18b6eb0a32c5d208527772751c636d042ce611c1d85",
+      "bytes": 1704
+    },
+    "page.txt": {
+      "sha256": "20e6ea73685bc4e1019bae57a32113388b2b6a633b557ad8a52f6816abf3dc90",
+      "bytes": 8076
+    },
+    "page.pdf": {
+      "sha256": "b4bc1df6ec5a0b7769fd77349bb143ec07a002f61e08f0cdb4ec193f5f08fe6a",
+      "bytes": 111394
+    },
+    "page.html": {
+      "sha256": "ed08b182495f3dc8e7be79131b8bf0cdd5dc328fae7431d477dbd29cb660517e",
+      "bytes": 486391
+    },
+    "page.complete.pdf": {
+      "sha256": "bb616c0269ab10dbf4d19b3a9563d871d5693d1c080769e15534e260f5b53eae",
+      "bytes": 364551
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "15997dc277d602b205c9a5b0205b819b08f52d3a6e2323a73949bce412bcf7d0",
+      "bytes": 8194
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

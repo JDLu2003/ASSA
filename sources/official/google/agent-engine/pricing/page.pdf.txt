@@ -1,0 +1,442 @@
+menu                                                                   search light_mode    Language           Sign in
+
+
+
+
+                     Gemini Enterprise Agent Platform                                                   Start free
+
+
+
+
+Home chevron_right Documentation chevron_right AI and ML                                   Was this helpful?
+
+ chevron_right Gemini Enterprise Agent Platform chevron_right Agents
+
+Scale your agents                                                                                 Send feedback
+
+
+  bookmark_borderarrow_drop_down   content_copy arrow_drop_down
+
+    On this page
+                                           expand_more
+    Agent Runtime
+
+            Deploy and manage agents
+
+            Monitor agents
+
+            Use agents
+
+            Security and performance
+
+    Sessions
+
+    Feedback service
+
+    Memory Bank
+
+
+    more_horiz
+Gemini Enterprise Agent Platform offers the following to help you seamlessly scale
+your agents in production.
+
+Bringing AI agents into production requires a high-performance runtime and a
+systematic approach to continuous improvement. As organizations build complex,
+dynamic applications, Agent Platform provides a fully managed environment for
+developers to handle testing, release management, and reliability at a global scale.
+This allows teams to focus entirely on application creation by providing essential
+services across four critical areas:
+
+                     Serverless efficiency: Utilizing a fully managed Agent Runtime to deploy and
+                     scale agents efficiently without the need to manage underlying infrastructure,
+                     ensuring reliable performance with built-in observability.
+
+                     Context management: Utilizing Agent Platform Sessions and an Agent
+                     Platform Memory Bank to maintain the state of continuous conversations and
+     retrieve persistent, long-term memories, enabling highly personalized and
+                                                                                      Sign in
+     natural user interactions.
+
+     Continuous quality improvement: Leveraging the Example Store and Evaluation
+     Gemini    Enterprise Agent Platform                                   Start free
+     Service to test, monitor, and trace agent behavior, creating a continuous
+     feedback loop and data flywheel to iteratively refine agent performance over
+     time.
+
+     Secure sandbox execution: Empowering agents to safely solve complex
+     computational problems and automate workflows through dynamic Code
+     Execution and Computer Use, allowing them to run scripts or mimic human-like
+     interactions with graphical interfaces.
+
+
+
+
+Agent Runtime
+Deploy, operate, and scale agentic applications.
+
+
+
+Deploy and manage agents
+
+   Guide                                           Guide
+
+  Deploy agents                                 Manage deployed agents
+  Learn the five ways to deploy an agent        Learn how to manage agents that have
+  on Agent Platform Runtime based on            been deployed to the Agent Platform
+  your development needs.                       managed runtime.
+
+
+
+
+   Guide
+
+  Manage agent access
+  Learn how to manage access to your
+  agents deployed on Agent Platform,
+  such as agent identity, service accounts,
+  API keys, and OAuth clients.
+
+
+
+
+Monitor agents
+  Guide                                     Guide                             Sign in
+
+
+ Set up tracing                   Set up logging
+   Gemini Enterprise Agent Platform                                     Start free
+ Learn how to enable Cloud Trace on your   Learn how to set up Cloud Logging for
+ agent and view traces to analyze query    your agents deployed on Agent Platform.
+ response times and executed
+ operations.
+
+
+
+  Guide
+
+ Set up monitoring
+ Learn how to use built-in metrics,
+ custom metrics, and alerts to monitor
+ your agents in Agent Platform.
+
+
+
+
+Use agents
+
+  Guide                                     Guide
+
+ Use an agent                              Use a custom agent
+ Use an agent with Agent Platform          Use a custom agent with Agent Platform
+ Runtime.                                  Runtime.
+
+
+
+
+  Guide                                     Guide
+
+ Use a LangChain agent                     Use a LangGraph agent
+ Use a LangChain agent with Agent          Use a LangGraph agent with Agent
+ Platform Runtime.                         Platform Runtime.
+
+
+
+
+  Guide                                     Guide
+
+ Use a LlamaIndex Query                    Use an Agent2Agent agent
+ Pipeline agent
+                                           Use an Agent2Agent agent with Agent
+                                           Platform Runtime.
+ Use a LlamaIndex Query Pipeline agent
+                                                                                     Sign in
+ with Agent Platform Runtime.
+
+
+
+    Gemini Enterprise Agent PlatformGuide
+  Guide
+                                                                           Start free
+
+ Use an Agent Development                     Use an AG2 agent
+ Kit agent
+                                              Use an AG2 agent with Agent Platform
+
+ Use an Agent Development Kit (ADK)           Runtime.
+
+ agent with Agent Platform Runtime.
+
+
+
+
+Security and performance
+
+  Guide                                        Guide
+
+ Use IAM agent identity                       Route Agent Runtime traffic
+                                              through Agent Gateway
+ Learn how to use Identity Access
+ Management (IAM) agent identity to           Learn how to route Agent Runtime traffic
+ provide security and access                  through Agent Gateway for secure and
+ management features with Agent               governed connectivity.
+ Platform.
+
+
+
+
+  Guide                                        Guide
+
+ Use bidirectional streaming                  Optimize and scale Agent
+                                              Platform Runtime
+ Learn how to use bidirectional streaming
+ to build real-time applications with Agent
+                                              performance
+ Platform.
+                                              Learn best practices to optimize and
+                                              scale Agent Platform Runtime
+                                              performance using deployment
+                                              parameters.
+
+
+
+
+  Guide
+
+ Use a Private Service
+ Connect interface with
+  Agent Platform Runtime                                                          Sign in
+
+  Learn to configure a Private Service
+
+     Gemini Enterprise Agent Platform
+  Connect (PSC) interface to securely                                     Start free
+  connect your agent to your VPC and
+  manage internet access.
+
+
+
+
+Sessions
+Store individual interactions between users and agents.
+
+
+
+   Overview                                    Guide
+
+  Sessions overview                           Manage sessions with
+                                              Agent Development Kit
+  Learn how to use sessions to maintain
+  conversation state with your agents.        Learn how to manage sessions with
+                                              Agent Development Kit.
+
+
+
+
+   Guide                                       Guide
+
+  Manage sessions using the                   Control access to sessions
+  console or API calls                        with IAM Conditions
+  Learn how to manage sessions using the      Learn how to control access to sessions
+  console or API calls.                       with IAM Conditions.
+
+
+
+
+Feedback service
+
+   Overview                                    Guide
+
+  Feedback service overview                   Manage feedback using
+                                              Python SDK or REST API
+  Collect, manage, and trace user
+  qualitative feedback alongside system       Learn how to manage feedback entries
+  events and telemetry.                       and feedback context using the Python
+                                              SDK or REST API.
+                                                                                 Sign in
+
+
+
+
+     Gemini Enterprise Agent Platform
+   Guide                                                                   Start free
+
+  View feedback in the
+  console
+  Learn how to view received end-user
+  feedback next to trace events on the
+  Traces tab of the .
+
+
+
+
+Memory Bank
+Store and retrieve information from sessions to personalize agent interactions
+
+
+
+Get started
+
+   Overview                                    Quickstart
+
+  Memory Bank overview                        Memory Bank API quickstart
+  Learn how to use Memory Bank to store       Get started with the Memory Bank API to
+  long-term user preferences and facts.       manage long-term memories.
+
+
+
+
+   Quickstart                                  Guide
+
+  Quickstart with Agent                       Set up Memory Bank
+  Development Kit
+                                              Learn how to set up Memory Bank.
+
+  Get started with the Agent Development
+  Kit (ADK).
+
+
+
+
+Manage memories
+
+   Guide                                       Guide
+  Generate memories                           Ingest events                      Sign in
+
+  Learn how to generate memories in           Learn how to ingest events into Memory
+
+     Gemini Enterprise Agent PlatformBank.
+  Memory Bank.                                                             Start free
+
+
+   Guide                                       Guide
+
+  Memory profiles                             Fetch memories
+  Learn how to use memory profiles in         Learn how to fetch generated and
+  Memory Bank.                                uploaded memories.
+
+
+
+
+   Guide                                       Guide
+
+  Inspect memory revisions                    Control access to Memory
+                                              Bank with IAM Conditions
+  Learn how to inspect memory revisions.
+
+                                              Learn how to control access to Memory
+                                              Bank with IAM Conditions.
+
+
+
+
+Code Execution
+Run code in a secure, isolated, and managed sandbox environment
+
+
+
+   Overview                                    Quickstart
+
+  Code Execution overview                     Code Execution quickstart
+  Get an overview of Code Execution.          Get started with Code Execution.
+
+
+
+
+Enterprise security
+The following table shows which enterprise security features are supported for each
+Agent Platform service:
+                         Agent         Agent                        Memory       Example        CodeSign in
+ Security feature                                      Sessions
+                         Runtime       evaluation                   Bank         Store          Execution
+
+ VPC Service             Yes           Yes             Yes          Yes          No             Yes
+      Gemini Enterprise Agent Platform
+ Controls
+                                                                                               Start free
+
+ Customer-               Yes           Yes             Yes          Yes          No             Yes
+ managed
+ encryption keys
+ (CMEK)
+
+ Data residency          Yes           Yes             Yes          Yes          No             Yes
+ (DRZ) at rest
+
+ HIPAA                   Yes           Yes             Yes          Yes          Yes            Yes
+
+ Access                  Yes           No              Yes          Yes          No             No
+ Transparency in
+ Agent Platform
+
+ Access Approval         Yes           No              Yes          Yes          No             No
+
+
+
+
+star Note: Agent Platform Memory Bank uses Generative AI models to generate memories.
+      Machine learning (ML) processing occurs within the specific region or multi-region of the
+      model endpoint used by Agent Platform Memory Bank.
+
+
+
+
+                                             Was this helpful?
+
+
+
+
+                                             Send feedback
+
+
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution
+4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google
+Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+
+Last updated 2026-10-07 UTC.
+
+
+
+
+Products and                Support                     Resources                     Engage
+pricing                     Community forums            GitHub                        Blog
+
+See all products            Support                     Getting Started with          Events
+                                                        Google Cloud
+Google Cloud pricing        Release Notes                                             X (Twitter)
+Google Cloud              System status            Code samples         Google Cloud on
+                                                                                     Sign in
+Marketplace                                                             YouTube
+                                                   Cloud Architecture
+Contact sales                                      Center               Google Cloud Tech
+      Gemini Enterprise Agent Platform
+                                    Training and
+                                                                        on YouTube
+                                                                               Start free
+                                                   Certification
+
+
+
+
+Android
+
+Chrome
+
+Firebase
+
+Google AI
+
+
+
+
+About Google | Privacy | Site terms | Google Cloud terms
+
+| Our third decade of climate action: join us
+
+
+Sign up for the Google Cloud newsletter         Subscribe
+
+
+      Language
+

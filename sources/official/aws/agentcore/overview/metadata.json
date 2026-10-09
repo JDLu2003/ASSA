@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore",
+    "id": "overview",
+    "url": "https://aws.amazon.com/bedrock/agentcore/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:48.635417+00:00",
+  "path": "sources/official/aws/agentcore/overview",
+  "requested_url": "https://aws.amazon.com/bedrock/agentcore/",
+  "final_url": "https://aws.amazon.com/bedrock/agentcore/",
+  "http_status": 200,
+  "title": "Amazon Bedrock AgentCore - AWS",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "86d1c8d9c8b245fa52d1833a2f2dec709eafd43cadaadb9b9dc60e8c1a282061",
+      "bytes": 6653
+    },
+    "page.txt": {
+      "sha256": "6b7b2488f42d8f9345b5461e50889469e9d40f0a210815c1ddea696c30408b5e",
+      "bytes": 4731
+    },
+    "page.pdf": {
+      "sha256": "8a69f29b6480ca71ad1aaa439e380cdcd420b128d4a43a015c237fde6c1b0965",
+      "bytes": 1477853
+    }
+  }
+}

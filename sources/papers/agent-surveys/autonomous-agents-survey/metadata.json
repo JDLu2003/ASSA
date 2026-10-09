@@ -1,0 +1,27 @@
+{
+  "item": {
+    "topic": "agent-surveys",
+    "id": "autonomous-agents-survey",
+    "arxiv": "2308.11432",
+    "title": "A Survey on Large Language Model based Autonomous Agents",
+    "kind": "arxiv-paper"
+  },
+  "capture_started_at": "2026-10-09T12:08:57.624930+00:00",
+  "path": "sources/papers/agent-surveys/autonomous-agents-survey",
+  "requested_url": "https://arxiv.org/abs/2308.11432",
+  "pdf_url": "https://arxiv.org/pdf/2308.11432",
+  "source_status": "unavailable: CalledProcessError",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "paper.txt": {
+      "sha256": "b7cfd543a0010d5fe86697db058ba54610c8e7d12bc595da97a3f7798d956988",
+      "bytes": 193998
+    },
+    "paper.pdf": {
+      "sha256": "8709507742c260a5a92b4690ffc0459a0ab9af16dc7a5478d253a6e7b57bf23a",
+      "bytes": 5788348
+    }
+  }
+}

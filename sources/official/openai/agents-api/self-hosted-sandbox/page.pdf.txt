@@ -1,0 +1,39 @@
+Self-hosted sandboxes
+Connect your compute and files to an agent session.
+    Copy Page
+
+
+
+Connect your own environment when you want more control over the agent’s environment or
+want to use compute you trust. The environment can be a laptop, a container, or a remote
+sandbox. To have OpenAI provision the environment, use an OpenAI-hosted sandbox.
+
+
+How the connection works
+OpenAI runs the agent harness. You run codex exec-server , the executor, inside your
+environment. It runs shell commands, reads and writes files, and uses local MCP servers at the
+harness’s request.
+
+The executor registers with the API using an environment ID and a restricted API key. It then
+connects over WebSocket to receive commands and return results. All connections are outbound.
+The executor reconnects if the connection drops.
+
+
+
+
+Prepare your environment
+Prepare the files and dependencies your agent needs. Isolate environments by user or workload.
+Agents that share an environment can access the same files, credentials, and other resources.
+
+Create the working directory and install the Codex CLI inside the environment. This example uses
+ /workspace :
+
+
+
+  mkdir -p /workspace
+  npm install -g @openai/codex@alpha
+
+                                                                                                Ask AI
+
+Network access
+

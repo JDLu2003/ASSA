@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform",
+    "id": "session-management",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:08:13.476757+00:00",
+  "path": "sources/official/google/agent-platform/session-management",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
+  "http_status": 200,
+  "title": "Manage sessions using Google Cloud console or API calls  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "04e3e1ac696e8f66c4b148570de26b144418b0c75ad1aacc6540c769e9834f2b",
+      "bytes": 8092
+    },
+    "page.txt": {
+      "sha256": "d54474bc38cf1e61578aa00cf745bb30a4d3411d667ba8534a0355e4b0b192c7",
+      "bytes": 8585
+    },
+    "page.pdf": {
+      "sha256": "82000bef92714ab3f121af5e910d6b625f3e0be79f2942685808b2d45a199e9f",
+      "bytes": 215189
+    },
+    "page.html": {
+      "sha256": "0f891b3fe72d7c665d3a7531749c09b512603f52b0b3b0c28bb5bbc98a565f62",
+      "bytes": 358543
+    }
+  }
+}

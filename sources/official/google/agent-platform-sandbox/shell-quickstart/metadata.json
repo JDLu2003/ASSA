@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform-sandbox",
+    "id": "shell-quickstart",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:08:21.169984+00:00",
+  "path": "sources/official/google/agent-platform-sandbox/shell-quickstart",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
+  "http_status": 200,
+  "title": "Shell sandbox quickstart  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "12443e0a41ff25e6660e9a68a327840e37ec4599047344fc7f7be5f046dc19f5",
+      "bytes": 7918
+    },
+    "page.txt": {
+      "sha256": "42fb238d06ef32335d46008291d071b87be329f2346665a47d29c765cd389b52",
+      "bytes": 7796
+    },
+    "page.pdf": {
+      "sha256": "e08e62ab11b2138c08c02f521d74aff96e3b43ac685db2898958b4dd5147483c",
+      "bytes": 230922
+    },
+    "page.html": {
+      "sha256": "653973d17b09194ca16767f721b9a8fd33efbdddf7d4ac97b124aaa9d9d448ab",
+      "bytes": 263184
+    }
+  }
+}

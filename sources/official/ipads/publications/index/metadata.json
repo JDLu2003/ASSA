@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "ipads",
+    "product": "publications",
+    "id": "index",
+    "url": "https://ipads.se.sjtu.edu.cn/pub/publication",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:05:41.690734+00:00",
+  "path": "sources/official/ipads/publications/index",
+  "requested_url": "https://ipads.se.sjtu.edu.cn/pub/publication",
+  "final_url": "https://ipads.sjtu.edu.cn/pub/publication",
+  "http_status": 200,
+  "title": "Publications [IPADS]",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "72550716088f51568324a8eb633b17ec72162e75519c67b2314624a71e6e4dd3",
+      "bytes": 73073
+    },
+    "page.txt": {
+      "sha256": "7615b27aec462cedddf98261ffdcd15c857b9165e20a350944c9bf3b4ef6c45e",
+      "bytes": 67318
+    },
+    "page.pdf": {
+      "sha256": "d31e4bbeb8da65cfc149c572a1ae0bc0dd38138a5fa1bf48cbc287adc0e91081",
+      "bytes": 1209039
+    }
+  }
+}

@@ -1,0 +1,186 @@
+      Azure       Explore  Products  Solutions  Pricing  Partners  Resources                                           Sign in
+
+
+
+
+Home / Azure pricing / Microsoft Foundry pricing
+
+
+
+
+Microsoft Foundry pricing
+
+   Request a pricing quote                Try Azure for free
+
+
+
+
+  Overview        Pricing table       Purchase options         Resources        FAQ       Microsoft Foundry 
+
+
+
+
+The AI app and agent                             It’s never been easier to build, optimize, and govern AI apps and
+                                                 agents that understand your business context and deliver business
+factory                                          impact. Our unified, interoperable AI platform enables developers to
+                                                 build faster and smarter, while organizations gain fleetwide security
+                                                 and governance in a unified portal.
+
+
+
+
+Explore pricing options
+Apply filters to customize pricing options to your needs.
+
+Prices are estimates only and are not intended as actual price quotes. Actual pricing may vary depending on the type of
+agreement entered with Microsoft, date of purchase, and the currency exchange rate. Prices are calculated based on US
+dollars and converted using London closing spot rates that are captured in the two business days prior to the last
+business day of the previous month end. If the two business days prior to the end of the month fall on a bank holiday
+in major markets, the rate setting day is generally the day immediately preceding the two business days. This rate
+applies to all transactions during the upcoming month. Sign in to the Azure pricing calculator to see pricing based on
+your current program/offer with Microsoft. Contact an Azure sales specialist for more information on pricing or to
+request a price quote. See frequently asked questions about Azure pricing.
+
+
+Region:                              Currency:                                                             Ask Microsoft​
+East US                  United States – Dollar
+
+
+
+
+Models     Agents Service and Frameworks          Knowledge and Tools      Observability and Trust    Local an
+
+
+
+Products                          Description
+
+Foundry Models                    ​Access more than 11,000                See pricing details for Foundry
+                                   foundation, open, reasoning,           Models
+                                   multimodal and industry-
+                                   specific models. Instantly
+                                   benchmark and compare
+                                   models for your use case or
+                                   enable intelligent model routing
+                                   to optimize performance in real-
+                                   time.
+
+
+
+
+                     Azure pricing and purchasing options
+
+
+                        Connect with us                 See ways to                  Explore Microsoft
+                        directly                        purchase                     Foundry Pricing
+                        Get a walkthrough of            Purchase Azure services      and Platform
+                        Azure pricing.                  through the Azure            Capabilities
+                        Understand pricing for          website, a Microsoft         This guide provides an
+                        your cloud solution,            representative, or an        overview of Microsoft
+                        learn about cost                Azure partner.               Foundry’s platform
+                        optimization and                                             capabilities,
+                                                        Explore your options
+                        request a custom                                             deployment options,
+                        proposal.                                                    and pricing
+                                                                                     considerations. Learn
+                              Talk to a sales                                        how cost models apply
+                                specialist
+                                                                                     across workloads, how
+                                                                                     usage impacts spend,
+                                                                                  Askand  how Microsoft’s
+                                                                                      Microsoft​
+transparent pricing
+approach helps teams
+plan, optimize, and
+scale AI solutions with
+confidence.
+Access the Pricing
+Guide
+
+
+
+
+                                    Additional resources
+
+
+
+Microsoft Foundry         Pricing calculator        Documentation               Infographic
+Learn more about          Estimate your expected    Review technical            Roadmap that offers
+Microsoft Foundry         monthly costs for using   tutorials, videos, and      key insights to guide
+features and              any combination of        more Microsoft              impactful financial
+capabilities.             Azure products.           Foundry resources.          adoption of AI with
+                                                                                Foundry.
+
+
+
+
+Frequently
+                                      Is Foundry Free?
+asked                                                                                             
+
+questions
+                                      Do I need an Azure account to use Foundry?                  
+
+Frequently asked
+questions about Azure
+pricing                               How is Foundry billed?                                      
+
+
+
+                                      What is the Microsoft Agent pre‑purchase plan and how
+                                      does it work?                                               
+
+
+
+
+                                                                             Ask Microsoft​
+          Talk to a sales specialist for a walk-through of Azure pricing. Understand pricing for your
+          cloud solution.
+
+
+               Request a pricing quote
+
+
+
+
+          Get free cloud services and a $200 credit to explore Azure for 30 days.
+
+
+               Try Azure for free
+
+
+
+
+       Get the Azure mobile app
+
+
+
+    Explore Azure                                                                                       +
+
+
+    Products and pricing                                                                                +
+
+
+    Solutions and support                                                                               +
+
+
+    Partners                                                                                            +
+
+
+    Resources                                                                                           +
+
+
+    Cloud computing                                                                                     +
+
+
+Change language
+
+ English (US)                            Your Privacy Choices                       Ask Microsoft​
+Consumer Health Privacy   Diversity and Inclusion   Accessibility   Privacy & Cookies   Data Protection Notice   Trademarks
+
+                          Terms of use   Privacy Data Management       Contact us   Feedback    Sitemap © Microsoft 2026
+
+
+
+
+                                                                                        Ask Microsoft​
+

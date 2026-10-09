@@ -1,0 +1,256 @@
+Skip to main content
+Azure
+Explore
+Products
+Solutions
+Pricing
+Partners
+Resources
+Learn
+Support
+Contact Sales
+Try Azure for free
+Sign in
+Home
+Azure pricing
+Microsoft Foundry pricing
+Microsoft Foundry pricing
+Request a pricing quote
+Try Azure for free
+Overview
+Pricing table
+Purchase options
+Resources
+FAQ
+Microsoft Foundry
+Free account
+The AI app and agent factory
+It’s never been easier to build, optimize, and govern AI apps and agents that understand your business context and deliver business impact. Our unified, interoperable AI platform enables developers to build faster and smarter, while organizations gain fleetwide security and governance in a unified portal.
+Explore pricing options
+
+Apply filters to customize pricing options to your needs.
+
+Prices are estimates only and are not intended as actual price quotes. Actual pricing may vary depending on the type of agreement entered with Microsoft, date of purchase, and the currency exchange rate. Prices are calculated based on US dollars and converted using London closing spot rates that are captured in the two business days prior to the last business day of the previous month end. If the two business days prior to the end of the month fall on a bank holiday in major markets, the rate setting day is generally the day immediately preceding the two business days. This rate applies to all transactions during the upcoming month. Sign in to the Azure pricing calculator to see pricing based on your current program/offer with Microsoft. Contact an Azure sales specialist for more information on pricing or to request a price quote. See frequently asked questions about Azure pricing.
+
+Region:
+Central US
+East US
+East US 2
+North Central US
+South Central US
+West Central US
+West US
+West US 2
+West US 3
+UK South
+UK West
+UAE Central
+UAE North
+Switzerland North
+Switzerland West
+Sweden Central
+Sweden South
+Spain Central
+Qatar Central
+Poland Central
+Norway East
+Norway West
+New Zealand North
+Mexico Central
+Malaysia West
+Korea Central
+Korea South
+Japan East
+Japan West
+Italy North
+Israel Central
+Indonesia Central
+Central India
+India South Central
+South India
+West India
+Germany North
+Germany West Central
+France Central
+France South
+North Europe
+West Europe
+Denmark East
+Chile Central
+Canada Central
+Canada East
+Brazil South
+Brazil Southeast
+Belgium Central
+US Gov Arizona
+US Gov Texas
+US Gov Virginia
+Austria East
+Australia Central
+Australia Central 2
+Australia East
+Australia Southeast
+East Asia
+Southeast Asia
+South Africa North
+South Africa West
+Currency:
+United States – Dollar ($) USD
+Australia – Dollar ($) AUD
+Brazil – Real (R$) BRL
+Canada – Dollar ($) CAD
+Denmark – Krone (kr) DKK
+Euro Zone – Euro (€) EUR
+India – Rupee (₹) INR
+Japan – Yen (¥) JPY
+Korea – Won (₩) KRW
+New Zealand – Dollar ($) NZD
+Norway – Krone (kr) NOK
+Russia – Ruble (руб) RUB
+Sweden – Krona (kr) SEK
+Switzerland – Franc (chf) CHF
+Taiwan – Dollar (NT$) TWD
+United Kingdom – Pound (£) GBP
+Models Agents Service and Frameworks Knowledge and Tools Observability and Trust Local and Edge
+Products	Description	
+Not available
+
+Foundry Models	​Access more than 11,000 foundation, open, reasoning, multimodal and industry-specific models. Instantly benchmark and compare models for your use case or enable intelligent model routing to optimize performance in real-time.	See pricing details for Foundry Models
+Azure pricing and purchasing options
+Connect with us directly
+
+Get a walkthrough of Azure pricing. Understand pricing for your cloud solution, learn about cost optimization and request a custom proposal.
+
+Talk to a sales specialist
+See ways to purchase
+
+Purchase Azure services through the Azure website, a Microsoft representative, or an Azure partner.
+
+Explore your options
+Explore Microsoft Foundry Pricing and Platform Capabilities
+
+This guide provides an overview of Microsoft Foundry’s platform capabilities, deployment options, and pricing considerations. Learn how cost models apply across workloads, how usage impacts spend, and how Microsoft’s transparent pricing approach helps teams plan, optimize, and scale AI solutions with confidence.
+
+Access the Pricing Guide
+Additional resources
+Microsoft Foundry
+
+Learn more about Microsoft Foundry features and capabilities.
+
+Pricing calculator
+
+Estimate your expected monthly costs for using any combination of Azure products.
+
+Documentation
+
+Review technical tutorials, videos, and more Microsoft Foundry resources.
+
+Infographic
+
+Roadmap that offers key insights to guide impactful financial adoption of AI with Foundry.
+
+Frequently asked questions
+Frequently asked questions about Azure pricing
+Is Foundry Free?
+Do I need an Azure account to use Foundry?
+How is Foundry billed?
+What is the Microsoft Agent pre‑purchase plan and how does it work?
+
+Talk to a sales specialist for a walk-through of Azure pricing. Understand pricing for your cloud solution.
+
+Request a pricing quote
+
+Get free cloud services and a $200 credit to explore Azure for 30 days.
+
+Try Azure for free
+ Added to estimate.
+Press 'v' to view on calculator
+View on calculator
+Ask Microsoft​
+Ask questions or make requests to the web AI assistant. Use the text input at the bottom to send messages.
+Additional Navigation
+Get the Azure mobile app
+Explore Azure
+What is Azure?
+Get started
+Global infrastructure
+Datacenter regions
+Trust your cloud
+Customer enablement
+Customer stories
+Products and pricing
+Products
+Pricing
+Free Azure services
+Flexible purchase options
+Cloud economics
+Optimize your costs
+Solutions and support
+Solutions
+Resources for accelerating growth
+Solution architectures
+Support
+Azure demo and live Q&A
+Partners
+Azure Marketplace
+Find a partner
+Join ISV Success
+Resources
+Training and certifications
+Documentation
+Blog
+Developer resources
+Students
+Events and webinars
+Analyst reports, white papers, and e-books
+Videos
+Cloud computing
+What is cloud computing?
+What is cloud migration?
+What is a hybrid cloud?
+What is AI?
+What is IaaS?
+What is SaaS?
+What is PaaS?
+What is DevOps?
+Change language
+English (US)
+Čeština
+Dansk
+Deutsch
+English (Australia)
+English (Canada)
+English (India)
+English (UK)
+Español
+Español (MX)
+Français
+Français (Canada)
+Indonesia
+Italiano
+Magyar
+Norsk
+Nederlands
+Polski
+Português (Brasil)
+Português
+Svenska
+Türkçe
+Pусский
+日本語
+한국어
+中文(简体)
+中文(繁體)
+Your Privacy Choices
+Consumer Health Privacy
+Diversity and Inclusion
+Accessibility
+Privacy & Cookies
+Data Protection Notice
+Trademarks
+Terms of use
+Privacy Data Management
+Contact us
+Feedback
+Sitemap
+© Microsoft 2026

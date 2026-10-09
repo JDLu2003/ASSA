@@ -1,0 +1,1070 @@
+                                                  C ONVERSATIONAL AI M ULTI -AGENT I NTEROPERABILITY
+                                                       U NIVERSAL O PEN API S FOR AGENTIC NATURAL L ANGUAGE M ULTIMODAL
+                                                                                 C OMMUNICATIONS
+
+
+
+
+                                                                    Diego Gosmar∗                                         Deborah A. Dahl
+                                                            Chief AI Officer XCALLY                            Principal Conversational Technologies
+                                                    Open Voice Interoperability Initiative Member           Open Voice Interoperability Initiative Member
+arXiv:2407.19438v1 [cs.AI] 28 Jul 2024
+
+
+
+
+                                                           Linux Foundation AI & Data                              Linux Foundation AI & Data
+                                                              Torino, TO 10100, Italy                          Plymouth Meeting, Pennsylvania, USA
+                                                            diego.gosmar@ieee.org                           dahl@conversational-technologies.com
+
+                                                                                                Emmett Coin
+                                                                                               Founder ejTalk
+                                                                                Open Voice Interoperability Initiative Member
+                                                                                       Linux Foundation AI & Data
+                                                                                         Bellville, Michigan, USA
+                                                                                           emmett@ejtalk.com
+
+
+                                                                                                July 30, 2024
+
+                                                                                                A BSTRACT
+                                                     This paper analyses Conversational AI multi-agent interoperability frameworks and describes the
+                                                     novel architecture proposed by the Open Voice Interoperability initiative (Linux Foundation AI
+                                                     & DATA), also known briefly as OVON (Open Voice Network). The new approach is illustrated,
+                                                     along with the main components, delineating the key benefits and use cases for deploying standard
+                                                     multi-modal AI agency (or agentic AI) communications.
+                                                     Beginning with Universal APIs based on Natural Language, the framework establishes and enables
+                                                     interoperable interactions among diverse Conversational AI agents, including chatbots, voicebots,
+                                                     videobots, and human agents. Furthermore, a new Discovery specification framework is introduced,
+                                                     designed to efficiently look up agents providing specific services and to obtain accurate information
+                                                     about these services through a standard Manifest publication, accessible via an extended set of
+                                                     Natural Language-based APIs. The main purpose of this contribution is to significantly enhance the
+                                                     capabilities and scalability of AI interactions across various platforms.
+                                                     The novel architecture for interoperable Conversational AI assistants is designed to generalize, being
+                                                     replicable and accessible via open repositories.
+
+                                         Keywords Conversational AI · Artificial intelligence · AI Interoperability · Multi-Agency · Agentic AI · Agentive AI ·
+                                         Chatbot · Voicebot · Intelligent Assistant
+
+                                         1       INTRODUCTION
+                                         As of this writing, the number of Chatbots and Voicebots available worldwide has reached figures above 200,000. For
+                                         instance, a particular Chatbot Directory website reports[1] a total of over 183,000 bots related to Facebook Messenger
+                                         and Amazon Alexa Skills alone.
+                                         According to an analysis by Tidio.com[2] roughly 1.5 billion people are using chatbots. The number of chatbot users
+                                         worldwide is expected to continue growing, and by 2027, chatbots are projected to become the primary customer service
+                                             ∗
+                                                 Lead Author
+                                                                                         A PREPRINT - J ULY 30, 2024
+
+
+channel for a quarter of businesses. This dramatic proliferation and commercial importance of Chatbots and Voicebots
+means that it is imperative to consider the overall worldwide ecosystem of Chatbots and Voicebots in order to improve
+how it can be made more efficient and effective.
+For the remainder of this document, the term "agent" will be used to refer to an entity with the capacity to act, while
+"agency" or “agentic” will denote the exercise or manifestation of this capacity, in accordance with the definition
+provided by Markus Schlosser[3].
+Currently, Conversational AI encompasses interactions between human agents and AI agents, as well as an increasing
+number of interactions occurring directly among AI agents themselves. This research[4] analyses how Conversational
+AI interactions are becoming pervasive and, in some use cases, nearly indistinguishable from human-to-AI interactions,
+particularly in terms of technical user experience and channels.
+According to Cyberprotection Magazine[5], only 4% of web content is accessible through search engines. This implies
+that 96% of web content is not available to public generative AI large language models (LLMs). Consequently, AI
+agents will need to communicate with each other outside of public LLMs, especially when they need to escalate issues
+or request specific information available only from vertical and specialized AI assistants.
+As a consequence, the proliferation of fragmented and specialized AI agents needing to communicate with each other,
+but without an interoperable framework, could lead to implementation complexity, duplication of effort, and ultimately
+user frustration. Defining interoperable standards for Conversational AI agent interactions will help mitigate these
+potential issues and increase scalability. For those reasons, the Open Voice Interoperability Initiative has defined a set
+of Universal APIs based on the Interoperable Conversation Envelope Specifications[6].
+The rest of the paper is structured as follows. Section 2 describes earlier related work and how it differs from the work
+described in this paper. Section 3 describes an open source approach to intelligent assistant interoperability. Section 4
+provides some state diagrams that illustrate the life cycle of an exchange among interoperable agents. We review two
+detailed use cases in Section 5. Section 6 describes future directions and Section 7 covers our conclusions.
+
+
+2   PREVIOUS WORK
+
+In this section we review other investigations into ways to enable independent conversational assistants to exchange
+information. There are three previous threads of work addressing the problem of collaborating independent conversa-
+tional assistants.
+The first approach does not strictly involve independent assistants but independent modality components that collaborate,
+similarly to independent assistants, using a standard API. These modality components perform dialog functions such as
+speech recognition, natural language understanding, text-to-speech and so on. Examples of these kinds of architectures
+are the W3C Multimodal Architecture[7] and the Galaxy Communicator Software Infrastructure[8]. We mention these
+in order to clarify how this previous work differs from the work we describe in this paper.
+The second approach (Agentic AI) enables independent assistants to collaborate by hard-wiring the assistants together at
+development time. Examples of this are AutoGen[9] and OpenDevin[10]. This approach is more flexible than develop-
+ing a single system that can handle all of the anticipated functions, because new functionalities can be added by adding
+new assistants. This is especially useful for coding development and testing, i.e., having different LLMs performing
+specific tasks like software development and other LLMs “reflecting” on the result to perform test simulations, fix
+issues and improve the results. However, this approach has several drawbacks. It still requires all of the collaborating
+assistants to be known ahead of time, it requires the developer to be familiar with all of their APIs based on specific
+coding instead of natural language, and it requires all of the assistants to be based on a common technology; in this case
+LLMs. As a result, with this approach it would be quite complex to deploy interoperable Conversational AI assistants
+capable of handing over voice, video, and chat interactions from humans to different levels of independent AI agents
+specialised in Natural conversations.
+Another system for supporting the interaction of independent assistants is VoiceXML[11]. Very simple collaboration
+among voice dialog systems was made possible with the VoiceXML <transfer> element, which instructed the platform
+to transfer a user’s call to another location, either to a phone number or, more generally, to a URI. The transfer could
+be either a “bridge” transfer that would return the call to the originating VoiceXML platform at the end, or a “blind”
+transfer which did not allow the original platform to resume the call. VoiceXML differs from the work described here in
+that a VoiceXML transfer requires that Agent B, the receiving agent, was either another VoiceXML application or a
+human agent, while this paper proposes that conversational assistants with any internal architecture should be able to
+collaborate as long as they adhere to the communication standards.
+In the third approach, fewer assumptions are made about the internal structures of the assistants. For example, in
+the Open Agent Architecture[12], it is only necessary that the assistants adhere to the Inter Agent Communication
+Language (ICL); their internal architecture is not important. However, the messages sent between agents are in the form
+of a request for the secondary agent to do something, which requires the requesting agent to have good information
+about the secondary agent’s capabilities. Moreover, secondary agents need to have the ability to interpret ICL, which is
+
+
+                                                            2
+                                                                                         A PREPRINT - J ULY 30, 2024
+
+
+a fairly fine-grained semantic representation.
+In contrast, the work to be presented here, the fourth approach, for the most part simply passes on the user’s request
+to the secondary assistant, which minimally only needs to know how to interpret natural language, although agents
+can also communicate using structured formats that they both understand. In contrast to the ICL, the Open Voice
+Conversation Envelope API can also send information to a human agent at the endpoint.
+The DARPA Communicator program[13] also supported collaboration among multiple dialog managers, but the overall
+communication was coordinated through a central Hub, while in our approach all of the conversational assistants are
+independent.
+In summary, while the goal of enabling multiple independent assistants to work together has been explored in previous
+work, no previous work has allowed independent assistants, potentially using totally different technologies (Generative
+AI LLMs, LMM, LAM, Non-Generative AI, or even no AI at all in some cases) and different channels (voice, video,
+text), to be as loosely coupled as the work presented here. We believe this an important feature because it greatly
+reduces the complexity of adding Open Voice integration to new assistants.
+The Open Voice Specifications impose very few requirements on cooperating assistants (refer to Table 1 for a detailed
+comparison of the different approaches).
+
+                       Table 1: Conversational AI Interoperability Collaboration Approaches
+       Approach                        Description              Benefits                 Drawbacks
+       First Approach: Independent     Independent modality     Modular       design,    Not fully independent
+       Modality Components             components collabo-      Components perform       assistants, Limited to
+                                       rate using a standard    specific dialog func-    modality components
+                                       API (e.g., W3C Mul-      tions
+                                       timodal Architecture,
+                                       Galaxy Communica-
+                                       tor Software Infras-
+                                       tructure)
+       Second Approach: Agentic        Independent assis-       Flexible addition of     All assistants must be
+       Hard-Wired Collaboration        tants are hard-wired     new functionalities,     known ahead of time,
+                                       together at devel-       Specialized LLMs for     Requires familiarity
+                                       opment time (e.g.,       specific tasks           with all APIs, Based
+                                       AutoGen,        Open-                             on common technol-
+                                       Devin). Uses LLMs                                 ogy (LLMs)
+                                       for specific tasks
+                                       and "reflection" for
+                                       testing and improve-
+                                       ment.
+       Third Approach: Inter Agent     Assistants adhere to     Less dependency on       Requires      detailed
+       Communication Language          ICL, focusing on re-     internal structures,     knowledge of sec-
+       (ICL)                           quests and task per-     Standard communica-      ondary         agent’s
+                                       formance (e.g., Open     tion protocol            capabilities, Need to
+                                       Agent Architecture).                              interpret fine-grained
+                                                                                         ICL semantics
+       Fourth Approach: Open           Passes user requests Very loosely coupled         Relies on natural lan-
+       Voice Conversation Envelope     to secondary assis- assistants, Supports          guage interpretation,
+       API                             tants, which interpret various technologies       which may vary in ac-
+                                       natural       language. (Generative         AI,   curacy
+                                       Supports different LMM, LAM, Non-
+                                       technologies        and Generative AI, etc.),
+                                       channels         (voice, Minimal       require-
+                                       video, text).            ments for integration,
+                                                                Simplified addition
+                                                                of new assistants
+
+
+3   CONVERSATIONAL AI INTEROPERABILITY
+The Open Voice Interoperability initiative has released the first version of the Interoperable Conversation Envelope
+Specification, with further updates available here[6].
+
+
+                                                          3
+                                                                                          A PREPRINT - J ULY 30, 2024
+
+
+This work is motivated by three simple premises: First, that the ubiquity of foundation language models (FLMs) will
+lead to a multiplicity of specialised conversational agents instead of a monolithic all-knowing AI. Second, that these
+conversational agents will be much more effective if they can collaborate with each other to achieve tasks, being
+potentially hosted anywhere and developed with any kind of technology. Third, that this collaboration will itself
+be based on unstructured natural language instead of on complex and specific coding. In short, we anticipate that
+interaction between language-capable AIs will look remarkably like collaboration between people.
+These premises are, of course, open to debate but, if they prove to be correct, there will be a need for interoperability
+between AIs that use different underlying architectures and technologies. They may even speak different languages.
+In the long-term it may even be possible for this interoperability to use the same mechanisms that people use to
+interoperate - namely email, instant messaging, social media, publications and even phone calls and video calls. This
+will only become possible however, when conversational AI has reached human-level intelligence. In the near term,
+the Interoperable Conversation Envelope Specification[14] has been developed to facilitate interoperability between
+language-capable AIs with varying levels of intelligence and varying degrees of speciality.
+In the Open Voice Interoperability framework, conversational envelope messages are sent from one agent to another
+agent, carrying events. The messages support the following event types:
+
+       • Utterance: each agent can receive utterances and generate utterances in a conversation. These are expressed
+         in a standard format called dialog events[15], supporting simple text and extensible to support audio and other
+         media in the future.
+       • Whisper: each agent can receive and generate Whispers. These are out-of-band utterances that can be sent
+         ’behind the scenes’ to facilitate cooperation without being verbalised in the conversation itself. Whispers also
+         use Dialog Events[15].
+       • Invite: agents can invite other agents to join a conversation. They can also choose to accept such invites and
+         leave conversations.
+       • Bye: agents can terminate the conversation by sending the Bye dialog event message.
+       • Request/Publish Manifest: each agent provides a simple structured manifest on request which describes its
+         capabilities using natural language and simple structured keywords.[16]
+       • Find/Propose Assistant: agents can ask other agents to recommend third-party agents to help with a specific
+         task. Agents can also ask other agents if they want to service a specific task.
+
+Details of the actual formats of these events can be found in the appendices and the specifications. The conversational
+envelope framework draws no distinction between human agents and automated agents. This underlines the insight
+above that language-capable AIs will interact with one another in much the same way as humans cooperate with each
+other. It further anticipates that such cooperation may actually involve a web of human and artificial agents. In the
+classic instance of a single human ’user’ interacting with a single conversational AI then the user is simply represented
+by a proxy agent adopting the role of a Demanding Agent as described below. All agents can initiate requests or respond
+to requests. Chains and trees of agent interactions are possible and encouraged. The next section adds detail about the
+interactions among agents through a set of state diagrams showing how the events defined in the OVON specifications
+cause state transitions among interoperable assistants.
+
+4   STATE DIAGRAM REPRESENTATION
+Let’s define a state diagram representing AI agents moving from one status to another in the environment as a visual
+representation that illustrates the different states an AI agent can occupy and the transitions between these states based
+on specific events or conditions. This type of diagram is useful for modelling the behaviour of AI agents, showing how
+they react to various stimuli or inputs and change their state accordingly. In particular, for conversational AI agents, a
+state diagram represents the different states or modes the agent can be in during a conversation with a user or another
+AI agent, and how it transitions between these states based on the inputs and interactions with the counterpart. This
+representation is useful for mapping the OVON Interoperability Specifications to the dynamic statuses and standard
+messages exchanged. Note that the state diagrams shown here only describe states that are relevant to inter-agent
+collaboration. In the course of performing the functions they’re designed for, agents can be in a wide variety of internal
+states that are not of concern for interoperability among agents.
+
+The key components of such a state diagram are as follows:
+States: the different conditions or modes the conversational AI agent can be in during a conversation. Each state might
+represent a specific context or task the agent is handling.
+Transitions: the changes from one state to another, triggered by specific user inputs, agent messages, or internal
+
+
+                                                            4
+                                                                                          A PREPRINT - J ULY 30, 2024
+
+
+conditions.
+Events/Triggers: the inputs or conditions that cause the AI agent to move from one state to another. These are often
+user or other agent inputs or system conditions.
+Initial State: the starting point of the conversation, where the agent begins its interaction.
+Final State: the end of the conversation or a termination state, indicating the conversation is complete.
+Actions: behaviours or responses the AI agent produces during transitions or while in a specific state.
+
+Let’s define a Serving Agent as an AI entity designed to provide services, information, or assistance to
+users or other agents. It operates by responding to requests, performing tasks, and delivering outputs based on its
+capabilities and the inputs it receives. In the context of conversational AI, a serving agent handles inquiries (according
+to the Interoperable Conversation Envelope Specifications), executes commands, and engages in interactions to fulfill
+the needs of the user or the system it serves.
+On the other hand, a Demanding Agent is an AI entity that initiates requests or tasks, seeking services, information, or
+assistance from other agents or systems. It operates by sending queries, commands, or prompts to other agents to
+achieve its objectives. In the context of conversational AI, a demanding agent engages in interactions (according to the
+Interoperable Conversation Envelope Specifications) where it plays the role of requester, needing responses or actions
+from the serving agent.
+It should be noted that the same agent can serve either of these roles at different times (serving or demanding agent).
+
+4.1   Interoperable Conversation Envelope Diagrams
+
+The OVON (Open Voice Network) Conversation Envelope is a universal JSON structure whose purpose is to allow
+human or automatic agents (assistants) to interoperably participate in a conversation.
+
+
+
+
+           Figure 1: States and events related to a serving agent when it is successful in finding a response
+
+The state diagram above (see Figure1) depicts the different states and transitions related to a serving agent in a normal
+conversation where the agent has been able to provide a response to an utterance or a whisper Conversation Envelope.
+As shown in Listing 2, the JSON structure illustrates an example of a POST request sent to an AI agent specializing in
+information about books and authors. For simplicity, this agent is referred to as ’Smartlibrary,’ and the example includes
+both Utterance and Whisper events. From the IDLE state, the serving agent moves to the READY state whenever it
+receives an INVITE standard message envelope event[17] from a demanding agent. While in the READY state, the
+agent can move to the Searching for Response state upon receiving an UTTERANCE or a WHISPER standard envelope
+event[18] from the serving agent. From the Searching for Response state, the agent can move to the Sending Response
+state whenever the query look-up is successful, moving back to the READY state upon sending the response to the
+demanding agent, so continuing to be ready for further utterance or whisper events. Finally, the serving agent can return
+to the IDLE state after proper inactivity timeout or a BYE event[19].
+The next state diagram (Figure2) represents the different states and transitions related to a serving agent when the agent
+has not been able to provide a response to an UTTERANCE or a WHISPER event. This can be due to various reasons,
+such as lookup failures, timeouts, or other situations. Figure1 and Figure2 can be combined (see Figure3) to represent
+both use cases: the serving agent sending a response and the serving agent terminating the conversation without sending
+a response.
+The state diagram in Figure4 shows the different states and transitions related to a demanding agent. From IDLE state,
+the agent moves to the READY state whenever it sends an INVITE standard message envelope event[17]. While in
+the READY state, the agent can continue sending Utterances or Whispers according to the standard message envelope
+event[18], or it can move to the Consuming Response state upon receiving a response from the serving agent.
+
+
+                                                            5
+                                                                                       A PREPRINT - J ULY 30, 2024
+
+
+
+
+         Figure 2: States and events related to a serving agent when it is unsuccessful in finding a response
+
+
+
+
+                          Figure 3: Combined states and events related to a serving agent
+
+
+
+
+                       Figure 4: Different states and transitions related to a demanding agent
+
+
+From the Consuming Response state, the demanding agent can move back to the READY state whenever it sends an
+Utterance or a Whisper event[18], or it can return to the IDLE state if the conversation has been terminated (BYE
+standard envelope event[19]).
+
+
+
+
+                                                          6
+                                                                                           A PREPRINT - J ULY 30, 2024
+
+
+4.2   Interoperable Assistant Manifest Diagrams
+
+By using the Assistant Manifest specifications each agent can describe its capabilities to other agents. This provides the
+basis for a DISCOVERY process by which an agent can find agents with specific capabilities. The state diagram in
+
+
+
+
+                     Figure 5: Demanding agent looking for the Manifest details of a target agent
+
+Figure5 shows the different states and transitions related to a demanding agent looking for the Manifest details of a target
+agent. From CAPABILITY SEARCH state, the agent moves to the WAITING for MANIFEST state whenever it sends a
+requestMANIFEST standard message envelope event[20]. While in the WAITING for MANIFEST state, the agent can
+continue sending requestMANIFEST periodically, or it can move to the READY state upon receiving a response from
+the serving agent via the publishMANIFEST standard message envelope event[21]. The previous process is useful when
+the potential serving agent has already been identified by the demanding agent. In other cases, it is possible to search for
+a list of potential serving agents capable of accomplishing specific tasks using a natural language-based API similar to
+the Whisper events. The state diagram in Figure6 shows the different states and transitions related to a demanding agent
+
+
+
+
+                 Figure 6: Demanding agent looking for Assistants available to perform specific tasks
+
+looking for Assistants available to perform specific tasks. From the ASSISTANT SEARCH state, the agent moves to
+the WAITING for ASSISTANT LIST state whenever it sends a findASSISTANT standard message envelope event[22].
+While in the WAITING for ASSISTANT LIST state, the agent can continue sending findASSISTANT periodically, or it
+can move to the READY state upon receiving a response from the serving agent via the proposeMANIFEST standard
+message envelope event[23], in case of recommendation involves one or more agents to directly service the request
+(including itself). In case the recommendation is related to one or more agents to help find who can service this request
+(indirect service), the agent will move back to the ASSISTANT SEARCH state and it will use the findASSISTANT
+event to query some of the suggested agents.
+
+
+
+
+                                                             7
+                                                                                           A PREPRINT - J ULY 30, 2024
+
+
+5   USE CASES
+This section describes two scenarios in which multiple agents interact to coordinate and optimize a series of errands. This
+interaction is designed according to the Universal Open API specifications for Agentic Natural Language Multimodal
+Communications as described in this paper.
+
+Smart Errands Use Case
+In the first scenario, Emmett, a human, seeks assistance from Cassandra, his general AI assistant, to manage and
+streamline his possible errands efficiently. The AI assistants at various service points - Pat at Blooming Town Florist,
+Andrew at the Post Office, Charles at the hardware store, and Sukanya the Host at Thai Palace - facilitate the transactions.
+Emmett, a human, has the following goals:
+
+       • Order some flowers for his wife’s birthday.
+       • Check on the repair of the chainsaw he left at the hardware store.
+       • Order some carryout Thai food for lunch.
+       • Find the cost of mailing a 2 pound package to California.
+
+Characters
+       • Emmett: The Human
+       • Cassandra: Emmett’s general AI assistant
+       • Pat: AI Assistant for his local florist
+       • Andrew: AI Assistant at the post office
+       • Charles: AI Assistant at Emmett’s local hardware store
+       • Sukanya: AI Assistant at the local restaurant, “Thai Palace”
+
+AI LLM Technologies
+       • Cassandra: based on GPT-3.5 Turbo
+       • Pat: llama2
+       • Andrew: rule-based application (no LLM involved)
+       • Charles: Claude.ai 3.5 Sonnet
+       • Sukanya: GPT-4o
+
+Conversations
+Emmett: Hi Cassandra.
+Cassandra: Hi Emmett! How can I assist you today?
+Emmett: I do need to order some flowers for my wife’s birthday.
+Cassandra: Sure thing, Emmett! I’ll connect you with the local florist shop.
+[invites Blooming Town Florist to this conversation]
+Pat: Hi Emmett!
+I’m Pat, your friendly florist. How can I help you with your flower selection today?
+Are you looking for something specific or need suggestions?
+Emmett: Do you have any red Proteas?
+Pat: Hi Emmett! Yes, we do have red Proteas. They’re stunning and make a bold statement.
+Would you like to include them in your arrangement?
+Emmett: Yes and add some eucalyptus in a clear vase, please.
+Pat: Great choice, Emmett!
+Red Proteas with eucalyptus in a clear vase will look stunning.
+Would you like to add any other flowers or accents?
+Emmett: No that’s fine, send it to my home.
+
+
+                                                             8
+                                                                  A PREPRINT - J ULY 30, 2024
+
+
+Pat: Great choice, Emmett! Shall I use the credit card on file for this order?
+Emmett: Yes use the card on file.
+Pat: Great choice, Emmett! Your red Proteas with eucalyptus in a clear vase will be sent
+to your home. Thanks for your order! Have a blooming day!
+[Pat returns a "bye" event and the conversation turns back to Cassandra]
+Cassandra: Hi Emmett! How can I assist you today?
+Emmett: I need to check with the hardware store to see if my chainsaw repair is finished.
+Cassandra: Sure thing, Emmett! I’ll check with the hardware store for you.
+One moment please.
+[Cassandra invites Charles at the hardware store to join]
+Charles: Hi Emmett! How can I help you today?
+Need anything from the store or checking on a repair?
+Emmett: I want to know if my chainsaw repair is finished.
+Charles: Hi Emmett! Let me check on that for you. Ah, yes, your chainsaw will be ready
+by tomorrow afternoon. Anything else I can help you with?
+Emmett: No that’s all Thanks. Goodbye.
+[Charles returns a "bye" event and the conversation turns back to Cassandra]
+Cassandra: Hi Emmett! Your chainsaw repair will be ready by tomorrow afternoon.
+Thanks for checking in.
+Cassandra: Hi Emmett! How can I assist you today?
+Emmett: I want to order a carry out from my Thai restaurant.
+Cassandra: Sure thing, Emmett! I’ll connect you with your favorite Thai restaurant.
+[Cassandra invites Thai Palace to join]
+Sukanya: Hello, Emmett! I’m Sukanya, the Restaurant Manager.
+How can I help you with your carryout order today?
+Our special of the day is Pad Thai with shrimp. Would you like to try it?
+Emmett: Yes I’ll take one order of the pad Thai with shrimp and make it spicy.
+Sukanya: Great choice, Emmett! Would you like to add our special appetizer
+of the day, crispy spring rolls?
+Emmett: Yes add 2 spring rolls.
+Sukanya: Great choice, Emmett! Would you like to try our special of the day,
+Mango Sticky Rice for dessert? When would you like to pick up your order?
+Emmett: No dessert today but I’d like to pick up my order in about an hour
+Sukanya: Got it, Emmett! One spicy shrimp Pad Thai and two spring rolls.
+Ready for pick-up in an hour.
+Thank you and see you soon!
+[Sukanya returns a "bye" event and the conversation turns back to Cassandra]
+Cassandra: Hi Emmett! How can I assist you today?
+Emmett: How much does it cost to mail a 2 LB package to California?
+Cassandra: Hi Emmett! I can help with that.
+Let me connect you to the post office for accurate pricing.
+[Cassandra invites the Post Office to join]
+Andrew: Hi Emmett! I’m Andrew, the Postmaster.
+How can I assist you with sending mail and packages
+through the United States Postal Service today?
+Emmett: How much does a 2 LB package going to California cost?
+Andrew: Hi Emmett! The cost depends on the shipping service you choose.
+For example, Priority Mail starts around $8.70.
+Rates can vary based on dimensions and delivery speed. Need more details?
+Emmett: No that’s good Thanks. Goodbye.
+Andrew: Goodbye, Emmett.
+[Andrew returns a "bye" event and the conversation turns back to Cassandra]
+Cassandra: Hi Emmett! How can I assist you today?
+Emmett: That’s all I needed. Have a good day.
+Cassandra: Thank you, Emmett! Have a wonderful day!
+
+
+
+
+                                            9
+                                                                                          A PREPRINT - J ULY 30, 2024
+
+
+OVON sequence diagram
+As illustrated in APPENDIX C (Sequence Diagrams) on page 21, Figure7 shows a snapshot of the sequence related to
+the main OVON Conversation Envelope messages exchanged between the different Agents (Human and AI-based).
+
+Summary
+In this use case, Emmett, a human, engages with Cassandra, his general AI assistant, and other AI assistants at various
+service points—his florist, the hardware store, the local Thai restaurant, and the Post Office. The scenario showcases
+how these AI agents efficiently manage tasks, demonstrating a seamless integration of technology that transcends
+specific AI models or frameworks. This is achieved independently of the underlying large language models (LLMs) and
+AI technologies deployed.
+
+Smart Library Use Case
+The second use case illustrates an actual experiment conducted to provide potential conversational AI chatbot support
+to Estonian citizens[26]. It outlines a scenario where various AI assistants collaborate to provide support for a human
+user, Lea, who needs assistance with literature research. The AI assistants are characterized by distinct roles, different
+technologies and AI capabilities.
+
+Characters
+       • Lea: the Human Citizen
+       • Juri: the Frontend AI assistant for Citizens
+       • Andres: AI Assistant with Discovery capabilities
+       • Kaja: a Smart Library AI assistant
+
+AI LLM Technologies
+       • Juri: GPT-3.5 Turbo
+       • Andres: Mistral-7B-Instruct-v0.3
+       • Kaja: HuggingFaceH4/zephyr-7b-beta
+
+Conversations
+Juri: Welcome to the OVON Smart Library service!
+I can look up information about books if you provide a valid ISBN number
+with a Whisper. If you prefer, you can also send me a Natural Language utterance
+and I’ll reply you!
+Lea: Hello this is Lea, I need to prepare a Literature essay.
+Do you know about any books written by Lydia Koidula?
+Juri: Sure, Lea. Let me check with a proper specialized library assistant.
+Hold on please.
+Juri to Andres: Can you send me a list of Assistants with knowledge about books
+related to Lydia Koidula please?
+Andres to Juri: Here it’s a list of Assistants:
+[proposedAssistant:
+Kaja, "url": https://smartlibrary1.ee
+Heli, "url": https://nationalLibraryArchive1.org
+Kalev, "url": https://estonianlibrary2.org]
+Juri to Kaja: Send me your Manifest please [requestManifest]
+Kaja to Juri: This is my Manifest
+publishManifest:
+[{
+
+
+                                                           10
+                                                                                          A PREPRINT - J ULY 30, 2024
+
+
+"identification":
+{
+"serviceEndpoint": "https://smartlibrary1.ee/smartlibrary",
+"organization": ”EE_example",
+"conversationalName": "smartlibrary",
+"serviceName": "Books and Authors AI agent",
+"role": "Book Specialist",
+"synopsis" : "AI agent specializing in providing information about
+Estonian books and authors."
+},
+
+"capabilities": [
+{
+"keywords": [
+"books",
+"authors",
+"ISBN",
+"editors”...
+],
+"languages": [
+...
+]
+Juri to Kaja: Do you know about any books written by Lydia Koidula?
+Kaja to Juri: Lydia Koidula, the pen name for Lydia Emilie Florentine Jannsen,
+was one of the most important figures in Estonian literature,
+particularly known for...
+Juri to Lea: Thank you for your patience. Lydia Koidula, the pen name for
+Lydia Emilie Florentine Jannsen, was one of the most important figures in
+Estonian literature, particularly known for...
+
+
+OVON sequence diagram
+
+As illustrated in APPENDIX C (Sequence Diagrams), Figure8 shows a snapshot of the sequence related to the main
+OVON Conversation Envelope messages exchanged between the different Agents (Human and AI-based).
+
+
+Summary
+
+As can be seen in this second use case, when Lea asks for information on books by Lydia Koidula, Juri does not
+provide the information directly but instead coordinates with Andres to identify the appropriate assistant with better
+expertise. Andres suggests Kaja among others, and Juri interacts with Kaja to retrieve the necessary information, which
+is then relayed back to Lea. Also this scenario underscores that the AI framework’s ability to provide such coordinated,
+specialized support is independent of the specific large language models (LLMs) and conversational AI technologies
+deployed. This independence suggests a versatile and adaptable AI system capable of integrating various technologies
+to meet specific user needs.
+
+
+6   IMPROVEMENTS AND FUTURE DIRECTIONS
+
+While the interoperability specifications are currently able to support many practical use cases, there are several future
+enhancements that we believe will extend their applicability to even more use cases.
+
+       • The ability to represent multimodal interchanges among agents
+       • Support for multi-party conversations
+       • Formats to enable agents to exchange background information, conversation history, and other context in
+         addition to users’ utterances
+       • Redaction of sensitive data
+
+
+                                                           11
+                                                                                           A PREPRINT - J ULY 30, 2024
+
+
+Furthermore, to address the complexities of Conversational AI Security, Ethics, and Accountability within the proposed
+interoperability specifications, several additional enhancements can be considered for future directions. These improve-
+ments are based on the work of a related project, the Open Voice TrustMark initiative[24], and will complement the
+specifications by strengthening the framework’s capability to handle security risks, ensure ethical interactions, and
+maintain clear accountability. Here are some potential future guidelines for enhancements:
+
+       • Enhanced Authentication, Authorization, and Accounting (AAA) Framework: Implement robust multi-factor
+         authentication methods to verify the identity of all interacting agents. Establish comprehensive authorization
+         protocols to control access based on agent roles and responsibilities. Introduce detailed accounting logs that
+         capture all interactions for audit purposes, ensuring traceability and non-repudiation.
+       • Bias Mitigation Mechanisms: Develop specifications to detect and mitigate bias in AI responses, particularly
+         focusing on language models’ training data and output. Include periodic reviews of AI systems for bias across
+         different demographics to ensure fairness and inclusivity in AI-mediated interactions.
+       • Transparency Guidelines: Mandate the disclosure of AI decision-making processes, allowing users to under-
+         stand how responses are generated. Implement mechanisms that explain AI responses in understandable terms,
+         particularly in high-stake scenarios.
+       • Ethical Interaction Protocols: Create ethical guidelines that AI agents must adhere to during interactions,
+         including respect for user privacy, adherence to social norms, and prohibition of deceptive practices. Enforce
+         these guidelines through regular compliance checks and updates in response to emerging ethical considerations.
+       • Accountability Tracking: Develop a system to assign and track accountability for decisions made by AI agents,
+         ensuring that all actions can be traced back to specific algorithms or data used. Set up independent review
+         boards that can assess AI actions and intervene in cases of ethical violations or disputes.
+       • Sensitive Data Redaction and Encryption: Integrate advanced data redaction tools to automatically identify
+         and mask sensitive information within conversations. Employ state-of-the-art encryption techniques to protect
+         data integrity and confidentiality during transmission between agents.
+
+By incorporating these enhancements into the interoperability specifications, we can significantly improve the security,
+ethics, and accountability of Conversational AI platforms, ensuring they are safer, fairer, and more reliable for all users.
+
+7   CONCLUSIONS
+The proposed approach based on a Universal set of Open APIs for Agentic Natural Language Multimodal Communica-
+tions, utilising the Open Voice Conversation Envelope API, offers significant advancements in enabling independent
+conversational assistants to collaborate. The key benefits of this approach include its very loose coupling of assistants,
+which allows for a high degree of flexibility and ease of integration. It is agnostic to the underlying technologies on
+which agents are based, thereby supporting a diverse range of technologies, including Generative AI LLMs, LMM,
+LAM, Non-Generative AI, and even non-AI systems, across multiple communication channels such as voice, video, and
+text. The approach imposes minimal requirements on cooperating assistants, thus reducing the complexity of adding
+new ones. By relying on natural language interpretation, it simplifies the communication process between assistants.
+Additionally, it can seamlessly send information to human agents, enhancing its versatility in handling user requests.
+These features collectively represent a step forward in the development of interoperable and flexible conversational AI
+systems.
+The state diagrams and use cases previously described illustrate how the specifications are meticulously designed to
+remain independent of any specific conversational AI technology, including but not limited to large language models
+(LLMs). This design ensures wide compatibility and interoperability across various AI platforms and technologies.
+The proposed architecture for interoperable Conversational AI assistants is designed to be replicable and accessible via
+open repositories. Everyone can access the OVON specifications[14] and the Sandbox[25], an experimental browser/as-
+sistant system that implements InteropDialogEventSpecs and supports OVON Envelopes. This system features text
+and speech interfaces, includes a local server for hosting browser-based applications, and provides a list of assistant
+servers for experimentation. Additionally, it offers a basic Python as well as LLM based assistant server frameworks for
+developing new assistants.
+Furthermore, incorporating the proposed advancements into the interoperability specifications will profoundly elevate
+the capabilities of Conversational AI platforms in managing security, ethical interactions, and accountability. These
+advancements, previously detailed, include comprehensive authentication protocols, bias mitigation, transparency
+measures, and ethical guidelines, alongside enhanced data protection techniques. Implementing these measures ensures
+AI platforms not only meet current needs but are also prepared for broader and more complex applications, making
+them indispensable tools in a technology-driven future.
+
+
+                                                            12
+                                                                                       A PREPRINT - J ULY 30, 2024
+
+
+ACKNOWLEDGMENTS
+We express our sincere appreciation to the Open Voice interoperability[27] Team (Linux Foundation AI & Data
+Foundation) for their invaluable contributions and support in developing the Interoperable Standards, particularly to
+Jon Stine, Jim Larson and David Attwater, together with all the Burokratt team[26]. Their expertise, suggestions, and
+resources have been pivotal in shaping a model that is both ethically grounded and practically effective in real-world
+applications.
+
+References
+[1] ChatBottle, Chatbots search engine powered by ranking algorithms and full-text search, 2024, https:
+    //chatbottle.co/
+[2] The Future of Chatbots:        80+ Chatbot Statistics for 2024,             https://www.tidio.com/blog/
+    chatbot-statistics/
+[3] Markus Schlosser. Agency definition, Stanford Encyclopedia of Philosophy Archive. In Fall 2015 Edition,
+    https://plato.stanford.edu/archives/fall2015/entries/agency/
+[4] Gosmar, D. Conversational hyperconvergence: an onlife evolution model for conversational AI agency. In Springer
+    Nature AI Ethics, 2024, https://doi.org/10.1007/s43681-024-00463-0
+[5] The Web Layers: Introduction to Surface, Deep and Darknet, 2020, https://cyberprotection-magazine.
+    com/the-web-layers-introduction-to-surface-deep-and-darknet
+[6] Interoperable Conversation Envelope Specification, (2024), Editor-in-Chief: David Attwater, Con-
+    tributors:   Emmett Coin, Deborah Dahl, Jim Larson, Allan Wylie, Rainer Türner and Diego
+    Gosmar, https://github.com/open-voice-interoperability/docs/blob/main/specifications/
+    ConversationEnvelope/0.9.2/InteroperableConvEnvSpec.md
+[7] Multimodal Architecture and Interfaces, W3C Recommendation, 2012 https://www.w3.org/TR/mmi-arch/
+[8] Galaxy Communicator, Defense Advanced Research Projects Agency (DARPA) 2003, https://communicator.
+    sourceforge.io/
+[9] AutoGen. An Open-Source Programming Framework for Agentic AI, 2024, https://microsoft.github.io/
+    autogen/
+[10] OpenDevin, an autonomous AI software engineer, 2024, https://docs.all-hands.dev/modules/usage/
+    intro
+[11] Voice Extensible Markup Language (VoiceXML), W3C Recommendation, 2007, https://www.w3.org/TR/
+    voicexml21/
+[12] Cheyer, A., Martin, D. The Open Agent Architecture. Autonomous Agents and Multi-Agent Systems 4, 143–148
+    (2001), https://doi.org/10.1023/A:1010091302035
+[13] Marilyn Walker, Alex Rudnicky, John Aberdeen, Elizabeth Bratt, John Garofolo, Helen Hastie, Audrey Le, Bryan
+    Pellom, Alex Potamianos, Rebecca Passonneau, Rashmi Prasad, Salim Roukos, Gregory Sanders, Stephanie Seneff,
+    and David Stallard. Darpa communicator evaluation: Progress from 2000 to 2001. In Proceedings of ICSLP 2002,
+    Denver, USA, 2002, http://dx.doi.org/10.21437/ICSLP.2002-133
+[14] Open voice interoperability specifications (2024), Editor-in-Chief: David Attwater. Contributors: Em-
+    mett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gosmar,                   https://github.com/
+    open-voice-interoperability/docs/tree/main/specifications
+[15] Interoperable Dialog Event Object Specification (2023), Editor-in-Chief: David Attwater, Contributors: Em-
+    mett Coin, Deborah Dahl, Jim Larson https://github.com/open-voice-interoperability/docs/tree/
+    main/specifications/DialogEvents
+[16] Assistant Manifest Specification Version 0.9.0 (2024) Editor-in-Chief: David Attwater. Contributors:
+    Emmett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gosmar, https://github.com/
+    open-voice-interoperability/docs/blob/main/specifications/AssistantManifest/0.9.0/
+    AssistantManifestSpec.md
+[17] Interoperable Conversation Envelope, Invite event, 2024, Editor-in-Chief: David Attwater. Contributors:
+    Emmett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gosmar, https://github.com/
+    open-voice-interoperability/docs/blob/main/specifications/ConversationEnvelope/0.9.2/
+    InteroperableConvEnvSpec.md#115-invite-event
+
+
+                                                         13
+                                                                              A PREPRINT - J ULY 30, 2024
+
+
+[18] Interoperable Conversation Envelope, Utterance event, 2024, Editor-in-Chief: David Attwater. Contribu-
+    tors: Emmett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gosmar, https://github.com/
+    open-voice-interoperability/docs/blob/main/specifications/ConversationEnvelope/0.9.2/
+    InteroperableConvEnvSpec.md#-110-utterance-events
+[19] Interoperable Conversation Envelope, Bye event, 2024, Editor-in-Chief: David Attwater. Contributors:
+    Emmett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gosmar, https://github.com/
+    open-voice-interoperability/docs/blob/main/specifications/ConversationEnvelope/0.9.2/
+    InteroperableConvEnvSpec.md#114-bye-event
+[20] Interoperable Conversation Envelope, Request Manifest event, 2024, Editor-in-Chief:              David
+    Attwater. Contributors: Emmett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gos-
+    mar.,       https://github.com/open-voice-interoperability/docs/blob/main/specifications/
+    ConversationEnvelope/0.9.2/InteroperableConvEnvSpec.md#116-requestmanifest-event-1
+[21] Interoperable Conversation Envelope, Publish Manifest event, 2024, Editor-in-Chief:              David
+    Attwater. Contributors: Emmett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gos-
+    mar.,       https://github.com/open-voice-interoperability/docs/blob/main/specifications/
+    ConversationEnvelope/0.9.2/InteroperableConvEnvSpec.md#117-publishmanifest-event-1
+[22] Interoperable Conversation Envelope, Find Assistant event, 2024, Editor-in-Chief: David Attwa-
+    ter. Contributors: Emmett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gosmar.,
+    https://github.com/open-voice-interoperability/docs/blob/main/specifications/
+    ConversationEnvelope/0.9.2/InteroperableConvEnvSpec.md#118-findassistant-event-1
+[23] Interoperable Conversation Envelope, Find Assistant event, 2024, Editor-in-Chief: David Attwa-
+    ter. Contributors: Emmett Coin, Deborah Dahl, Leah Barnes, Allan Wylie and Diego Gosmar.,
+    https://github.com/open-voice-interoperability/docs/blob/main/specifications/
+    ConversationEnvelope/0.9.2/InteroperableConvEnvSpec.md#119-proposeassistant-event-1
+[24] Open Voice Trustmark initiative, 2024, https://openvoicenetwork.org/trustmark-initiative/
+[25] Open Voice Sandbox repository, 2024,               https://github.com/open-voice-interoperability/
+    open-voice-sandbox
+[26] Bürokratt, virtual assistant based on artificial intelligence, 2024,           https://www.ria.ee/en/
+    state-information-system/personal-services/burokratt
+[27] Introducing the Interoperability Initiative of the Open Voice Network, 2023, https://openvoicenetwork.
+    org/interoperability-initiative
+
+
+
+
+                                                   14
+                                                                                                   A PREPRINT - J ULY 30, 2024
+
+
+     APPENDIX A (Conversation Envelope)
+     Conversation Envelope Object Structure:
+ 1      {
+ 2           " ovon " : {
+ 3
+ 4             " schema " : {
+ 5                " version " : " 0 . 9 . 2 "
+ 6                " url " : " https : // github . com / open - voice - interoperability / docs / tree /
+            main / schemas / conversation - envelope / 0 . 9 . 2 / conversation - envelope - schema .
+            json "
+ 7             },
+ 8
+ 9               " conversation " : {
+10                  " id " : " 3 1 0 5 0 8 7 9 6 6 2 4 0 7 5 6 0 0 6 1 8 5 9 4 2 5 9 1 3 2 0 8 "
+11               },
+12
+13               " sender " : {
+14                  " from " : " https : // example . com / message - from " ,
+15                  " reply - to " : " https : // example . com / reply - message - to "
+16               },
+17
+18               " events " : [
+19               {
+20                  " to " : " intended recipient A " ,
+21                  " eventType " : " event type A " ,
+22                  " parameters " : {
+23                     " parameter 1 " : { parameter 1                           values }
+24                     " parameter n " : { parameter n                           values }
+25                  }
+26               },
+27               {
+28                  " to " : " intended recipient B " ,
+29                  " eventType " : " event type B " ,
+30                  " parameters " : {
+31                     " parameter 1 " : { parameter 1                           values }
+32                     " parameter n " : { parameter n                           values }
+33                  }
+34               },
+35               ]
+36           }
+37      }
+                                             Listing 1: Conversation Envelope Object Structure
+
+     Conversation Envelope JSON POST REQUEST example (utterance and whisper events sent to a “Smart Library” AI
+     Assistant specialized in Author and Book information):
+ 1      {
+ 2           " ovon " : {
+ 3              " schema " : {
+ 4                 " version " : " 0 . 9 . 2 " ,
+ 5                 " url " : " https : // openvoicenetwork . org / schema / dialog - envelope . json "
+ 6              },
+ 7              " conversation " : {
+ 8                 " id " : " conv_ 1 6 9 9 8 1 2 8 3 4 7 9 4 "
+ 9              },
+10              " sender " : {
+11                 " from " : " https : // o r g a n i z a t i o n _ u r l _ f r o m " ,
+
+
+                                                                          15
+                                                                               A PREPRINT - J ULY 30, 2024
+
+
+12             " reply - to " : " https : // o r ga n iz a t io n _u r l_ t o "
+13          },
+14          " responseCode " : 2 0 0 ,
+15          " events " : [
+16          {
+17             " eventType " : " invite " ,
+18             " parameters " : {
+19                " to " : {
+20                   " url " : " https : // your - smartlibrary - url - here "
+21                }
+22             }
+23          },
+24          {
+25             " eventType " : " utterance " ,
+26             " parameters " : {
+27                " dialogEvent " : {
+28                   " speakerId " : " h um anO rA ss ist an tI D " ,
+29                   " span " : { " startTime " : " 2 0 2 3 -1 1 -1 4 0 2 : 0 6 : 0 7 + 0 0 : 0 0 " } ,
+30                   " features " : {
+31                       " text " : {
+32                          " mimeType " : " text / plain " ,
+33                          " tokens " : [ { " value " : " Can I have some info about Harry
+         Potter please ?" } ]
+34                       }
+35                   }
+36                }
+37             }
+38          },
+39          {
+40             " eventType " : " whisper " ,
+41             " parameters " : {
+42                " dialogEvent " : {
+43                   " speakerId " : " h um anO rA ss ist an tI D " ,
+44                   " span " : { " startTime " : " 2 0 2 3 -1 1 -1 4 0 2 : 0 6 : 0 7 + 0 0 : 0 0 " } ,
+45                   " features " : {
+46                       " text " : {
+47                          " mimeType " : " text / plain " ,
+48                          " tokens " : [ { " value " : " In particular can I get some info
+         about harry potter and the philosopher ’ s stone " } ]
+49                       }
+50                   }
+51                }
+52             }
+53          }
+54          ]
+55        }
+56   }
+            Listing 2: HTTPS POST REQUEST using the OVON Universal APIs with Utterance and Whisper
+
+
+
+
+                                                     16
+                                                                                           A PREPRINT - J ULY 30, 2024
+
+
+    Conversation Envelope JSON POST RESPONSE example:
+1   { " ovon " : { " schema " : { " version " : " 0 . 9 . 2 " , " url " : " https : // openvoicenetwork . org /
+         schema / dialog - envelope . json " } , " conversation " : { " id " : " conv_ 1 6 9 9 8 1 2 8 3 4 7 9 4 "
+         } , " sender " : { " from " : " Smart
+2             Library
+3             APIs " } , " responseCode " : { " code " : 2 0 0 , " description " : " OK " } , " events " : [ { "
+         eventType " : " utterance " , " parameters " : { " dialogEvent " : { " speakerId " : "
+         assistant " , " span " : { " startTime " : " 2 0 2 4 -0 7 -1 3 T 1 9 : 1 8 : 2 5 . 8 5 5 Z " } , " features " : {
+         " text " : { " mimeType " : " text / plain " , " tokens " : [ { " value " : "\" Certainly ! \\\"
+         Harry Potter and the Philosopher ’ s Stone \\\" is the first novel in the
+         \\\" Harry Potter \\\" series written by British author J . K . Rowling . The
+           title of the book in the United States was changed to \\\" Harry Potter
+           and the Sorcerer ’ s Stone .\\\" The book was first published by
+         Bloomsbury in the UK on June 2 6 , 1 9 9 7 , and later in the US by
+4                            Scholastic on September 1 , 1 9 9 8 .\\ n \\ nThe novel introduces
+           Harry Potter , an \"" } ] } } } } } ] } }
+                  Listing 3: Smartlibrary AI Agent POST RESPONSE example to Utterance and Whisper
+
+
+
+
+                                                             17
+                                                                                    A PREPRINT - J ULY 30, 2024
+
+
+     APPENDIX B (Manifest and Discovery)
+     Assistant Manifest Object Structure example:
+ 1   {
+ 2       " identification " :
+ 3       {
+ 4          " serviceEndpoint " : " your - smartlibrary - url - here / smartlibrary " ,
+ 5          " organization " : " Your_O rganizati on " ,
+ 6          " co nv ers at io nal Na me " : " smartlibrary " ,
+ 7          " serviceName " : " Books and Authors AI agent " ,
+ 8          " role " : " Book Specialist " ,
+ 9          " synopsis " : " AI agent specializing in providing information about
+           books and authors ."
+10       },
+11
+12       " capabilities " : [
+13       {
+14          " keywords " : [
+15          " books " ,
+16          " authors " ,
+17          " ISBN " ,
+18          " editors "
+19          ],
+20          " languages " : [
+21          " en - us "
+22          ],
+23          " descriptiveTexts " : [
+24          " Authors and Books information "
+25          ],
+26          " modalities " : [
+27          " text "
+28          ],
+29          " contentType " : " application / json "
+30       }
+31       ]
+32   }
+                                         Listing 4: Smartlibrary Manifest example
+
+
+
+
+                                                           18
+                                                                                              A PREPRINT - J ULY 30, 2024
+
+
+     Conversation Envelope JSON POST REQUEST example (requestManifest event sent to a “Smart Library” AI Assistant
+     specialized in Author and Book information):
+ 1   {
+ 2       " ovon " : {
+ 3          " schema " : {
+ 4             " version " : " 0 . 9 . 2 "
+ 5          },
+ 6          " conversation " : {
+ 7             " id " : " 3 1 0 5 0 8 7 9 6 6 2 4 0 7 5 6 0 0 6 1 8 5 9 4 2 5 9 1 3 2 0 8 "
+ 8          },
+ 9          " sender " : {
+10             " from " : " https : // someBot . com "
+11          },
+12          " events " : [
+13          {
+14             " to " : " https : // your - smartlibrary - url - here " ,
+15             " eventType " : " requestManifest "
+16          }
+17          ]
+18       }
+19   }
+                                        Listing 5: requestManifest POST REQUEST example
+
+
+
+
+                                                                     19
+                                                                                A PREPRINT - J ULY 30, 2024
+
+
+     Example of JSON RESPONSE to requestManifest:
+
+ 1   {
+ 2       " ovon " : {
+ 3          " schema " : {
+ 4             " version " : " 0 . 9 . 2 "
+ 5          },
+ 6          " conversation " : {
+ 7             " id " : " 3 1 0 5 0 8 7 9 6 6 2 4 0 7 5 6 0 0 6 1 8 5 9 4 2 5 9 1 3 2 0 8 "
+ 8          },
+ 9          " sender " : {
+10             " from " : " https : // your - smartlibrary - url - here " ,
+11             " to " : " https : // someBot . com "
+12          },
+13          " events " : [
+14          {
+15             " eventType " : " publishManifest " ,
+16             " parameters " : {
+17                " manifest " : {
+18                    " identification " : {
+19                       " serviceEndpoint " : " https : // your - smartlibrary - url - here /
+           smartlibrary " ,
+20                       " organization " : " Your_O rganizati on " ,
+21                       " co nv ers at io nal Na me " : " smartlibrary " ,
+22                       " serviceName " : " Books and Authors AI agent " ,
+23                       " role " : " Book Specialist " ,
+24                       " synopsis " : " AI agent specializing in providing information
+           about books and authors ."
+25                    },
+26                    " capabilities " : [
+27                    {
+28                       " keywords " : [
+29                       " books " ,
+30                       " authors " ,
+31                       " ISBN " ,
+32                       " editors "
+33                       ],
+34                       " languages " : [
+35                       " en - us "
+36                       ],
+37                       " descriptiveTexts " : [
+38                       " Authors and Books information "
+39                       ],
+40                       " modalities " : [
+41                       " text "
+42                       ],
+43                       " contentType " : " application / json "
+44                    }
+45                    ]
+46                }
+47             }
+48          }
+49          ]
+50       }
+51   }
+
+             Listing 6: HTTPS POST REQUEST using the OVON Universal APIs with Utterance and Whisper
+
+
+
+
+                                                      20
+                                                                           A PREPRINT - J ULY 30, 2024
+
+
+APPENDIX C (Sequence Diagrams)
+
+
+
+
+                   Figure 7: Interoperable AI Assistant scenario for Errands
+
+
+
+
+                                              21
+                                                                                    A PREPRINT - J ULY 30, 2024
+
+
+
+
+                     Figure 8: Interoperable Smart Library AI Assistant scenario for Citizens
+
+Sequence Diagrams can be generated by running the Sandbox environment available in this repository[25].
+
+
+
+
+                                                       22
+

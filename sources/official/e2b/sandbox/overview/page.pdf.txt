@@ -1,0 +1,104 @@
+  Getting started           E2B Documentation
+
+
+
+
+GETTING STARTED
+
+
+E2B Documentation                                                                   Copy page
+
+
+
+What is E2B?
+E2B provides isolated sandboxes that let agents safely execute code, process data, and run tools.
+Our SDKs make it easy to start and manage these environments.
+
+Start a sandbox and run code in a few lines:
+
+
+  JavaScript & TypeScript    Python
+
+
+  npm i e2b
+
+
+
+  JavaScript & TypeScript    Python
+
+
+  import { Sandbox } from 'e2b'
+
+  const sandbox = await Sandbox.create() // Needs E2B_API_KEY environment variable
+  const result = await sandbox.commands.run('echo "Hello from E2B Sandbox!"')
+  console.log(result.stdout)
+
+
+
+E2B building blocks
+A quick overview of the core building blocks you’ll interact with when using E2B.
+
+    Sandbox — A fast, secure Linux VM created on demand for your agent, which you can pause
+    and resume as needed
+
+    Template — Defines what environment a sandbox starts with
+
+    Persistence — Pausing a sandbox saves both its filesystem and its memory, and paused
+    sandboxes are kept indefinitely until you kill them
+
+
+
+How to use the docs
+The documentation is split into three main sections:
+  Quickstart — Step-by-step tutorials that walk you through creating your first E2B sandboxes.
+
+  Examples — In-depth tutorials focused on specific use cases. Pick the topics that match what
+  you’re building.
+
+  SDK Reference — A complete technical reference for every SDK method, parameter, and
+  configuration option.
+
+
+     Working with an AI coding agent? These docs are served for machines too. Point your agent at the docs
+     MCP server at https://docs.e2b.dev/mcp (public, no authentication needed), or give it
+      https://docs.e2b.dev/llms.txt for the full page index. Every page also serves its Markdown source
+     at the same URL with .md appended.
+
+
+
+
+Quickstart
+
+
+
+  Running your first Sandbox                              Connecting LLMs to E2B
+  Learn how to start your first E2B Sandbox               Connect your favorite LLM to E2B to run
+  with our Python or JavaScript SDK.                      AI-generated code inside the Sandbox.
+
+
+
+
+  Uploading & downloading files                           Install custom packages
+  A quick guide on how to upload and                      Customize your Sandbox with third-party
+  download files to and from the Sandbox.                 packages.
+
+
+
+
+Examples
+
+
+
+  Computer Use                                            GitHub Actions CI/CD
+  Build AI agents that see, understand, and               Use E2B sandboxes in your GitHub
+  control virtual Linux desktops using E2B                Actions workflows to run testing,
+  Desktop sandboxes.                                      validation, and AI code reviews.
+Was this page helpful?          Yes           No
+
+
+
+
+                         Running your first Sandbox
+
+  Ask a question...
+

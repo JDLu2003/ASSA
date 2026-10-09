@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-api",
+    "id": "web-search",
+    "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:34.643061+00:00",
+  "path": "sources/official/anthropic/claude-api/web-search",
+  "requested_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+  "final_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+  "http_status": 200,
+  "title": "Web search tool - Claude Platform Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "8522e803f94dee2cdff598597134c6e13151922a9f582d0d8169a1f452cb1272",
+      "bytes": 21890
+    },
+    "page.txt": {
+      "sha256": "5f6748eae6346ba791294941a20579dc3a5e243706a0315a15f97431749eef92",
+      "bytes": 20238
+    },
+    "page.pdf": {
+      "sha256": "4e63cc9b402d10ab96ccbefed1468999bf27ef2ef5a2371cd01c059d7e4d6ab4",
+      "bytes": 546081
+    }
+  }
+}

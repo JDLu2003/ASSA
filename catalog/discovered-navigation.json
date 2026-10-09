@@ -1,0 +1,165 @@
+[
+  {
+    "source": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+    "links": [
+      {
+        "text": "Sandbox environment",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment"
+      },
+      {
+        "text": "Quickstart: Develop with agent frameworks on Agent Runtime",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart"
+      },
+      {
+        "text": "Quickstart: Develop with Agent Development Kit on Agent Runtime",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart-adk"
+      },
+      {
+        "text": "RAG Engine billing",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/rag-engine/rag-engine-billing"
+      },
+      {
+        "text": "Agent Identity with Agent Runtime",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/agent-identity"
+      },
+      {
+        "text": "Optimize and scale Agent Runtime performance",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale"
+      },
+      {
+        "text": "Agent Runtime SDK migration",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/sdk-migration"
+      },
+      {
+        "text": "Shell sandbox quickstart",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart"
+      },
+      {
+        "text": "Manage sandboxes",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-sandboxes"
+      },
+      {
+        "text": "Manage sandbox templates",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates"
+      },
+      {
+        "text": "Configure VPC Service Controls for sandboxes",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/configure-vpc-sc"
+      },
+      {
+        "text": "Configure customer-managed encryption keys (CMEK) for sandboxes",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/configure-cmek"
+      },
+      {
+        "text": "Route Agent Runtime traffic through Agent Gateway",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/agent-gateway-runtime-deploy"
+      },
+      {
+        "text": "Codelab: Agent Gateway egress from Agent Runtime to Google MCP servers",
+        "url": "https://codelabs.developers.google.com/agw-cuj-arun-egress-gmcp"
+      },
+      {
+        "text": "Codelab: Agent Gateway egress from Agent Runtime to external MCP servers",
+        "url": "https://codelabs.developers.google.com/agw-cuj-arun-egress-emcp"
+      },
+      {
+        "text": "Codelab: Agent Gateway egress from Agent Runtime to VPC network",
+        "url": "https://codelabs.developers.google.com/agw-cuj-arun-egress-vpc"
+      },
+      {
+        "text": "Route Agent Runtime traffic through Agent Gateway",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/agent-gateway-runtime-deploy"
+      },
+      {
+        "text": "Sessions overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions"
+      },
+      {
+        "text": "Google Cloud pricing",
+        "url": "https://cloud.google.com/pricing/"
+      }
+    ]
+  },
+  {
+    "source": "https://platform.claude.com/docs/en/managed-agents/overview",
+    "links": [
+      {
+        "text": "Models & pricing",
+        "url": "https://platform.claude.com/docs/en/models/overview"
+      },
+      {
+        "text": "Cloud sandbox reference",
+        "url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference"
+      },
+      {
+        "text": "Self-hosted sandboxes",
+        "url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes"
+      },
+      {
+        "text": "self-hosted sandbox",
+        "url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes"
+      }
+    ]
+  },
+  {
+    "source": "https://developers.openai.com/api/docs/guides/agents",
+    "links": [
+      {
+        "text": "Responses API",
+        "url": "https://developers.openai.com/api/docs/guides/migrate-to-responses"
+      },
+      {
+        "text": "Pricing",
+        "url": "https://developers.openai.com/api/docs/pricing"
+      },
+      {
+        "text": "OpenAI-hosted sandboxes",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted"
+      },
+      {
+        "text": "Self-hosted sandboxes",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted"
+      },
+      {
+        "text": "Sandbox lifecycle",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle"
+      },
+      {
+        "text": "Sandbox security",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security"
+      },
+      {
+        "text": "Sandbox agents",
+        "url": "https://developers.openai.com/api/docs/guides/agents/sandboxes"
+      },
+      {
+        "text": "Pricing",
+        "url": "https://developers.openai.com/codex/pricing"
+      },
+      {
+        "text": "Windows sandbox",
+        "url": "https://developers.openai.com/codex/windows/windows-sandbox"
+      },
+      {
+        "text": "Sandboxing",
+        "url": "https://developers.openai.com/codex/sandboxing"
+      },
+      {
+        "text": "Sandbox agents",
+        "url": "https://developers.openai.com/api/docs/guides/agents/sandboxes"
+      },
+      {
+        "text": "Responses API",
+        "url": "https://developers.openai.com/api/docs/guides/migrate-to-responses"
+      },
+      {
+        "text": "Agents SDK overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents/sdk"
+      },
+      {
+        "text": "Responses guide",
+        "url": "https://developers.openai.com/api/docs/guides/migrate-to-responses"
+      }
+    ]
+  }
+]
