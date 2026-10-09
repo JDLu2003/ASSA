@@ -1,0 +1,75 @@
+{
+  "item": {
+    "topic": "agent-environments",
+    "id": "acrfence",
+    "arxiv": "2603.20625v1",
+    "kind": "arxiv-paper",
+    "title": "ACRFence: Preventing Semantic Rollback Attacks in Agent Checkpoint-Restore",
+    "landing_url": "https://arxiv.org/abs/2603.20625v1",
+    "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+    "published": "2026-03-21T03:39:36Z",
+    "authors": [
+      "Yusheng Zheng",
+      "Yiwei Yang",
+      "Wei Zhang",
+      "Andi Quinn"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:00:45.428541+00:00",
+  "path": "sources/papers/agent-environments/acrfence",
+  "requested_url": "https://arxiv.org/abs/2603.20625v1",
+  "pdf_url": "https://arxiv.org/pdf/2603.20625v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "f0d4d709b3aea8526da02549c0ba7fe27450a0a72e902fe9b461e22552ee037a",
+      "bytes": 110693
+    },
+    "paper.txt": {
+      "sha256": "a2e9c71558c3c681a62072d36e9750e3e332add8ab8879e24ea34907ba3e23a6",
+      "bytes": 32446
+    },
+    "paper.pdf": {
+      "sha256": "5b88ebb1f9dc1cb136c2e8b282a5b9d31122dc172ecd9c1893f4a5b578e86263",
+      "bytes": 463072
+    },
+    "landing.html": {
+      "sha256": "c633e8b66c7dc45bb58b67db22897dbd12115616c16016fbfdfb8d76b9e3d7fd",
+      "bytes": 40599
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2603.20625v1",
+    "retrieved_at": "2026-10-09T13:06:16.921598+00:00",
+    "fields": {
+      "citation_title": [
+        "ACRFence: Preventing Semantic Rollback Attacks in Agent Checkpoint-Restore"
+      ],
+      "citation_author": [
+        "Zheng, Yusheng",
+        "Yang, Yiwei",
+        "Zhang, Wei",
+        "Quinn, Andi"
+      ],
+      "citation_date": [
+        "2026/03/21"
+      ],
+      "citation_online_date": [
+        "2026/03/21"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2603.20625"
+      ],
+      "citation_arxiv_id": [
+        "2603.20625"
+      ],
+      "citation_abstract": [
+        "LLM agent frameworks increasingly offer checkpoint-restore for error recovery and exploration, advising developers to make external tool calls safe to retry. This advice assumes that a retried call will be identical to the original, an assumption that holds for traditional programs but fails for LLM agents, which re-synthesize subtly different requests after restore. Servers treat these re-generated requests as new, enabling duplicate payments, unauthorized reuse of consumed credentials, and other irreversible side effects; we term these semantic rollback attacks. We identify two attack classes, Action Replay and Authority Resurrection, validate them in a proof of concept experiment, and confirm that the problem has been independently acknowledged by framework maintainers. We propose ACRFence, a framework-agnostic mitigation that records irreversible tool effects and enforces replay-or-fork semantics upon restoration"
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

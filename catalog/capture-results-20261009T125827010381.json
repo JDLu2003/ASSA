@@ -1,0 +1,97 @@
+{
+  "run_at": "2026-10-09T12:58:27.010444+00:00",
+  "results": [
+    {
+      "item": {
+        "topic": "agent-surveys",
+        "id": "autonomous-agents-survey",
+        "arxiv": "2308.11432",
+        "title": "A Survey on Large Language Model based Autonomous Agents",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:58:18.026143+00:00",
+      "path": "sources/papers/agent-surveys/autonomous-agents-survey",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:58:18.027199+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-surveys",
+        "id": "rise-and-potential-survey",
+        "arxiv": "2309.07864",
+        "title": "The Rise and Potential of Large Language Model Based Agents: A Survey",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:58:18.027266+00:00",
+      "path": "sources/papers/agent-surveys/rise-and-potential-survey",
+      "requested_url": "https://arxiv.org/abs/2309.07864",
+      "pdf_url": "https://arxiv.org/pdf/2309.07864",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "8b2811e4c2bdf3b873c390aee0ab52611730d4a987985f2412a54c9f4ad4d31f",
+          "bytes": 23664872
+        },
+        "paper.txt": {
+          "sha256": "9428271df34cba34480ee5c50e8505a869d2f1a753d0075b1b9c1fc918d1feaf",
+          "bytes": 382000
+        },
+        "paper.pdf": {
+          "sha256": "5e3b2357ff942e1a0e084ae4af3327011a651cf1f155d108065c70af369e24ac",
+          "bytes": 6832174
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:58:25.529062+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "ai-agents-that-matter",
+        "arxiv": "2407.01502",
+        "title": "AI Agents That Matter",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:58:25.529217+00:00",
+      "path": "sources/papers/agent-evaluation/ai-agents-that-matter",
+      "requested_url": "https://arxiv.org/abs/2407.01502",
+      "pdf_url": "https://arxiv.org/pdf/2407.01502",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "e59228a57d763507d9cf69f7770121e52afa033f5c1df5aef5dd4e4a4ab7eaf9",
+          "bytes": 1138812
+        },
+        "paper.txt": {
+          "sha256": "3e0d81cbbe96d025b3b26059d07fa8c281307de41914261e6ea3490f1f730eed",
+          "bytes": 140522
+        },
+        "paper.pdf": {
+          "sha256": "1681013e0421f9d193ca5bb556b566f50d1e5eaa43d7a9700a31ca3dd0e2ff7a",
+          "bytes": 1235369
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:58:26.708879+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "the-agent-company",
+        "arxiv": "2412.14161",
+        "title": "TheAgentCompany: Benchmarking LLM Agents on Consequential Real World Tasks",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:58:26.709029+00:00",
+      "path": "sources/papers/agent-evaluation/the-agent-company",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:58:26.709222+00:00"
+    }
+  ]
+}

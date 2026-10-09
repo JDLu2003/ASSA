@@ -1,0 +1,54 @@
+{
+  "item": {
+    "id": "dynarl",
+    "topic": "rl-systems",
+    "title": "DynaRL: Flexible and Dynamic Scheduling of Large-Scale Reinforcement Learning Training",
+    "url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+    "pdf_url": "https://www.usenix.org/system/files/osdi26-wang-yuanqing.pdf",
+    "venue": "OSDI 2026",
+    "kind": "publisher-paper"
+  },
+  "path": "sources/papers/rl-systems/dynarl",
+  "capture_started_at": "2026-10-09T13:08:31.389664+00:00",
+  "status": "captured",
+  "requested_url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+  "pdf_url": "https://www.usenix.org/system/files/osdi26-wang-yuanqing.pdf",
+  "landing_capture": {
+    "requested_url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+    "final_url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+    "http_status": 200,
+    "title": "DynaRL: Flexible and Dynamic Scheduling of Large-Scale Reinforcement Learning Training | USENIX",
+    "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+    "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+    "review_status": "captured; relevance and completeness require source review"
+  },
+  "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+  "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+  "files": {
+    "paper.txt": {
+      "sha256": "4b56731d17553325a21b836a7625e323a5c1404ee936738a7d60749abff44a16",
+      "bytes": 116117
+    },
+    "paper.pdf": {
+      "sha256": "f19ccf45513cebea665b8292a9282e6e9fc97dbc87018e6b350aa2cadf6035ec",
+      "bytes": 1657026
+    },
+    "landing.html": {
+      "sha256": "f1f56d3307801dc89d71358fad26a91e9f6a6bf25b41a8e52cee68fde9228800",
+      "bytes": 57229
+    },
+    "landing.txt": {
+      "sha256": "5aa9ae1d67e33e96f5d578e6e3fd4118bf33cb6f2d64b583ce59095cb4124f64",
+      "bytes": 3116
+    },
+    "landing.pdf.txt": {
+      "sha256": "59573f380292dc5ab238129d23ac66740e4f1305eacf6be8a4d2dafecf574a57",
+      "bytes": 2964
+    },
+    "landing.pdf": {
+      "sha256": "9e9a959591de577251a13093705a7c7430a2927f5fba56f74d8f334ac79b36ca",
+      "bytes": 50201
+    }
+  },
+  "capture_finished_at": "2026-10-09T13:08:35.518553+00:00"
+}

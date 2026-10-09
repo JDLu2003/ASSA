@@ -1,0 +1,492 @@
+                                                   Everything is Context: Agentic File System
+                                                      Abstraction for Context Engineering
+                                                              Xiwei Xu                                Robert Mao                              Quan Bai
+                                                CSIRO’s Data61, NSW Australia                        ArcBlock, Inc                      University of Tasmania
+                                          University of New South Wales, NSW Australia               Seattle, USA                        Tasmania Australia
+                                                     xiwei.xu@data61.csiro.au                       rob@arcblock.io                     quan.bai@utas.edu.au
+                                                              Xuewu Gu                                 Yechao Li                            Liming Zhu
+                                                            ArcBlock, Inc                            ArcBlock, Inc          CSIRO’s Data61, NSW Australia
+                                                            Seattle, USA                             Seattle, USA     University of New South Wales, NSW Australia
+                                                           nate@arcblock.io                      liyechao@arcblock.io           liming.zhu@data61.csiro.au
+arXiv:2512.05470v1 [cs.SE] 5 Dec 2025
+
+
+
+
+                                           Abstract—Generative AI (GenAI) has reshaped software sys-              Recent industrial frameworks such as LangChain have be-
+                                        tem design by introducing foundation models as pre-trained             gun to articulate context engineering as a structured process
+                                        subsystems that redefine architectures and operations. The             within agent architectures [3]. Four key stages of context
+                                        emerging challenge is no longer model fine-tuning but con-
+                                        text engineering—how systems capture, structure, and govern            engineering are identified. Agents first write contextual infor-
+                                        external knowledge, memory, tools, and human input to en-              mation into a shared memory or store, select the most relevant
+                                        able trustworthy reasoning. Existing practices such as prompt          elements for a given task, compress the selected context to fit
+                                        engineering, retrieval-augmented generation (RAG), and tool            model constraints, and isolate the final subset across agents
+                                        integration remain fragmented, producing transient artefacts that      for reasoning. These industrial practices highlight the growing
+                                        limit traceability and accountability. This paper proposes a file-
+                                        system abstraction for context engineering, inspired by the Unix       recognition that context management has become a central
+                                        notion that “everything is a file.” The abstraction offers a persis-   architectural concern. Similar pipelines appear in AutoGen [4],
+                                        tent, governed infrastructure for managing heterogeneous con-          and other related frameworks that support tool use and memory
+                                        text artefacts through uniform mounting, metadata, and access          augmentation [5]. However, these solutions remain ad hoc
+                                        control. Implemented within the open-source AIGNE framework,           and implementation-driven. They lack a unified architectural
+                                        the architecture realises a verifiable context-engineering pipeline,
+                                        comprising the Context Constructor, Loader, and Evaluator,             foundation to ensure traceability, governance, or systematic
+                                        that assembles, delivers, and validates context under token            handling of evolving context. Consequently, context artefacts
+                                        constraints. As GenAI becomes an active collaborator in decision       generated during these steps are often transient, opaque, and
+                                        support, humans play a central role as curators, verifiers, and        unverifiable, raising challenges of context rot [6] and knowl-
+                                        co-reasoners. The proposed architecture establishes a reusable         edge drift in industrial-setting GenAI systems [7].
+                                        foundation for accountable and human-centred AI co-work,
+                                        demonstrated through two exemplars: an agent with memory                  GenAI introduces new architectural constraints in AI engi-
+                                        and an MCP-based GitHub assistant. The implementation within           neering [8]. Foundation models act as pre-trained subsystems
+                                        the AIGNE framework demonstrates how the architecture can be           with limited token windows that constrain reasoning. This
+                                        operationalised in developer and industrial settings, supporting       bounded working memory propagates upward through the ar-
+                                        verifiable, maintainable, and industry-ready GenAI systems.            chitecture, shaping how context must be selected, modularised,
+                                           Index Terms—AI engineering, context engineering, GenAI
+                                                                                                               compressed, and loaded at runtime. As GenAI becomes an
+                                                                                                               active collaborator across domains such as education, health-
+                                                               I. I NTRODUCTION
+                                                                                                               care, and decision support, humans increasingly co-work with
+                                            Context engineering is emerging as a central concern in soft-      AI [9], [10] on reasoning and decision-making tasks. Yet
+                                        ware architecture for Generative AI (GenAI) and Agentic sys-           GenAI systems may produce inaccurate or misleading outputs
+                                        tems [1]–[3]. It refers to the process of capturing, structuring,      due to limited contextual awareness and evolving data sources.
+                                        and governing external knowledge, memory, tools, and human             Architectural mechanisms are therefore needed to govern
+                                        input so that reasoning by large language models (LLMs) and            how persistent knowledge (long-term memory) transitions into
+                                        agents is grounded in the right information, constraints, and          bounded context (short-term window) in a traceable, verifiable,
+                                        provenance. In contrast to prompt engineering, which focuses           and human-aware manner, ensures that human judgment and
+                                        on crafting individual instructions, context engineering focuses       tacit knowledge remain embedded within the system’s evolv-
+                                        on the entire information lifecycle, from selection, retrieval,        ing context for reasoning and evaluation.
+                                        filtering, construction, to compression, evaluation and refresh,          This paper introduces a file-system abstraction as an archi-
+                                        ensuring that GenAI systems and agents remain coherent,                tectural foundation, as a stepping stone for context engineer-
+                                        efficient, and verifiable over time.                                   ing, inspired by the Unix philosophy that “everything is a file”
+[11]. The abstraction provides a persistent, hierarchical, and       proposed for bridging context construction and retrieval [18]
+governed environment where heterogeneous context sources,            but note the absence of a verifiable architectural foundation.
+such as memory, tools, external knowledge, and human contri-            Industry and open-source efforts have converged on long-
+butions, are mounted and accessed uniformly. Building upon           term memory as a critical capability for agentic systems.
+this infrastructure, the paper extends file system into a context-   Existing solutions can be roughly categorized into embed-
+engineering pipeline that operationalises context construction       ding based solutions, like mem0 [19] and Letta (formerly
+under explicit architectural design constraints with the token       MemGPT) [20], and Knowledge Graph (KG) based solutions,
+window. The pipeline performs selection, compression, and            like Zep/Graphiti [21] and Cognee [22]. However, across these
+incremental streaming of context to ensure that bounded              solutions, context governance, access control, and multi-agent
+context capacity is used efficiently and transparently.              sharing remain largely ad hoc. Most frameworks focus on
+   Section II reviews related developments in SE4AI and              storage and retrieval optimization rather than architectural
+motivates the need for architectural foundations for context         composability or verifiable traceability.
+engineering. Section III introduces the file system abstraction         Beyond architectural paradigms, growing attention has been
+and its role as a persistent context infrastructure. Section V       paid to the dynamics of human–AI co-work, where humans
+introduces the design constraints and presents the context-          and AI agents jointly perform reasoning, assessment, and
+engineering pipeline built on these constraints. Section VI          decision-making tasks. Recent studies show that combining
+details the AIGNE implementation of the proposed file system         human judgment with AI inference can enhance performance
+abstraction, illustrated through two exemplars. Finally, Sec-        when tasks require contextual understanding, ethical reason-
+tion VII discusses key challenges, future research directions,       ing, or tacit domain knowledge [23]–[25].
+and concluding remarks.                                                 The file system abstraction proposed in this paper aligns
+                                                                     with the broader LLM-as-OS paradigm. It provides a persistent
+          II. BACKGROUND AND R ELATED W ORK                          and governed infrastructure for mounting and managing het-
+                                                                     erogeneous context resources. By aligning with core software-
+   The emergence of agentic Generative AI systems has given          architectural principles, including modularity, encapsulation,
+rise to an operating-system paradigm for LLMs (LLM-as-               separation of concerns, and traceability, the file system trans-
+OS), which conceptualises the LLM as a kernel orchestrat-            forms context engineering from ad hoc practice into a sys-
+ing context, memory, tools, and agents. AIOS project [12]            tematic, verifiable, and reusable infrastructure. Human roles
+operationalises this paradigm through OS-like primitives for         are directly embed into the context-engineering architecture,
+scheduling, resource allocation, and memory management for           ensuring that tacit knowledge and ethical judgment remain
+multi-agent systems [13]. Recent work on further extends this        integral parts of system reasoning and evaluation.
+view by proposing an LLM-based semantic file system that
+enables natural-language–driven file operations and semantic           III. F ILE SYSTEM AS I NFRASTRUCTURE FOR C ONTEXT
+indexing [14] MemGPT [15] introduces a memory hierar-                   The file system provides the foundational infrastructure
+chy that coordinates both short-term (context window) and            that enables systematic context engineering in GenAI sys-
+long-term (external storage) memory. While the LLM-as-OS             tems.Within this environment, agents and human experts func-
+paradigm provides an intuitive high-level conceptual model,          tion analogously to operating-system processes, performing
+it lacks a software-architectural abstraction for how context        file-style operations such as reading, writing, and searching
+is structured, shared, and governed. In particular, existing         on mounted context resources. The file system defines a uni-
+implementations often treat memory, retrieval, and tool use as       form namespace and a consistent set of basic operations that
+independent components rather than a coherent infrastructure.        together enable scalable coordination between autonomous
+   In parallel, context engineering [3], [16] has emerged as a       and human actors. The overall architecture of the proposed
+central element in design of Generative AI system. Unlike            infrastructure is represented in Figure 1. This architectural
+traditional prompt engineering, which considers context as           abstraction aligns with established software engineering first
+just a fixed block of text, context engineering treats it as a       principles. Concepts such as abstraction, modularity, encapsu-
+living, structured mix of instructions, external knowledge, tool     lation, separation of concerns, and composability shape how
+definitions, memory, system state, and user queries. Frame-          context resources are represented, accessed, and evolved. By
+works such as LangChain [17], AutoGen [4] provide partial            applying these principles, the file system transforms the com-
+support through modular components for memory and tool               plexity of heterogeneous context into a structured, verifiable,
+orchestration, but they lack unified mechanisms for traceabil-       and extensible environment for human–AI co-work. The file
+ity, governance, and lifecycle management of context artefacts.      system operationalises LLM-as-Operating-System paradigm by
+Emerging link-based mechanisms [1] treats context as inter-          transforming the metaphor into a concrete software architec-
+connected, discoverable resources, highlighting the need for         ture design.
+an unified, verifiable infrastructure to manage such dynamic            1) Abstraction: The file system implements the SE prin-
+context. Recent survey [2] from academia also confirms that          ciple of abstraction, providing a uniform interface that hides
+current approaches are fragmented and identified gaps in             the heterogeneity of underlying context sources. Regardless
+verification and lifecycle support. An integrated framework is       of whether a resource is a knowledge graph, a memory
+                                                                           experts can interpret intent and behaviour correctly, applying
+                                                                           appropriate verification and execution strategies. Separation
+                                                                           of concerns also extends to governance: access control, log,
+                                                                           and metadata management are handled through dedicated
+                                                                           mechanisms that remain independent of the functional logic
+                                                                           of retrieval or reasoning.
+                                                                              4) Traceability and Verifiability: Every interaction with the
+                                                                           file system, whether initiated by an agent or a human, is
+                                                                           logged as a transaction in the persistent context repository.
+                                                                           This enforces traceability that enables the reconstruction of
+                                                                           context provenance and accountability of actions. Coupled
+                                                                           with structured metadata, these logs support verifiability by
+                                                                           allowing changes, reasoning steps, and tool invocations to be
+                                                                           audited retrospectively. This ensures that the context pipeline
+                                                                           is not only functional but also transparent and auditable.
+                                                                              5) Composability and Evolvability: The file system
+                                                                           achieves composability by defining a consistent namespace and
+                                                                           interoperable metadata schema across all mounted resources.
+                                                                           Context elements can be combined, queried, or integrated into
+                                                                           higher-level reasoning processes without additional integration
+                                                                           code. Evolvability is realised through a plugin architecture
+                                                                           that allows new backends, such as full-text indexers, vector
+  Fig. 1. File system as a unifying abstraction for context engineering.   databases, or knowledge graphs to be mounted seamlessly
+                                                                           without modifying the other components.
+                                                                              Beyond standard file operations, the abstraction can asso-
+store, or a human-curated note, it is represented through a                ciate each file or directory with meta-defined actions. These
+standardised file interface. Because the file system is schema-            actions specify callable behaviours discoverable by agents,
+driven, heterogeneous structures—including REST/OpenAPI                    ranging from analytical functions, including summarisation,
+resources, GraphQL types, MCP tools, memory stores, or                     validation, and synchronisation, to domain-specific transfor-
+external APIs—can be automatically projected into the names-               mations. Actions elevate each file or directory into an active
+pace. This avoids integration code and turns the file system               node, allowing agents to execute tools, transformations or
+into a universal semantic interface. This allows agents to rea-            service calls directly through the file system interface.
+son over diverse context types without knowing their physical
+format, storage mechanism, or retrieval logic.                              IV. P ERSISTENT C ONTEXT R EPOSITORY: H ISTORY AND
+   2) Modularity and Encapsulation: The architecture realizes                               M EMORY L IFECYCLE
+modularity by decomposing the environment into indepen-                       Large language models are inherently stateless: once a
+dently manageable context resources. Each resource is encap-               session ends, all contextual information is lost. To sustain
+sulated as a mounted component with well-defined boundaries                coherent reasoning across sessions, a GenAI system requires
+and metadata. This encapsulation isolates the internal logic               an external, persistent memory repository that captures, struc-
+or backend implementation of each resource while exposing                  tures, and evolves context over time. The Persistent Context
+only the minimal set of operations required for integration.               Repository enabled by the File System fulfills this role. It
+Thus, changes in one component, for example, swapping a                    unifies history, memory, and scratchpad into a continuous life-
+relational database for a vector store, do not propagate across            cycle, ensuring that both short-term and long-term contextual
+other components in the system. These capabilities eliminate               knowledge remain accessible, traceable, and up to date.
+the need to hard-code extensive tool descriptions that would                  When an interaction occurs, raw data are first appended to
+otherwise overload the model’s token window. New context                   History. Summarisation, embedding and indexing transforms
+sources can be mounted dynamically, similar to Unix file                   these records into Memory representations optimized for re-
+systems, allowing agents to treat external services, tools, or             trieval and reasoning. During reasoning, temporary informa-
+databases as part of a unified addressable space.                          tion are written to Scratchpads, which may be selectively
+   3) Separation of Concerns: Following the SE principle of                inserted into Memory or archived in History after validation.
+separation of concerns, the file system distinguishes between              This layered design ensures that all context resources remain
+data, tools, and governance layers. Non-executable files, such             both traceable and reusable across agents and sessions.
+as config.yaml or experiment_results.csv, serve                               These components differ in persistence: history is global
+as data or knowledge resources, while executable artefacts                 and permanent; memory is agent-specific or session-specific,
+such as analyser.py or simulate.sh represent active                        persistent but mutable; and scratchpads are transient yet au-
+tools. This clear distinction ensures that agents and human                ditable. Short-term context, assembled dynamically within the
+                                                                       hierarchy. Multiple memory types may coexist, as illustrated
+                                                                       in Table I.
+                                                                          Memory entries are agent-specific and governed through
+                                                                       shared metadata and access-control rules. Each memory item
+                                                                       maintains a reference to its historical source, ensuring trace-
+                                                                       ability between summarized and original data. Indexed logs
+                                                                       and embeddings enable selective recall without re-scanning the
+                                                                       entire history, supporting performance and scalability. In the
+         Fig. 2. Lifecycle of History, Memory and Scratchpad
+                                                                       file system, memory is exposed as /context/memory/agentID
+                                                                       and can be extended through plugins such as vector databases
+                                                                       or full-text search engines.
+model’s token window, functions like working memory. Long-
+                                                                       C. Scratchpad: Temporary Workspace
+term context, by contrast, must reside outside the model and
+be selectively included when needed.                                     Scratchpads serve as temporary workspaces where agents
+   The file system enables provenance through timestamps,              compose intermediate hypotheses, computations, or drafts dur-
+version control, and access policies. Each transformation, from        ing reasoning. Unlike memory, scratchpads are ephemeral and
+history to memory, or from scratchpad to memory, is logged             scoped to a specific task or reasoning episode. However, once
+as a verifiable state transition. Each artefact carries its creation   a session concludes, relevant artefacts may be inserted into
+context, ownership, and lineage, enabling verifiable recon-            memory or appended to history, completing the loop. Scratch-
+struction of the reasoning process. This makes the repository          pads are represented in the file system as /context/pad/taskID
+not only a data store but also a traceability infrastructure           and are governed by the same metadata and access-control
+that aligns context management with software engineering               schema as persistent artefacts.
+principles of modularity and traceability.
+                                                                       D. Governance
+A. History: Immutable Source of Truth                                    The lifecycle of history/memory/scratchpad is governed
+   History records all raw interactions between users, agents,         by explicit policies for versioning, aging, and retention. For
+and the environment. Each input, output, and intermediate rea-         example, obsolete scratchpads can be pruned automatically,
+soning step is logged immutable and enriched with metadata             while historical logs may be compressed but never deleted.
+such as timestamp, origin, and model version. History acts             Such policies ensure that the system remains both scalable
+as a verifiable source of truth. It can span multiple agents           and auditable. The persistent context repository operates as
+and sessions, forming a shared global data record accessible           a mounted layer within the file system, using its hierarchical
+through the file system namespace (e.g., /context/history/ ). By       namespace and access-control mechanisms. It also serves as
+maintaining complete traces, the system preserves the prove-           the principal data source for the context engineering pipeline,
+nance of reasoning and enables post-hoc analysis, debugging,           where selected memory and history artefacts are retrieved,
+and compliance verification.                                           compressed, and injected into the context constrained by the
+                                                                       token window. All state transitions and transformations are
+B. Memory: Structured and Indexed Views                                represented as file-level events with timestamps and lineage
+   From the context management perspective, memory can                 metadata, enabling replay, audit, and reversible evolution.
+be classified along temporal, structural, and representational
+dimensions.                                                                       V. C ONTEXT E NGINEERING P IPELINE
+   • Temporal: How long the memory persists.                           A. Design Constraints
+   • Structural: Size or abstraction level of what’s stored,              GenAI model introduce a unique set of architectural design
+     token-level, fact-level, or summary-level.                        constraints that collectively define the rationale for the design
+   • Representational: How the memory is modelled inter-               of the context engineering pipeline, fundamentally shape how
+     nally, as raw text, vector embeddings, structured triples,        context is operated. These constraints are intrinsic to the
+     or summaries.                                                     GenAI model layer, and cascade upward through the soft-
+   While the short-term versus long-term distinction originates        ware architecture, influencing the structure and behavior of
+from human cognition, practical GenAI systems manage a                 higher-level components. Recognizing and formalizing these
+spectrum of memory types that balance persistence with                 design constraints transforms context engineering from ad-hoc
+dynamism [26], such as episodic memory (task-bounded sum-              prompting practices into a systematic software-architectural
+maries) and fact memory (persistent atomic facts). Semantic            discipline.
+or induced memory captures higher-level embeddings derived                1) Token window: The token window of GenAI model
+from clustering or summarisation. Each type serves a com-              introduces a hard architectural constraint, which defines the
+plementary role within the GenAI reasoning process, ranging            maximum number of tokens that the model can attend to dur-
+from ephemeral reasoning support to enduring knowledge                 ing a single inference pass. This bounded reasoning capacity,
+preservation, and is exposed through a consistent namespace            determined by model architecture, sets an upper limit on the
+                                                                   TABLE I
+                                               TAXONOMY OF M EMORY T YPES IN C ONTEXT E NGINEERING
+
+    Memory Type                Temporal Scope                   Structural Unit                               Representation
+
+    Scratchpad                 Temporary, task-bounded          Dialogue turns, temporary reasoning states    Plain text or embeddings
+
+    Episodic Memory            Medium-term, session-bounded     Session summaries, case histories             Summaries in plain text or embeddings
+    Fact Memory                Long-term, fine-grained          Atomic factual statements                     Key–value pairs or triples
+    Experiential Memory        Long-term, cross-task            Observation-action trajectories               Structured logs or database
+    Procedural Memory          Long-term, system-wide           Functions, tools, or function definitions     API or code references
+    User Memory                Long-term, personalized          User attributes, preferences and histories    User profiles, embeddings
+
+    Historical Record          Immutable, full-trace            Raw logs of all interactions                  Plain text with metadata
+
+
+
+amount of active context available at runtime (e.g., 128K for
+GPT 51 , 200k for Claude Sonnet 4.52 ). Moreover, as the length
+of input prompts increases, the computational cost of GenAI
+models rises significantly due to the quadratic complexity of
+the self-attention mechanism [27].
+   Consequently, the context engineering pipeline must curate,
+compress, and incrementally stream relevant information from
+the file system into the model’s token window. Persistent
+information in memory must therefore be modularized and
+hierarchically organized, enabling selective retrieval and incre-
+mental refresh. The pipeline manages the temporal coherence
+of the active window, ensuring that reasoning remains consis-
+tent and traceable within bounded context limit. The simplest
+mitigation is to truncate or summarise large texts, though this
+inevitably risks information loss [26].
+                                                                                                Fig. 3. The Context Engineering Pipeline.
+   2) Statelessness: GenAI models are inherently stateless,
+which do not retain conversational history or memory across
+sessions. This constraint requires external persistent context                B. Design of Context Engineering Pipeline
+repository that records, reconstructs, and governs relevant
+                                                                                 Building upon the unified architectural foundation estab-
+information across interactions. The stateless nature also drives
+                                                                              lished by the file system, this section proposes Context En-
+the need for the session memory mechanisms to restore
+                                                                              gineering Pipeline that serves as the operational layer that
+continuity and avoid redundant computation.
+                                                                              orchestrates context evolution across components.
+   However, persisting state externally introduces secondary                     A pipeline that retains context through both long-term and
+challenges related to memory growth and redundancy. As con-                   short-term mechanisms is a key component of an autonomous
+versational or task histories accumulate, semantically similar                GenAI agent [28]. Such a pipeline keeps the knowledge and
+entries or repeated experiences can increase quickly, degrading               context that is not embedded within the model’s weights. The
+retrieval precision and increasing storage cost. To mitigate                  Context Engineering Pipeline bridges context stored in the
+these effects, context engineering pipeline requires memory                   persistent context repository (history, memory, tools, human
+deduplication and consolidation strategies that maintain a                    input) with bounded reasoning (the token window), ensur-
+memory base with minimal redundancy.                                          ing that context is continuously constructed, refreshed, and
+   3) Non-Deterministic and Probabilistic Output: Because                     evaluated throughout the operational lifecycle of an agent.
+LLMs produce probabilistic outputs conditioned on sampling                    Architecturally, as shown in Figure 3, the pipeline consists
+parameters (e.g., temperature), identical prompts can yield                   of three components: the Context Constructor, the Context
+varying responses. From an architectural perspective, this non-               Updater, and the Context Evaluator. The architecture operates
+determinism introduces challenges for traceability, testing, and              under three interrelated design constraints as discussed in
+verification. It is required that the context engineering pipeline            Section V-A. The pipeline performs selection, compression,
+preserves input–output pairs, metadata, and provenance within                 injection, refreshing, and human-in-the-loop evaluation and
+the file system to support audit, replay, and post-hoc evalua-                overwrite, forming a closed loop for context management.
+tion.                                                                         Metadata in the file system is used by all the major operations
+                                                                              in the context engineering pipeline.
+  1 https://platform.openai.com/docs/models/gpt-5-chat-latest                    1) Context Constructor: The Constructor defines how rele-
+  2 https://www.anthropic.com/claude/sonnet                                   vant context is selected, prioritized, and compressed from the
+persistent context repository to prepare bounded, task-specific    another.
+inputs for reasoning. This process transforms unbounded               3) Context Evaluator: The Context Evaluator closes the
+knowledge into a curated subset that is suitable for the model’s   loop by verifying model outputs, updating the persistent con-
+active context window. Context selection must also fulfill non-    text repository, and maintaining governance over the evolving
+functional qualities such as privacy, access control, and data     knowledge base. It ensures that newly generated or refined
+governance. Because the file system serves as a shared global      information is validated, contextualized, and reintegrated into
+infrastructure across agents and tasks, the Constructor enforces   the persistent context repository in a traceable and auditable
+these constraints to ensure that each reasoning session operates   manner.
+within its authorized scope and the corresponding context             Model outputs are evaluated against their source context
+remains properly isolated.                                         element and provenance metadata to detect hallucinations,
+   Architecturally, the Constructor manages a trade-off be-        contradictions, or context drift. This may involve automated
+tween completeness (covering all relevant information) with        semantic comparison, factual consistency checking, or cross-
+boundedness (respecting token constraint and cost efficiency).     referencing with authoritative sources. Evaluation metrics,
+It relies on metadata indicating recency, provenance, which        such as confidence scores, factual alignment, and human
+together help infer the relevance of context elements during re-   override rates, are recorded as structured metadata within the
+trieval and prioritization. Selected context is then compressed    file system, supporting post-hoc analysis and traceability.
+through summarization, embedding, or clustering techniques            Verified outputs are transformed into structured memory
+to meet computational budgets, before being aligned with the       element, updating or extending the persistent context repos-
+model’s prompt schema [29], [30], a structured input format        itory. Long-term memory entries may be appended, revised,
+specifying how context elements are organized for inference.       or summarized, while episodic memories and scratchpads are
+   The Constructor interfaces directly with the file               pruned or archived. Each update is versioned with timestamps
+system mount points (e.g., /context/memory/,                       and lineage metadata, ensuring that context evolution remains
+/context/tool/), queries metadata, and generates a                 transparent and reversible.
+context manifest that records which elements were selected,           When confidence thresholds are low or contradictions are
+excluded, and why. This manifest provides transparency,            detected, the Evaluator triggers human review. Human an-
+reproducibility, and verifiability for each reasoning session,     notations, ranging from factual corrections to interpretive
+turning context assembly from an ad hoc operation into a           insights, are stored as explicit context elements, elevating tacit
+traceable architectural process.                                   knowledge becomes a first-class component of the knowledge
+   2) Context Updater: The Context Updater manages the             base.
+transfer and refresh of constructed context into the bounded
+reasoning space of the GenAI model. Given the model’s              VI. I MPLEMENTATION P LATFORM : AIGNE F RAMEWORK
+limited token window, the Updater must continuously syn-              The proposed file system and context engineering pipeline
+chronize the token window, the state of the persistent context     are implemented within the AIGNE Framework3 , a functional
+repository, and the runtime dialogue to maintain coherence         development framework designed to simplify and accelerate
+and consistency. It ensures that the active context always         the creation of GenAI agents. AIGNE provides native integra-
+reflects the most relevant and authorized information, without     tion with multiple mainstream large language models (e.g.,
+exceeding model limits or violating access and governance          OpenAI, Gemini, Claude, DeepSeek, Ollama) and external
+constraints. This synchronization requires continuous mon-         services via the built-in Model Context Protocol (MCP),
+itoring of context size, relevance decay, and temporal and         enabling dynamic and context-aware application behaviour.
+structural dependencies across agents and sessions.                   In the AIGNE framework, the AFS (Agentic File System)
+   At beginning of the process, a static snapshot of context       module serves as the primary file system interface. The
+may be fed into before a single reasoning task for pro-            SystemFS module implements a virtual file system that
+cessing. During extended reasoning, incremental streaming          provides the following key features.
+allows additional fragments of context to be progressively            • Supports list, read, write, and search commands
+loaded as the reasoning unfolds. In dynamic or interactive              for managing files within mounted directories.
+sessions, adaptive refresh mechanisms replace outdated or less        • Enables navigation across nested subdirectories with con-
+relevant fragments in response to model feedback or human               figurable depth limits.
+intervention. Together, these modes collectively ensure that the      • Integrates with ripgrep for efficient content search.
+reasoning process remains contextually grounded.                      • Access to file timestamps, sizes, types, and support user-
+   All context loading and replacement actions are recorded             defined metadata
+as metadata events within the file system, including times-           • Sandboxed access restricted to mounted directories, en-
+tamps, source paths, and reasoning identifiers, to enable full          suring isolation and secure file operation
+traceability and replay of any reasoning session. In multi-           All mounted resources, including MCP modules, memory
+agent scenarios, the Context Updater also enforces resource        stores, databases, or external APIs, are projected into the file
+isolation and access separation, ensuring that the context of
+one reasoning process neither interferes with nor leaks into         3 https://github.com/AIGNE-io/aigne-framework
+system through programmable resolvers. These resolvers im- DefaultMemory module, which persists conversation his-
+plement declarative mappings (similar to GraphQL/OpenAPI tory as retrievable context. The storage location is specified
+schemas) that translate internal structures into AFS nodes as a file path (e.g., file:./memory.sqlite3), allowing
+without requiring any change to the underlying storage format, memory data to be saved and reloaded across sessions. Each
+enabling semless integration of heterogenous systems.                dialogue round is appended to memory and automatically
+   Within AIGNE, context elements are represented as typed incorporated into subsequent reasoning, enabling long-term,
+resources under the AFS namespace. Modules such as stateful interaction without explicit state management.
+SystemFS, FSMemory, and UserProfileMemory, each 1 import { AIAgent } from "@aigne/core";
+exposing list/read/write/search APIs through stan- 2 import { AFS } from "@aigne/afs";
+dard asynchronous methods. This abstraction enables GenAI 34 import             { AFSHistory } from "@aigne/afs-history";
+                                                                       import { UserProfileMemory } from "@aigne/afs-user
+agents to access heterogeneous data, like local files, chat                  -profile-memory";
+histories, and structured memory entries—through a uniform 5
+                                                                   6 const sharedStorage = { url: "file:./memory.
+interface without concern for underlying storage backends.                   sqlite3" }; // use a SQLite database as memory
+   In AIGNE, agents perform reasoning while delegating ex-                    storage provider
+ecution to modular Functions, which are implemented 7
+                                                                   8 const afs = new AFS()
+as executable files (e.g., Node.js modules). Each func- 9                 .mount(new AFSHistory({ storage: sharedStorage
+tion exports a default asynchronous function together with                   })) // message history memory
+metadata descriptors (description, input_schema, and 10                   .mount(new UserProfileMemory({ storage:
+                                                                             sharedStorage, context: aigne.newContext() }))
+output_schema) that allow agents to discover, validate,                      ; // user memory
+and invoke them with structured arguments. Functions act 11
+as the tools through which agents perform concrete actions, 12 const agent = AIAgent.from({
+                                                                  13      instructions: "You are a friendly chatbot",
+executing code in a sandbox, or calling external APIs.            14      inputKey: "message",
+   The Context Constructor is implemented as a process. When 15           afs,
+a new prompt is received, The constructor executes a series of 16 });
+tool calls such as afs_list() and afs_read(), collect-                         Listing 1. Defining an agent with persistent memory.
+ing candidate artefacts (documents, history records, or pro-
+file summaries) tagged with metadata including timestamps, B. Exemplar 2: MCP with Github
+provenance, and access scope. The constructor then applies             The second exemplar demonstrates that any MCP (Model
+summarisation and token-budget estimation functions to pro- Context Protocol) server can be mounted as an AFS mod-
+duce a JSON-formatted manifest, which records the selected ule, exposing its capabilities through a unified file system
+artefacts, their ordering, and their estimated contribution to interface. Using the GitHub MCP server as a real-world
+the model’s prompt. This manifest is passed downstream to case, it shows AI agents interact with GitHub as if they
+the Context Updater.                                                 were simply accessing files. Once mounted, the agent can
+   The Context Updater is realised as part of AIGNE’s agent invoke all GitHub MCP tools directly, using afs_exec on
+workflow engine. The updater streams context fragments into /modules/github-mcp/search_repositories and
+the model’s input buffer during dialogue. In single-turn tasks, it /modules/github-mcp/list_issues.
+performs a one-off injection of a static snapshot; in interactive 1 import { AIAgent } from "@aigne/core";
+sessions, it incrementally refreshes the prompt by invoking 2 import { AFS } from "@aigne/afs";
+                                                                   3 import { MCPAgent } from "@aigne/core";
+AFS read operations to replace or append elements as reason- 4
+ing unfolds.                                                       5 const mcpAgent = await MCPAgent.from({ // create
+   The Context Evaluator leverages AIGNE’s memory modules                    agent from GitHub official MCP Server
+                                                                   6      command: "docker",
+to persist newly generated information. After each model 7                args: [
+response, validated outputs, like summarised user preferences 8             "run", "-i", "--rm",
+or extracted factual statements, are written back to AFS, stored 9          "-e", ‘GITHUB_PERSONAL_ACCESS_TOKEN=${process.
+                                                                             env.GITHUB_PERSONAL_ACCESS_TOKEN}‘,
+under directories such as /context/memory/fact/. Each 10                     "ghcr.io/github/github-mcp",
+entry is enriched with lineage metadata (createdAt, 11                    ],
+sourceId, confidence, and revisionId) to support 12 });
+                                                                  13
+audit and rollback. When the Evaluator detects uncertainty 14 const afs = new AFS()
+(e.g., confidence below threshold or inconsistent information), 15 .mount(mcpAgent); //Mounted at /modules/github-
+it triggers a human-verification stage: annotations are ap-                  mcp
+                                                                  16
+pended as separate artefacts in /context/human/.                  17 const agent = AIAgent.from({
+                                                                18     instructions: "Help users interact with GitHub
+A. Exemplar 1: Memory-Enabled Context Construction                       via the github-mcp-server module.",
+                                                                19     inputKey: "message",
+  AIGNE enables agents to maintain contextual coher- 20                afs,//Agent accesss to all mounted modules});
+ence across multiple dialogue turns. Memory is acti-
+                                                                               Listing 2. Attaching a GitHub MCP function.
+vated declaratively during agent construction through the
+            VII. C ONCLUSION AND F UTURE W ORK                                 [12] Y. Ge, Y. Ren, W. Hua, S. Xu, J. Tan, Y. Zhang, Llm as os, agents
+                                                                                    as apps: Envisioning aios, agents and the aios-agent ecosystem (2023).
+   Grounded in the emerging LLM-as-Operating-System                                 arXiv:2312.03815.
+paradigm, this paper presents a file system–based abstrac-                          URL https://arxiv.org/abs/2312.03815
+                                                                               [13] K. Mei, X. Zhu, W. Xu, W. Hua, M. Jin, Z. Li, S. Xu, R. Ye, Y. Ge,
+tion for context engineering. On this foundation, agents and                        Y. Zhang, Aios: Llm agent operating system (2025). arXiv:2403.16971.
+humans interact as OS-like processes applying standard file                         URL https://arxiv.org/abs/2403.16971
+operations governed by metadata and transaction logs. The                      [14] Z. Shi, K. Mei, M. Jin, Y. Su, C. Zuo, W. Hua, W. Xu, Y. Ren,
+                                                                                    Z. Liu, M. Du, D. Deng, Y. Zhang, From commands to prompts: Llm-
+implementation within the AIGNE framework and accompa-                              based semantic file system for aios, in: Proceedings of the International
+nying exemplars demonstrate the feasibility and adaptability                        Conference on Learning Representations (ICLR), 2025.
+of the proposed approach. Treating context as files further                    [15] C. Packer, S. Wooders, K. Lin, V. Fang, S. G. Patil, I. Stoica,
+                                                                                    J. E. Gonzalez, Memgpt: Towards llms as operating systems (2024).
+enables GenAI agents to become traceable and auditable,                             arXiv:2310.08560.
+allowing context to be versioned, reviewed, and deployed                            URL https://arxiv.org/abs/2310.08560
+using DevOps and data-ops practices rather than ad hoc                         [16] Q. Hua, L. Ye, D. Fu, Y. Xiao, X. Cai, Y. Wu, J. Lin, J. Wang, P. Liu,
+                                                                                    Context engineering 2.0: The context of context engineering (2025).
+prompt management. By treating the file system as a universal                       arXiv:2510.26493.
+context projection layer, the architecture provides a concrete                      URL https://arxiv.org/abs/2510.26493
+substrate for emerging LLM-as-OS paradigms, enabling agents                    [17] LangChain, Deep agents overview, https://docs.langchain.com/labs/
+                                                                                    deep-agents/overview, accessed: 30 October 2025 (2025).
+to navigate, organize, and evolve their own world models in a                  [18] S. Dai, J. Tang, J. Wu, K. Wang, Y. Zhu, B. Chen, B. Hong, Y. Zhao,
+verifiable, human-aligned manner.                                                   C. Fu, K. Wu, Y. Ni, A. Zeng, W. Wang, X. Chen, J. Xu, S.-K.
+   Future extensions will explore agentic navigation within the                     Ng, Onepiece: Bringing context engineering and reasoning to industrial
+                                                                                    cascade ranking system (2025). arXiv:2509.18091.
+AFS hierarchy, enabling agents to autonomously browse, con-                         URL https://arxiv.org/abs/2509.18091
+struct indices, and evolve data structures in the mounted space.               [19] P. Chhikara, D. Khant, S. Aryan, T. Singh, D. Yadav, Mem0: Building
+By allowing agents to function as self-organising processes                         production-ready ai agents with scalable long-term memory, arXiv
+                                                                                    preprint arXiv:2504.19413 (2025).
+that observe and modify their own context, the architecture                    [20] L. AI, Letta (formerly memgpt), https://github.com/letta-ai/letta, ac-
+can gradually evolve into a living knowledge fabric, where                          cessed: 30 October 2025 (2025).
+reasoning, memory, and action converge within a verifiable and                 [21] P. Rasmussen, P. Paliychuk, T. Beauvais, J. Ryan, D. Chalef, Zep:
+                                                                                    A temporal knowledge graph architecture for agent memory (2025).
+extensible file system substrate. Another important direction                       arXiv:2501.13956.
+is to strengthen human–AI co-work, empowering humans                                URL https://arxiv.org/abs/2501.13956
+not only to oversee or correct system behaviour but also to                    [22] V. Markovic, L. Obradovic, L. Hajdu, J. Pavlovic, Optimizing the
+                                                                                    interface between knowledge graphs and llms for complex reasoning
+contribute to, curate, and contextualise knowledge as active                        (2025). arXiv:2505.24478.
+participants in context engineering.                                                URL https://arxiv.org/abs/2505.24478
+                                                                               [23] X. Xu, D. Zhang, W. Zhang, Q. Lu, L. Zhu, Design process for re-
+                             R EFERENCES                                            trieval augmented generation systems, in: 2025 IEEE 22nd International
+                                                                                    Conference on Software Architecture Companion (ICSA-C), 2025, pp.
+ [1] M. Bleigh, Context engineering is sleeping on the humble hy-                   482–487.
+     perlink, https://mbleigh.dev/posts/context-engineering-with-links/, ac-   [24] D. Lindner, I. Rahwan, S. Schubert, R. H. J. M. Kurvers, When
+     cessed: 2025-11-01 (October 2025).                                             combinations of humans and ai are useful: A systematic review and
+ [2] L. Mei, J. Yao, Y. Ge, Y. Wang, B. Bi, Y. Cai, J. Liu, M. Li, Z.-Z. Li,        meta-analysis, Nature Human Behaviour 8 (8) (2024) 1631–1643.
+     D. Zhang, C. Zhou, J. Mao, T. Xia, J. Guo, S. Liu, A survey of context         doi:10.1038/s41562-024-02024-1.
+     engineering for large language models (2025). arXiv:2507.13334.           [25] S. Amershi, D. Weld, M. Vorvoreanu, A. Fourney, B. Nushi, P. Collisson,
+     URL https://arxiv.org/abs/2507.13334                                           J. Suh, S. Iqbal, P. N. Bennett, K. Inkpen, J. Teevan, R. Kikin-Gil,
+ [3] LangChain, Context engineering for agents, https://blog.langchain.com/         E. Horvitz, Guidelines for human-ai interaction, in: Proceedings of
+     context-engineering-for-agents/, accessed: 30 October 2025 (2024).             the 2019 CHI Conference on Human Factors in Computing Systems,
+ [4] Microsoft, Memory and rag — autogen user guide, https://microsoft.             CHI2019, New York, NY, USA, 2019, p. 1–13.
+     github.io/autogen/stable/user-guide/agentchat-user-guide/memory.html,     [26] X. Wang, M. Salmani, P. Omidi, X. Ren, M. Rezagholizadeh, A. Es-
+     accessed: 30 October 2025 (2024).                                              haghi, Beyond the limits: A survey of techniques to extend the context
+ [5] Anthropic, Effective context engineering for ai agents, https://www.           length in large language models (2024). arXiv:2402.02244.
+     anthropic.com/engineering/effective-context-engineering-for-ai-agents,         URL https://arxiv.org/abs/2402.02244
+     accessed: 30 October 2025 (2024).                                         [27] F. Duman Keles, P. M. Wijewardena, C. Hegde, On the computational
+ [6] T. Research, Context rot: How long-term ai memory goes stale, https://         complexity of self-attention, in: S. Agrawal, F. Orabona (Eds.), Pro-
+     research.trychroma.com/context-rot, accessed: 30 October 2025 (2024).          ceedings of The 34th International Conference on Algorithmic Learning
+ [7] P. Laban, H. Hayashi, Y. Zhou, J. Neville, Llms get lost in multi-turn         Theory, Vol. 201 of Proceedings of Machine Learning Research, PMLR,
+     conversation (2025). arXiv:2505.06120.                                         2023, pp. 597–619.
+     URL https://arxiv.org/abs/2505.06120                                      [28] V. de Lamo Castrillo, H. K. Gidey, A. Lenz, A. Knoll, Fundamentals of
+ [8] G. A. Lewis, I. Ozkaya, X. Xu, Software architecture challenges                building autonomous llm agents (2025). arXiv:2510.09244.
+     for ml systems, in: 2021 IEEE International Conference on Software             URL https://arxiv.org/abs/2510.09244
+     Maintenance and Evolution (ICSME), 2021, pp. 634–638.                     [29] J. White, Q. Fu, S. Hays, M. Sandborn, C. Olea, H. Gilbert, A. Elnashar,
+ [9] X. Xu, D. Zhang, Q. Liu, Q. Lu, L. Zhu, Agentic rag with human-in-             J. Spencer-Smith, D. C. Schmidt, A prompt pattern catalog to enhance
+     the-retrieval, in: 2025 IEEE 22nd International Conference on Software         prompt engineering with chatgpt (2023). arXiv:2302.11382.
+     Architecture Companion (ICSA-C), 2025, pp. 498–502.                            URL https://arxiv.org/abs/2302.11382
+[10] X. Xu, H. Weytjens, D. Zhang, Q. Lu, I. Weber, L. Zhu, Ragops: Op-        [30] P. Liu, W. Yuan, J. Fu, Z. Jiang, H. Hayashi, G. Neubig, Pre-train,
+     erating and managing retrieval-augmented generation pipelines (2025).          prompt, and predict: A systematic survey of prompting methods in
+     arXiv:2506.03401.                                                              natural language processing, ACM Comput. Surv. 55 (9) (Jan. 2023).
+     URL https://arxiv.org/abs/2506.03401
+[11] D. M. Ritchie, K. Thompson, The unix time-sharing system, Commun.
+     ACM 17 (7) (1974) 365–375.
+

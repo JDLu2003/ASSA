@@ -1,25 +1,27 @@
 {
-  "generated_at": "2026-10-09T12:38:59.830383+00:00",
-  "priority": "products first; paper discovery remains paused",
+  "generated_at": "2026-10-09T13:11:54.632084+00:00",
+  "priority": "Paper collection resumed following user instruction",
   "captured_webpages": 89,
-  "captured_papers": 18,
+  "captured_papers": 57,
   "products_index": "catalog/PRODUCTS.md",
-  "git_upload_status": "Source files and product index uploaded and verified on remote branch; this report records verification of the cited source commit",
+  "git_upload_status": "Current paper batch verified locally; upload pending",
   "remaining": [
-    "This is an initial product source inventory, not an exhaustive market census.",
-    "Additional per-product API limits, resource specifications and pricing sources can be collected from the confirmed product entries.",
-    "Identify the user-mentioned IPADS paper separately when paper discovery resumes; no identification claim has been made."
+    "Initial source inventory, not an exhaustive literature or market census.",
+    "ACM publisher page for RhymeRL returned a browser access challenge; arXiv original retained.",
+    "The user-mentioned IPADS OSDI filesystem/RL paper is not conclusively identified."
   ],
   "checks": {
     "source_hashes": "415 file hashes verified; all PDFs parsed and all downloaded source archives listed successfully",
     "browser_tls": "verification retained; NSS database write access required in sandbox",
     "print_completeness": "Default and adjusted browser PDFs retained. PDF/DOM text screening passed; Kiro sandbox document uses full body line matching because printed sidebar is omitted. Kiro Web expanded reading layout visually inspected. Dynamic variants and text in images are not guaranteed by these checks.",
-    "git_lfs": "136 PDF/archive files represented as Git LFS pointers; source commit LFS fsck passed; both uploads confirmed"
+    "git_lfs": "136 PDF/archive files represented as Git LFS pointers; source commit LFS fsck passed; both uploads confirmed",
+    "paper_integrity": "240 paper file hashes verified; all paper PDFs parsed, extracted titles matched, all source archives listed."
   },
-  "paper_source_archives": 17,
+  "paper_source_archives": 51,
   "offering_index_entries": 16,
   "component_and_agent_type_entries": 11,
   "previous_product_candidates_resolved": 15,
   "git_branch": "source-collection-20261009",
-  "verified_uploaded_source_commit": "0f2ee3d9b2d33d51ad6e4b098e6688266289d5d5"
+  "verified_uploaded_source_commit": "0f2ee3d9b2d33d51ad6e4b098e6688266289d5d5",
+  "papers_index": "catalog/PAPERS.md"
 }

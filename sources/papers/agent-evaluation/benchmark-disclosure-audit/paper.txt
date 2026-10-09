@@ -1,0 +1,575 @@
+                                                  What Twelve LLM Agent Benchmark Papers
+                                                          Disclose About Themselves:
+                                                  A Pilot Audit and an Open Scoring Schema
+                                                                    Mahdi Naser Moghadasi1,2                                          Faezeh Ghaderi
+                                                         1
+                                                             Research Division, BrightMind AI, Seattle, WA                    University of Texas at Arlington
+                                                                2
+                                                                  Texas Tech University, Lubbock, TX                                   Arlington, TX
+                                                                      mahdi@brightmind-ai.com                                  faezeh.ghederi@mavs.uta.edu
+arXiv:2605.21404v1 [cs.LG] 20 May 2026
+
+
+
+
+                                            Abstract—We set out to do something modest: read a stack           scaffolds. One had used the official agent loop; the other had
+                                         of well-known LLM agent benchmark papers and write down,              used a custom one. The official agent loop had also been re-
+                                         dimension by dimension, what each paper actually says about           tagged in the meantime, so even “which version of the official
+                                         how its evaluation was run. The motivation came from a
+                                         frustration that should be familiar to anyone working on agents—      loop” was not immediately recoverable.
+                                         two papers will report results on the same benchmark with                This is not a complaint about either report. Both did what
+                                         the same model name, and the numbers will disagree, and you           was reasonable at the time. The complaint is that the published
+                                         cannot tell why. Was it the scaffold? The sampling settings?          artifact, in both cases, did not contain enough information to
+                                         A different subset? An evaluator version? In many cases the           let a downstream reader decide whether the numbers were
+                                         published artifact does not let you answer. This paper is an
+                                         implementation report on the attempt. We designed a small audit       comparable.
+                                         schema (five fields: benchmark identity, harness specification,          There is a lot of writing about this problem in adjacent
+                                         inference settings, cost reporting, failure breakdown), wrote a       areas. The deep reinforcement learning literature went through
+                                         scoring codebook with the boundary cases we hit during pilot          its own reproducibility wave a decade ago [15], [16]; the LLM
+                                         scoring, applied it to twelve canonical benchmark papers (eight       prompt-sensitivity work has documented that single-prompt
+                                         agent, four classical static), and recorded what we saw. The
+                                         audit was not painless. Two of the papers’ HTML renderings            evaluations can be wide of the multi-prompt mean by margins
+                                         on ar5iv failed mid-conversion and we fell back to the GitHub         large enough to matter [19], [20]; benchmark meta-evaluation
+                                         repository; one paper we wanted to include we dropped because         work has scored benchmarks themselves on dimensions of
+                                         we could not access enough of the text to score it fairly; a vendor   construct validity [21]. None of these target the unit of analysis
+                                         blog returned HTTP 403. We score the disclosure of an agent           that matters for an agent run, which is the agent run itself—the
+                                         run, not its correctness, and we make no claim that disclosure
+                                         implies a trustworthy result. The mean audit score across the         composition of model, scaffold, environment image, stopping
+                                         eight agent-benchmark papers is 0.38 (out of 1.0), and across the     rule, and grader that produced the number.
+                                         four classical static benchmarks 0.66; the largest gap is on cost        We wanted to know: if we wrote down a small list of
+                                         (none of the eight agent benchmark papers disclose inference cost     fields that together would be enough for a downstream reader
+                                         in any form) and on harness specification (none of the eight fully    to know what happened, how much of that list do current
+                                         disclose a content-addressed container image of the evaluation
+                                         environment). We release the schema as a JSON Schema file, the        benchmark papers already fill in? This paper is an attempt to
+                                         codebook as a Markdown document, and the raw scoring sheet            answer that empirically on a small but real corpus.
+                                         as a CSV. The scoring was performed by a single auditor in one           Three things came out of it. First, an audit schema with
+                                         pass; a multi-rater audit is the natural next step, and we discuss    five fields, plus a single aggregate score. We did not invent
+                                         what we think it would change.                                        the fields from first principles. We started with a longer list
+                                            Index Terms—LLM agents, benchmark reproducibility, evalua-
+                                         tion methodology, empirical software engineering, meta-research,
+                                                                                                               and trimmed and merged it during pilot scoring, where we
+                                         pilot audit.                                                          kept running into boundary cases that suggested the boundaries
+                                                                                                               should move. Second, a codebook that documents the partial-
+                                                                                                               versus-disclosed boundary rules for each field. Several of those
+                                                                  I. I NTRODUCTION
+                                                                                                               rules were not obvious in advance and only emerged after we
+                                            The question that started this work was specific. Two              hit cases we disagreed with ourselves on. Third, a set of twelve
+                                         reports—one in a paper, one in a blog post—claimed different          scored papers, each with a row of dimension scores and a short
+                                         SWE-bench Verified numbers for nominally the same model               justification per field. The mean disclosure score (out of 1.0)
+                                         from the same provider. The difference was around ten points.         came out to 0.38 for the eight agent benchmarks and 0.66 for
+                                         We tried to work out which of the two we should reference.            the four classical static benchmarks; we did not normalize that
+                                         After an afternoon of reading both reports and the SWE-bench          number against any baseline because we do not yet know what
+                                         repository, we still were not sure. They had used different           a realistic ceiling looks like.
+   The paper that follows is organized loosely around the order      TABLE I: Where Existing Reproducibility Artifacts Stop.
+in which we did the work. Section II situates the audit against
+                                                                     Artifact                   Unit it describes         Covers an
+prior reproducibility artifacts. Section III describes the schema                                                         agent run?
+and the codebook. Section IV collects the failure modes we
+kept seeing during scoring. Section V reports the audit itself,      Model Cards [17]           Trained model             No
+                                                                     Datasheets [18]            Dataset                   No
+including two walkthroughs of how we scored specific papers,
+                                                                     ML Repro. Checklist [16]   Training run              Partial
+the practical friction we hit, and the per-dimension findings.       BetterBench [21]           Benchmark                 No
+Section VII discusses what we think this means for adoption.         This paper                 Agent run                 Yes
+Section VIII is the limitations section, which we tried to make
+honest rather than ritual. Appendix material is included where
+it is referenced.                                                               III. D ESIGNING THE AUDIT S CHEMA
+          II. BACKGROUND AND R ELATED W ORK                         A. What we asked of the schema
+   We use “agent benchmark” loosely, to mean a public                  We wanted the schema to be answerable from a paper plus
+evaluation in which an LLM is given a multi-step task that          its public repository, in roughly an hour per paper. We did not
+involves tool use, environment interaction, or both, and is         want it to require running any model: a downstream reader
+scored by a runnable grader against a fixed task set. By            who only reads papers should be able to compute the score.
+that definition the canonical examples include SWE-bench [1]        We also did not want the schema to be aspirational, in the
+and its variants [2]; WebArena [3], VisualWebArena [4], and         sense that a 1.0 should correspond to “a competent reader
+Mind2Web [5] for the web setting; OSWorld [6] for the               could attempt a faithful re-execution,” not to “the experiment
+desktop setting; GAIA [7] for general-assistant tasks; Agent-       was correctly designed.” The distinction matters and we return
+Bench [8] and AgentBoard [9] as multi-domain bundles; and           to it in Section VIII.
+MLE-bench [10] for ML engineering. Outside the agent setting
+but inside the LLM setting, we also looked at HumanEval [11],       B. The fields
+MBPP [12], GSM8K [13], and MMLU [14] because they are                  The schema has five fields, plus an aggregate score.
+routinely re-evaluated by agent papers as baselines.                   Benchmark identity. What benchmark was used, in what
+   Each of these has a public GitHub repository. The repository     version, on which subset, scored by which grader? The thing
+identifier is part of what we recorded.                             we wanted to be able to answer here was “which release
+   The reproducibility literature in machine learning has pro-      of which benchmark, with which task list, scored by which
+duced several artifacts that an author can attach to a paper.       version of which evaluator.” We accept benchmark-name + a
+Model cards [17] describe the trained model. Datasheets [18]        public repository reference as the easy half; we ask for an
+describe the data the model was trained on. The ML Repro-           explicit version tag or commit hash for the harder half. Subset
+ducibility Checklist [16] asks training-time questions (seeds,      declaration is a required structured field: “full set” counts, but
+hyperparameter sweeps, hardware). BetterBench [21] scores           it has to be said. The grader is a separate field because a
+benchmarks themselves on construct-validity and documenta-          benchmark can ship multiple graders or change its grader over
+tion dimensions.                                                    time. For brevity in tables we sometimes refer to this as the
+   None of these are wrong; they are just answering different       identity card.
+questions from the one we needed answered, which is what               Harness specification. What scaffold was wrapped around
+happened during inference. A model card tells us what was           the model, what tools did it have, what stopping rule, what
+trained but not how it was queried. A datasheet tells us            environment image? This is the field that the agent setting
+about the training set but not the evaluation environment.          introduces and that the classical setting does not have, and it
+The checklist asks training questions. BetterBench asks “is         is also the field on which the audit corpus performs worst. The
+the benchmark a good ruler.” Our question is “can I, given          specific sub-fields we settled on, after some shuffling during
+only this paper and its public repository, work out what was        pilot scoring, are: scaffold name and version (or commit),
+actually run.”                                                      system prompt (verbatim or hash), tool inventory, stopping rule
+   The prompt-sensitivity strand of work is closer to our           (max steps, max tokens, max wall-clock), and an environment
+concern but operates at a different scale: it shows that            identifier. For environment, we ask for a content-addressed
+single-prompt evaluations are noisy versus multi-prompt ag-         image (a Docker digest, in practice) rather than a repository
+gregates [19], [20]. We take this as ambient evidence that          tag, because tags are mutable. We initially had “reference
+decoding and prompt details matter, and treat its measurements      harness” as a separate field; we folded it into “scaffold name
+as background; we are not re-doing it.                              and version” because the boundary between “the reference
+   We treat data contamination [22], [23] as orthogonal. Two        scaffold” and “a scaffold the authors are themselves propos-
+papers running an under-specified harness on the same bench-        ing” turned out to be muddier than we wanted to legislate.
+mark with the same model will disagree even with perfect test-         Inference settings. What model was queried, through what
+set hygiene. Contamination explains levels; under-specification     engine, with what sampling configuration, with what seed (or
+explains spread.                                                    with an explicit acknowledgment that no seed is exposed),
+and on what date? We ask for the run date because closed-            hash without changing the tag. Across the eight agent
+API model aliases are re-pointed silently by their providers; a      benchmark papers we scored, zero used digests; several used
+paper that says “gpt-4o” and was written six months before           repository tags; many used neither.
+another paper that says “gpt-4o” may have been querying                 Qualitative error analysis is not a failure breakdown. The
+a different model. The aggregation rule (single shot, mean           convention we ended up with is that a structured failure
+of n, majority of n, best-of-n against a verifier) is also a         breakdown needs to (a) name categories explicitly, (b) give
+sub-field, because two papers can have the same “accuracy”           a count per category, and (c) attribute each failure to a task
+headline number that differs by an order of magnitude in             or class of tasks. A paper that contains a paragraph saying
+tokens consumed.                                                     “the model often misinterpreted the screenshot” is informative
+   Cost reporting. Input tokens, output tokens, total tool calls,    but does not, by our codebook, count as disclosed on this
+wall-clock time, and dollar cost at a stated rate. We include        field. A paper with a table of error categories and counts (the
+cost because the same accuracy at hundredfold cost is a              AgentBench paper [8] has one) does count.
+different operating point, and because the cost field is the one        Subset cardinality has to be a structured number, not a
+that vendor reports tend to surface and academic papers tend         prose statement. A paper that says “we evaluated on the test
+to suppress, which makes it a useful signal of where a paper         set” satisfies the spirit but not the letter of disclosure on the
+sits on the disclosure spectrum.                                     benchmark identity field if the test set’s size is given elsewhere
+   Failure breakdown. A structured taxonomy of why an                and not in the paper. We treat this as partial. A paper that says
+agent failed each task it failed: refusal, infinite loop, tool-use   “we evaluated on 500 problems from SWE-bench Verified” is
+error, environment error, time-out, grader timeout, incorrect        disclosed.
+final state. We do not require any particular taxonomy—a                We do not pretend these rules are perfect. Two of them
+benchmark whose failures have different categories may use           (“greedy decoding alone is not enough” and “qualitative
+different categories—but we do require that the paper report         analysis is not a failure breakdown”) are judgment calls; a
+categorized counts at task granularity.                              reasonable auditor could disagree. The codebook is released
+   Aggregate score. For each of the five fields, the auditor         so that disagreement can be made specific rather than vague.
+assigns a score in {0, 0.5, 1} (absent, partial, disclosed). N/A
+is allowed and is collapsed out of the denominator. The                        IV. FAILURE M ODES W E K EPT S EEING
+aggregate score is the unweighted mean over applicable fields.          We were not initially planning to name failure modes. We
+We deliberately did not weight the fields. Weighting invites         were going to score papers and report what we saw. What
+an argument about which field matters more, which is an              pushed us to name them was that the same patterns kept
+argument we did not want to have during pilot scoring; the           reappearing across papers, and naming them turned out to be
+per-field vector is reported alongside the scalar so anyone          useful for the discussion that follows. There are five, but they
+who disagrees with the unweighted mean can read off the              are not neatly orthogonal and they do not map one-to-one onto
+components.                                                          the schema fields. We tried to make them do so in an early
+                                                                     draft; we unmade that mapping because it felt cleaner than the
+C. The codebook (or: things we wrote down because we kept            corpus.
+disagreeing with ourselves)                                             Harness drift. Two papers report a number on the same
+   We started pilot scoring without a written codebook. By           benchmark using two different scaffolds and neither pins
+the fourth paper we had to add one. The boundary cases that          which scaffold. The original SWE-bench paper [1] introduced
+prompted it are worth being explicit about, because they are         SWE-agent as a reference scaffold; subsequent papers report
+exactly where a second auditor would reach a different verdict.      SWE-bench numbers using their own scaffolds, often without
+   A few examples of rules we wrote down:                            comparing to the reference. The two numbers are not directly
+   “Greedy decoding” alone is not enough for inference set-          comparable. This is the field that “harness specification” is
+tings to count as disclosed. A paper that says “we use greedy        supposed to address.
+decoding” and stops there has named the sampling method but             Silent subsetting. A paper reports a result on benchmark B
+has not named the engine (a closed API endpoint has its own          but evaluated on a subset B ′ ⊂ B without saying so or without
+defaults for, e.g., maximum tokens), the per-task token cap, or      saying how the subset was chosen. The unstated reason is
+the aggregation rule across passes. For closed APIs we treat         usually cost: the full SWE-bench is 2,294 tasks; the full
+the absence of a run date as also pushing toward partial. The        WebArena is 812; the full OSWorld is 369. Running these at
+threshold for full disclosure on this field is high enough that      scaffold depth costs thousands of dollars per model. Subsetting
+only two of our twelve papers cleared it.                            is rational; the failure mode is hiding it. The benchmark-
+   A repository tag is not a container digest. For the               identity field’s subset sub-field is meant to catch this.
+environment identifier under harness specification, we                  Decoding underspecification. The paper specifies the sam-
+accept a content-addressed digest (e.g., sha256:...)                 pling method (“greedy decoding”) but omits the inference
+as     disclosed;    a    Docker     repository     tag   (e.g.,     engine and the per-task token cap. This appears innocuous and
+xlang-ai/osworld-env:latest) we treat as partial                     is not. For open-weights models, different inference engines
+because the tag can be re-pushed against a different content         (vllm, TGI, llama.cpp, transformers) handle stop
+TABLE II: Failure Modes and the Schema Field That Ad-                       • The ar5iv HTML rendering for two papers (OSWorld [6],
+dresses Each.                                                                 MLE-bench [10]) returned the conversion-error page “Con-
+                                                                              version to HTML had a Fatal error and exited abruptly.” For
+ Failure mode                  What it looks like               Field
+                                                                              both we fell back to the abstract page on arxiv.org plus
+ Harness drift                 Same benchmark, different        Harness       the GitHub repository README. The scoring is therefore
+                               scaffolds, same name.
+                                                                              tighter than we would like on the two HSS sub-fields
+ Silent subsetting             Partial evaluation reported as   Identity
+                               full.                                          (system prompt, container image) for these papers; we noted
+ Decoding underspecification   Sampling method named;           Inference     this in the per-paper notes.
+                               engine, cap, aggregation                     • AgentBoard [9] also failed ar5iv conversion, and the
+                               missing.
+                                                                              abstract page did not contain enough disclosure-relevant text
+ Cost invisibility             Accuracy without compute         Cost
+                               or dollar cost.                                to score five fields. We dropped it from the corpus rather
+ Grader opacity                Grader behavior described,       Identity      than score it on insufficient evidence.
+                               not pinned to a version.                     • The vendor blog announcing SWE-bench Verified [2] re-
+                                                                              turned HTTP 403 to the fetch we performed; we excluded
+                                                                              it from the per-paper scoring rather than rely on second-hand
+sequences, KV caching, and batch determinism differently; the                 summaries. Note that SWE-bench Verified still appears in
+same model under each can produce different trajectories on                   our discussion as a subset of SWE-bench, but we did not
+a multi-step task. For closed-API models, the per-task token                  score the blog itself as a paper.
+cap interacts with the agent’s stopping rule in ways that can               • For papers where the README described a Docker setup but
+change the trajectory entirely.                                               did not pin a digest, we recorded the digest as absent. This
+   Cost invisibility. The paper reports accuracy but no cost.                 affected MLE-bench, where the mlebench-env Docker
+The reader cannot tell whether the number is from a single                    image is described in the environment/Dockerfile
+inference pass or a thousand-trajectory best-of-n search with                 but no released digest pins the built artifact. The MLE-
+an external verifier. Two methods can sit at the same accuracy                bench documentation provides the build command
+while differing by three orders of magnitude in tokens. Cost                  docker build --platform=linux/amd64 -t
+reporting is the field that addresses this; it is also, across the            mlebench-env -f environment/Dockerfile .,
+audit, the worst-scored field.                                                but the locally-built image’s digest will vary across builds.
+   Grader opacity. The grader is described informally but                     These are not catastrophic but they affected which papers
+not pinned. For agent benchmarks the grader is often itself                 made it into the table and how some fields were scored. We
+code; small grader changes can shift scores up or down. Two                 mention them because the corpus is meant to be reproducible
+implementations of “the same” grader can disagree on edge                   by anyone who repeats the same fetches; the failures are part
+cases. This is addressed by the grader-version sub-field of                 of what they will reproduce.
+benchmark identity.
+   These five do not partition the disclosure space. Harness                B. Audit walkthrough 1: SWE-bench
+drift and decoding underspecification often co-occur in pa-                   The SWE-bench paper [1] was the most familiar of the
+pers proposing a new scaffold (the engineering effort is on                 papers we audited; it was also the one whose score surprised
+the scaffold; the inference settings get less attention). Silent            us most. The paper introduces a benchmark and evaluates a
+subsetting and cost invisibility share a root cause (the unstated           small set of language models against it, without proposing an
+reason for subsetting is usually that running the full set was              agent scaffold per se. The walkthrough below is the fields we
+unaffordable). We mention this because we ended up de-                      extracted and the score we assigned each.
+emphasizing the cleanness of the mapping during writing.                      Benchmark identity. The paper states “2294 soft-
+                                                                            ware engineering problems” (abstract) and points to
+                     V. C ONDUCTING THE AUDIT                               www.swebench.com for the data. The scoring is binary: “If
+                                                                            the patch applies successfully and all of these tests pass we
+A. Sources and the friction of getting at them
+                                                                            consider the proposed solution to have successfully resolved
+   Each paper was scored from two sources: the canonical pa-                the issue” (Section 2.2). What it does not state in a structured
+per (read via the HTML rendering on ar5iv where available,                  way is a release tag for the benchmark, a grader version, or an
+or the PDF where not) and the official GitHub repository’s                  explicit partial-credit policy. We scored this field 0.5 (partial).
+README and configuration files. The scoring was done in one                 A reader who needs to reproduce a specific number will find
+pass per paper by a single auditor, who recorded for each field             the dataset but will not find a pinned version of either the
+a value in {0, 0.5, 1} and a one-sentence justification citing the          dataset or the grader.
+section of the paper or location in the repository that supported             Harness specification. This is where the score came out
+the score.                                                                  lower than we initially expected. The paper does not describe
+   Getting at the sources was not as smooth as we expected.                 an agent scaffold; it evaluates LLMs directly with a prompt
+We had planned for fifteen papers; we ended with twelve. The                template shown in Appendix D.3. There is no tool inventory in
+reasons:                                                                    the harness sense, no stopping rule beyond “generate a patch,”
+no environment image identifier. We marked this 0.0 (absent).      Table 1. The aggregation across passes is implicit (the paper
+This is a case where the boundary between “not applicable”         reports a single evaluation per model). What is not disclosed:
+and “absent” was a judgment call. We chose absent because the      seed, inference engine for the open-weights models, evaluation
+paper does describe a procedure for evaluating LLMs against        date. We marked this 1.0 (disclosed) rather than 0.5 because
+the benchmark, just not one that maps onto the harness fields      the paper passes the codebook threshold by disclosing both
+the schema asks for. A reasonable second auditor could mark        the sampling method and the pass count explicitly; the missing
+this n/a; we documented our convention in the codebook.            fields are individually small. This was a borderline call; one
+   Inference settings. “We simply use greedy decoding for all      of us argued for 0.5 and we settled on 1.0 because the explicit
+models” (Appendix D.2) and “only generate a single patch           naming of greedy with temperature=0 and the single-pass-per-
+per instance” (Appendix D.2). Models named: ChatGPT-3.5,           task convention is more than the codebook threshold strictly
+GPT-4, Claude 2, SWE-Llama (Section 4.3). What is missing:         requires. We flagged this in the per-paper notes.
+temperature value (greedy implies 0 but is not stated), top-p,        Cost reporting. The paper mentions “approximately 4k and
+top-k, seed, inference engine for the open model, evaluation       13k calls for inference, approximately the identical amounts
+date. Score: 0.5 (partial). The sampling method and pass count     of calls for inference as MMLU requires.” That is a call count
+are disclosed; the rest is not.                                    but not a token count or dollar cost. Score: 0.0 (absent). We
+   Cost reporting. Training compute for SWE-Llama is re-           considered 0.5 because the call count is at least quantified; the
+ported (“20 hours on 4 NVIDIA A100s,” Appendix B.1) but            codebook says cost reporting requires token-level or dollar-
+inference cost is not. No per-instance token counts, no dollar     level disclosure, so we held the line at absent. This is another
+cost, no wall-clock. Score: 0.0 (absent).                          judgment call worth flagging.
+   Failure breakdown. Section 5.1 and Appendix F contain              Failure breakdown. Section 2 of the paper categorizes “five
+qualitative case-study analysis. Patterns noted include “models    typical types” of failures: Context Limit Exceeded, Invalid
+tend to write primitive Python code” and “generate shorter,        Format, Invalid Action, Task Limit Exceeded, and Complete.
+simpler edits” (Section 5). This is informative but does not       Table 4 quantifies the distribution across all eight environ-
+satisfy our requirement of named categories plus counts plus       ments. This satisfies all three of our requirements (named
+task-level attribution. Score: 0.0 (absent).                       categories, counts, attribution to tasks). Score: 1.0 (disclosed).
+   Aggregate. 0.20. We were a little surprised the number was      This was the paper that taught us what a fully disclosed failure
+this low, given how much of the agent literature uses SWE-         breakdown looks like in practice.
+bench, until we remembered that the paper predates much of            Aggregate. 0.70. The highest among the agent benchmarks
+the scaffold work that the field associates with the benchmark.    we audited.
+A SWE-bench result reported by a 2025 agent paper would
+presumably score higher on the harness fields because those        D. Per-dimension findings
+papers do discuss scaffolds; we did not audit those papers,           Table III reports the per-paper scores. A short reading of
+only the canonical benchmark introduction.                         the pattern:
+                                                                      Cost is the dimension where the corpus is most uni-
+C. Audit walkthrough 2: AgentBench                                 formly absent. Across all twelve papers, only one (MBPP,
+   The AgentBench paper [8] was the highest-scoring agent          which reports compute and CO2 for training as a matter of
+benchmark in our corpus and the one that most influenced our       disclosure policy in that subfield of the literature) discloses
+codebook. It is also instructive because some of its fields are    cost explicitly [12]; none of the eight agent benchmarks report
+disclosed clearly enough that they pulled their categories from    inference cost in any form. The agent-benchmark cost mean
+partial to disclosed mid-audit.                                    is exactly 0.00.
+   Benchmark identity. The paper describes “8 distinct en-            The harness field is universally partial. Seven of the eight
+vironments” (Section 1) with task counts and metrics for           agent benchmarks score 0.5; one (SWE-bench, which predates
+each (Table 2), and explicitly states the weighting formula:       the scaffold work) scores 0.0. Zero score 1.0. The pattern
+“reciprocal average score of all tested LLMs in each task as       across the seven is the same: scaffold and tools are described in
+a fixed weight.” That is a structured grader policy at the level   some form (often in an appendix), but the environment image
+we ask for. Score: 1.0 (disclosed).                                is not pinned by digest. The harness field is the place where
+   Harness specification. The agent framework uses Chain-          the audit’s adoption advice most clearly translates to a single
+of-Thought-style prompting (“Thought” and “Action” in one          recommended change: publish a digest.
+turn), with prompts in Appendix B.3 and C.3. Maximum                  Identity is the strongest field, with a split. All four
+interaction turns are reported (“8-35 by environment”). What       classical benchmarks reach 1.0; all eight agent benchmarks
+is not disclosed is an environment-image identifier; the paper     sit at 0.5. The agent gap is on benchmark version and subset
+does not pin a Docker digest for the environments. Score: 0.5      selection as structured fields rather than as prose descriptions.
+(partial). The scaffold and stopping rules are described; the      Several agent papers say something like “we evaluate on the
+environment image is not.                                          test set,” which we treat as partial.
+   Inference settings. The paper states “temperature=0 (i.e.,         Inference settings is partial across both groups. Temper-
+greedy decoding)” explicitly, and gives model identifiers in       ature is commonly reported, often as “greedy” or “tempera-
+TABLE III: Audit Scores for the Twelve Papers. Values are                      disclosure is instrumentation of the evaluation harness so that
+1.0 = disclosed, 0.5 = partial, 0.0 = absent, “—” = not                        disclosures are emitted automatically, not stricter peer review
+applicable.                                                                    trying to catch what was never written down in the first place.
+ Benchmark                     Iden.   Harn.   Infer.   Cost   Fail.   Score    VI. T OOLING : S CHEMA F ILE , VALIDATOR , AND H ARNESS
+ Agent benchmarks                                                                                           H OOKS
+ SWE-bench                      0.5     0.0     0.5     0.0    0.0     0.20       We ship three small pieces of code along with the audit.
+ WebArena                       0.5     0.5     1.0     0.0    0.5     0.50    They are not large or sophisticated; they are intended to make
+ OSWorld∗                       0.5     0.5     0.5     0.0    0.0     0.30
+                                                                               the schema concrete and the codebook executable.
+ GAIA                           0.5     0.5     0.0     0.0    0.0     0.20
+ AgentBench                     1.0     0.5     1.0     0.0    1.0     0.70
+                                                                                  reprobe.schema.json. A JSON Schema (draft 2020-
+ VisualWebArena                 0.5     0.5     0.5     0.0    0.5     0.40    12) file that describes the manifest format. The schema is about
+ Mind2Web                       0.5     0.5     0.5     0.0    0.5     0.40    230 lines and lives at the root of the repository. A minimal
+ MLE-bench∗                     0.5     0.5     0.5     0.0    0.0     0.30    valid manifest is shown in Figure 1; the schema enforces the
+ Classical static benchmarks                                                   field names and types but not the codebook rules (those live
+ HumanEval                      1.0     —       0.5     0.5    1.0     0.75    in the codebook CODEBOOK.md).
+ MMLU                           1.0     —       0.5     0.0    0.5     0.50       validate.py. A 90-line script that takes a directory of
+ GSM8K                          1.0     —       0.5     0.5    0.0     0.50    manifest JSON files and validates each against the schema. It
+ MBPP                           1.0     —       0.5     1.0    1.0     0.88    uses the jsonschema Python package. Usage is plain:
+ Agent mean (n=8)              0.56    0.44    0.56     0.00   0.31    0.38    $ python validate.py manifests/
+ Classical mean (n=4)          1.00     —      0.50     0.50   0.62    0.66    manifests/run_001.json OK
+ Overall (n=12)                0.71    0.44†   0.54     0.17   0.42    0.47    manifests/run_002.json FAIL: bic.cardinality must be integer
+                                                                               manifests/run_003.json OK
+  ∗ Scored from arXiv abstract + GitHub README because the ar5iv
+                        HTML conversion failed.                                The validator does not catch semantically wrong fields (“tem-
+  † Mean is over the n=8 agent benchmarks for which the harness field
+                                  applies.
+                                                                               perature = 999” will pass). It catches type errors and missing
+                                                                               required fields. We considered adding semantic checks and
+                                                                               decided against; the boundary between “invalid” and “odd
+ture 0”; the inference engine, seed, per-task token cap, and                   but possible” is exactly the boundary that downstream readers
+run date are usually not. Two papers reach 1.0 (WebArena,                      should think about, not one we should pre-decide.
+AgentBench), in both cases because they name the sampling                         Harness hooks for two open-source agents. We include
+and pass-aggregation rule explicitly.                                          small patches (harness_hooks/swe_agent.patch and
+   Failure breakdown is the most heterogeneous field. Three                    harness_hooks/browsergym.patch) that add a single
+of twelve papers reach 1.0 (AgentBench, HumanEval, MBPP);                      function call at the end of each run, writing a manifest JSON
+four are partial; five are absent. The 1.0 papers all share                    to disk. The patches are around 30 lines each. They are not
+the property that they ship explicit category-count tables.                    production code. They are deliberately small so that a reader
+The partial papers contain useful qualitative analysis but not                 can see what an instrumented harness looks like and adapt
+structured counts.                                                             them.
+                                                                                  The repository layout is approximately:
+E. The gap between agent and classical benchmarks
+                                                                               reprobe/
+   The mean across agent-benchmark papers (0.38) is smaller                     reprobe.schema.json # the schema
+                                                                                CODEBOOK.md # field-by-field scoring rules
+than the mean across classical-benchmark papers (0.66). We                      validate.py # manifest validator
+do not read this as evidence that agent-benchmark authors are                   score_corpus.py # corpus aggregation utility
+                                                                                audit_results.csv # the 12-paper scores (this paper)
+less rigorous. The harness field, which the classical setting                   audit_notes/ # per-paper extracted evidence
+does not have, is part of the score’s denominator for the                         swe-bench.md
+                                                                                  webarena.md
+agent papers and drags the mean down; even setting it aside,                      ...
+agent benchmarks score lower on the cost field, presumably                      harness_hooks/
+                                                                                  swe_agent.patch
+because the cost of running an agent benchmark is much                            browsergym.patch
+higher and reporting it tends to make a paper’s results look                    examples/
+                                                                                  minimal_manifest.json
+more expensive than the paper would like. We are speculating                      swe_bench_example.json
+about the mechanism; the level of the gap is the empirical
+part.                                                                             We do not attach a continuous-integration pipeline or a web-
+                                                                               site. We considered both and decided the schema’s adoption
+F. What the audit did not find                                                 story does not depend on either.
+   We did not find a paper that misrepresented its disclosures in
+                                                                                                   VII. D ISCUSSION
+the sense of stating something false. Across the twelve papers,
+every score of 0.0 corresponded to an omission—a field the                     A. Why we think this might adopt
+template did not call for—rather than a misstatement. We treat                   A voluntary standard in machine learning has a mixed
+this as a remediation-relevant finding: the lever that moves                   adoption history. We are not sure whether what we propose
+{                                                                 of those was not instant but did happen. We do not claim
+    "reprobe_version": "0.1",                                     ours is comparable in scope; we claim only that the precedent
+    "result_id": "swebench-verified-claude-2026-05-01",
+    "identity": {                                                 exists.
+      "benchmark": "swebench-verified",
+      "version": "v1",                                            B. What a leaderboard could do unilaterally
+      "commit": "<commit-hash>",
+      "subset": "full",                                              A benchmark maintainer who is convinced by the schema
+      "cardinality": 500,
+      "grader_version": "<grader-commit>",                        does not need any coordination across vendors to adopt it.
+      "partial_credit": false                                     The minimum intervention is to accept a manifest upload
+    },
+    "harness": {                                                  alongside the score, validate it against the schema, and render
+      "scaffold": "swe-agent",                                    the per-field vector alongside the headline number in the public
+      "scaffold_version": "1.0.0",
+      "system_prompt_hash": "sha256:...",                         table. A reader looking at the table can then see at a glance
+      "tools": ["bash", "edit", "submit"],                        which fields are disclosed for which submissions. None of this
+      "max_steps": 50,
+      "container_digest": "sha256:..."                            requires running a model.
+    },                                                               A second intervention, optional, is to cluster rows by
+    "inference": {
+      "provider": "anthropic",                                    (identity, harness) tuple so that nominally identical
+      "model_alias": "<model alias used>",                        benchmark settings appear together. The aim is not to rank
+      "engine": "anthropic-api",
+      "sampling": "greedy",                                       “best” but to make the apples-to-apples comparisons visually
+      "temperature": 0.0,                                         obvious without re-running anything.
+      "max_output_tokens": 4096,
+      "seed": null,
+      "passes_per_task": 1,                                       C. Things this schema does not do
+      "run_date": "2026-05-01"
+    },                                                               The schema is about disclosure of what an evaluation did.
+    "cost": {                                                     It does not say whether what the evaluation did was a good
+      "input_tokens": "<int>",
+      "output_tokens": "<int>",                                   idea. A paper can score 1.0 on every field and still have run
+      "tool_calls": "<int>",                                      a suspect experiment: the wrong benchmark for the question,
+      "wallclock_seconds": "<int>",
+      "dollar_cost_usd": "<float>",                               the wrong baseline, a contaminated training set. Disclosure
+      "rate_source": "<provider-pricing-page>"                    is a necessary but not sufficient condition for trustworthiness,
+    },
+    "failures": {                                                 and the schema is silent on the sufficient half. We treat the
+      "refusal": "<int>", "loop": "<int>",                        sufficient half as orthogonal work.
+      "tool_error": "<int>", "env_error": "<int>",
+      "timeout": "<int>", "wrong_state": "<int>"                     The schema also does not address the dynamics of model
+    },                                                            aliases under closed APIs. We require the run date as a field,
+    "headline_metric": {
+      "name": "resolved",                                         which lets a reader correlate against provider changelogs after
+      "value": "<float in [0,1]>"                                 the fact; we do not require the provider to publish a changelog.
+    }
+}                                                                 This is a constraint we cannot resolve from outside.
+
+                                                                    VIII. L IMITATIONS AND T HINGS T HAT S URPRISED U S
+Fig. 1: Manifest template. Field values shown as <...> are
+placeholders for what an author would fill in; the schema            The audit covered twelve papers. That is a pilot. A
+validates types but does not enforce plausibility.                representative-sample audit would need fifty to a hundred
+                                                                  papers stratified by venue and would need a second auditor
+                                                                  for inter-rater agreement; we did not attempt that here, and
+                                                                  we treat it as the natural next step. The reported means in
+will adopt or not. What we can say is what we wrote it to         Table III should be read as “what these twelve papers do,” not
+make plausible.                                                   “what the literature does on average.”
+   The schema is cheap. A research team that instruments its         The scoring was done by a single auditor in one pass.
+harness once gets the manifest emitted automatically per run;     The partial-versus-disclosed boundary is a judgment call on
+the marginal cost per result is roughly zero. The codebook        several fields, and the codebook documents the rules we used;
+is a single Markdown file that a reviewer can read in fifteen     a second auditor could legitimately move two or three cells in
+minutes. The validator is a script. There is no service to sign   either direction. We marked the cells where we were closest to
+up for.                                                           the boundary in our per-paper notes (the AgentBench inference
+   The artifact does work for the producer before anyone else     score of 1.0 vs. 0.5, the SWE-bench harness score of 0.0 vs.
+reads it. A manifest is a debugging artifact and a hand-off       n/a, the AgentBench cost score of 0.0 vs. 0.5).
+artifact across collaborators. If you have ever lost a few days      The audit recorded what is disclosed in publicly available
+trying to reconstruct what configuration produced last month’s    artifacts. It cannot rule out that the underlying experiments
+result, the manifest is the artifact you wish you had written.    were correctly conducted even when disclosure is poor. A
+   There is precedent. The ML/CV community has previously         paper that scores 0.20 may have been a careful piece of work
+absorbed conference-level reporting expectations (the ML Re-      whose authors simply did not write down details that the
+producibility Checklist, datasheets, model cards), and adoption   schema asks for. The aggregate score is a disclosure metric,
+not a quality metric. We tried to be careful about this in the      score came out to 0.38 (out of 1.0); the mean classical-
+prose but it is worth re-stating.                                   benchmark score came out to 0.66; cost is universally absent
+   A few practical things surprised us during the audit and are     for agent benchmarks, and no agent benchmark fully discloses
+worth flagging:                                                     its harness specification, primarily because content-addressed
+   Repository drift relative to paper. For two of the papers        environment images are replaced by mutable repository tags.
+(MLE-bench, OSWorld), the GitHub repository’s README                We make the schema, the codebook, the validator, and the
+contained more disclosure-relevant content than the paper           raw scoring sheet available under an open license. We are not
+did, particularly on environment specification and running          certain the schema is the right schema. We are certain the
+instructions. For one (Mind2Web), the opposite was true: the        work of writing it down and applying it to a small corpus was
+paper had more methodological detail than the repository’s          useful for our own understanding, and we are interested to see
+documentation. The schema scores both sources together, but         what a larger, multi-rater audit would find.
+a downstream reader might consult only one and get a different
+picture.                                                                                  R EPRODUCIBILITY
+   Mutable Docker tags. For OSWorld, the GitHub README                 The audit was performed against the canonical paper
+provides Docker setup via provider_name: docker                     for each of the twelve benchmarks (via the HTML ren-
+with no image digest pinned. The image tag is mutable:              dering on ar5iv.labs.arxiv.org where available, or
+someone re-running the same instructions a year from now            the abstract plus GitHub repository where not) and against
+may pull a different image. We treated this as “partial” on the     the official repository’s README. Each per-paper score is
+harness field; one of the strongest arguments we kept making        supported by a single-sentence justification with a citation
+during scoring was that this should be “absent.” We held the        to the section of the paper or location in the repository
+line at partial because the build pipeline is at least described.   that grounds it. The release accompanying this paper con-
+   Model aliases vs. actual checkpoints. Several of the papers      tains: the schema (reprobe.schema.json), the code-
+report results for a closed-API model identifier (e.g., gpt-4o,     book (CODEBOOK.md), the validator (validate.py), the
+claude-3-5-sonnet) without a run date. A paper pub-                 raw scoring sheet (audit_results.csv), the per-paper
+lished nine months ago that reports gpt-4o numbers is, in a         extracted evidence (audit_notes/), and and the harness
+strict sense, reporting on a different model from one published     hooks (harness_hooks/). The repository is available at
+last month under the same alias. We do not have a way to            https://github.com/mahdinaser/reprobe-audit.
+retroactively correlate the two without a run date; we asked
+the schema to require it.                                               A PPENDIX A: A S ELECTION FROM THE C ODEBOOK
+   Conversion errors. The ar5iv HTML conversion failed
+for three papers in our intended corpus. Two we recovered              The codebook documents the partial-versus-disclosed
+from the GitHub repository; one (AgentBoard) we could not.          boundary for each field. The full file is in the release. A few
+This is an infrastructure issue at the source-rendering layer       representative entries:
+that is outside our control but that materially affects any audit      Identity / version. Disclosed requires a specific release
+attempting to use ar5iv as a primary source. We recommend           tag, commit hash, or version string for the benchmark; the
+that a re-runner use the arXiv PDF in addition to or in place       benchmark name alone is not sufficient. “We evaluate on
+of ar5iv for completeness, at the cost of slower extraction.        SWE-bench Verified” is partial unless a release identifier is
+   The boundary between “partial” and “disclosed.” The              given.
+case that took us the longest to argue out was AgentBench’s            Identity / subset. Disclosed requires either a numeric
+inference field. The paper states “temperature=0 (i.e., greedy      cardinality of the subset or an explicit “full set.” Prose-only
+decoding)” and gives model identifiers, and reports a single        references (“we evaluate on the test set”) are partial.
+pass per task. By the codebook this is enough to be disclosed,         Harness / environment. Disclosed requires a content-
+but the paper does not state seeds, inference engines, or           addressed identifier (a Docker image digest, a container hash,
+evaluation dates—all of which we asked for in the field             or equivalent). A repository tag is partial. A prose description
+description. We ended up at 1.0 because the codebook’s              of the environment without a build artifact is absent.
+threshold is “sampling method and pass count clearly stated”           Inference / sampling. Disclosed requires naming the sam-
+and AgentBench meets it; a stricter threshold would put it          pling method and the per-task pass count. Greedy decoding
+at 0.5. This is the kind of case where a second auditor’s           stated alone, without a per-task pass count, is partial.
+disagreement is most likely to fall.                                   Cost. Disclosed requires at least one of: token counts (input
+                                                                    + output), dollar cost at a stated rate, or wall-clock time.
+                      IX. C ONCLUSION                               Inference compute described qualitatively (“approximately 4k
+  We tried to measure how much current LLM agent bench-             calls”) is partial only if it gives at least a structured number.
+mark papers disclose about how their evaluations were run.             Failure breakdown. Disclosed requires named categories,
+We designed a small schema with five fields, scored twelve          counts per category, and attribution to tasks (not just to the
+canonical benchmark papers against it, and recorded the per-        corpus as a whole). Qualitative analysis without counts is
+paper, per-field scores. The mean agent-benchmark disclosure        absent.
+               A PPENDIX B: T WO AUDIT N OTES                                    [8] X. Liu, H. Yu, H. Zhang, Y. Xu, X. Lei, H. Lai, Y. Gu, H. Ding,
+                                                                                     K. Men, K. Yang, S. Zhang, X. Deng, A. Zeng, Z. Du, C. Zhang,
+  The audit_notes/ directory contains one Markdown file                              S. Shen, T. Zhang, Y. Su, H. Sun, M. Huang, Y. Dong, and J. Tang,
+per audited paper, with the extracted evidence for each field.                       “AgentBench: Evaluating LLMs as Agents,” International Conference
+                                                                                     on Learning Representations (ICLR), 2024.
+Two short excerpts:                                                              [9] C. Ma, J. Zhang, Z. Zhu, C. Yang, Y. Yang, Y. Jin, Z. Lan, L. Kong, and
+  swe-bench.md (excerpt):                                                            J. He, “AgentBoard: An Analytical Evaluation Board of Multi-Turn LLM
+                                                                                     Agents,” Advances in Neural Information Processing Systems (NeurIPS),
+## Inference settings (score: 0.5)                                                   2024.
+                                                                                [10] J. S. Chan, N. Chowdhury, O. Jaffe, J. Aung, D. Sherburn, E. Mays,
+Disclosed:                                                                           G. Starace, K. Liu, L. Maksin, T. Patwardhan, L. Weng, and A. Madry,
+- Sampling method: "we simply use greedy                                             “MLE-bench: Evaluating Machine Learning Agents on Machine Learn-
+ decoding for all models" (Appendix D.2)
+- Passes per task: "only generate a single
+                                                                                     ing Engineering,” OpenAI Technical Report, 2024.
+ patch per instance" (Appendix D.2)                                             [11] M. Chen, J. Tworek, H. Jun, Q. Yuan, H. P. de Oliveira Pinto, J. Kaplan,
+- Models named: ChatGPT-3.5, GPT-4, Claude 2,                                        et al., “Evaluating Large Language Models Trained on Code,” arXiv
+ SWE-Llama (Section 4.3)                                                             preprint arXiv:2107.03374, 2021.
+                                                                                [12] J. Austin, A. Odena, M. Nye, M. Bosma, H. Michalewski, D. Dohan,
+Absent:                                                                              E. Jiang, C. Cai, M. Terry, Q. Le, and C. Sutton, “Program Synthesis
+- Temperature (implicit; not stated)                                                 with Large Language Models,” arXiv preprint arXiv:2108.07732, 2021.
+- Top-p / top-k                                                                 [13] K. Cobbe, V. Kosaraju, M. Bavarian, M. Chen, H. Jun, L. Kaiser,
+- Seed
+- Inference engine for SWE-Llama
+                                                                                     M. Plappert, J. Tworek, J. Hilton, R. Nakano, C. Hesse, and J. Schulman,
+- Evaluation date                                                                    “Training Verifiers to Solve Math Word Problems,” arXiv preprint
+                                                                                     arXiv:2110.14168, 2021.
+Boundary note: This is the canonical case the                                   [14] D. Hendrycks, C. Burns, S. Basart, A. Zou, M. Mazeika, D. Song, and
+codebook is calibrated against. Greedy + pass                                        J. Steinhardt, “Measuring Massive Multitask Language Understanding,”
+count is the minimum for disclosed; we did not                                       International Conference on Learning Representations (ICLR), 2021.
+reach that bar here because the inference                                       [15] P. Henderson, R. Islam, P. Bachman, J. Pineau, D. Precup, and D. Meger,
+engine is missing for the open-weights model.                                        “Deep Reinforcement Learning that Matters,” AAAI Conference on
+                                                                                     Artificial Intelligence, 2018.
+  agentbench.md (excerpt):                                                      [16] J. Pineau, P. Vincent-Lamarre, K. Sinha, V. Larivière, A. Beygelzimer,
+                                                                                     F. d’Alché-Buc, E. Fox, and H. Larochelle, “Improving Reproducibility
+## Failure breakdown (score: 1.0)                                                    in Machine Learning Research,” Journal of Machine Learning Research,
+                                                                                     vol. 22, no. 164, pp. 1–20, 2021.
+Disclosed:                                                                      [17] M. Mitchell, S. Wu, A. Zaldivar, P. Barnes, L. Vasserman, B. Hutchin-
+- Categories named: Context Limit Exceeded,
+                                                                                     son, E. Spitzer, I. D. Raji, and T. Gebru, “Model Cards for Model
+ Invalid Format, Invalid Action,
+ Task Limit Exceeded, Complete (Section 2)                                           Reporting,” ACM Conference on Fairness, Accountability, and Trans-
+- Counts per category and per environment:                                           parency (FAT*), 2019.
+ Table 4                                                                        [18] T. Gebru, J. Morgenstern, B. Vecchione, J. W. Vaughan, H. Wallach,
+- Attribution to tasks: yes (table is                                                H. Daumé III, and K. Crawford, “Datasheets for Datasets,” Communi-
+ per-environment)                                                                    cations of the ACM, vol. 64, no. 12, pp. 86–92, 2021.
+                                                                                [19] M. Sclar, Y. Choi, Y. Tsvetkov, and A. Suhr, “Quantifying Language
+Notes: This is the paper we used to calibrate                                        Models’ Sensitivity to Spurious Features in Prompt Design,” Interna-
+what "disclosed" looks like on this field.
+                                                                                     tional Conference on Learning Representations (ICLR), 2024.
+Most papers in the corpus do not approach
+this level of structured failure reporting.                                     [20] M. Mizrahi, G. Kaplan, D. Malkin, R. Dror, D. Shahaf, and
+                                                                                     G. Stanovsky, “State of What Art? A Call for Multi-Prompt LLM Eval-
+                                                                                     uation,” Transactions of the Association for Computational Linguistics
+                                                                                     (TACL), 2024.
+                             R EFERENCES                                        [21] A. Reuel, A. Hardy, C. Smith, M. Lamparth, M. Hardy, and M. J.
+                                                                                     Kochenderfer, “BetterBench: Assessing AI Benchmarks, Uncovering
+[1] C. E. Jimenez, J. Yang, A. Wettig, S. Yao, K. Pei, O. Press, and                 Issues, and Establishing Best Practices,” Advances in Neural Information
+    K. Narasimhan, “SWE-bench: Can Language Models Resolve Real-                     Processing Systems (NeurIPS), 2024.
+    World GitHub Issues?” International Conference on Learning Repre-           [22] I. Magar and R. Schwartz, “Data Contamination: From Memorization
+    sentations (ICLR), 2024.                                                         to Exploitation,” Annual Meeting of the Association for Computational
+[2] OpenAI, “Introducing SWE-bench Verified,” OpenAI Technical Report,               Linguistics (ACL), 2022.
+    2024.                                                                       [23] Y. Oren, N. Meister, N. Chatterji, F. Ladhak, and T. B. Hashimoto,
+[3] S. Zhou, F. F. Xu, H. Zhu, X. Zhou, R. Lo, A. Sridhar, X. Cheng, T. Ou,          “Proving Test Set Contamination in Black Box Language Models,”
+    Y. Bisk, D. Fried, U. Alon, and G. Neubig, “WebArena: A Realistic                International Conference on Learning Representations (ICLR), 2024.
+    Web Environment for Building Autonomous Agents,” International
+    Conference on Learning Representations (ICLR), 2024.
+[4] J. Y. Koh, R. Lo, L. Jang, V. Duvvur, M. C. Lim, P.-Y. Huang, G. Neubig,
+    S. Zhou, R. Salakhutdinov, and D. Fried, “VisualWebArena: Evaluating
+    Multimodal Agents on Realistic Visual Web Tasks,” Annual Meeting of
+    the Association for Computational Linguistics (ACL), 2024.
+[5] X. Deng, Y. Gu, B. Zheng, S. Chen, S. Stevens, B. Wang, H. Sun, and
+    Y. Su, “Mind2Web: Towards a Generalist Agent for the Web,” Advances
+    in Neural Information Processing Systems (NeurIPS), 2023.
+[6] T. Xie, D. Zhang, J. Chen, X. Li, S. Zhao, R. Cao, T. J. Hua, Z. Cheng,
+    D. Shin, F. Lei, Y. Liu, Y. Xu, S. Zhou, S. Savarese, C. Xiong, V. Zhong,
+    and T. Yu, “OSWorld: Benchmarking Multimodal Agents for Open-
+    Ended Tasks in Real Computer Environments,” Advances in Neural
+    Information Processing Systems (NeurIPS), 2024.
+[7] G. Mialon, C. Fourrier, C. Swift, T. Wolf, Y. LeCun, and T. Scialom,
+    “GAIA: A Benchmark for General AI Assistants,” International Con-
+    ference on Learning Representations (ICLR), 2024.
+

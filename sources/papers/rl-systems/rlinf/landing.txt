@@ -1,0 +1,72 @@
+Back to USENIX
+Sign In
+Conferences
+ATTEND
+REGISTRATION INFORMATION
+REGISTRATION DISCOUNTS
+GRANT OPPORTUNITIES
+VENUE, HOTEL, AND TRAVEL
+SCHEDULE
+TECHNICAL SESSIONS
+ACTIVITIES
+POSTER SESSION
+PARTICIPATE
+CALL FOR PAPERS
+REQUIREMENTS FOR AUTHORS
+CALL FOR ARTIFACTS
+CALL FOR POSTERS
+INSTRUCTIONS FOR PRESENTERS
+MENTORSHIP
+SPONSORS
+EXHIBITOR RESOURCES
+ABOUT
+SYMPOSIUM ORGANIZERS
+PAST SYMPOSIA
+CONFERENCE POLICIES
+CODE OF CONDUCT
+QUESTIONS
+RLinf: Flexible and Efficient Large-Scale Reinforcement Learning via Macro-to-Micro Flow Transformation
+
+Chao Yu, Tsinghua University; Yuanqing Wang, Infinigence AI and Peking University; Zhen Guo, Hao Lin, and Si Xu, Infinigence AI; Hongzhi Zang, Tsinghua University; Quanlu Zhang, Infinigence AI; Yongji Wu, University of California, Berkeley; Chunyang Zhu and Junhao Hu, Infinigence AI; Zixiao Huang, Tsinghua University and Infinigence AI; Mingjie Wei, Zhongguancun Academy; Yuqing Xie, Tsinghua University; Ke Yang, Zhongguancun Academy; Bo Dai, Beihang University and Infinigence AI; Zhexuan Xu and Jiakun Du, Tsinghua University; Xiangyuan Wang, Peking University and Infinigence AI; Xu Fu and Letong Shi, Infinigence AI; Zhihao Liu, Zhongguancun Academy; Kang Chen, Peking University and Zhongguancun Academy; Weilin Liu, Infinigence AI; Gang Liu, Tsinghua University; Boxun Li, Infinigence AI; Jianlei Yang, Beihang University; Zhi Yang, Peking University; Guohao Dai, Shanghai Jiao Tong University and Infinigence AI; Yu Wang, Tsinghua University
+
+Reinforcement learning (RL) has demonstrated immense potential in advancing artificial general intelligence, agentic intelligence, and embodied intelligence. However, the inherent heterogeneity and dynamicity of RL workflows often lead to low hardware utilization and slow training on existing systems. In this paper, we present RLinf, a high-performance RL training system based on our key observation that the major roadblock to efficient RL training lies in system flexibility. To maximize flexibility and efficiency, RLinf is built atop a novel RL system design paradigm called macro-to-micro flow transformation (M2Flow), which automatically breaks down high-level, easy-to-compose RL workflows at both the temporal and spatial dimensions, and recomposes them into optimized execution flows. Supported by Rinf worker’s adaptive communication capability, we devise context switching and elastic pipelining to realize M2Flow transformation, and a profiling-guided scheduling policy to generate optimal execution plans. Extensive evaluations on both reasoning RL and embodied RL tasks demonstrate that Rinf consistently outperforms state-of-the-art systems, achieving 1.07×∼2.43× speedup in end-to-end training throughput.
+
+OSDI '26 Open Access Sponsored by
+King Abdullah University of Science and Technology (KAUST)
+
+Open Access Media
+
+USENIX is committed to Open Access to the research presented at our events. Papers and proceedings are freely available to everyone once the event begins. Any video, audio, and/or slides that are posted after the event are also free and open to everyone. Support USENIX and our commitment to Open Access.
+
+BibTeX
+Yu PDF
+View the slides
+Presentation Video 
+ATTEND
+Registration Information
+Registration Discounts
+Grant Opportunities
+Venue, Hotel, and Travel
+SCHEDULE
+Technical Sessions
+Activities
+Poster Session
+PARTICIPATE
+Call for Papers
+Requirements for Authors
+Call for Artifacts
+Call for Posters
+Instructions for Presenters
+Mentorship
+SPONSORS
+Exhibitor Resources
+ABOUT
+Symposium Organizers
+Past Symposia
+Conference Policies
+Code of Conduct
+Questions
+Privacy Policy Contact Us
+
+© USENIX 2026
+EIN 13-3055038

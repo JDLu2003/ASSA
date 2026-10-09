@@ -1,0 +1,76 @@
+Back to USENIX
+Sign In
+Conferences
+ATTEND
+REGISTRATION INFORMATION
+REGISTRATION DISCOUNTS
+GRANT OPPORTUNITIES
+VENUE, HOTEL, AND TRAVEL
+SCHEDULE
+TECHNICAL SESSIONS
+ACTIVITIES
+POSTER SESSION
+PARTICIPATE
+CALL FOR PAPERS
+REQUIREMENTS FOR AUTHORS
+CALL FOR ARTIFACTS
+CALL FOR POSTERS
+INSTRUCTIONS FOR PRESENTERS
+MENTORSHIP
+SPONSORS
+EXHIBITOR RESOURCES
+ABOUT
+SYMPOSIUM ORGANIZERS
+PAST SYMPOSIA
+CONFERENCE POLICIES
+CODE OF CONDUCT
+QUESTIONS
+Murakkab: Resource-Efficient Agentic Workflow Orchestration in Cloud Platforms
+
+Gohar Irfan Chaudhry, MIT CSAIL; Esha Choukse, Haoran Qiu, Íñigo Goiri, and Rodrigo Fonseca, Microsoft Azure Research; Adam Belay, MIT CSAIL; Ricardo Bianchini, Microsoft Azure
+
+Agentic workflows commonly coordinate multiple models and tools with complex control logic. They are quickly becoming the dominant paradigm for AI applications. However, serving them remains inefficient with today’s frameworks. The key problem is that they expose workflows as opaque sequences of model and tool calls that tightly couple agent logic with model and hardware choices. This prevents systems from holistically reasoning about trade-offs across accuracy, latency, energy, and cost. This leads to resource waste and degraded service-level objectives (SLOs).
+
+We present Murakkab, a resource-efficient serving system for agentic workflows. Murakkab introduces a declarative abstraction that decouples workflow specification from execution configuration. A profile-guided optimizer and adaptive runtime jointly manage the full stack: orchestrating workflow components, mapping them to models and hardware, and dynamically reconfiguring execution to satisfy user-defined SLOs. By exposing the internal structure of agentic workflows, Murakkab enables cross-layer optimization that existing frameworks and cloud schedulers cannot achieve.
+
+Our evaluation on diverse workflows shows that, compared to state-of-the-art systems, Murakkab reduces GPU usage by up to 2.8×, energy consumption by 3.7×, and cost by 4.3× while maintaining SLOs.
+
+OSDI '26 Open Access Sponsored by
+King Abdullah University of Science and Technology (KAUST)
+
+Open Access Media
+
+USENIX is committed to Open Access to the research presented at our events. Papers and proceedings are freely available to everyone once the event begins. Any video, audio, and/or slides that are posted after the event are also free and open to everyone. Support USENIX and our commitment to Open Access.
+
+BibTeX
+Chaudhry PDF
+View the slides
+Presentation Video 
+ATTEND
+Registration Information
+Registration Discounts
+Grant Opportunities
+Venue, Hotel, and Travel
+SCHEDULE
+Technical Sessions
+Activities
+Poster Session
+PARTICIPATE
+Call for Papers
+Requirements for Authors
+Call for Artifacts
+Call for Posters
+Instructions for Presenters
+Mentorship
+SPONSORS
+Exhibitor Resources
+ABOUT
+Symposium Organizers
+Past Symposia
+Conference Policies
+Code of Conduct
+Questions
+Privacy Policy Contact Us
+
+© USENIX 2026
+EIN 13-3055038

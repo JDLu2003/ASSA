@@ -1,0 +1,107 @@
+{
+  "item": {
+    "topic": "agent-surveys",
+    "id": "human-agent-collaboration-survey",
+    "arxiv": "2505.00753v5",
+    "kind": "arxiv-paper",
+    "title": "LLM-Based Human-Agent Collaboration and Interaction Systems: A Survey",
+    "landing_url": "https://arxiv.org/abs/2505.00753v5",
+    "discovered_by": "all:agent AND all:survey AND (all:systems OR all:infrastructure)",
+    "authors": [
+      "Henry Peng Zou",
+      "Wei-Chieh Huang",
+      "Yaozu Wu",
+      "Jizhou Guo",
+      "Yankai Chen",
+      "Chunyu Miao",
+      "Hoang Nguyen",
+      "Yue Zhou",
+      "Weizhi Zhang",
+      "Liancheng Fang",
+      "Hanrong Zhang",
+      "Fangxin Wang",
+      "Pengfei Zhang",
+      "Huacan Wang",
+      "Langzhou He",
+      "Yangning Li",
+      "Dongyuan Li",
+      "Renhe Jiang",
+      "Xue Liu",
+      "Philip S. Yu"
+    ],
+    "published": "2025-05-01T08:29:26Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:53.870109+00:00",
+  "path": "sources/papers/agent-surveys/human-agent-collaboration-survey",
+  "requested_url": "https://arxiv.org/abs/2505.00753v5",
+  "pdf_url": "https://arxiv.org/pdf/2505.00753v5",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "8da2626b529ea458fcfcf50c4f097280830adf80e41369cadf2c3f874b31dc5d",
+      "bytes": 2336982
+    },
+    "paper.txt": {
+      "sha256": "0bf29acc814095453a01a1fcbd4bf421ec0f0774507433c5f425dbb7bcd07215",
+      "bytes": 197799
+    },
+    "paper.pdf": {
+      "sha256": "833c41888253b7f5efce0548bb345804d26c5034d49bc677bcf4befd5abe0663",
+      "bytes": 3077161
+    },
+    "landing.html": {
+      "sha256": "7bd5e4ddf61b5d1c60bf6dc41a7db2108884446cad3e38c2d77b048e1eb33b3f",
+      "bytes": 45880
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2505.00753v5",
+    "retrieved_at": "2026-10-09T13:06:17.971478+00:00",
+    "fields": {
+      "citation_title": [
+        "LLM-Based Human-Agent Collaboration and Interaction Systems: A Survey"
+      ],
+      "citation_author": [
+        "Zou, Henry Peng",
+        "Huang, Wei-Chieh",
+        "Wu, Yaozu",
+        "Guo, Jizhou",
+        "Chen, Yankai",
+        "Miao, Chunyu",
+        "Nguyen, Hoang",
+        "Zhou, Yue",
+        "Zhang, Weizhi",
+        "Fang, Liancheng",
+        "Zhang, Hanrong",
+        "Wang, Fangxin",
+        "Zhang, Pengfei",
+        "Wang, Huacan",
+        "He, Langzhou",
+        "Li, Yangning",
+        "Li, Dongyuan",
+        "Jiang, Renhe",
+        "Liu, Xue",
+        "Yu, Philip S."
+      ],
+      "citation_date": [
+        "2025/05/01"
+      ],
+      "citation_online_date": [
+        "2026/05/06"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2505.00753"
+      ],
+      "citation_arxiv_id": [
+        "2505.00753"
+      ],
+      "citation_abstract": [
+        "Recent advances in large language models (LLMs) have sparked growing interest in building fully autonomous agents. However, fully autonomous LLM-based agents still face significant challenges, including limited reliability due to hallucinations, difficulty in handling complex tasks, and substantial safety and ethical risks, all of which limit their feasibility and trustworthiness in real-world applications. To overcome these limitations, LLM-based human-agent systems (LLM-HAS) incorporate human-provided information, feedback, or control into the agent system to enhance system performance, reliability, and safety. These human-agent collaboration systems enable humans and LLM-based agents to collaborate effectively by leveraging their complementary strengths. This paper provides the first comprehensive and structured survey of LLM-HAS. It clarifies fundamental concepts, systematically presents core components shaping these systems, including environment and profiling, human feedback, interaction types, orchestration, and communication, explores emerging applications, and discusses unique challenges and opportunities arising from human-AI collaboration. By consolidating current knowledge and offering a structured overview, we aim to foster further research and innovation in this rapidly evolving interdisciplinary field. Paper lists and resources are available at https://github.com/HenryPengZou/Awesome-Human-Agent-Collaboration-Interaction-Systems."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

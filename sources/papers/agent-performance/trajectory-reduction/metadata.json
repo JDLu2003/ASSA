@@ -1,0 +1,78 @@
+{
+  "item": {
+    "topic": "agent-performance",
+    "id": "trajectory-reduction",
+    "arxiv": "2509.23586v2",
+    "kind": "arxiv-paper",
+    "title": "Reducing Cost of LLM Agents with Trajectory Reduction",
+    "landing_url": "https://arxiv.org/abs/2509.23586v2",
+    "discovered_by": "all:LLM AND all:agent AND (all:latency OR all:cost) AND all:benchmark",
+    "authors": [
+      "Yuan-An Xiao",
+      "Pengfei Gao",
+      "Chao Peng",
+      "Yingfei Xiong"
+    ],
+    "published": "2025-09-28T02:43:41Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:33.867073+00:00",
+  "path": "sources/papers/agent-performance/trajectory-reduction",
+  "requested_url": "https://arxiv.org/abs/2509.23586v2",
+  "pdf_url": "https://arxiv.org/pdf/2509.23586v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "d87642997f89e5f83337c8ab4639dedcd16ffb342cf443451209270735f1e4c0",
+      "bytes": 429476
+    },
+    "paper.txt": {
+      "sha256": "8c9eb4aa17a582b0b384cf3b606b1f5f4ff68c216deca5b3b913166c822cc9f6",
+      "bytes": 101155
+    },
+    "paper.pdf": {
+      "sha256": "192cfc95b0596464ff11c5b5c3e5a6f13a5c84a64a35ac7ddc7c8784761cc88a",
+      "bytes": 1040745
+    },
+    "landing.html": {
+      "sha256": "d80606dedccb81707867a3da9ab6abf11d1ca0cba9ce652397fde2011d2ecdc0",
+      "bytes": 43076
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2509.23586v2",
+    "retrieved_at": "2026-10-09T13:06:19.048849+00:00",
+    "fields": {
+      "citation_title": [
+        "Reducing Cost of LLM Agents with Trajectory Reduction"
+      ],
+      "citation_author": [
+        "Xiao, Yuan-An",
+        "Gao, Pengfei",
+        "Peng, Chao",
+        "Xiong, Yingfei"
+      ],
+      "citation_doi": [
+        "10.1145/3797084"
+      ],
+      "citation_date": [
+        "2025/09/28"
+      ],
+      "citation_online_date": [
+        "2026/03/15"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2509.23586"
+      ],
+      "citation_arxiv_id": [
+        "2509.23586"
+      ],
+      "citation_abstract": [
+        "Multi-turn agent systems based on Large Language Models (LLMs) have become increasingly popular for software engineering tasks. While LLM agents demonstrate promising effectiveness, the high computational cost of input tokens due to ever-growing trajectories remains a significant efficiency concern. Efficiency has been largely overlooked in existing studies and agent products, and this paper addresses this gap by introducing an inference-time trajectory reduction approach that reduces computational costs. By analyzing existing agent trajectories, we demonstrate that useless, redundant, and expired information is widespread across trajectories. Such waste can be identified and reduced without compromising the agent's performance. We propose a simple yet effective trajectory reduction approach, AgentDiet, which automatically removes such waste during agent execution. We implement AgentDiet on a top-performing coding agent, and our evaluation on two LLMs and two benchmarks shows that AgentDiet can reduce input tokens by 39.9%-59.7% and the total computational cost by 21.1%-35.9%, while maintaining the same agent performance. These results indicate that inference-time trajectory reduction is a promising direction for agent systems."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

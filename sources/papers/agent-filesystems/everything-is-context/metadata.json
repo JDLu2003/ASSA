@@ -1,0 +1,79 @@
+{
+  "item": {
+    "topic": "agent-filesystems",
+    "id": "everything-is-context",
+    "arxiv": "2512.05470v1",
+    "kind": "arxiv-paper",
+    "title": "Everything is Context: Agentic File System Abstraction for Context Engineering",
+    "landing_url": "https://arxiv.org/abs/2512.05470v1",
+    "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+    "published": "2025-12-05T06:56:45Z",
+    "authors": [
+      "Xiwei Xu",
+      "Robert Mao",
+      "Quan Bai",
+      "Xuewu Gu",
+      "Yechao Li",
+      "Liming Zhu"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:10.079867+00:00",
+  "path": "sources/papers/agent-filesystems/everything-is-context",
+  "requested_url": "https://arxiv.org/abs/2512.05470v1",
+  "pdf_url": "https://arxiv.org/pdf/2512.05470v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "3a0c7485970974f5a9d41612b7fefea2db556742fb3894dc9b887ac497329e36",
+      "bytes": 297135
+    },
+    "paper.txt": {
+      "sha256": "6f46a4a45459c2f021cee78bebf232f103734b7c2dacc993ec45a0fb4968f553",
+      "bytes": 59656
+    },
+    "paper.pdf": {
+      "sha256": "b2a8a219e70525d3ebde919f5a328a6e39474b73bc313bc6c97f2b1d958388ec",
+      "bytes": 181999
+    },
+    "landing.html": {
+      "sha256": "479dcc755370e7a8c0b76d855f582d3c02466268682f9c73d8649c856eeb6c01",
+      "bytes": 42908
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2512.05470v1",
+    "retrieved_at": "2026-10-09T13:06:18.885628+00:00",
+    "fields": {
+      "citation_title": [
+        "Everything is Context: Agentic File System Abstraction for Context Engineering"
+      ],
+      "citation_author": [
+        "Xu, Xiwei",
+        "Mao, Robert",
+        "Bai, Quan",
+        "Gu, Xuewu",
+        "Li, Yechao",
+        "Zhu, Liming"
+      ],
+      "citation_date": [
+        "2025/12/05"
+      ],
+      "citation_online_date": [
+        "2025/12/05"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2512.05470"
+      ],
+      "citation_arxiv_id": [
+        "2512.05470"
+      ],
+      "citation_abstract": [
+        "Generative AI (GenAI) has reshaped software system design by introducing foundation models as pre-trained subsystems that redefine architectures and operations. The emerging challenge is no longer model fine-tuning but context engineering-how systems capture, structure, and govern external knowledge, memory, tools, and human input to enable trustworthy reasoning. Existing practices such as prompt engineering, retrieval-augmented generation (RAG), and tool integration remain fragmented, producing transient artefacts that limit traceability and accountability. This paper proposes a file-system abstraction for context engineering, inspired by the Unix notion that 'everything is a file'. The abstraction offers a persistent, governed infrastructure for managing heterogeneous context artefacts through uniform mounting, metadata, and access control. Implemented within the open-source AIGNE framework, the architecture realises a verifiable context-engineering pipeline, comprising the Context Constructor, Loader, and Evaluator, that assembles, delivers, and validates context under token constraints. As GenAI becomes an active collaborator in decision support, humans play a central role as curators, verifiers, and co-reasoners. The proposed architecture establishes a reusable foundation for accountable and human-centred AI co-work, demonstrated through two exemplars: an agent with memory and an MCP-based GitHub assistant. The implementation within the AIGNE framework demonstrates how the architecture can be operationalised in developer and industrial settings, supporting verifiable, maintainable, and industry-ready GenAI systems."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

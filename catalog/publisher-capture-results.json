@@ -1,0 +1,329 @@
+{
+  "run_at": "2026-10-09T13:08:44.343064+00:00",
+  "results": [
+    {
+      "item": {
+        "id": "firecracker",
+        "topic": "sandbox-systems",
+        "title": "Firecracker: Lightweight Virtualization for Serverless Applications",
+        "url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+        "pdf_url": "https://www.usenix.org/system/files/nsdi20-paper-agache.pdf",
+        "venue": "NSDI 2020",
+        "kind": "publisher-paper"
+      },
+      "path": "sources/papers/sandbox-systems/firecracker",
+      "capture_started_at": "2026-10-09T13:08:14.649230+00:00",
+      "status": "captured",
+      "requested_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+      "pdf_url": "https://www.usenix.org/system/files/nsdi20-paper-agache.pdf",
+      "landing_capture": {
+        "requested_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+        "final_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+        "http_status": 200,
+        "title": "Firecracker: Lightweight Virtualization for Serverless Applications | USENIX",
+        "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+        "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+        "review_status": "captured; relevance and completeness require source review"
+      },
+      "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+      "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+      "files": {
+        "paper.txt": {
+          "sha256": "caf05b3ed6abef674b0de86b8e1e0893b7f0c19c384a4bb7834884a52d6cef2a",
+          "bytes": 104964
+        },
+        "paper.pdf": {
+          "sha256": "05eb1dc65d9f17409ec9a293f420125c4350bf953271c9d20590b3a21900c820",
+          "bytes": 480552
+        },
+        "landing.html": {
+          "sha256": "e3b4d8bf1c7a6601a8c49e6d8ff5f2674edb1ba0899a56fd6a0fa93fcea396c4",
+          "bytes": 49169
+        },
+        "landing.txt": {
+          "sha256": "ce92a94c0cb264af3f1ad2a7edda9aab52253331d2c1ff328c2cfa7872b30725",
+          "bytes": 2877
+        },
+        "landing.pdf.txt": {
+          "sha256": "fa97d3eda35ddbd71081e53a0cd328008fec4208623b9c1f380c32462817b78f",
+          "bytes": 2914
+        },
+        "landing.pdf": {
+          "sha256": "1845aeef3770136bce3c5e262ae43a181344c58c226742ec421f4b157ffbe7a9",
+          "bytes": 39707
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:08:21.932256+00:00"
+    },
+    {
+      "item": {
+        "id": "murakkab",
+        "topic": "agent-systems",
+        "title": "Murakkab: Resource-Efficient Agentic Workflow Orchestration in Cloud Platforms",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+        "pdf_url": "https://www.usenix.org/system/files/osdi26-chaudhry.pdf",
+        "venue": "OSDI 2026",
+        "kind": "publisher-paper"
+      },
+      "path": "sources/papers/agent-systems/murakkab",
+      "capture_started_at": "2026-10-09T13:08:21.951573+00:00",
+      "status": "captured",
+      "requested_url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-chaudhry.pdf",
+      "landing_capture": {
+        "requested_url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+        "final_url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+        "http_status": 200,
+        "title": "Murakkab: Resource-Efficient Agentic Workflow Orchestration in Cloud Platforms | USENIX",
+        "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+        "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+        "review_status": "captured; relevance and completeness require source review"
+      },
+      "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+      "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+      "files": {
+        "paper.txt": {
+          "sha256": "0afc75e702a2a9e058bacc8df5c995416667c008519100395fbf6237d8e605f8",
+          "bytes": 226254
+        },
+        "paper.pdf": {
+          "sha256": "9c9aa888b675c7849467d5b594e640996fee57f32b79fc9cf443fb549587c0e0",
+          "bytes": 1648218
+        },
+        "landing.html": {
+          "sha256": "5f42caf20e54b52b6530943fc2c67cddf72615bdaf2e20c432dd39dfd5a60f51",
+          "bytes": 53163
+        },
+        "landing.txt": {
+          "sha256": "908cf1353db4b762250b99812ebc70ac77de5d2a93774e2a4213699a0c34af49",
+          "bytes": 2973
+        },
+        "landing.pdf.txt": {
+          "sha256": "2077d9b2017ca7745398c8d335e31236bbe861516f6fd64d8046186943af6da6",
+          "bytes": 2817
+        },
+        "landing.pdf": {
+          "sha256": "14420c450ab44424ceb3ee7e52d25137b387ffef48359c67f401ec7dbf4f9d50",
+          "bytes": 41498
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:08:26.740357+00:00"
+    },
+    {
+      "item": {
+        "id": "rlinf",
+        "topic": "rl-systems",
+        "title": "RLinf: Flexible and Efficient Large-Scale Reinforcement Learning via Macro-to-Micro Flow Transformation",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+        "pdf_url": "https://www.usenix.org/system/files/osdi26-yu-chao.pdf",
+        "venue": "OSDI 2026",
+        "kind": "publisher-paper"
+      },
+      "path": "sources/papers/rl-systems/rlinf",
+      "capture_started_at": "2026-10-09T13:08:26.761444+00:00",
+      "status": "captured",
+      "requested_url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-yu-chao.pdf",
+      "landing_capture": {
+        "requested_url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+        "final_url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+        "http_status": 200,
+        "title": "RLinf: Flexible and Efficient Large-Scale Reinforcement Learning via Macro-to-Micro Flow Transformation | USENIX",
+        "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+        "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+        "review_status": "captured; relevance and completeness require source review"
+      },
+      "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+      "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+      "files": {
+        "paper.txt": {
+          "sha256": "77333d7c8a2ac320201e13cb61e740b9fd09c9da151d49900ef36017de248da8",
+          "bytes": 139115
+        },
+        "paper.pdf": {
+          "sha256": "089012384cfdee9edec090815974fccd80e9be790cdae212766f26cf105ab8c4",
+          "bytes": 1930421
+        },
+        "landing.html": {
+          "sha256": "7a2f81136b80bce3b424bcf4bd6b366bad22f4a55cb0e26386dfd47cd2ced766",
+          "bytes": 62890
+        },
+        "landing.txt": {
+          "sha256": "ecab0cbf12bf64c10fe750bde5e9055efa8ae63eaf4815d55593f3ee1b7934ca",
+          "bytes": 3647
+        },
+        "landing.pdf.txt": {
+          "sha256": "8798bfcba2e232156934ef6796d8f3be8bfeef6035d76774563c1be2b5bd4de3",
+          "bytes": 3489
+        },
+        "landing.pdf": {
+          "sha256": "63278f1e7295a2dbd1f5b0c6fb321afaf21ba8ee3104c90db877a25f54bce945",
+          "bytes": 55618
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:08:31.353386+00:00"
+    },
+    {
+      "item": {
+        "id": "dynarl",
+        "topic": "rl-systems",
+        "title": "DynaRL: Flexible and Dynamic Scheduling of Large-Scale Reinforcement Learning Training",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+        "pdf_url": "https://www.usenix.org/system/files/osdi26-wang-yuanqing.pdf",
+        "venue": "OSDI 2026",
+        "kind": "publisher-paper"
+      },
+      "path": "sources/papers/rl-systems/dynarl",
+      "capture_started_at": "2026-10-09T13:08:31.389664+00:00",
+      "status": "captured",
+      "requested_url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-wang-yuanqing.pdf",
+      "landing_capture": {
+        "requested_url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+        "final_url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+        "http_status": 200,
+        "title": "DynaRL: Flexible and Dynamic Scheduling of Large-Scale Reinforcement Learning Training | USENIX",
+        "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+        "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+        "review_status": "captured; relevance and completeness require source review"
+      },
+      "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+      "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+      "files": {
+        "paper.txt": {
+          "sha256": "4b56731d17553325a21b836a7625e323a5c1404ee936738a7d60749abff44a16",
+          "bytes": 116117
+        },
+        "paper.pdf": {
+          "sha256": "f19ccf45513cebea665b8292a9282e6e9fc97dbc87018e6b350aa2cadf6035ec",
+          "bytes": 1657026
+        },
+        "landing.html": {
+          "sha256": "f1f56d3307801dc89d71358fad26a91e9f6a6bf25b41a8e52cee68fde9228800",
+          "bytes": 57229
+        },
+        "landing.txt": {
+          "sha256": "5aa9ae1d67e33e96f5d578e6e3fd4118bf33cb6f2d64b583ce59095cb4124f64",
+          "bytes": 3116
+        },
+        "landing.pdf.txt": {
+          "sha256": "59573f380292dc5ab238129d23ac66740e4f1305eacf6be8a4d2dafecf574a57",
+          "bytes": 2964
+        },
+        "landing.pdf": {
+          "sha256": "9e9a959591de577251a13093705a7c7430a2927f5fba56f74d8f334ac79b36ca",
+          "bytes": 50201
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:08:35.518553+00:00"
+    },
+    {
+      "item": {
+        "id": "rollart",
+        "topic": "rl-systems",
+        "title": "RollArt: Disaggregated Multi-Task Agentic RL Training at Scale",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+        "pdf_url": "https://www.usenix.org/system/files/osdi26-gao.pdf",
+        "venue": "OSDI 2026",
+        "kind": "publisher-paper"
+      },
+      "path": "sources/papers/rl-systems/rollart",
+      "capture_started_at": "2026-10-09T13:08:35.564207+00:00",
+      "status": "captured",
+      "requested_url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-gao.pdf",
+      "landing_capture": {
+        "requested_url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+        "final_url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+        "http_status": 200,
+        "title": "RollArt: Disaggregated Multi-Task Agentic RL Training at Scale | USENIX",
+        "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+        "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+        "review_status": "captured; relevance and completeness require source review"
+      },
+      "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+      "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+      "files": {
+        "paper.txt": {
+          "sha256": "6fe6502c242bae07bc8e6bf0d4d0b147e5b622a1fa689f7b5fddee92568f4da8",
+          "bytes": 151783
+        },
+        "paper.pdf": {
+          "sha256": "49344555d8e08db2621b0664adcb68d0f95ce7021c06542a1da08ce75cb89e7d",
+          "bytes": 1553369
+        },
+        "landing.html": {
+          "sha256": "01685d09b7fe77f0423ef56982b6b1dcfd65844ca7cf87194918a2e9147f4299",
+          "bytes": 57717
+        },
+        "landing.txt": {
+          "sha256": "b65725e6a12d27ec0df155de2ce49c9ecff5aa6d8fe1ac757cd68f09b0e60e28",
+          "bytes": 3315
+        },
+        "landing.pdf.txt": {
+          "sha256": "7a2bf351ac6422965a98b9b0fde6e378258d96e43bd2d06922c1fc2728e2d7fa",
+          "bytes": 3170
+        },
+        "landing.pdf": {
+          "sha256": "3fd9fc582a386ec6274b05eaa1d11c5c1b2415cbf6724040c6a8dd24b65ce390",
+          "bytes": 42181
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:08:39.733673+00:00"
+    },
+    {
+      "item": {
+        "id": "seer",
+        "topic": "rl-systems",
+        "title": "Seer: Online Context Learning for Fast Synchronous LLM Reinforcement Learning",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+        "pdf_url": "https://www.usenix.org/system/files/osdi26-qin.pdf",
+        "venue": "OSDI 2026",
+        "kind": "publisher-paper"
+      },
+      "path": "sources/papers/rl-systems/seer",
+      "capture_started_at": "2026-10-09T13:08:39.751586+00:00",
+      "status": "captured",
+      "requested_url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-qin.pdf",
+      "landing_capture": {
+        "requested_url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+        "final_url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+        "http_status": 200,
+        "title": "Seer: Online Context Learning for Fast Synchronous LLM Reinforcement Learning | USENIX",
+        "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+        "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+        "review_status": "captured; relevance and completeness require source review"
+      },
+      "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+      "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+      "files": {
+        "paper.txt": {
+          "sha256": "f0cb3fe64ad2f31c7a75e5855449c6e200efc3c2ad1afa94a2ce6e5666b71122",
+          "bytes": 142272
+        },
+        "paper.pdf": {
+          "sha256": "d1c7f76dbba748925e395e488620dd4d5c9e7c20ed8a6f3b744c12a0f5fc39ff",
+          "bytes": 1102751
+        },
+        "landing.html": {
+          "sha256": "8747375ab9da3e0cf0f17754a5f0be703099ed7957a27bd2b9e986d83bb050e9",
+          "bytes": 54052
+        },
+        "landing.txt": {
+          "sha256": "f91fc7a8251a435809cab6e6dc02bd7aef77f56e8480319d9db86ddd3415639a",
+          "bytes": 2832
+        },
+        "landing.pdf.txt": {
+          "sha256": "023c296485cdbc26e6e4538723b41ca7f0526245e04308216eadba1ceb6c308f",
+          "bytes": 2674
+        },
+        "landing.pdf": {
+          "sha256": "304ac28b7e2d054be01969f0d70d1fd6f1daba00b25bc25db5314b1a51e56b22",
+          "bytes": 40295
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:08:43.905995+00:00"
+    }
+  ]
+}

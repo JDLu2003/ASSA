@@ -1,0 +1,77 @@
+{
+  "item": {
+    "topic": "model-serving",
+    "id": "talaria",
+    "arxiv": "2607.17181v1",
+    "kind": "arxiv-paper",
+    "title": "Talaria: Session-Aware Serverless Serving of Hundred-Billion-Parameter LLMs",
+    "landing_url": "https://arxiv.org/abs/2607.17181v1",
+    "discovered_by": "all:agent AND all:serverless",
+    "authors": [
+      "Utopia Meng",
+      "Unicornt Zhao",
+      "Derek Li",
+      "Goalen Gao",
+      "Frank Du"
+    ],
+    "published": "2026-07-19T10:37:33Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:52.482591+00:00",
+  "path": "sources/papers/model-serving/talaria",
+  "requested_url": "https://arxiv.org/abs/2607.17181v1",
+  "pdf_url": "https://arxiv.org/pdf/2607.17181v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "cd2ec829cbfee075e3e697119f1501497a56c7b59c8f9f3ec3212f9081c98cf0",
+      "bytes": 505863
+    },
+    "paper.txt": {
+      "sha256": "e2c7a6a2a1fbcbe62b5a890f9407246fb8f9c83e810ed737bff7df9359e1308b",
+      "bytes": 150155
+    },
+    "paper.pdf": {
+      "sha256": "012328c43d1c773d9183541a0f8c6e49629617dcf0f3daaa8dd9d19dafb50327",
+      "bytes": 708874
+    },
+    "landing.html": {
+      "sha256": "a2c319f24cbbc55c34fef9ba23da9cb7ceda04e26a3395d560f21c375ee7b152",
+      "bytes": 43007
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2607.17181v1",
+    "retrieved_at": "2026-10-09T13:06:18.117685+00:00",
+    "fields": {
+      "citation_title": [
+        "Talaria: Session-Aware Serverless Serving of Hundred-Billion-Parameter LLMs"
+      ],
+      "citation_author": [
+        "Meng, Utopia",
+        "Zhao, Unicornt",
+        "Li, Derek",
+        "Gao, Goalen",
+        "Du, Frank"
+      ],
+      "citation_date": [
+        "2026/07/19"
+      ],
+      "citation_online_date": [
+        "2026/07/19"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2607.17181"
+      ],
+      "citation_arxiv_id": [
+        "2607.17181"
+      ],
+      "citation_abstract": [
+        "Serverless multi-model LLM systems multiplex popularity-skewed model catalogs over shared GPU pools, yet typically schedule each request independently. Tool-using agents break this abstraction: a session repeatedly calls an LLM across short tool gaps, carries a long reusable KV prefix, and is judged by session completion time (SCT). Load-only routing can separate a continuation from both its model and KV state, while round-based model multiplexing can delay even a correctly placed continuation until the target model's next slot. Both failures are especially costly for hundred-billion-parameter models: their weights constrain residency, while long-context KV is expensive to reconstruct or move. We present Talaria, a session-aware serverless multi-model serving system that makes session continuity a joint placement-and-admission decision. Its router ranks placements by model residency, KV locality, and instance pressure, while soft reservations account for likely returns in the last serving instance's admission budget. Session-prefill (SP) admits budget-eligible continuations before the active model slot closes. An instance-local substrate keeps HBM addresses stable, preserves host-restorable KV, and stages weights across model switches. On a single TP=8 server, we replay 30 SWE-Bench model-sessions (960 calls) over three models, each with more than 100B total parameters. Against an otherwise identical round scheduler with SP, host-KV restoration, and D2D staging disabled, Talaria cuts p50 SCT from 1000 s to 189 s and p95 from 2296 s to 867 s, speedups of 5.3x and 2.6x."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

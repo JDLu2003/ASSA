@@ -1,0 +1,149 @@
+[
+  {
+    "query": "History Doesn’t Repeat Itself but Rollouts Rhyme Accelerating Reinforcement Learning with HistoRL",
+    "results": [
+      {
+        "title": [
+          "History Doesn't Repeat Itself but Rollouts Rhyme: Accelerating Reinforcement Learning with RhymeRL"
+        ],
+        "doi": "10.1145/3779212.3790172",
+        "url": "https://doi.org/10.1145/3779212.3790172",
+        "links": null,
+        "venue": [
+          "Proceedings of the 31st ACM International Conference on Architectural Support for Programming Languages and Operating Systems, Volume 2"
+        ]
+      },
+      {
+        "title": [
+          "23. ‘History Doesn’t Repeat Itself, but It Does Rhyme’: Fictionalizing History in Boardwalk Empire"
+        ],
+        "doi": "10.3138/9781487510466-024",
+        "url": "https://doi.org/10.3138/9781487510466-024",
+        "links": [
+          {
+            "URL": "https://toronto.degruyter.com/view/book/9781487510466/10.3138/9781487510466-024.xml",
+            "content-type": "text/html",
+            "content-version": "vor",
+            "intended-application": "text-mining"
+          },
+          {
+            "URL": "https://www.degruyter.com/document/doi/10.3138/9781487510466-024/xml",
+            "content-type": "application/xml",
+            "content-version": "vor",
+            "intended-application": "text-mining"
+          },
+          {
+            "URL": "https://www.degruyter.com/document/doi/10.3138/9781487510466-024/pdf",
+            "content-type": "unspecified",
+            "content-version": "vor",
+            "intended-application": "similarity-checking"
+          }
+        ],
+        "venue": [
+          "Mafia Movies"
+        ]
+      },
+      {
+        "title": [
+          "Cycles and Trends: History Does Not Repeat Itself, but It Does Rhyme"
+        ],
+        "doi": "10.1057/9781137401809_1",
+        "url": "https://doi.org/10.1057/9781137401809_1",
+        "links": [
+          {
+            "URL": "http://link.springer.com/content/pdf/10.1057/9781137401809_1",
+            "content-type": "unspecified",
+            "content-version": "vor",
+            "intended-application": "similarity-checking"
+          }
+        ],
+        "venue": [
+          "Applied Financial Macroeconomics and Investment Strategy"
+        ]
+      },
+      {
+        "title": [
+          "When History Doesn’t Repeat Itself"
+        ],
+        "doi": "10.1007/978-94-010-0195-3_5",
+        "url": "https://doi.org/10.1007/978-94-010-0195-3_5",
+        "links": [
+          {
+            "URL": "http://link.springer.com/content/pdf/10.1007/978-94-010-0195-3_5",
+            "content-type": "unspecified",
+            "content-version": "vor",
+            "intended-application": "similarity-checking"
+          }
+        ],
+        "venue": [
+          "Studies in Natural Language and Linguistic Theory",
+          "Optimality Theory and Language Change"
+        ]
+      }
+    ]
+  },
+  {
+    "query": "IPADS reinforcement learning file system agent",
+    "error": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "query": "Firecracker Lightweight Virtualization for Serverless Applications",
+    "results": [
+      {
+        "title": [
+          "Sentinel"
+        ],
+        "doi": "10.1145/3565382.3565880",
+        "url": "https://doi.org/10.1145/3565382.3565880",
+        "links": [
+          {
+            "URL": "https://dl.acm.org/doi/10.1145/3565382.3565880",
+            "content-type": "unspecified",
+            "content-version": "vor",
+            "intended-application": "text-mining"
+          },
+          {
+            "URL": "https://dl.acm.org/doi/pdf/10.1145/3565382.3565880",
+            "content-type": "unspecified",
+            "content-version": "vor",
+            "intended-application": "similarity-checking"
+          }
+        ],
+        "venue": [
+          "Proceedings of the Eighth International Workshop on Serverless Computing"
+        ]
+      },
+      {
+        "title": [
+          "Lightweight virtualization and the network edge"
+        ],
+        "doi": "10.12681/eadd/52015",
+        "url": "https://doi.org/10.12681/eadd/52015",
+        "links": null,
+        "venue": null
+      },
+      {
+        "title": [
+          "Lightweight serverless protocols for the internet of things"
+        ],
+        "doi": "10.70675/f57d376dz5263z4953zbe2bzb6d7145674d7",
+        "url": "https://doi.org/10.70675/f57d376dz5263z4953zbe2bzb6d7145674d7",
+        "links": null,
+        "venue": null
+      },
+      {
+        "title": [
+          "DARPA MobiVisor: An Architecture for High Assurance for Untrusted Applications on Wireless Handheld Devices via Lightweight Virtualization"
+        ],
+        "doi": "10.21236/ada548297",
+        "url": "https://doi.org/10.21236/ada548297",
+        "links": null,
+        "venue": null
+      }
+    ]
+  },
+  {
+    "query": "Catalyzer Sub-millisecond Startup for Serverless Computing",
+    "error": "HTTP Error 429: Too Many Requests"
+  }
+]

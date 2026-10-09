@@ -1,0 +1,653 @@
+[
+  {
+    "query": "all:RhymeRL",
+    "searched_at": "2026-10-09T12:59:45.851000+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2508.18588v1",
+        "title": "History Rhymes: Accelerating LLM Reinforcement Learning with RhymeRL",
+        "published": "2025-08-26T01:42:46Z",
+        "updated": "2025-08-26T01:42:46Z",
+        "authors": [
+          "Jingkai He",
+          "Tianjian Li",
+          "Erhu Feng",
+          "Dong Du",
+          "Qian Liu",
+          "Tao Liu",
+          "Yubin Xia",
+          "Haibo Chen"
+        ],
+        "abstract": "With the rapid advancement of large language models (LLMs), reinforcement learning (RL) has emerged as a pivotal methodology for enhancing the reasoning capabilities of LLMs. Unlike traditional pre-training approaches, RL encompasses multiple stages: rollout, reward, and training, which necessitates collaboration among various worker types. However, current RL systems continue to grapple with substantial GPU underutilization, due to two primary factors: (1) The rollout stage dominates the overall RL process due to test-time scaling; (2) Imbalances in rollout lengths (within the same batch) result in GPU bubbles. While prior solutions like asynchronous execution and truncation offer partial relief, they may compromise training accuracy for efficiency. Our key insight stems from a previously overlooked observation: rollout responses exhibit remarkable similarity across adjacent training epochs. Based on the insight, we introduce RhymeRL, an LLM RL system designed to accelerate RL training with two key innovations. First, to enhance rollout generation, we present HistoSpec, a speculative decoding inference engine that utilizes the similarity of historical rollout token sequences to obtain accurate drafts. Second, to tackle rollout bubbles, we introduce HistoPipe, a two-tier scheduling strategy that leverages the similarity of historical rollout distributions to balance workload among rollout workers. We have evaluated RhymeRL within a real production environment, demonstrating scalability from dozens to thousands of GPUs. Experimental results demonstrate that RhymeRL achieves a 2.6x performance improvement over existing methods, without compromising accuracy or modifying the RL paradigm."
+      }
+    ]
+  },
+  {
+    "query": "all:LLM AND all:agent AND (all:latency OR all:cost) AND all:benchmark",
+    "searched_at": "2026-10-09T12:59:49.407385+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2605.21404v1",
+        "title": "What Twelve LLM Agent Benchmark Papers Disclose About Themselves: A Pilot Audit and an Open Scoring Schema",
+        "published": "2026-05-20T17:02:36Z",
+        "updated": "2026-05-20T17:02:36Z",
+        "authors": [
+          "Mahdi Naser Moghadasi",
+          "Faezeh Ghaderi"
+        ],
+        "abstract": "We read twelve well-known LLM agent benchmark papers and recorded, dimension by dimension, what each paper actually says about how its evaluation was run. The motivation came from a familiar frustration: two papers will report results on the same benchmark with the same model name and disagree, and you cannot tell why -- the scaffold, the sampling settings, the subset, or the evaluator version. In many cases the published artifact does not let you answer. This paper is an implementation report on the attempt. We designed a small audit schema (five fields: benchmark identity, harness specification, inference settings, cost reporting, failure breakdown), wrote a scoring codebook with the boundary cases we hit during pilot scoring, applied it to twelve canonical papers (eight agent, four classical static), and recorded what we saw. We score the disclosure of an agent run, not its correctness, and make no claim that disclosure implies a trustworthy result. The mean audit score across the eight agent-benchmark papers is 0.38 (out of 1.0), and across the four classical static benchmarks 0.66; the largest gap is on cost (none of the eight agent benchmark papers disclose inference cost in any form) and on harness specification (none fully disclose a content-addressed container image of the evaluation environment). We release the schema as a JSON Schema file, the codebook as a Markdown document, and the raw scoring sheet as a CSV. The scoring was performed by a single auditor in one pass; a multi-rater audit is the natural next step, and we discuss what we think it would change."
+      },
+      {
+        "url": "https://arxiv.org/abs/2606.29771v3",
+        "title": "CLQT: A Closed-Loop, Cost-Aware, Strategy-Consistent Benchmark for Diagnostic Evaluation of LLM Portfolio-Management Agents",
+        "published": "2026-06-29T04:26:30Z",
+        "updated": "2026-09-12T07:00:24Z",
+        "authors": [
+          "Bo Qu",
+          "Mingguang Chen"
+        ],
+        "abstract": "LLM agents are increasingly cast as autonomous portfolio managers, yet the dominant evaluation idiom, a leaderboard of returns over a fixed window, certifies neither the soundness of an agent's process nor the durability of its edge: one period's return is dominated by the market path, and apparent alpha can dissolve once look-ahead bias and trading costs are controlled. We introduce CLQT, a closed-loop benchmark that reframes LLM trading evaluation as diagnosis rather than ranking. CLQT enforces point-in-time data access through a hard TimeGate, models institutional transaction and financing costs, scores strategy consistency across rounds, and seals every gather-analyze-decide-execute-reflect cycle into a recompute-verifiable audit chain; the same model runs as a constrained investment committee or a single autonomous orchestrator, making scaffolding an experimental variable. From the audit trail CLQT computes a five-axis capability scorecard (Coherence, Acuity, Composure, Discipline, Reliability), with coherence scored partly by a held-out LLM judge to curb self-preference bias. We validate CLQT on a contamination-controlled, year-long multi-model backtest campaign with a 13-configuration ablation grid and a four-week live broker paper-trading track on post-cutoff data. The diagnosis-first read shows that the capability leader is not the Sharpe leader; that agents' allocations systematically fail to follow their own stated analysis, a stating-versus-doing gap stable across both tracks (+0.30 backtest, +0.23 live); and that module value registers on the capability and behavioral axes when returns alone cannot separate it. Net of realistic costs, agents clear defensive baselines but do not cleanly beat the index. Credible evaluation of LLM investment agents must therefore diagnose the process rather than rank a period's return, the standard CLQT operationalizes and makes auditable."
+      },
+      {
+        "url": "https://arxiv.org/abs/2606.19559v1",
+        "title": "Uncertainty Decomposition for Clarification Seeking in LLM Agents",
+        "published": "2026-06-17T19:59:32Z",
+        "updated": "2026-06-17T19:59:32Z",
+        "authors": [
+          "Gregory Matsnev"
+        ],
+        "abstract": "Recent position papers argue that the classical aleatoric/epistemic uncertainty framework is insufficient for interactive large language model (LLM) agents and call for underspecification-aware, decomposed, and communicable uncertainty representations that can unlock new agent capabilities such as proactive clarification seeking and shared mental-model building. Practical deployment constraints -- black-box APIs, interactive latency budgets, and the absence of labeled trajectories -- rule out logprob-based, multi-sampling, and training-based methods, leaving prompt-based estimation as the most viable family for surfacing such signals at deployment time. We answer this call with a simple prompt-based decomposition that separates action confidence from request uncertainty (u), enabling the agent to ask for clarification when the task specification is ambiguous. To evaluate it, we introduce two clarification-augmented benchmarks (WebShop-Clarification and ALFWorld-Clarification) in which 50% of tasks are deliberately underspecified, and systematically compare the proposed decomposition against ReAct+UE and Uncertainty-Aware Memory (UAM) across five LLM backbones (GPT-5.1, DeepSeek-v3.2-exp, GLM-4.7, Qwen3.5-35B, GPT-OSS-120B) on these variants together with the standard WebShop, ALFWorld, and REAL benchmarks for fault detection. Averaged across the five backbones, the proposed decomposition improves clarification F1 on ALFWorld-Clarification by 73% over ReAct+UE and by 36% over UAM, and leads clarification F1 on every backbone on WebShop-Clarification and on four of five backbones on ALFWorld-Clarification, indicating that the gains generalize beyond a single LLM."
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.10472v2",
+        "title": "FML-bench: Benchmarking Machine Learning Agents for Scientific Research",
+        "published": "2025-10-12T06:41:05Z",
+        "updated": "2026-02-25T08:42:24Z",
+        "authors": [
+          "Qiran Zou",
+          "Hou Hei Lam",
+          "Wenhao Zhao",
+          "Yiming Tang",
+          "Tingting Chen",
+          "Samson Yu",
+          "Tianyi Zhang",
+          "Chang Liu",
+          "Xiangyang Ji",
+          "Dianbo Liu"
+        ],
+        "abstract": "Large language models (LLMs) have sparked growing interest in machine learning research agents that can autonomously propose ideas and conduct experiments. However, existing benchmarks predominantly adopt an engineering-oriented perspective: they emphasize application-oriented tasks and evaluate primarily on final performance and computational cost, overlooking agents' research processes and limiting assessment of their capabilities in scientific research settings. To more comprehensively evaluate agents in scientific research settings, we introduce FML-bench, a benchmark comprising 8 diverse and fundamental ML research tasks, and further propose complementary metrics, notably Exploration Diversity, which quantifies the variance of proposals across iterations and reveals how exploration patterns influence research outcomes. We evaluate state-of-the-art research agents on FML-bench, showing that agents employing broad exploration strategies exhibit higher exploration diversity and achieve superior performance, and that exploration diversity positively correlates with performance improvements across multiple tasks. We hope these findings and our benchmark inform future agent design and support the community in further investigating agent behavior. Our benchmark is available at https://github.com/qrzou/FML-bench."
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.23586v2",
+        "title": "Reducing Cost of LLM Agents with Trajectory Reduction",
+        "published": "2025-09-28T02:43:41Z",
+        "updated": "2026-03-15T11:20:36Z",
+        "authors": [
+          "Yuan-An Xiao",
+          "Pengfei Gao",
+          "Chao Peng",
+          "Yingfei Xiong"
+        ],
+        "abstract": "Multi-turn agent systems based on Large Language Models (LLMs) have become increasingly popular for software engineering tasks. While LLM agents demonstrate promising effectiveness, the high computational cost of input tokens due to ever-growing trajectories remains a significant efficiency concern. Efficiency has been largely overlooked in existing studies and agent products, and this paper addresses this gap by introducing an inference-time trajectory reduction approach that reduces computational costs. By analyzing existing agent trajectories, we demonstrate that useless, redundant, and expired information is widespread across trajectories. Such waste can be identified and reduced without compromising the agent's performance. We propose a simple yet effective trajectory reduction approach, AgentDiet, which automatically removes such waste during agent execution. We implement AgentDiet on a top-performing coding agent, and our evaluation on two LLMs and two benchmarks shows that AgentDiet can reduce input tokens by 39.9%-59.7% and the total computational cost by 21.1%-35.9%, while maintaining the same agent performance. These results indicate that inference-time trajectory reduction is a promising direction for agent systems."
+      },
+      {
+        "url": "https://arxiv.org/abs/2606.28362v1",
+        "title": "LUMEN: Cost-Transparent Multi-Agent Pipeline for Automated Systematic Review and Meta-Analysis",
+        "published": "2026-03-29T09:02:10Z",
+        "updated": "2026-03-29T09:02:10Z",
+        "authors": [
+          "Yen-Hsun Huang",
+          "Yu-Shiou Lin"
+        ],
+        "abstract": "Systematic reviews and meta-analyses (SR/MA) remain the gold standard for evidence synthesis, yet completing one typically requires 67 weeks and substantial expert effort. Recent large language model (LLM) systems have demonstrated strong performance on individual SR phases - screening (otto-SR: 96.7% sensitivity), extraction (Gartlehner et al.: 91.0% accuracy), and search (TrialMind: 0.83 recall) - but no study has reported what it actually costs to run an end-to-end pipeline, how cost distributes across phases, or how architectural choices affect the cost-quality trade-off. We present LUMEN, an open-source multi-agent pipeline that automates six SR/MA phases using 11 specialized LLM agents with deliberate model routing. We evaluate LUMEN on seven datasets: five self-conducted domain reviews (psychiatry, psychology, surgery, vaccinology, cardiology) and two SYNERGY screening benchmarks. Across 13 ground-truth-comparable outcomes, LUMEN achieves 100% directional agreement with published meta-analyses, with effect sizes within 1% for homogeneous study designs. The primary contribution is the first empirical cost and operational characterization of such a pipeline: a complete review costs 19 to 29 USD (median 22.65 USD), with title-abstract screening and data extraction together dominating expenditure. A three-arm extraction ablation reveals a phase-dependent architecture reversal: multi-agent design hurts screening but is essential for extraction, producing 5.7x more poolable analyses than single-model alternatives while eliminating clinically dangerous direction errors. A two-dataset screening benchmark demonstrates that model ranking is domain-dependent and not transferable across review topics. All code and cost logs are publicly available."
+      },
+      {
+        "url": "https://arxiv.org/abs/2609.18949v1",
+        "title": "StableEval Arena: A Cost-Aware Agentic Benchmark for Stablecoin Price Stability Prediction",
+        "published": "2026-08-07T15:41:10Z",
+        "updated": "2026-08-07T15:41:10Z",
+        "authors": [
+          "Sean Wan",
+          "Dongping Liu",
+          "Luyao Zhang"
+        ],
+        "abstract": "We introduce StableEval Arena, a cost-aware benchmark framework for evaluating agentic AI systems on stablecoin peg-risk prediction. StableEval Arena evaluates LLM-backed agentic systems on diagnosing peg stress and forecasting deviations from the one-dollar peg over a hidden seven-day horizon, using leakage-safe historical replay with exchange price-volume data and market-context features. We report two complementary experiment blocks: a 120-case stress-enriched validation block and a 507-case natural-distribution full-arena evaluation block. Across six LLM-backed agent configurations and baselines, StableEval Arena measures prediction quality, calibrated-label behavior, structured-output reliability, latency, token consumption, and estimated inference cost. Rather than ranking agents by accuracy alone, the framework treats trustworthiness as a joint property of forecast quality, operational reliability, and computational cost. The results show a gap between protocol-following reliability and financial-risk reliability: agents reliably produce valid structured outputs at modest measured cost, but still miss most rare severe-stress and sustained-depeg cases. To support auditing and replication, we release the benchmark dataset on Hugging Face and the source code on GitHub."
+      },
+      {
+        "url": "https://arxiv.org/abs/2411.07464v2",
+        "title": "BudgetMLAgent: A Cost-Effective LLM Multi-Agent system for Automating Machine Learning Tasks",
+        "published": "2024-11-12T00:57:30Z",
+        "updated": "2025-01-08T07:25:55Z",
+        "authors": [
+          "Shubham Gandhi",
+          "Manasi Patwardhan",
+          "Lovekesh Vig",
+          "Gautam Shroff"
+        ],
+        "abstract": "Large Language Models (LLMs) excel in diverse applications including generation of code snippets, but often struggle with generating code for complex Machine Learning (ML) tasks. Although existing LLM single-agent based systems give varying performance depending on the task complexity, they purely rely on larger and expensive models such as GPT-4. Our investigation reveals that no-cost and low-cost models such as Gemini-Pro, Mixtral and CodeLlama perform far worse than GPT-4 in a single-agent setting. With the motivation of developing a cost-efficient LLM based solution for solving ML tasks, we propose an LLM Multi-Agent based system which leverages combination of experts using profiling, efficient retrieval of past observations, LLM cascades, and ask-the-expert calls. Through empirical analysis on ML engineering tasks in the MLAgentBench benchmark, we demonstrate the effectiveness of our system, using no-cost models, namely Gemini as the base LLM, paired with GPT-4 in cascade and expert to serve occasional ask-the-expert calls for planning. With 94.2\\% reduction in the cost (from \\$0.931 per run cost averaged over all tasks for GPT-4 single agent system to \\$0.054), our system is able to yield better average success rate of 32.95\\% as compared to GPT-4 single-agent system yielding 22.72\\% success rate averaged over all the tasks of MLAgentBench."
+      }
+    ]
+  },
+  {
+    "query": "all:LLM AND all:\"reinforcement learning\" AND (all:environment OR all:sandbox) AND (all:system OR all:infrastructure)",
+    "searched_at": "2026-10-09T12:59:53.138812+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2512.12476v2",
+        "title": "HetRL: Efficient Reinforcement Learning for LLMs in Heterogeneous Environments",
+        "published": "2025-12-13T22:20:51Z",
+        "updated": "2026-04-11T14:05:07Z",
+        "authors": [
+          "Yongjun He",
+          "Shuai Zhang",
+          "Jiading Gai",
+          "Xiyuan Zhang",
+          "Boran Han",
+          "Bernie Wang",
+          "Huzefa Rangwala",
+          "George Karypis"
+        ],
+        "abstract": "As large language models (LLMs) continue to scale and new GPUs are released even more frequently, there is an increasing demand for LLM post-training in heterogeneous environments to fully leverage underutilized mid-range or previous-generation GPUs and alleviate the shortage of homogeneous high-end GPUs within a single availability zone. However, achieving high-performance reinforcement learning (RL) training for LLMs on such computing resources remains challenging because the workflow involves multiple models and tasks with complex computation and data dependencies. In this paper, we present HetRL, a distributed system for efficient RL training in infrastructures with heterogeneous GPUs and networks. HetRL formulates the scheduling of RL training in heterogeneous environments as a constrained joint optimization problem and provides two complementary approaches for addressing this problem: (1) a hybrid scheduling algorithm that efficiently identifies near-optimal solutions, and (2) an integer linear programming (ILP)-based scheduling algorithm that obtains optimal solutions, enabling flexible trade-offs between solution optimality and efficiency. Our extensive evaluation, consuming 20,000 GPU-hours, shows that HetRL achieves up to 9.17x the throughput of state-of-the-art systems, and 3.17x on average, across a wide range of workloads and settings."
+      },
+      {
+        "url": "https://arxiv.org/abs/2602.05183v2",
+        "title": "Data-Centric Interpretability for LLM-based Multi-Agent Reinforcement Learning",
+        "published": "2026-02-05T01:21:22Z",
+        "updated": "2026-02-06T02:44:25Z",
+        "authors": [
+          "John Yan",
+          "Michael Yu",
+          "Yuqi Sun",
+          "Alexander Duffy",
+          "Tyler Marques",
+          "Matthew Lyle Olson"
+        ],
+        "abstract": "Large language models (LLMs) are increasingly trained in complex Reinforcement Learning, multi-agent environments, making it difficult to understand how behavior changes over training. Sparse Autoencoders (SAEs) have recently shown to be useful for data-centric interpretability. In this work, we analyze large-scale reinforcement learning training runs from the sophisticated environment of Full-Press Diplomacy by applying pretrained SAEs, alongside LLM-summarizer methods. We introduce Meta-Autointerp, a method for grouping SAE features into interpretable hypotheses about training dynamics. We discover fine-grained behaviors including role-playing patterns, degenerate outputs, language switching, alongside high-level strategic behaviors and environment-specific bugs. Through automated evaluation, we validate that 90% of discovered SAE Meta-Features are significant, and find a surprising reward hacking behavior. However, through two user studies, we find that even subjectively interesting and seemingly helpful SAE features may be worse than useless to humans, along with most LLM generated hypotheses. However, a subset of SAE-derived hypotheses are predictively useful for downstream tasks. We further provide validation by augmenting an untrained agent's system prompt, improving the score by +14.2%. Overall, we show that SAEs and LLM-summarizer provide complementary views into agent behavior, and together our framework forms a practical starting point for future data-centric interpretability work on ensuring trustworthy LLM behavior throughout training."
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.25455v1",
+        "title": "PIPer: On-Device Environment Setup via Online Reinforcement Learning",
+        "published": "2025-09-29T20:03:05Z",
+        "updated": "2025-09-29T20:03:05Z",
+        "authors": [
+          "Alexander Kovrigin",
+          "Aleksandra Eliseeva",
+          "Konstantin Grotov",
+          "Egor Bogomolov",
+          "Yaroslav Zharov"
+        ],
+        "abstract": "Environment setup-the process of configuring the system to work with a specific software project-represents a persistent challenge in Software Engineering (SE). Automated environment setup methods could assist developers by providing fully configured environments for arbitrary repositories without manual effort. This also helps SE researchers to scale execution-based benchmarks. However, recent studies reveal that even state-of-the-art Large Language Models (LLMs) achieve limited success in automating this task. To address this limitation, we tune a specialized model for environment setup. We combine supervised fine-tuning for generating correct Bash scripts and Reinforcement Learning with Verifiable Rewards (RLVR) to adapt it to the task of environment setup. On EnvBench-Python, our method enables Qwen3-8B (a model runnable on consumer hardware) to perform on par with larger models-Qwen3-32B and GPT-4o. The training code and model checkpoints are available online: https://github.com/JetBrains-Research/PIPer."
+      },
+      {
+        "url": "https://arxiv.org/abs/2609.22978v1",
+        "title": "DeepSeek Elastic Compute (DSec): A Sandbox Infrastructure for Effective Agentic Training at Scale",
+        "published": "2026-09-19T12:20:26Z",
+        "updated": "2026-09-19T12:20:26Z",
+        "authors": [
+          "Jialiang Huang",
+          "Hongxuan Tang",
+          "Jingchang Chen",
+          "Yuxuan Liu",
+          "Yixiao Chen",
+          "Yuan Cheng",
+          "Yi Tao",
+          "Jingli Zhou",
+          "Yupeng Chen",
+          "Haoyu Chen",
+          "Jiarui Wang",
+          "Shengkai Lin",
+          "Chuqi Zhang",
+          "Bryan Lee Teng",
+          "Lian Guo",
+          "Zhe Fu",
+          "Wenjun Gao",
+          "Yisong Wang",
+          "Liang Zhao",
+          "Zehao Wang",
+          "Ziwei Xie",
+          "Yongqiang Guo",
+          "Peixin Cong",
+          "Ziyi Gao",
+          "Shuiping Yu",
+          "Hanwei Xu",
+          "Zuofan Wu",
+          "Zhizhou Ren",
+          "Yuyang Zhou",
+          "Bowei Zhang",
+          "Zhihuan Huang",
+          "Qihao Zhu",
+          "Lei Wang",
+          "Tianle Lin",
+          "Han Yu",
+          "Jiewen Hu",
+          "Dejian Yang",
+          "Shuo Yang",
+          "Shanghao Lu",
+          "Shaoyuan Chen",
+          "Junjie Qiu",
+          "Zhangli Sha",
+          "Yinmin Zhong",
+          "Yongtong Wu",
+          "Shiyu Wang",
+          "Wei Liu",
+          "Bingzheng Xu",
+          "Longhao Chen",
+          "Qiushi Du",
+          "Yuzhen Huang",
+          "Shirong Ma",
+          "Yaohui Wang",
+          "Mingshu Chen",
+          "Tongrui Xiong",
+          "Y. C. Yan",
+          "Haowen Luo",
+          "Haofen Liang",
+          "Xiaokang Zhang",
+          "Weihao Zeng",
+          "Runxin Xu",
+          "Peiyi Wang",
+          "Jinhua Zhu",
+          "Ruoyu Zhang",
+          "Wenkai Yang",
+          "Qi Tang",
+          "Jiping Yu",
+          "Tian Ye",
+          "Ruizhe Pan",
+          "Honghui Ding",
+          "Xiaodong Liu",
+          "Lingxiao Luo",
+          "Zhihong Shao",
+          "Yuhan Wu",
+          "Jibai Lu",
+          "Wen Liu",
+          "Haoling Zhang",
+          "Jingcheng Hu",
+          "Yaoyang Ye",
+          "Chaofan Lin",
+          "Zhaochen Zhang",
+          "Jianan Tong",
+          "Hengxu Wu",
+          "Zhihao Li",
+          "Yicheng Wang",
+          "Luyao Wang",
+          "Yuzhuo Bai",
+          "Lingyue Fu",
+          "Ruifan Xu",
+          "Y. Z. Wang",
+          "Zonglin Li",
+          "Mingqi Wei",
+          "Haiyang Shen",
+          "Chengyuan Zhang",
+          "Chao Jin",
+          "Zili Zhang",
+          "R. H. Yang",
+          "Xinbo Xu",
+          "Jian Zhou",
+          "Ruidong Zhu",
+          "Yuzhe Guo",
+          "Zelun Pan",
+          "Shaoheng Nie",
+          "Erhang Li",
+          "Shuhan Lin",
+          "Zheng Liu",
+          "Anshuo Chen",
+          "Zilong Lyu",
+          "Sinuo Cao",
+          "Rui Yu",
+          "Chuhao Wang",
+          "Junyi Guo",
+          "Junxiao Song",
+          "Kaifeng Chen",
+          "Menghao Ye",
+          "Junxian Li",
+          "Di Wu",
+          "Haiyang Ma",
+          "Yilun Wang",
+          "Haoran Yang",
+          "Yizai Cai",
+          "Shichun Liu",
+          "Yiping Wang",
+          "Junbo Sun",
+          "Shicheng Xu",
+          "Xiao Bi",
+          "Ying He",
+          "Yichao Zhang",
+          "Mingxing Zhang",
+          "Liyue Zhang",
+          "Panpan Huang",
+          "Wenfeng Liang"
+        ],
+        "abstract": "Large-scale agentic training and evaluation with large language models (LLMs) rely on isolated, stateful execution environments in which models inspect repositories, invoke tools, execute commands, and interact with task-specific services. These workloads create sandboxes in large bursts, span heterogeneous functionality and isolation requirements, retain state across long interactions, and draw from large image corpora with limited reuse. Supporting them therefore requires an elastic execution platform rather than a single sandbox runtime. This report presents DeepSeek Elastic Compute (DSec), a production sandbox platform that exposes FnCall, container, microVM, and full-VM sandbox backends through a unified SDK. DSec coordinates placement and lifecycle management across the cluster, composes environments from independently versioned layers, combines memory sharing, reclamation, and CPU scheduling for high-density execution, and loads image data on demand from Fire-Flyer File System (3FS), a cluster-wide distributed filesystem. DSec is co-designed with the reinforcement learning (RL) framework, decouples stateful rollout execution from preemptible GPU training, coordinates sandbox lifecycle with training to preserve rollout state while reclaiming idle resources, and mitigates agent misbehavior such as reward hacking. A single production-scale unit of DSec spans around 160 nodes, serving about 3 million sandboxes per day; in production, it supports over 380,000 concurrent sandboxes and sustains over 5,000 sandbox creations per second. Our evaluation and deployment experience show that these mechanisms reduce environment setup and image-distribution overhead, improve memory efficiency, and preserve latency-sensitive performance under high-density overcommit."
+      },
+      {
+        "url": "https://arxiv.org/abs/2608.03502v2",
+        "title": "Hybrid LLM-Augmented Reinforcement Learning Agents for Complex Sequential Decision Tasks",
+        "published": "2026-08-04T11:44:07Z",
+        "updated": "2026-08-18T17:00:03Z",
+        "authors": [
+          "Christophe D. Hounwanou",
+          "John Emeka Eze",
+          "Yaé Ulrich Gaba"
+        ],
+        "abstract": "Large Language Models (LLMs) have recently shown strong capabilities in reasoning, planning, and tool-use, enabling new forms of autonomous agents. However, LLM-based agents struggle with long-horizon sequential decision tasks that require precise action optimization and environment interaction. Reinforcement Learning (RL), while effective for sequential control, often lacks the high-level abstraction and task decomposition abilities needed for complex scenarios. This paper introduces an LLM-Augmented Reinforcement Learning Agent that integrates LLM-driven planning with RL-based action optimization. The proposed architecture leverages the LLM to generate subgoals, structured plans, and contextual guidance, while the RL agent refines low-level actions through interaction with the environment. Experiments on sequential decision tasks demonstrate improved sample efficiency, higher success rates, and more coherent action trajectories compared to RL-only and LLM-only baselines. This hybrid paradigm highlights a promising direction for building more capable autonomous systems."
+      },
+      {
+        "url": "https://arxiv.org/abs/2503.15726v1",
+        "title": "Reinforcement Learning Environment with LLM-Controlled Adversary in D&D 5th Edition Combat",
+        "published": "2025-03-19T22:48:20Z",
+        "updated": "2025-03-19T22:48:20Z",
+        "authors": [
+          "Joseph Emmanuel DL Dayo",
+          "Michel Onasis S. Ogbinar",
+          "Prospero C. Naval"
+        ],
+        "abstract": "The objective of this study is to design and implement a reinforcement learning (RL) environment using D\\&D 5E combat scenarios to challenge smaller RL agents through interaction with a robust adversarial agent controlled by advanced Large Language Models (LLMs) like GPT-4o and LLaMA 3 8B. This research employs Deep Q-Networks (DQN) for the smaller agents, creating a testbed for strategic AI development that also serves as an educational tool by simulating dynamic and unpredictable combat scenarios. We successfully integrated sophisticated language models into the RL framework, enhancing strategic decision-making processes. Our results indicate that while RL agents generally outperform LLM-controlled adversaries in standard metrics, the strategic depth provided by LLMs significantly enhances the overall AI capabilities in this complex, rule-based setting. The novelty of our approach and its implications for mastering intricate environments and developing adaptive strategies are discussed, alongside potential innovations in AI-driven interactive simulations. This paper aims to demonstrate how integrating LLMs can create more robust and adaptable AI systems, providing valuable insights for further research and educational applications."
+      },
+      {
+        "url": "https://arxiv.org/abs/2601.05808v2",
+        "title": "EnvScaler: Scaling Tool-Interactive Environments for LLM Agent via Programmatic Synthesis",
+        "published": "2026-01-09T14:32:06Z",
+        "updated": "2026-04-17T17:24:06Z",
+        "authors": [
+          "Xiaoshuai Song",
+          "Haofei Chang",
+          "Guanting Dong",
+          "Yutao Zhu",
+          "Ji-Rong Wen",
+          "Zhicheng Dou"
+        ],
+        "abstract": "Large language models (LLMs) are expected to be trained to act as agents in various real-world environments, but this process relies on rich and varied tool-interaction sandboxes. However, access to real systems is often restricted; LLM-simulated environments are prone to hallucinations and inconsistencies; and manually built sandboxes are hard to scale. In this paper, we propose EnvScaler, an automated framework for scalable tool-interaction environments via programmatic synthesis. EnvScaler comprises two components. First, SkelBuilder constructs diverse environment skeletons through topic mining, logic modeling, and quality evaluation. Then, ScenGenerator generates multiple task scenarios and rule-based trajectory validation functions for each environment. With EnvScaler, we synthesize 191 environments and about 7K scenarios, and apply them to Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL) for Qwen3 series models. Results on three benchmarks show that EnvScaler significantly improves LLMs' ability to solve tasks in complex environments involving multi-turn, multi-tool interactions. We release our code and data at https://github.com/RUC-NLPIR/EnvScaler."
+      },
+      {
+        "url": "https://arxiv.org/abs/2503.10049v1",
+        "title": "Enhancing Multi-Agent Systems via Reinforcement Learning with LLM-based Planner and Graph-based Policy",
+        "published": "2025-03-13T05:02:49Z",
+        "updated": "2025-03-13T05:02:49Z",
+        "authors": [
+          "Ziqi Jia",
+          "Junjie Li",
+          "Xiaoyang Qu",
+          "Jianzong Wang"
+        ],
+        "abstract": "Multi-agent systems (MAS) have shown great potential in executing complex tasks, but coordination and safety remain significant challenges. Multi-Agent Reinforcement Learning (MARL) offers a promising framework for agent collaboration, but it faces difficulties in handling complex tasks and designing reward functions. The introduction of Large Language Models (LLMs) has brought stronger reasoning and cognitive abilities to MAS, but existing LLM-based systems struggle to respond quickly and accurately in dynamic environments. To address these challenges, we propose LLM-based Graph Collaboration MARL (LGC-MARL), a framework that efficiently combines LLMs and MARL. This framework decomposes complex tasks into executable subtasks and achieves efficient collaboration among multiple agents through graph-based coordination. Specifically, LGC-MARL consists of two main components: an LLM planner and a graph-based collaboration meta policy. The LLM planner transforms complex task instructions into a series of executable subtasks, evaluates the rationality of these subtasks using a critic model, and generates an action dependency graph. The graph-based collaboration meta policy facilitates communication and collaboration among agents based on the action dependency graph, and adapts to new task environments through meta-learning. Experimental results on the AI2-THOR simulation platform demonstrate the superior performance and scalability of LGC-MARL in completing various complex tasks."
+      }
+    ]
+  },
+  {
+    "query": "all:agent AND all:serverless",
+    "searched_at": "2026-10-09T12:59:56.815058+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2512.22149v2",
+        "title": "Adaptive GPU Resource Allocation for Multi-Agent Collaborative Reasoning in Serverless Environments",
+        "published": "2025-12-15T09:21:48Z",
+        "updated": "2026-01-01T03:32:51Z",
+        "authors": [
+          "Guilin Zhang",
+          "Wulan Guo",
+          "Ziqi Tan"
+        ],
+        "abstract": "Multi-agent systems powered by large language models have emerged as a promising paradigm for solving complex reasoning tasks through collaborative intelligence. However, efficiently deploying these systems on serverless GPU platforms presents significant resource allocation challenges due to heterogeneous agent workloads, varying computational demands, and the need for cost-effective scaling. This paper presents an adaptive GPU resource allocation framework that achieves 85% latency reduction compared to round-robin scheduling while maintaining comparable throughput to static allocation, using an O(N) complexity algorithm for real-time adaptation. Our approach dynamically allocates GPU resources based on workload characteristics, agent priorities, and minimum resource requirements, enabling efficient utilization while maintaining quality of service. The framework addresses three key challenges: (1) heterogeneous computational demands across lightweight coordinators and heavyweight specialists, (2) dynamic workload fluctuations requiring millisecond-scale reallocation, and (3) capacity constraints in serverless environments. Through comprehensive simulations modeling realistic multi-agent workflows with four heterogeneous agents, we demonstrate that adaptive allocation outperforms static equal and round-robin strategies across latency, cost, and GPU utilization metrics. The framework provides a practical solution for deploying cost-efficient multi-agent AI systems on serverless GPU infrastructure."
+      },
+      {
+        "url": "https://arxiv.org/abs/2401.08859v2",
+        "title": "Shabari: Delayed Decision-Making for Faster and Efficient Serverless Functions",
+        "published": "2024-01-16T22:20:36Z",
+        "updated": "2024-01-25T16:34:22Z",
+        "authors": [
+          "Prasoon Sinha",
+          "Kostis Kaffes",
+          "Neeraja J. Yadwadkar"
+        ],
+        "abstract": "Serverless computing relieves developers from the burden of resource management, thus providing ease-of-use to the users and the opportunity to optimize resource utilization for the providers. However, today's serverless systems lack performance guarantees for function invocations, thus limiting support for performance-critical applications: we observed severe performance variability (up to 6x). Providers lack visibility into user functions and hence find it challenging to right-size them: we observed heavy resource underutilization (up to 80%). To understand the causes behind the performance variability and underutilization, we conducted a measurement study of commonly deployed serverless functions and learned that the function performance and resource utilization depend crucially on function semantics and inputs. Our key insight is to delay making resource allocation decisions until after the function inputs are available. We introduce Shabari, a resource management framework for serverless systems that makes decisions as late as possible to right-size each invocation to meet functions' performance objectives (SLOs) and improve resource utilization. Shabari uses an online learning agent to right-size each function invocation based on the features of the function input and makes cold-start-aware scheduling decisions. For a range of serverless functions and inputs, Shabari reduces SLO violations by 11-73% while not wasting any vCPUs and reducing wasted memory by 64-94% in the median case, compared to state-of-the-art systems, including Aquatope, Parrotfish, and Cypress."
+      },
+      {
+        "url": "https://arxiv.org/abs/2311.12839v1",
+        "title": "A Review of Deep Reinforcement Learning in Serverless Computing: Function Scheduling and Resource Auto-Scaling",
+        "published": "2023-10-05T09:26:04Z",
+        "updated": "2023-10-05T09:26:04Z",
+        "authors": [
+          "Amjad Yousef Majid",
+          "Eduard Marin"
+        ],
+        "abstract": "In the rapidly evolving field of serverless computing, efficient function scheduling and resource scaling are critical for optimizing performance and cost. This paper presents a comprehensive review of the application of Deep Reinforcement Learning (DRL) techniques in these areas. We begin by providing an overview of serverless computing, highlighting its benefits and challenges, with a particular focus on function scheduling and resource scaling. We then delve into the principles of deep reinforcement learning (DRL) and its potential for addressing these challenges. A systematic review of recent studies applying DRL to serverless computing is presented, covering various algorithms, models, and performances. Our analysis reveals that DRL, with its ability to learn and adapt from an environment, shows promising results in improving the efficiency of function scheduling and resource scaling in serverless computing. However, several challenges remain, including the need for more realistic simulation environments, handling of cold starts, and the trade-off between learning time and scheduling performance. We conclude by discussing potential future directions for this research area, emphasizing the need for more robust DRL models, better benchmarking methods, and the exploration of multi-agent reinforcement learning for more complex serverless architectures. This review serves as a valuable resource for researchers and practitioners aiming to understand and advance the application of DRL in serverless computing."
+      },
+      {
+        "url": "https://arxiv.org/abs/2205.08430v1",
+        "title": "Towards Resilient Access Equality for 6G Serverless p-LEO Satellite Networks",
+        "published": "2022-05-17T15:16:48Z",
+        "updated": "2022-05-17T15:16:48Z",
+        "authors": [
+          "Lin Shih-Chun",
+          "Lin Chia-Hung",
+          "Chu Liang C.",
+          "Lien Shao-Yu"
+        ],
+        "abstract": "Low earth orbit (LEO) mega-constellations, integrating government space systems and commercial practices, have emerged as enabling technologies for the sixth generation (6G) networks due to their good merits of global coverage and ubiquitous services for military and civilian use cases. However, convergent LEO-based satellite networking infrastructures still lack leveraging the synergy of space and terrestrial systems. This paper, therefore, extends conventional serverless cloud platforms with serverless edge learning architectures for 6G proliferated LEO (p-LEO) satellite ecosystems and provides a new distributed training design from a networking perspective. The proposed design dynamically orchestrates communications and computation functionalities and resources among heterogeneous physical units to efficiently fulfill multi-agent deep reinforcement learning for service-level agreements. Innovative ecosystem enhancements, including ultrabroadband access, anti-jammed transmissions, resilient networking, and related open challenges, are also investigated for end-to-end connectivity, communications, and learning performance."
+      },
+      {
+        "url": "https://arxiv.org/abs/2501.14417v3",
+        "title": "DeepServe: Serverless Large Language Model Serving at Scale",
+        "published": "2025-01-24T11:34:13Z",
+        "updated": "2025-06-09T02:09:42Z",
+        "authors": [
+          "Junhao Hu",
+          "Jiang Xu",
+          "Zhixia Liu",
+          "Yulong He",
+          "Yuetao Chen",
+          "Hao Xu",
+          "Jiang Liu",
+          "Jie Meng",
+          "Baoquan Zhang",
+          "Shining Wan",
+          "Gengyuan Dan",
+          "Zhiyu Dong",
+          "Zhihao Ren",
+          "Changhong Liu",
+          "Tao Xie",
+          "Dayun Lin",
+          "Qin Zhang",
+          "Yue Yu",
+          "Hao Feng",
+          "Xusheng Chen",
+          "Yizhou Shan"
+        ],
+        "abstract": "In this paper, we propose DEEPSERVE, a scalable and serverless AI platform designed to efficiently serve large language models (LLMs) at scale in cloud environments. DEEPSERVE addresses key challenges such as resource allocation, serving efficiency, and cold start latencies through four main design components. First, DEEPSERVE uses a simple serverless abstraction called the request-job-task model, which helps manage diverse AI workloads across posttraining and model-serving tasks. Second, DEEPSERVE integrates an in-house serving engine named FLOWSERVE using a microkernel-inspired design, NPU-centric execution, and SPMD-based parallelism to optimize LLM serving. Third, DEEPSERVE includes novel scheduling policies tailored for a configuration with both PD-disaggregated and PD-colocated instances. Fourth, DEEPSERVE includes optimizations such as pre-warmed pods, DRAM pre-loading, and NPU-fork, which allow DEEPSERVE to scale up to 64 instances in seconds. DEEPSERVE has been in production for over a year, operating on a large Ascend NPU cluster and providing industrystandard APIs for fine-tuning, agent serving, and model serving to our customers."
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.09525v2",
+        "title": "TrEnv-X: Transparently Share Serverless Execution Environments Across Different Functions and Nodes",
+        "published": "2025-09-11T15:06:03Z",
+        "updated": "2026-03-21T12:02:04Z",
+        "authors": [
+          "Jialiang Huang",
+          "Teng Ma",
+          "Zheng Liu",
+          "Sixing Lin",
+          "Kang Chen",
+          "Jinlei Jiang",
+          "Xia Liao",
+          "Yingdi Shan",
+          "Yongwei Wu",
+          "Ning Zhang",
+          "Mengting Lu",
+          "Tao Ma",
+          "Haifeng Gong",
+          "Mingxing Zhang"
+        ],
+        "abstract": "Serverless computing is renowned for its computation elasticity, yet its full potential is often constrained by the requirement for functions to operate within local and dedicated background environments, resulting in limited memory elasticity. To address this limitation, this paper introduces TrEnv-X, a co-designed integration of the serverless platform with the operating system and CXL/RDMA-based remote memory pools. TrEnv-X's core innovations are repurposable sandboxes, which can be shared across different functions to decrease the associated creation overhead, and OS-level memory templates, which enable rapid state restoration from CXL/RDMA-based remote memory pools. To further demonstrate TrEnv-X's versatility, we generalize its design from traditional containers for microVM-based agent workloads and introduce new optimizations, including browser sharing and a page cache bypassing mechanism. Our evaluation shows that TrEnv-X achieves up to 7x reduction in P99 latency and 48% memory savings for container-based functions. When applied to LLM agents, it reduces the P99 latency by up to 58% and memory usage by 61% compared to state-of-the-art systems like E2B."
+      },
+      {
+        "url": "https://arxiv.org/abs/2308.11209v1",
+        "title": "A Deep Reinforcement Learning based Algorithm for Time and Cost Optimized Scaling of Serverless Applications",
+        "published": "2023-08-22T05:45:58Z",
+        "updated": "2023-08-22T05:45:58Z",
+        "authors": [
+          "Anupama Mampage",
+          "Shanika Karunasekera",
+          "Rajkumar Buyya"
+        ],
+        "abstract": "Serverless computing has gained a strong traction in the cloud computing community in recent years. Among the many benefits of this novel computing model, the rapid auto-scaling capability of user applications takes prominence. However, the offer of adhoc scaling of user deployments at function level introduces many complications to serverless systems. The added delay and failures in function request executions caused by the time consumed for dynamically creating new resources to suit function workloads, known as the cold-start delay, is one such very prevalent shortcoming. Maintaining idle resource pools to alleviate this issue often results in wasted resources from the cloud provider perspective. Existing solutions to address this limitation mostly focus on predicting and understanding function load levels in order to proactively create required resources. Although these solutions improve function performance, the lack of understanding on the overall system characteristics in making these scaling decisions often leads to the sub-optimal usage of system resources. Further, the multi-tenant nature of serverless systems requires a scalable solution adaptable for multiple co-existing applications, a limitation seen in most current solutions. In this paper, we introduce a novel multi-agent Deep Reinforcement Learning based intelligent solution for both horizontal and vertical scaling of function resources, based on a comprehensive understanding on both function and system requirements. Our solution elevates function performance reducing cold starts, while also offering the flexibility for optimizing resource maintenance cost to the service providers. Experiments conducted considering varying workload scenarios show improvements of up to 23% and 34% in terms of application latency and request failures, while also saving up to 45% in infrastructure cost for the service providers."
+      },
+      {
+        "url": "https://arxiv.org/abs/2607.17181v1",
+        "title": "Talaria: Session-Aware Serverless Serving of Hundred-Billion-Parameter LLMs",
+        "published": "2026-07-19T10:37:33Z",
+        "updated": "2026-07-19T10:37:33Z",
+        "authors": [
+          "Utopia Meng",
+          "Unicornt Zhao",
+          "Derek Li",
+          "Goalen Gao",
+          "Frank Du"
+        ],
+        "abstract": "Serverless multi-model LLM systems multiplex popularity-skewed model catalogs over shared GPU pools, yet typically schedule each request independently. Tool-using agents break this abstraction: a session repeatedly calls an LLM across short tool gaps, carries a long reusable KV prefix, and is judged by session completion time (SCT). Load-only routing can separate a continuation from both its model and KV state, while round-based model multiplexing can delay even a correctly placed continuation until the target model's next slot. Both failures are especially costly for hundred-billion-parameter models: their weights constrain residency, while long-context KV is expensive to reconstruct or move. We present Talaria, a session-aware serverless multi-model serving system that makes session continuity a joint placement-and-admission decision. Its router ranks placements by model residency, KV locality, and instance pressure, while soft reservations account for likely returns in the last serving instance's admission budget. Session-prefill (SP) admits budget-eligible continuations before the active model slot closes. An instance-local substrate keeps HBM addresses stable, preserves host-restorable KV, and stages weights across model switches. On a single TP=8 server, we replay 30 SWE-Bench model-sessions (960 calls) over three models, each with more than 100B total parameters. Against an otherwise identical round scheduler with SP, host-KV restoration, and D2D staging disabled, Talaria cuts p50 SCT from 1000 s to 189 s and p95 from 2296 s to 867 s, speedups of 5.3x and 2.6x."
+      }
+    ]
+  },
+  {
+    "query": "all:agent AND all:survey AND (all:systems OR all:infrastructure)",
+    "searched_at": "2026-10-09T13:00:00.413247+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2203.08975v2",
+        "title": "A Survey of Multi-Agent Deep Reinforcement Learning with Communication",
+        "published": "2022-03-16T22:39:46Z",
+        "updated": "2024-10-18T10:14:58Z",
+        "authors": [
+          "Changxi Zhu",
+          "Mehdi Dastani",
+          "Shihan Wang"
+        ],
+        "abstract": "Communication is an effective mechanism for coordinating the behaviors of multiple agents, broadening their views of the environment, and to support their collaborations. In the field of multi-agent deep reinforcement learning (MADRL), agents can improve the overall learning performance and achieve their objectives by communication. Agents can communicate various types of messages, either to all agents or to specific agent groups, or conditioned on specific constraints. With the growing body of research work in MADRL with communication (Comm-MADRL), there is a lack of a systematic and structural approach to distinguish and classify existing Comm-MADRL approaches. In this paper, we survey recent works in the Comm-MADRL field and consider various aspects of communication that can play a role in designing and developing multi-agent reinforcement learning systems. With these aspects in mind, we propose 9 dimensions along which Comm-MADRL approaches can be analyzed, developed, and compared. By projecting existing works into the multi-dimensional space, we discover interesting trends. We also propose some novel directions for designing future Comm-MADRL systems through exploring possible combinations of the dimensions."
+      },
+      {
+        "url": "https://arxiv.org/abs/2602.04518v1",
+        "title": "Learning the Value Systems of Agents with Preference-based and Inverse Reinforcement Learning",
+        "published": "2026-02-04T13:07:15Z",
+        "updated": "2026-02-04T13:07:15Z",
+        "authors": [
+          "Andrés Holgado-Sánchez",
+          "Holger Billhardt",
+          "Alberto Fernández",
+          "Sascha Ossowski"
+        ],
+        "abstract": "Agreement Technologies refer to open computer systems in which autonomous software agents interact with one another, typically on behalf of humans, in order to come to mutually acceptable agreements. With the advance of AI systems in recent years, it has become apparent that such agreements, in order to be acceptable to the involved parties, must remain aligned with ethical principles and moral values. However, this is notoriously difficult to ensure, especially as different human users (and their software agents) may hold different value systems, i.e. they may differently weigh the importance of individual moral values. Furthermore, it is often hard to specify the precise meaning of a value in a particular context in a computational manner. Methods to estimate value systems based on human-engineered specifications, e.g. based on value surveys, are limited in scale due to the need for intense human moderation. In this article, we propose a novel method to automatically \\emph{learn} value systems from observations and human demonstrations. In particular, we propose a formal model of the \\emph{value system learning} problem, its instantiation to sequential decision-making domains based on multi-objective Markov decision processes, as well as tailored preference-based and inverse reinforcement learning algorithms to infer value grounding functions and value systems. The approach is illustrated and evaluated by two simulated use cases."
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.00753v5",
+        "title": "LLM-Based Human-Agent Collaboration and Interaction Systems: A Survey",
+        "published": "2025-05-01T08:29:26Z",
+        "updated": "2026-05-06T06:53:19Z",
+        "authors": [
+          "Henry Peng Zou",
+          "Wei-Chieh Huang",
+          "Yaozu Wu",
+          "Jizhou Guo",
+          "Yankai Chen",
+          "Chunyu Miao",
+          "Hoang Nguyen",
+          "Yue Zhou",
+          "Weizhi Zhang",
+          "Liancheng Fang",
+          "Hanrong Zhang",
+          "Fangxin Wang",
+          "Pengfei Zhang",
+          "Huacan Wang",
+          "Langzhou He",
+          "Yangning Li",
+          "Dongyuan Li",
+          "Renhe Jiang",
+          "Xue Liu",
+          "Philip S. Yu"
+        ],
+        "abstract": "Recent advances in large language models (LLMs) have sparked growing interest in building fully autonomous agents. However, fully autonomous LLM-based agents still face significant challenges, including limited reliability due to hallucinations, difficulty in handling complex tasks, and substantial safety and ethical risks, all of which limit their feasibility and trustworthiness in real-world applications. To overcome these limitations, LLM-based human-agent systems (LLM-HAS) incorporate human-provided information, feedback, or control into the agent system to enhance system performance, reliability, and safety. These human-agent collaboration systems enable humans and LLM-based agents to collaborate effectively by leveraging their complementary strengths. This paper provides the first comprehensive and structured survey of LLM-HAS. It clarifies fundamental concepts, systematically presents core components shaping these systems, including environment and profiling, human feedback, interaction types, orchestration, and communication, explores emerging applications, and discusses unique challenges and opportunities arising from human-AI collaboration. By consolidating current knowledge and offering a structured overview, we aim to foster further research and innovation in this rapidly evolving interdisciplinary field. Paper lists and resources are available at https://github.com/HenryPengZou/Awesome-Human-Agent-Collaboration-Interaction-Systems."
+      },
+      {
+        "url": "https://arxiv.org/abs/2402.09563v2",
+        "title": "ABIDES-Economist: Agent-Based Simulator of Economic Systems with Learning Agents",
+        "published": "2024-02-14T20:26:52Z",
+        "updated": "2025-08-12T19:03:22Z",
+        "authors": [
+          "Kshama Dwarakanath",
+          "Tucker Balch",
+          "Svitlana Vyetrenko"
+        ],
+        "abstract": "We present ABIDES-Economist, an agent-based simulator for economic systems that includes heterogeneous households, firms, a central bank, and a government. Agent behavior can be defined using domain-specific behavioral rules or learned through reinforcement learning by specifying their objectives. We integrate reinforcement learning capabilities for all agents using the OpenAI Gym environment framework for the multi-agent system. To enhance the realism of our model, we base agent parameters and action spaces on economic literature and real U.S. economic data. To tackle the challenges of calibrating heterogeneous agent-based economic models, we conduct a comprehensive survey of stylized facts related to both microeconomic and macroeconomic time series data. We then validate ABIDES-Economist by demonstrating its ability to generate simulated data that aligns with the relevant stylized facts for the economic scenario under consideration, following the learning of all agent behaviors via reinforcement learning. Specifically, we train our economic agents' policies under two broad configurations. The first configuration demonstrates that the learned economic agents produce system data consistent with macroeconomic and microeconomic stylized facts. The second configuration illustrates the utility of the validated simulation platform in designing regulatory policies for the central bank and government. These policies outperform standard rule-based approaches from the literature, which often overlook agent heterogeneity, shocks, and agent adaptability."
+      },
+      {
+        "url": "https://arxiv.org/abs/2411.18279v12",
+        "title": "Large Language Model-Brained GUI Agents: A Survey",
+        "published": "2024-11-27T12:13:39Z",
+        "updated": "2025-05-06T15:08:00Z",
+        "authors": [
+          "Chaoyun Zhang",
+          "Shilin He",
+          "Jiaxu Qian",
+          "Bowen Li",
+          "Liqun Li",
+          "Si Qin",
+          "Yu Kang",
+          "Minghua Ma",
+          "Guyue Liu",
+          "Qingwei Lin",
+          "Saravan Rajmohan",
+          "Dongmei Zhang",
+          "Qi Zhang"
+        ],
+        "abstract": "GUIs have long been central to human-computer interaction, providing an intuitive and visually-driven way to access and interact with digital systems. The advent of LLMs, particularly multimodal models, has ushered in a new era of GUI automation. They have demonstrated exceptional capabilities in natural language understanding, code generation, and visual processing. This has paved the way for a new generation of LLM-brained GUI agents capable of interpreting complex GUI elements and autonomously executing actions based on natural language instructions. These agents represent a paradigm shift, enabling users to perform intricate, multi-step tasks through simple conversational commands. Their applications span across web navigation, mobile app interactions, and desktop automation, offering a transformative user experience that revolutionizes how individuals interact with software. This emerging field is rapidly advancing, with significant progress in both research and industry. To provide a structured understanding of this trend, this paper presents a comprehensive survey of LLM-brained GUI agents, exploring their historical evolution, core components, and advanced techniques. We address research questions such as existing GUI agent frameworks, the collection and utilization of data for training specialized GUI agents, the development of large action models tailored for GUI tasks, and the evaluation metrics and benchmarks necessary to assess their effectiveness. Additionally, we examine emerging applications powered by these agents. Through a detailed analysis, this survey identifies key research gaps and outlines a roadmap for future advancements in the field. By consolidating foundational knowledge and state-of-the-art developments, this work aims to guide both researchers and practitioners in overcoming challenges and unlocking the full potential of LLM-brained GUI agents."
+      },
+      {
+        "url": "https://arxiv.org/abs/2608.18104v1",
+        "title": "Self-Evolving Agents as Dynamic Graph Transformation: A Survey and New Perspective",
+        "published": "2026-06-10T10:22:56Z",
+        "updated": "2026-06-10T10:22:56Z",
+        "authors": [
+          "Yuanyuan Xu",
+          "Wenjie Zhang",
+          "Yin Chen",
+          "Xuemin Lin",
+          "Ying Zhang"
+        ],
+        "abstract": "Large language model (LLM)-based agents are increasingly becoming self-evolving systems that persist across interactions, maintain memories, use tools, acquire skills, refine workflows, and coordinate with other agents. These capabilities make agent states structural and dynamic: entities, relations, attributes, dependencies, and execution structures change with new evidence, feedback, and environmental conditions. Existing graph-agent surveys typically treat graphs as support structures for agent functions rather than as evolving substrates, while self-evolving-agent surveys focus on agent-level mechanisms and rarely discuss graph topology evolution. Thus, the coupling between evolving agent state and dynamic graph topology remains underexplored. This survey connects these two research lines by framing \\textit{agent evolution as dynamic graph transformation}. We model agent state as a dynamic graph, where memories, tools, skills, workflows, and inter-agent relations are represented as typed nodes, edges, and subgraphs updated through schema-constrained rewrites. Based on this formulation, we organize existing dynamic-graph-based methods for self-evolving agents into four taxonomies: node/feature evolution, edge/topology evolution, subgraph activation, and cross-component co-evolution. Building on this taxonomy, we propose dynamic graph learning as reusable infrastructure for self-evolving agents and map nine dynamic-graph-learning subfields to agent-evolution capabilities, discussing their adaptations and possible failure modes. Finally, we discuss five types of graph-aware evaluation and governance protocols from a dynamic-graph perspective, which complement end-task evaluation. The goal is to provide a compact structural lens for designing and governing self-evolving agents."
+      },
+      {
+        "url": "https://arxiv.org/abs/2409.02645v2",
+        "title": "Emergent Language: A Survey and Taxonomy",
+        "published": "2024-09-04T12:22:05Z",
+        "updated": "2025-03-07T12:39:10Z",
+        "authors": [
+          "Jannik Peters",
+          "Constantin Waubert de Puiseau",
+          "Hasan Tercan",
+          "Arya Gopikrishnan",
+          "Gustavo Adolpho Lucas De Carvalho",
+          "Christian Bitter",
+          "Tobias Meisen"
+        ],
+        "abstract": "The field of emergent language represents a novel area of research within the domain of artificial intelligence, particularly within the context of multi-agent reinforcement learning. Although the concept of studying language emergence is not new, early approaches were primarily concerned with explaining human language formation, with little consideration given to its potential utility for artificial agents. In contrast, studies based on reinforcement learning aim to develop communicative capabilities in agents that are comparable to or even superior to human language. Thus, they extend beyond the learned statistical representations that are common in natural language processing research. This gives rise to a number of fundamental questions, from the prerequisites for language emergence to the criteria for measuring its success. This paper addresses these questions by providing a comprehensive review of 181 scientific publications on emergent language in artificial intelligence. Its objective is to serve as a reference for researchers interested in or proficient in the field. Consequently, the main contributions are the definition and overview of the prevailing terminology, the analysis of existing evaluation methods and metrics, and the description of the identified research gaps."
+      },
+      {
+        "url": "https://arxiv.org/abs/2607.13104v1",
+        "title": "Self-Improvements in Modern Agentic Systems: A Survey",
+        "published": "2026-07-14T09:12:57Z",
+        "updated": "2026-07-14T09:12:57Z",
+        "authors": [
+          "Zhe Ren",
+          "Yimeng Chen",
+          "Dandan Guo",
+          "Guowei Rong",
+          "Tonghui Li",
+          "R. B. Xiong",
+          "Qingfeng Lan",
+          "Wenyi Wang",
+          "Li Nanbo",
+          "Yibo Yang",
+          "Mingchen Zhuge",
+          "Jürgen Schmidhuber"
+        ],
+        "abstract": "Self-improving autonomous agents are moving from research prototypes to deployed systems. The primary goal is controllable evolution, or adaptation, from experience with minimal or even no human input. This survey frames modern self-improving agents as adaptive systems that convert experience into accumulated capability gains. We offer a system-level framework that represents a modern agent as a configuration coupling a foundation model with an operational scaffold of prompts, memory, tools, and control logic. Within this framework, self-improvement is formalized as a self-induced update operator that obtains and commits updates to model parameters or scaffold components. We organize prior work by update target and by the signals that drive change, then review applications and discuss evaluation, before closing with open problems and future directions. For convenience, we track technical updates on https://github.com/selfimproving-agent/awesome-Self-Improving-Agents."
+      }
+    ]
+  }
+]

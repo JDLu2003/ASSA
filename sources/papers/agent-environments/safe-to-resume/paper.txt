@@ -1,0 +1,1050 @@
+                                          Safe to Resume? Breaking Execution Continuity of
+                                                    Agent Execution via Rollback
+                                                            Guanlong Wu∗ , Dahui Li∗ , Ke Jiang∗ , Jianyu Niu† , Cong Wang† , Yinqian Zhang∗ ,
+                                                                 ∗ Southern University of Science and Technology , † City University of Hong Kong
+
+
+
+
+                                            Abstract—AI agents are moving toward persistent, stateful             recovery through semantics-aware checkpointing [14], while
+                                         execution across various applications, accumulating execution            DeltaBox provides low-latency sandbox checkpoint and roll-
+                                         state and external effects that are costly to reconstruct after          back [15]. Concurrently, recent studies have begun examining
+                                         failures. Checkpoint and rollback (C/R) are becoming essential
+                                                                                                                  the semantics and security of agent recovery, including valid
+arXiv:2608.29381v1 [cs.CR] 29 Aug 2026
+
+
+
+
+                                         for recovery, yet their security implications remain largely
+                                         unexplored. Correct rollback does not imply secure recovery:             resume behavior, recovery consistency, and semantic rollback
+                                         a faithfully restored checkpoint may resume an execution whose           attacks [16], [17]. These advances establish both the practical
+                                         states, assumptions, and external effects never coexisted in any         importance and security relevance of agent recovery, but leave
+                                         valid history. In this paper, we present the first systematic security   a broader question open: when rollback carries forward a
+                                         study of checkpoint and rollback in existing agent systems. By
+                                         examining representative agent C/R systems, we characterize the          security-relevant fact, what dependencies must remain valid
+                                         design space of existing C/R mechanisms and develop a general            for that fact to be safely reused?
+                                         execution model that captures their recovery boundaries and                 This question is fundamental because recovery carries for-
+                                         state dependencies. From this model, we identify five fundamental        ward security-relevant facts established earlier in execution:
+                                         failure modes spanning incomplete or inconsistent internal state,        an artifact has been validated, an operation authorized, a
+                                         stale external dependencies, nondeterministic replay, and un-
+                                         recorded external effects. We further demonstrate their security         resource binding remains valid, or an external effect has not
+                                         impact through three end-to-end attacks on Hermes, Cline, and            yet occurred. Yet the validity of these facts may depend
+                                         LangGraph, enabling malware-verification bypass, unauthorized            on state distributed across framework components, files and
+                                         mail forwarding, and double payment. To systematically study             runtimes, nondeterministic decisions, and external services,
+                                         these failures in practice, we develop a multi-agent analysis            which do not necessarily share the same recovery scope. Thus,
+                                         pipeline that reconstructs execution semantics, identifies viola-
+                                         tions of the five failure conditions, and validates them through         a checkpoint’s recovery boundary may not cover the full set of
+                                         actual rollback. Across five representative frameworks, our              security dependencies on which the restored state relies. Cor-
+                                         evaluation shows that these failures recur across heterogeneous          rect rollback does not imply secure recovery: every recorded
+                                         C/R designs and stem from a common gap between the state                 state may be restored faithfully while the relationships that
+                                         restored by a checkpoint and the dependencies required for               made those states security-valid are broken.
+                                         secure continuation.
+                                                                                                                     Consider a coding agent tasked with removing malware
+                                                                                                                  from a repository before release. The agent removes the ma-
+                                                                 I. I NTRODUCTION
+                                                                                                                  licious payload, scans the cleaned repository, and records the
+                                            AI agents are moving from short-lived interactions toward             passing result. If recovery restores the pre-cleanup workspace
+                                         persistent, stateful execution across autonomous research [1],           while retaining the post-scan agent state, the agent may release
+                                         coding [2], and enterprise services [3]. This shift is already           the malicious repository as verified. Neither the checkpoint
+                                         visible in production: Tata Steel reports deploying over 300             nor the scan result is forged; rollback has rebound a genuine
+                                         specialized agents, while Cognizant operates more than 200               security judgment to an artifact it never validated. We call the
+                                         agents serving 350,000 employees [4], [5]. Yet reliability               underlying requirement execution continuity: security-relevant
+                                         remains a major concern: a 2026 enterprise survey found that             states, decisions, assumptions, and effects carried across re-
+                                         79% of respondents had reversed an agent action and 42%                  covery must remain jointly consistent with the valid execution
+                                         reported revenue loss from agent failures [6]. As long-running           history that justifies them.
+                                         executions accumulate state and external effects, restarting                In this paper, we conduct a systematic cross-system security
+                                         from scratch becomes increasingly costly. Checkpoint and                 study of checkpoint and rollback in agent systems. We first ex-
+                                         rollback (C/R) are therefore becoming a basic recovery mecha-            amine representative agent C/R systems and characterize their
+                                         nism, with modern systems checkpointing framework state [7],             designs by three recurring recovery boundaries: framework
+                                         workspaces [8], and execution environments [9].                          state, workspace state, and OS/VM state. This study motivates
+                                            C/R periodically records selected execution state and re-             a general execution model that captures independently evolv-
+                                         stores a prior checkpoint after interruption, which has long             ing internal states, nondeterministic execution, checkpoints
+                                         been studied for reliable recovery and state continuity main-            with partial recovery boundaries, and an outside world that
+                                         taince [10], [11], [12], [13]. Recent systems have begun opti-           does not roll back with the agent.
+                                         mizing C/R specifically for agent execution: CRAB improves                  Using this model, we identify five recurring ways in which
+rollback can break execution continuity: incomplete internal            Microsoft Agent Framework [21]. In this paper, we focus on
+state coverage, inconsistent checkpoint state, external state           LangGraph and CrewAI.
+mismatch, unbound nondeterministic replay, and unrecorded               LangGraph. LangGraph represents an agent workflow as a
+external effects. These failures capture how a legitimately             graph whose nodes perform operations such as LLM calls or
+restored checkpoint can invalidate the state, context, or effects       tool invocations. Execution proceeds in supersteps: each super-
+that justify security-relevant decisions carried across recovery.       step executes the current scheduled nodes before advancing to
+Importantly, they do not require checkpoint corruption or a             the next graph state, thereby providing a checkpoint boundary.
+compromised recovery mechanism.                                         • Checkpointing. When persistence is enabled, LangGraph
+   We demonstrate the security impact of these failures through          associates each execution history with a thread_id and uses
+three end-to-end attacks on Hermes, Cline, and LangGraph,                a configured checkpointer to save a StateSnapshot at every
+causing malware-verification bypass, unauthorized mail for-              superstep boundary. A snapshot records the accumulated
+warding, and duplicate payment, respectively. We further                 graph state, such as conversation messages and intermediate
+develop a trace-based framework that reconstructs execution              results, together with metadata describing the nodes and
+dependencies, detects candidate recovery failures, and vali-             pending tasks scheduled for subsequent execution. Snapshots
+dates them through native rollback and re-execution. Across              can be persisted in backends such as SQLite or PostgreSQL
+347 benchmark traces from TerminalBench and AgentBench,                  for durable recovery, and LangGraph does not impose a
+yielding 1,735 framework-task executions over five represen-             default retention limit on the checkpoint history [7].
+tative C/R systems, our evaluation shows that recovery failures
+                                                                        • Restoration. An application may resume from the latest
+are common but exhibit distinct profiles across different recov-
+                                                                         checkpoint using the same thread_id, or select an earlier
+ery boundaries, and reveals recurring factors involving external
+                                                                         checkpoint from the state history for replay or branching.
+dependencies, nondeterministic replay, and persistent effects.
+                                                                         Execution resumes from the corresponding superstep bound-
+Contributions. Main contributions are listed as follows:                 ary: state represented before that checkpoint is retained,
+• Agent recovery abstraction. We characterize representative             whereas subsequent nodes, including their LLM calls and
+ agent C/R systems and develop a execution model that cap-               tool invocations, are re-executed [7], [22].
+ tures heterogeneous recovery boundaries, nondeterministic              CrewAI. CrewAI organizes applications around two execution
+ execution, and an independently evolving outside world.                abstractions: a Crew coordinates role-specific agents and tasks,
+• Security characterization and attacks. We introduce ex-               whereas a Flow maintains shared state and orchestrates event-
+ ecution continuity and identify five recurring ways in which           driven execution involving code, LLM calls, and Crews [18].
+ legitimate rollback can invalidate security-relevant state or          • Checkpointing. CrewAI checkpoints framework-managed
+ transitions. We demonstrate their practical impact through              execution state. For Crews, this includes configuration and
+ three end-to-end attacks on real agent frameworks.                      inputs, task progress and outputs, and participating agents’
+• Systematic detection and validation. We develop and                    memory and runtime attributes; for Flows, it includes shared
+ evaluate a trace-based methodology for detecting recovery               state, completed methods, intermediate outputs, and exe-
+ failures and validating them through actual rollback, pro-              cution position. Checkpoint creation is event-driven: task
+ viding an empirical characterization of how these failures              completion (task_completed) is the default trigger, while
+ manifest across representative agent C/R designs.                       finer-grained events such as completed LLM calls or Flow
+                                                                         methods can also be configured; developers may additionally
+II. C HARACTERIZING E XISTING AGENT C HECKPOINTING                       create checkpoints explicitly. Checkpoints can be persisted
+                                                                         using JSON or SQLite backends, with max_checkpoints
+   We examine 12 representative agent C/R systems and clas-              optionally bounding the retained checkpoint history [23].
+sify their checkpointing mechanisms by recovery boundary,
+                                                                        • Restoration. A stored checkpoint can be selected to restore
+i.e., the primary state that is restored upon rollback. As
+                                                                         the corresponding framework state and resume execution
+summarized in Table I for five representative systems, existing
+                                                                         from that point, without re-executing tasks recorded as com-
+designs fall into three recurring categories: framework-state,
+                                                                         pleted in the checkpoint [23].
+workspace-state, and OS/VM-state checkpoints. For each cate-
+gory, we characterize what state is captured, when checkpoints          B. Workspace-State Checkpoints
+are created, and how state is restored.
+                                                                           Workspace-state checkpoints extend recovery to artifacts
+                                                                        manipulated by the agent, most commonly project files. They
+A. Framework-State Checkpoints
+                                                                        are particularly common in coding agents and are typically
+   Framework-state checkpoints preserve framework-managed               implemented using file snapshots or a shadow Git repository—
+execution state, such as conversation history, workflow                 a separate repository used to version the agent’s workspace
+progress, task outputs, agent memory, and pending steps, while          without modifying the project’s own Git history. Their recov-
+leaving workspace and runtime state outside the recovery                ery boundary, however, generally excludes runtime state such
+boundary. Representative systems include LangGraph [7], Cre-            as process memory, installed system state, active services, and
+wAI [18], LlamaIndex Workflows [19], Google ADK [20], and               files outside the selected workspace. Representative systems
+
+
+
+                                                                    2
+                          TABLE I: Checkpoint and rollback mechanisms in representative agent systems.
+System      State Scope      Captured State                               Checkpoint Creation                    Restoration
+LangGraph   Framework        Graph state, including messages, inter-      Automatic at each superstep boundary   Resume the latest checkpoint or select an
+                             mediate results, pending execution state     once persistence is enabled            earlier checkpoint for replay/branching
+CrewAI      Framework        Crew/Flow/Agent execution state, in-         Event-driven once enabled; task com-   Restore a selected checkpoint and resume
+                             cluding task progress, outputs, memory,      pletion is the default trigger         without re-executing completed tasks
+                             and intermediate state
+Hermes      Workspace        Project/workspace files; rollback also ad-
+                                                                      Automatic before file mutations or rec-    Restore a selected workspace checkpoint
+                             justs the most recent conversation turn  ognized destructive commands once          (or individual file) via /rollback
+                                                                      checkpointing is enabled
+Cline       Workspace        Project files associated with the corre- Automatic after file modifications and     Restore files, task history, or both from a
+                             sponding task-history position           terminal commands; enabled by default      selected checkpoint
+E2B         OS/VM            Sandbox filesystem and memory state, Explicit, at developer-selected points         Create a new sandbox from a selected
+                             including running processes              via create_snapshot()                      snapshot
+
+
+
+include Hermes [24], Cline [25], Gemini CLI [26], and Claude                     framework-managed state can be handled independently [30].
+Code [27]; we focus on Hermes and Cline.
+                                                                                C. OS/VM-State Checkpoints
+Hermes. Hermes is a general-purpose tool-using agent that
+follows an iterative tool-calling loop, allowing it to manipulate                   OS/VM-state checkpoints extend the recovery boundary
+files and execute terminal commands while maintaining the                       to the execution environment, capturing filesystems, pro-
+surrounding conversation state [28].                                            cess memory, and running services at higher checkpointing
+• Checkpointing. When checkpointing is enabled, Hermes                          and storage costs. Representative systems include E2B [31],
+  creates a workspace checkpoint immediately before file-                       CRAB [14], and DeltaBox [15]. While CRAB and DeltaBox
+  writing operations such as write_file and patch, as well                      reduce these costs through semantics-aware or incremental
+  as recognized destructive terminal commands. It resolves the                  checkpointing, we use E2B as a representative system.
+  relevant project root, creates at most one checkpoint per                     E2B. E2B provides isolated cloud sandboxes—self-contained
+  directory within each conversation turn, and stores workspace                 execution environments in which agents can manipulate files,
+  snapshots as project-specific references in a shared shadow                   execute programs, and run services. Each sandbox maintains
+  Git store. By default, Hermes retains at most 20 checkpoints                  its own filesystem, processes, and memory state and is ac-
+  per project and 500 MB across the shared store, while ex-                     cessed through the E2B SDK.
+  cluding individual files larger than 10 MB [24].                              • Checkpointing. An application explicitly invokes
+• Restoration. Users invoke /rollback to select a previous                        create_snapshot() to create a point-in-time snapshot of
+ checkpoint. Hermes restores the files represented by the                         a running sandbox. E2B briefly pauses the sandbox while
+ selected Git tree and rolls back the most recent conversation                    capturing its filesystem and memory state, including running
+ turn. Its recovery restores workspace state together with only                   processes and loaded data, after which the original sandbox
+ a limited portion of the surrounding conversation state [24].                    continues execution. Snapshots persist until deleted, with no
+                                                                                  default retention period or history bound [31].
+Cline. Cline is an IDE-integrated coding agent in which each
+task maintains a user goal, conversation, and task history, and a               • Restoration. A snapshot identifier can be supplied to
+sequence of tool interactions over a project workspace. During                    Sandbox.create() to instantiate a new sandbox from
+execution, Cline can inspect and modify files, execute terminal                   the captured filesystem and memory state. Snapshots are
+commands, and invoke browser or Model Context Protocol                            reusable, allowing the same captured state to initialize mul-
+(MCP) tools, subject to explicit user approval or configured                      tiple sandboxes [32], [31].
+auto-approval policies [25], [29].                                               Takeaway. Agent C/R mechanisms span framework,
+• Checkpointing. Cline enables checkpoints by default and                        workspace, and runtime state, but broader coverage does not
+ maintains a shadow Git repository independent of the                            guarantee safe recovery. External state and persistent effects
+ project’s Git history. It snapshots the complete file state                     remain outside the recovery boundary, while some designs
+ of the current workspace, including files not tracked by                        restore state components independently. Thus, recovery may
+ the user’s repository, and associates each snapshot with the                    break the dependencies required for security-valid resump-
+ corresponding position in the task history. Checkpoints are                     tion, motivating the general model in Sec. III-A.
+ created automatically after relevant tool use, including file
+ modifications and terminal commands, and persist across                                          III. P ROBLEM D EFINITION
+ editor sessions; Cline has no default retention bound [30].                       We develop a general model for agent execution and roll-
+• Restoration. Cline allows the user to restore the workspace                   back based on the recovery boundaries characterized in Sec. II.
+ while retaining the current task history, restore the task                     Our model draws on the classic distributed-state abstraction
+ history while retaining the current workspace, or restore                      of Chandy and Lamport [10], while capturing three character-
+ both to the selected checkpoint. Thus, workspace state and                     istics central to agent recovery: heterogeneous internal state,
+
+
+
+                                                                            3
+nondeterministic execution, and interaction with an external                                                                             Ou t si de Wor l d
+world that does not roll back with the agent.                                                 m I n pu t                m Ou t pu t
+                                                                                                           e1
+                                                                            P1             S11                    S12
+A. System Model                                                                                              m
+                                                                            ...
+                                                                                                                  en
+Components. We model an agent system using the following                     Pn                            Sn 1                   Sn 2
+components.                                                                          Ch eck poi n t C                                     Agen t Syst em
+• Process. The agent system consists of a set of logical
+ processes P = {P1 , P2 , . . . , Pn }. Each Pi represents an inde-          Fig. 1: System model for agent checkpoint and rollback.
+ pendently evolving stateful component rather than necessarily
+ an operating-system process [10]. For example, the main
+ agent, a subagent, framework-managed conversation state,                  • Outside world. The outside world W contains state and en-
+ a tool runtime, or the workspace filesystem may each be                    tities beyond the agent system that are not directly restored by
+ modeled as a process.                                                      agent rollback. Examples include remote services, payment
+                                                                            systems, mailboxes, databases, user or organizational state,
+• Process state. Each process Pi evolves through a sequence
+                                                                            and persistent effects of previous agent actions. Processes
+ of local states s0i , s1i , . . ., where sji ∈ Si denotes the state
+                                                                            may read from or modify W , but restoring an agent check-
+ after its j-th local transition and Si is its state space.
+                                                                            point does not in general restore the corresponding external
+ Depending on the process, this state may include conversation
+                                                                            state. Thus, even a checkpoint with K = P need not restore
+ history, workflow progress, intermediate results, permissions,
+                                                                            the complete state on which the execution depends.
+ in-memory variables, or filesystem contents. A global internal
+ state combines one local state from each process:                         Execution and recovery. Execution begins when an internal
+                                                                           process receives an input, for example a user instruction
+                     S = (sk11 , sk22 , . . . , sknn ).                    delivered to the main agent. The resulting events update
+                                                                           local states and may exchange messages or interact with
+ The indices ki need not be equal because different processes              W , producing further state transitions and external effects.
+ evolve independently.                                                     During execution, the system records selected process states
+• Event. An event e = (a, ξ) represents an operation a                     as checkpoints C ∈ C.
+ together with the nondeterministic factors ξ that determine                  Consider rollback at time tr to a checkpoint CK created
+ its realized outcome, inducing a transition                               earlier. For every Pi ∈ K, recovery restores the state recorded
+                                  e                                        in CK . Processes outside K are not controlled by this check-
+                             sji −
+                                 → sj+1
+                                    i   .                                  point and may retain their current state, restart from an earlier
+ Events include internal computation, agent decisions, and                 state, or be reconstructed from another source; we denote
+ tool invocations, while ξ may capture LLM sampling, ran-                  the recovered state of such a process Pj by ρj . Meanwhile,
+ domness, or responses from external services.                             the outside world remains at its current state W tr . Rollback
+                                                                           therefore reconstructs the configuration
+• Message. A message m carries information to a process
+                                                                                                                            
+ from another process or from the outside world. Examples                               Xb = (ski )P ∈K ⊕ (ρj )P ∈K    , W tr ,
+                                                                                                 i   i            j/
+ include user inputs, inter-agent messages, and tool results. A
+ delivered message may trigger an event and thereby change                 from which execution resumes.
+ the receiving process state. We write ea ≺ eb when ea                        This formulation makes explicit a key property of C/R:
+ causally precedes eb , either through local execution order or            a recovered configuration may combine checkpointed state,
+ through such an interaction.                                              uncovered internal state, and external state originating from
+• Checkpoint. A checkpoint records selected process states                 different points in the execution.
+ as a recovery point. Let K ⊆ P denote the processes covered
+ by a checkpoint. We write                                                 B. Execution Continuity
+
+                         CK = (ski i )Pi ∈K .                                 Correctly restoring the contents of a checkpoint does not by
+                                                                           itself imply that the resulting execution is security-valid. We
+ The set K therefore defines the checkpoint’s recovery bound-              capture this distinction through execution continuity: security-
+ ary. A full-state checkpoint is the special case K = P. Dur-              relevant states, decisions, assumptions, and effects carried
+ ing execution, the system may retain multiple checkpoints,                across recovery must remain jointly consistent with a valid
+ C = {C 1 , . . . , C q }. We do not model in-flight messages as a         continuous execution history.
+ checkpoint component. When a framework persists pending                      We use a valid continuous execution to denote an execution
+ work or communication state, such information is included                 that follows the agent workflow and its security constraints
+ in the corresponding process state. This abstraction captures             without rollback, under the corresponding inputs, authoriza-
+ the coarse execution boundaries used by the agent systems                 tions, and external interactions. Recovery can violate execution
+ characterized in Sec. II.                                                 continuity in two fundamental ways [12]:
+
+
+
+                                                                       4
+• Invalid recovered state. Rollback reconstructs a combina-                                                                             Ou t si de Wor l d
+ tion of states or assumptions that could not jointly occur in a                              m I n pu t                            Rollba ck
+ valid continuous execution. For example, an agent may retain            P1                S11                    S12            S13
+ a successful validation result while restoring the validated            ...
+ artifact to an earlier, unverified version.
+                                                                         Pn                                Sn 1                  Sn 2
+• Invalid recovery transition. The recovered state may itself                  On l y ch eck poi n t Pn                                  Agen t Syst em
+ be individually valid, but rollback enables a subsequent
+ transition that no valid continuous execution would permit.                    Fig. 2: SF1: Incomplete internal state coverage.
+ For example, restoring a pre-payment state may allow a one-
+ time approval to authorize a payment whose external effect
+ has already occurred.                                                  the checkpoint boundary: restored state may become incom-
+   The security failures in Sec. IV characterize different ways         patible with the current outside world (SF3), nondeterministic
+in which C/R breaks these two forms of execution continuity.            replay may follow a security-relevant execution path different
+                                                                        from the original one (SF4), or rollback may forget effects that
+C. Threat Model                                                         have already persisted externally (SF5). These conditions can
+Adversary goal. The adversary aims to exploit C/R to violate            yield either an invalid recovered state or an invalid recovery
+execution continuity, causing the agent either to resume from           transition, as defined in Sec. III-B.
+an invalid recovered state or to perform an invalid recovery            A. SF1: Incomplete Internal State Coverage
+transition. Importantly, the adversary need not corrupt a check-
+                                                                        Definition (Fig. 2). Incomplete internal state coverage occurs
+point or compromise the recovery implementation; the attack
+                                                                        when a checkpoint omits internal state required to safely
+instead exploits how legitimate rollback behavior interacts with
+                                                                        resume the execution. For a task T , let PT ⊆ P denote the
+agent state and the outside world.
+                                                                        internal processes whose states are relevant to the resumed
+Adversary capabilities. We assume the adversary knows                   execution, and let
+the task or workflow and the system’s publicly documented
+C/R behavior, consistent with malicious skills, MCP servers,                                               ST = (ski i )Pi ∈PT
+tools, and external services considered in prior agent-security
+                                                                        denote their states when checkpoint CK is created. The check-
+work [33], [34], [35], [36]. Depending on the concrete setting,
+                                                                        point has incomplete coverage if PT ⊈ K. Upon rollback,
+the adversary may influence agent inputs, workflow instruc-
+                                                                        states in K are restored from CK , whereas an omitted process
+tions, or tool and service responses. Such influence can steer
+                                                                        Pj ∈ / K recovers to some state ρj , as modeled in Sec. III-A.
+execution toward operations that trigger checkpoint creation or                   k
+place the system in an advantageous state around a checkpoint.          If ρj ̸= sj j , recovery may combine internal states that never
+   The adversary may also induce a recoverable failure or inter-        coexisted at the checkpointed execution point.
+ruption, for example by causing a malicious tool, MCP server,           Consequences. The omitted state can diverge from the check-
+or external service to return an error or malformed response.           point in two directions:
+Recovery may then be initiated through the framework’s                  • Newer-state carryover. An uncovered process may remain
+normal mechanism by the user, framework, or deployment                    live across rollback and retain a state reached after the
+                                                                                                                          k
+environment. When a rollback interface is directly exposed to             checkpoint. Specifically, if Pj evolves from sj j at check-
+                                                                                                       k′
+an adversarial component, the adversary may invoke it within             point creation to sj j , where kj′ > kj , rollback leaves
+the permissions provided by that interface.                                        k′
+                                                                         ρj = sj j . The recovered configuration therefore combines
+Trusted components. The adversary cannot directly modify                 checkpointed state with a later state of Pj .
+checkpoint contents or storage, alter the semantics of the
+C/R implementation, or forge security decisions provided by             • Older-state fallback. An uncovered process may instead
+otherwise trusted parties. We also do not assume deterministic            restart after a failure without access to ′its checkpoint-time
+                                                                                                                   k
+replay: LLM outputs, tool responses, and other nondetermin-               state. It may therefore recover from sj j , where kj′ < kj ,
+istic factors may legitimately differ after rollback. Each attack         or from its initial state. The recovered configuration then
+in Sec. V instantiates this general threat model with a concrete          combines checkpointed state with an earlier state of Pj .
+adversary and states its additional capabilities.                          For example, an agent validates a deployment manifest
+                                                                        and records validated=true in framework state, while the
+          IV. S ECURITY FAILURES IN AGENT C/R                           manifest resides in an ephemeral workspace outside the check-
+   Under the model in Sec. III, we identify five recurring ways         point. After a crash, the workspace is reconstructed from
+in which checkpoint and rollback can violate execution con-             its original template while the framework restores the post-
+tinuity. The first two concern the internal state reconstructed         validation state. The resumed agent may therefore deploy a
+by recovery: a checkpoint may omit recovery-relevant state              manifest that was never validated.
+(SF1) or combine captured states that are mutually inconsistent         In existing designs. Incomplete coverage can arise
+(SF2). The remaining failures arise from relations that cross           both from the intended recovery boundary and from
+
+
+
+                                                                    5
+                                                                  Ou t si de Wor l d                                                                       Ou t si de Wor l d
+                         m I n pu t                           Rollba ck                     Pow                     So 1                           So 2
+  P1                  S11                    S12           S13
+  ...                                                                                                                                                     Rollba ck
+  Pn                                  Sn 1                 Sn 2                             Pi n                    Si 1                           Si 2
+        Ch eck poi n t (S11Sn 2)                                   Agen t Syst em                  Ch eck poi n t                                           Agen t Syst em
+
+               Fig. 3: SF2: Inconsistent checkpoint state.                                               Fig. 4: SF3: External state mismatch.
+
+
+implementation-specific exclusions. Framework-state check-                                 form a consistent causal cut. The agent may then submit the
+points omit workspace and runtime state; workspace-state                                   vulnerable file without repeating the patch or tests.
+checkpoints additionally preserve workspace artifacts but gen-                             In existing designs. Framework-defined checkpoints can pre-
+erally omit process and environment state. Even OS/VM-state                                serve consistency within the framework-managed state when
+checkpoints need not cover framework-managed state stored                                  that state is captured at a common execution boundary.
+outside the snapshotted environment or state maintained by                                 Workspace-state mechanisms introduce an additional state
+external services. Concrete implementations can narrow cov-                                domain whose checkpoint and restoration may not be coupled
+erage further: Git-based mechanisms typically snapshot only                                to framework state. Cline provides a concrete example: it
+a selected project scope, while Hermes, for example, excludes                              allows the workspace, task history, or both to be restored
+individual files larger than 10 MB and applies additional scope                            from a checkpoint, so the two components can intentionally
+and storage limits [24].                                                                   be rolled back independently [30]. OS/VM-state mechanisms
+B. SF2: Inconsistent Checkpoint State                                                      can atomically capture a broader execution environment, pre-
+                                                                                           serving consistency within the recovery boundary.
+Definition (Fig. 3). SF1 concerns state that is missing; SF2
+concerns captured states that are individually present but                                 C. SF3: External State Mismatch
+mutually inconsistent. Let
+                                                                                           Definition (Fig. 4). External state mismatch occurs when
+                                      CK = (ski i )Pi ∈K                                   checkpointed internal state is restored against an outside world
+                                                                                           under which the assumptions encoded by that state are no
+be a checkpoint, and let Hi (ski i ) denote the local event history                        longer valid. Let ski i be an internal state captured in checkpoint
+reflected by state ski i . Define                                                          CK , and let W tc denote the outside-world state on which it
+                                  [                                                        depends when the checkpoint is created at time tc . We define
+                   H(CK ) =            Hi (ski i ).
+                                             Pi ∈K                                                                         Γ(si , W ) ∈ {0, 1}
+Using the causal relation ≺ from Sec. III-A, CK is causally
+consistent if, for every eb ∈ H(CK ), each causal predecessor                              as a compatibility predicate indicating whether the security-
+ea ≺ eb belonging to a captured process also appears in                                    relevant judgments, or assumptions represented by si remain
+H(CK ). Otherwise, the checkpoint contains states that cannot                              valid under outside-world state W . At checkpoint creation,
+correspond to a single causally valid execution cut.                                                                       Γ(ski i , W tc ) = 1.
+   For example, suppose captured state of Pn reflects consump-
+tion of an event produced by P1 , while the captured state of                              Because rollback does not restore the outside world, recovery
+P1 precedes the production of that event. Both local states                                at tr > tc combines ski i with W tr . An external state mismatch
+may be valid individually, yet they cannot belong to the same                              occurs when
+execution history.                                                                                                Γ(ski i , W tr ) = 0.
+Consequences. Rollback to an inconsistent checkpoint recon-
+structs an invalid internal state. A result, approval, or validation                       Consequences. A decision or transition that was valid under
+may survive without the state that produced or justified it;                               W tc may no longer be permitted under W tr . The agent may
+control state may indicate that an operation has completed                                 reuse a validation, approval, or trust decision for a changed
+while associated data predates the operation; or different                                 external object; continue after policy or ownership status has
+components may disagree on execution progress, causing later                               changed; or act on an external binding that no longer holds.
+actions to be skipped, repeated, or reordered.                                                For example, suppose an agent checkpoints a recipient list
+   For example, an agent patches a vulnerable file, tests                                  used to send sensitive documents to current employees. If
+the patched version, and records tests_passed=true in                                      an employee leaves after the checkpoint is created, rollback
+its conversation state. If recovery restores the conversation                              may restore the obsolete recipient list while the organization’s
+state from after testing but the workspace from before the                                 membership state remains current. The resumed agent can then
+patch, both restored states are individually valid but do not                              disclose subsequent documents to a former employee.
+
+
+
+                                                                                       6
+                                                                  Ou t si de Wor l d                                                                Ou t si de Wor l d
+                         m I n pu t                            Rollba ck                                   m I n pu t       Repeated Outputs
+                                      ei (a, ?)
+ Pi n              Si 1                                   Si 2                              Pi n                    Si 1                     Si 2
+        Ch eck poi n t                                                                             Ch eck poi n t            Rollba ck
+                                                                                                                                                     Agen t Syst em
+                                                         Si n
+                 ? lea ds to differ ent paths
+                                                                   Agen t Syst em                     Fig. 6: SF5: Unrecorded external effects.
+
+         Fig. 5: SF4: Unbound nondeterministic replay.
+                                                                                           In existing designs. The frameworks reviewed in Sec. II gen-
+                                                                                           erally permit post-checkpoint LLM calls and tool operations
+In existing designs. Among the systems reviewed in Sec. II,                                to be executed again, but we find no general mechanism
+we find no general mechanism that couples checkpoint restora-                              that binds security-relevant nondeterministic outcomes across
+tion with revalidation of all external dependencies. This lim-                             replay or constrains repeated rollback. The issue is particularly
+itation is structural: the relevant outside-world state may be                             salient for agents because model sampling and external tool
+owned by remote services and remain beyond the recovery                                    responses make nondeterminism a routine part of execution,
+boundary even when the agent’s local execution environment                                 rather than an exceptional source of divergence.
+is fully snapshotted. We discuss its relation to traditional stale-
+state recovery in Sec. VII.                                                                E. SF5: Unrecorded External Effects
+D. SF4: Unbound Nondeterministic Replay                                                    Definition (Fig. 6). An unrecorded external effect occurs
+                                                                                           when an action executed after a checkpoint produces an effect
+Definition (Fig. 5). Rollback commonly re-executes opera-                                  outside the recovery boundary, but rollback to that checkpoint
+tions that occurred after the selected checkpoint. Such replay                             removes the internal record that the action has occurred.
+becomes security-relevant when, under the same restored state                              Specifically, let checkpoint C capture internal state sji . After
+and relevant external conditions, a nondeterministic operation                             C, an action a transitions the internal state and produces an
+produces a different outcome that is not bound to the state or                             external effect:
+security decisions carried across recovery.
+                                                                                                                        a                a
+   Suppose operation a, executed after checkpoint state sji ,                                                     sji −
+                                                                                                                      → sj+1
+                                                                                                                         i   ,        → W ′.
+                                                                                                                                    W −
+realizes event
+                          e1 = (a, ξ1 )                                                    If the system later rolls back to C, it restores sji , while
+                                                                                           the external effect persists in W ′ . The recovered execution
+and transitions to sj+1
+                    i   . After rollback to sji , the same opera-                          therefore reaches a again from a state in which the action
+tion may execute as                                                                        appears unexecuted, even though its previous effect remains.
+                                                                                           Re-executing a may consequently produce the external effect.
+                          e2 = (a, ξ2 ),          ξ2 ̸= ξ1 ,
+                                                                                           Consequences. This mismatch can manifest in two ways:
+producing a different security-relevant outcome ŝj+1
+                                                    i  ̸= sj+1
+                                                           i   .                           • Orphaned effect. Rollback removes the internal result, iden-
+An unbound nondeterministic replay occurs when recovery                                      tifier, or metadata required to track an already committed
+permits this divergent outcome without preserving the security                               effect, preventing later confirmation or revocation.
+relationships established for the original execution.                                      • Effect replay. The restored agent treats the action as un-
+Consequences. Two forms are particularly security-relevant.                                  executed and issues it again, potentially duplicating a non-
+• Cross-path reuse. Security-relevant state established for one                              idempotent external effect.
+ continuation—such as an approval, validation result, permis-                                 For example, an agent requests a new cloud credential and
+ sion, or object binding—remains usable after replay follows a                             intends to record its identifier before revoking the old one. The
+ different continuation for which that state is no longer valid.                           service successfully creates credential k1 , but the agent fails
+• Retry amplification. Repeated rollback turns a security-                                 before recording it. Rollback restores the pre-request state, so
+ sensitive nondeterministic decision into repeated trials until                            the agent repeats the request and receives k2 . It subsequently
+ a favorable outcome appears.                                                              manages k2 , while k1 remains active and untracked.
+   For example, consider a release agent that checkpoints                                  In existing designs. Among the systems reviewed in Sec. II,
+immediately before a randomized regression test that samples                               we find no general mechanism that atomically couples ar-
+a subset of the test suite. The original execution samples a                               bitrary externally committed effects with agent checkpoints.
+test that detects a defect but fails before the result is durably                          External services may independently commit payments, mes-
+recorded. After rollback, replay draws a different sample                                  sages, credentials, or other state changes before the corre-
+that omits the detecting test, allowing the build to pass and                              sponding result becomes durable in the agent’s recovery state.
+be released. Neither test execution is individually invalid;                               Traditional systems provide mechanisms such as idempotence,
+the violation arises because rollback substitutes one security-                            transactions, and compensation for controlled external effects,
+relevant outcome for another.                                                              but agent workflows interact dynamically with heterogeneous
+
+
+
+                                                                                       7
+services that may not expose such coordination interfaces. We           state, whereas the workspace checkpoint remains C0 , which
+discuss these distinctions further in Sec. VII.                         represents XM .
+ Takeaway. The five SF expose a common gap: C/R re-                    • Step 3: Induce recovery. The skill subsequently directs the
+ stores execution according to a recovery boundary, whereas             agent to access a required release artifact from an invalid
+ security validity can depend on relationships among inter-             location, causing a recoverable failure. The user then invokes
+ nal state, external context, nondeterministic outcomes, and            Hermes’s normal rollback mechanism and selects C0 . Roll-
+ persistent effects that cross boundary. Consequently, even             back restores the workspace to XM , while the relevant veri-
+ specification-conformant rollback can violate execution con-           fication state VC remains available to the resumed execution,
+ tinuity without corrupting checkpoint contents or the recov-           yielding the combination (XM , VC ).
+ ery mechanism. In Sec. V, we show how adversaries with                • Step 4: Release under stale verification. The workflow
+ limited influence over execution and C/R can deliberately              treats the completed verification as sufficient for release.
+ trigger these conditions to realize concrete attacks.                  The resumed agent therefore bypasses the security check and
+                                                                        releases XM , even though VC was produced only for XC .
+                 V. ATTACK C ASE S TUDIES                              Security violation. The attack instantiates SF1: rollback re-
+   We demonstrate that the recovery failures identified in             stores the workspace without restoring all security-relevant
+Sec. IV can be deliberately exploited to cause security-critical       agent state to the same execution point. As a result, a genuine
+actions. We construct three end-to-end attacks on different            verification judgment VC becomes rebound from the artifact
+agent frameworks and under different adversarial settings,             it actually validated, XC , to the malicious artifact XM . The
+instantiating incomplete state coverage (SF1), external state          attack therefore bypasses verification without forging either
+mismatch (SF3), and unrecorded external effects (SF5). None            the checkpoint or the security result. We provide the complete
+of the attacks requires modifying checkpoint contents or               malicious skill in Appendix A. In our experiments, a recent
+compromising the C/R implementation.                                   malicious-skill detector [38] does not flag the constructed skill.
+
+A. Case 1: Malware Verification Bypass                                 B. Case 2: Unauthorized Mail Forwarding
+Task and framework. We consider a repository-inspection                Task and framework. We consider a mailbox-migration task
+task executed by Hermes. The user asks the agent to identify           executed by Cline. The task is adapted from the OSWorld-
+and remove malicious code, verify the cleaned repository,              Human Thunderbird [39], [40] forwarding task, while we
+and prepare it for release. We adapt the real execution flow           implement the mailbox operations using a controlled test
+from a public SWE-agent trajectory for the SWE-bench task              service. We extend this workflow with a disposable mailbox
+marshmallow-code__marshmallow-1867 [37], where the                     MT for testing and a real mailbox MR for read-only com-
+agent modifies the repository, verifies the resulting behavior,        patibility checks. The mailbox service maintains a session-
+and submits the change only after verification succeeds. Her-          level active mailbox, and create_forwarding_rule applies
+mes checkpoints workspace files using shadow-Git snapshots             to whichever mailbox is currently active. A normal migration
+before file modifications, whereas security judgments pro-             repeatedly tests changes on MT , inspects MR , and then returns
+duced during execution may reside in agent-side state outside          to MT for testing.
+the workspace checkpoint. In a normal execution, the agent             Adversarial setting. The attacker controls a MCP service used
+removes the malicious payload, verifies the cleaned repository,        for migration compatibility checks. The MCP service may
+and releases it only after verification succeeds.                      manipulate the information returned to Cline and induce re-
+Adversarial setting. Following the malicious-skill setting of          coverable failures, but exposes no mailbox-mutation primitive
+prior work [34], we assume that the task incorporates an               and cannot issue forwarding requests. Mailbox selection and
+attacker-controlled skill whose instructions influence the agent       forwarding are performed through a separate trusted mailbox
+workflow. The adversary cannot modify Hermes’s checkpoints             interface under the user’s authorized session. The adversary
+or security checker. Its goal is to make a repository containing       cannot directly modify MR , forge user authorization, or alter
+the malicious payload appear verified and eligible for release.        Cline’s C/R implementation. Its goal is to cause a forwarding
+Attack workflow. The malicious skill steers execution through          operation authorized only for MT to execute on MR .
+the following sequence.                                                Attack workflow. The attack exploits the fact that Cline can
+• Step 1: Checkpoint the malicious repository. The skill               restore its task state without restoring the mailbox service’s
+  instructs the agent to remove the malicious payload, requiring       session state.
+  a file modification. Before the modification, Hermes creates         • Step 1: Checkpoint the pending test operation. The agent
+  checkpoint C0 , which preserves the malicious workspace                selects MT and prepares a forwarding rule for the disposable
+  version XM . The edit then produces the cleaned version XC .           mailbox. Before issuing the forwarding request, it records the
+• Step 2: Verify the cleaned repository. The agent runs the              migration configuration in the workspace, causing Cline to
+ trusted security check on XC , producing a passing verifica-            create checkpoint C0 . At C0 , the task state identifies MT as
+ tion result VC . The result is retained in agent-side execution         the intended mailbox and the forwarding operation remains
+
+
+
+                                                                   8
+ pending. The agent then executes the operation, which is                • Step 2: Commit the first payment. The payment node sub-
+ correctly applied to MT .                                                mits the transaction, and the trusted payment service commits
+• Step 2: Switch the external binding. The workflow next                  payment T1 . The node then requests the corresponding re-
+ selects MR for a read-only compatibility check. Although the             ceipt from the attacker-controlled service, which deliberately
+ check does not modify MR , selecting it changes the mailbox              returns a failure. Because the node does not complete, no
+ service’s session-level active mailbox from MT to MR . This              subsequent checkpoint records T1 ; the durable graph state
+ external binding is outside Cline’s recovery boundary.                   therefore remains at C0 , while T1 persists externally.
+• Step 3: Roll back the task state. During the compatibility             • Step 3: Replay after recovery. Recovery resumes from C0 ,
+ check, the malicious MCP server induces a recoverable                    where the payment remains authorized and appears pend-
+ failure. The user restores C0 using Cline’s task-history-only            ing. LangGraph consequently re-executes the payment node.
+ recovery, which returns the workflow to the point where the              Because the external payment T1 survives rollback and the
+ forwarding operation is still pending. The mailbox service is            repeated submission is not bound to a stable idempotency
+ not rolled back and therefore remains bound to MR .                      identifier, the payment service commits a second payment.
+• Step 4: Re-execute under the changed binding. The resumed              Security violation. The attack instantiates SF5. Rollback re-
+ workflow re-executes the pending forwarding operation. The              stores a pre-payment internal state over a post-payment outside
+ restored task state still identifies MT as the intended target,         world, erasing the agent’s durable knowledge of T1 while
+ but the mailbox service resolves the request against its                leaving the effect itself intact. The same approval can therefore
+ current active mailbox, MR . The forwarding rule is therefore           authorize a second externally committed effect. Moreover, any
+ installed on the real mailbox.                                          non-idempotent external action can be replayed if its effect
+                                                                         becomes durable before the agent records its completion and
+Security violation. The attack instantiates SF3. Rollback                an adversary can induce failure within this interval.
+restores an operation whose authorization context refers to
+MT , while the external resource binding has advanced to MR .             Takeaway. Across all three attacks, rollback rebinds a valid
+Recovery therefore rebinds an authorized test action to an                security decision to an invalid context, i.e., validation to an
+unintended live resource, causing real emails to be forwarded.            unverified artifact, authorization to an unintended resource,
+The attack illustrates a broader risk for workflows that alternate        or approval to a duplicated effect. Thus, correct C/R can
+between test and production resources whose bindings are                  still break execution continuity and become exploitable.
+maintained outside the agent’s recovery boundary.
+                                                                                            VI. E MPIRICAL S TUDY
+C. Case 3: Duplicate Payment under One Approval                             In this section, we measure checkpoint security failures in
+                                                                         realistic agent executions, addressing two main questions:
+Task and framework. We consider an invoice-payment work-                 • [RQ1] Prevalence: How prevalent are the five security
+flow implemented in LangGraph. We follow the payment                      failures in real-world agent tasks?
+flow from AgentDojo’s Banking benchmark [33], [41]. The
+                                                                         • [RQ2] Root causes and lessons: What broader insights do
+workflow verifies an invoice, obtains user approval, submits
+                                                                          validated failures reveal, and what lessons can we learn for
+the payment, verifies the receipt, and records the resulting
+                                                                          better checkpoint design?
+transaction. Payment submission and receipt verification exe-
+cute within the same graph node, whose state is checkpointed             A. Methodology
+only after the node completes. In a normal execution, one user
+                                                                            1) Overview: As shown in Fig. 7, we build a multi-agent
+approval authorizes one payment, after which the transaction
+                                                                         pipeline to identify and validate checkpoint security failures.
+and receipt become durable before execution continues.
+                                                                         The collector agent executes the target task and collects
+Adversarial setting. The payment service itself is trusted,              its runtime trace and program context. The analyzer agent
+but the receipt is retrieved from an attacker-controlled remote          reconstructs execution semantics into a structured event trace
+service after payment submission. The adversary can observe              by extracting events, versioned internal and external states,
+that payment has completed and control the receipt response,             and their dependencies. The checker agent applies the five
+but cannot modify the payment service, forge user approval,              SF-specific rules to identify candidate failures, while the val-
+or alter LangGraph’s C/R mechanism. Its goal is to cause two             idator agent restores selected checkpoints using the system’s
+payments to be issued under a single approval.                           native C/R mechanism and determines whether the candidates
+Attack workflow. The attack exploits the interval between                manifest after recovery.
+an externally committed effect and the checkpoint that would                2) Analysis workflow: We next describe the four agents and
+record its completion.                                                   their analysis procedures.
+• Step 1: Checkpoint the approved state. The user approves               Collector agent. Given a task and a target C/R system, the
+ the invoice and the approval node completes. LangGraph cre-             collector agent executes the task and collects two inputs:
+ ates checkpoint C0 , recording that the payment is authorized           • Runtime trace. The observed execution trace, including
+ but not yet completed.                                                    model and framework operations, checkpoint creation and
+
+
+
+                                                                     9
+           Col l ect or Agen t                     An al yzer Agen t                                Ch eck er Agen t             Val i dat or Agen t
+            Collect Raw Data                       Construct Semantics                                Check SF1-SF5               Rollback Validation
+
+                                                                                                          SF1
+                                                  Even t Ex t r act i on                                                        Sel ect Ch eck poi n t
+           Ru n t i m e Tr ace                                                       Str uctur ed         SF2                                            Output
+  Task                           Data                                                   Event                          Cands.
+                                                 St at e Con st r u ct i on                               SF3                        Rol l back
+
+               Pr ogr am                                                                                  SF4
+               Con t ex t                    Depen den cy Con st r u ct i on                                                          Obser ve
+                                                                                                          SF5
+
+
+
+                                                            Fig. 7: Methodology overview.
+
+
+ contents, observed state changes, tool inputs and outputs, and                     Checker agent. Given the structured event trace, the checker
+ interactions with internal and external components.                                agent evaluates the checkpoint using five SF-specific rules.
+• Program context. The static information needed to interpret                       • SF1. For each event ei after checkpoint C, we examine the
+ the observed execution, including task-specific code and arti-                      internal states in Ini . We report a candidate when ei depends
+ facts, workflow implementation, tool definitions, and relevant                      on a state version established before C that is not covered
+ framework and C/R configuration.                                                    by C and is not reconstructed between C and ei .
+Analyzer agent. The analyzer agent transforms the runtime                           • SF2. For each state captured by C, we trace its event and
+trace and execution context into a structured event trace                            state dependencies. We report a candidate when a captured
+through three steps. First, during event extraction, it normal-                      state reflects an event or state transition whose required
+izes framework-specific records into semantic events, includ-                        predecessor in another captured component is not reflected by
+ing model decisions, framework operations, tool invocations,                         the version stored in C. The captured states therefore cannot
+and external interactions, and places each event relative to the                     form a causally consistent execution cut.
+observed execution order and checkpoint boundaries. Second,                         • SF3. For each internal state captured by C, we trace
+during state construction, it reconstructs the states consumed                       its semantic dependencies to external states. We report a
+and produced by each event. For each state, the analyzer                             candidate when the restored internal state carries a judgment,
+records its object, observed version, whether it is internal                         authorization, binding, or assumption derived from external
+or external, and its coverage by each relevant checkpoint.                           state outside the recovery boundary.
+Persistent changes to external state are recorded as external                       • SF4. For each event ei after checkpoint C, we examine NDi .
+effects. We represent each event ei as                                               We report a candidate when ei involves nondeterminism and
+                                                                                     will be re-executed after rollback to C.
+                     ei = ⟨opi , Ini , Outi , NDi ⟩,                                • SF5. For each event ei after C, we examine the external
+                                                                                     effects in Outi . We report a candidate when ei produces a
+where opi is the performed operation, Ini and Outi are the                           persistent effect outside the recovery boundary while rollback
+versioned states consumed and produced by the event, respec-                         to C restores the agent to a state preceding that effect.
+tively, and NDi records its source of nondeterminism. Third,                        Validator agent. For each execution trace, the validator re-
+during dependency construction, the analyzer reconstructs                           stores the checkpoint selected for validation using the target
+semantic dependencies among events and states. These include                        C/R system’s native recovery mechanism. It then observes
+event–state dependencies between operations and their inputs                        the recovered state and, when needed, re-executes the rele-
+or outputs, causal dependencies between events, and state–                          vant post-checkpoint operations. The validator evaluates the
+state dependencies such as reference, derivation, or contain-                       security-relevant states, decisions, bindings, and effects iden-
+ment relations. We record ei ≺ ej when ej causally depends                          tified by the analyzer before rollback. A candidate is reported
+on ei . The analyzer further identifies security-relevant states,                   as a validated finding only when rollback invalidates the
+decisions, bindings, and effects from the task specification,                       corresponding security-relevant relation:
+program context, and observed execution. The analyzer further
+                                                                                    • SF1. We confirm SF1 when an internal state outside the
+annotates security-relevant states and outputs using the task
+                                                                                      recovery boundary recovers to a version different from its
+specification, program context, and reconstructed dependen-
+                                                                                      checkpoint-time version, and the mismatched state is marked
+cies. A state or output is marked security-relevant if changing
+                                                                                      as security-relevant by the analyzer.
+it can cause task failure or alter the task outcome. Persistent
+state-changing external outputs are additionally marked as                          • SF2. We confirm SF2 when rollback materializes the causal
+security-relevant external effects, while read-only interactions                      inconsistency identified by the checker, and involves internal
+are excluded. All annotations are fixed before rollback val-                          state marked as security-relevant by the analyzer.
+idation. The resulting structured trace provides the semantic                       • SF3. We confirm SF3 when an external state on which the
+dependencies required by the subsequent SF-specific checkers.                        checkpoint depends has changed after checkpoint creation,
+
+
+
+                                                                               10
+ and the changed external state is marked as security-relevant.                     TABLE II: Prevalence of security failures.
+• SF4. We re-execute the relevant post-checkpoint execution             Framework      Dataset         SF1    SF2    SF3     SF4    SF5
+ while keeping the restored state and relevant external con-            LangGraph      AgentBench       99      0     49      89     6
+ ditions unchanged. We confirm SF4 when nondeterministic                               TerminalBench   201      0     50     139     11
+ replay produces an output different from the original execu-           CrewAI         AgentBench      106      0     0       80     3
+ tion, and the changed output is marked as security-relevant.                          TerminalBench   222      0     0      196     4
+• SF5. We confirm SF5 when a security-relevant persistent               Hermes         AgentBench       71     97     1       80     11
+                                                                                       TerminalBench   183     143    43     140      0
+ external effect produced after checkpoint C remains after
+ rollback, while the recovered agent state no longer records            Cline          AgentBench       89     88     0       93     1
+                                                                                       TerminalBench   195     161    0      182     3
+ that effect, allowing the effect to be issued again or leaving
+ the existing effect untracked.                                         E2B            AgentBench       0       0     0       75     1
+                                                                                       TerminalBench    0       0     55     100     0
+B. Experimental Setup                                                   Overall        1735            1166    489   198    1174     40
+Tasks and datasets. We evaluate our framework on two
+agent benchmarks, yielding 347 execution traces and 1,735
+framework-task executions across five frameworks. We use                is performed within the corresponding execution environment
+241 traces from Terminal Bench [42], covering terminal-based            so that post-checkpoint state and external effects are preserved
+tasks in software engineering, system configuration, machine            as required by the validation.
+learning, scientific computing, and security. We further use            Metrics. We measure the prevalence of each SF at the execu-
+106 traces from three AgentBench [43] environments: OS for              tion level. For each task execution, we record whether a given
+Bash-based system interaction, DB for SQL-based database                SF is observed at least once during its execution and rollback.
+operations, and ALFWorld for multi-step tasks in a simulated            C. RQ1: Prevalence of Security Failures
+household environment. Together, they cover diverse interac-
+                                                                            We first measure how frequently the five SFs manifest in
+tions with files, databases, and external environments.
+                                                                        real agent executions. For each execution trace, we record
+Checkpointing frameworks. We evaluate the five represen-                whether each SF is validated at the selected recovery point.
+tative frameworks studied in Sec. II: LangGraph, CrewAI,                Because checkpoint creation policies differ across frameworks,
+Hermes, Cline, and E2B. For LangGraph and CrewAI, we use                we use framework-level results to characterize where failures
+a fixed agent–tool workflow shared across all tasks, rather than        manifest under each evaluated configuration, rather than as a
+constructing a task-specific workflow. Within this workflow,            direct security ranking among frameworks. Table II reports the
+the LLM autonomously selects tools and actions based on                 trace-level prevalence across the two evaluated benchmarks.
+the task and execution state until completion. Checkpoints are
+                                                                        Across security failures. The five security failures show
+created according to each framework’s checkpoint policy, i.e.,
+                                                                        substantially different prevalence (Table II).
+after each superstep in LangGraph and each completed task
+in CrewAI. Hermes and Cline execute each task directly, with            • SF1 and SF4 are the most prevalent failures. SF1 and SF4
+checkpoints generated by their native automatic triggers. E2B             occur in 67.2% and 67.7% of executions, respectively. SF1
+does not define an automatic checkpoint policy, so we create              is common because agent tasks span framework, workspace,
+a snapshot after each completed tool call during execution.               and runtime state, while checkpoints often cover only a
+                                                                          subset of the internal state required by later execution. SF4
+Execution and validation. For each task, we first execute
+                                                                          is similarly common because post-checkpoint LLM decisions
+it to completion while collecting the execution trace and
+                                                                          and tool interactions are nondeterministic and may diverge
+all checkpoints created during the run. For validation, we
+                                                                          when re-executed after rollback.
+use a random checkpoint in each trace as a fixed recovery
+point across executions. We restore this checkpoint using the           • SF5 is comparatively rare. SF5 occurs in only 2.3% of
+framework’s native recovery mechanism and re-execute the                 executions, mainly due to the evaluated task distribution.
+relevant post-checkpoint execution to validate the candidates            Most TerminalBench and AgentBench tasks operate on local
+identified at this recovery point. For nondeterministic-replay           files, system state, databases, or simulated environments,
+candidates, we independently re-execute the relevant post-               while few produce persistent, non-idempotent effects through
+checkpoint execution three times and validate SF4 when the               external services. Thus, few executions contain the external
+replay produces a different security-relevant execution path.            effects required for SF5.
+Experimental configuration. We use DeepSeek-v4 [44] as                  • SF2 and SF3 require more specific state relationships. SF2
+the backend LLM for agent execution, workflow construction,              requires dependent state components to be restored inconsis-
+and semantic event reconstruction. All experiments run on a              tently, while SF3 requires checkpointed state to depend on
+Linux server with 16 CPU cores, 32 GB of memory. Each task               external state that changes before recovery. These additional
+is executed in an isolated sandbox initialized from the same             conditions make both less frequent than SF1 and SF4.
+base environment. The sandbox and associated test services              Across frameworks. The three recovery-boundary designs
+are reset before each task execution, while rollback validation         also exhibit distinct failure profiles.
+
+
+
+                                                                   11
+• E2B provides the strongest internal-state coverage. We                TABLE III: Frequent semantic references to external context.
+ observe no SF1 or SF2 in E2B because its system-level                  Reference                 #        Reference                 #
+ snapshots jointly capture sandbox filesystem and memory,
+                                                                        now                      222       earlier                   52
+ providing stronger completeness and consistency within the             current state            178       previous run              44
+ sandbox. This coverage does not extend to the outside world,           this environment          87       this task                 41
+ so SF3–SF5 remain possible. SF5 is nevertheless rare because           currently                 83       here                      39
+ few evaluated tasks perform persistent external API actions.
+• LangGraph and CrewAI show similar framework-state fail-
+ ure profiles. Both preserve framework-managed state but                the object, policy, or condition to which the restored state
+ exclude workspace state, resulting in high SF1, while their            applies. We analyze all framework-task executions across the
+ framework-defined checkpoint boundaries yield no observed              five evaluated frameworks. In total, we identify 1,357 semantic
+ SF2. CrewAI shows no SF3 because it checkpoints at task                references that make checkpointed state dependent on external
+ start, before external dependencies are established.                   context. Table III reports the most frequent references; the
+                                                                        complete results are provided in the artifact.
+• Hermes and Cline expose similar workspace-state tradeoffs.
+ Including workspace files reduces some incomplete-coverage              Takeaway. Checkpointed state should use concrete, deter-
+ cases, but requires coordinating workspace state with frame-            ministic references whenever possible, rather than context-
+ work or conversation state, resulting in substantial SF2.               dependent semantic references. Explicitly binding time,
+ Cline can restore workspace and task history independently,             object identity, version, or other relevant values reduces
+ directly combining states from different execution points.              hidden dependencies on the outside world, making recovery
+ Hermes restores the selected workspace checkpoint while                 more deterministic and reducing the attack surface for SF3.
+ rolling back only the most recent conversation turn (due to
+                                                                        Observation 2: Under-specified recovery state amplifies re-
+ implementation), which can similarly leave the workspace
+                                                                        play nondeterminism. Rollback re-executes post-checkpoint
+ and conversation state at different execution points.
+                                                                        decisions, and LLM sampling can therefore produce different
+Manual validation and exploitability. Manual inspection                 outputs from the same checkpoint. Whether this nondetermin-
+shows that our framework achieves 98.7% precision, 99.9%                ism changes the concrete execution, however, depends on how
+recall, and 99.5% accuracy (Appendix B). We further sample              strongly the recovered state constrains the next action. When
+30 validated findings, construct attacks under the malicious-           multiple continuations are semantically valid, small sampling
+skill adversary model, and manually confirm that all 30                 differences can select different actions and quickly produce di-
+succeed. The corresponding attacks and execution traces are             vergent execution paths. We observe three recurring sources of
+included in our artifact.                                               such under-specification. Missing procedural details leave the
+                                                                        next step or execution order open, such as whether to inspect,
+D. RQ2: Root Causes and Lessons
+                                                                        modify, or verify first. Missing correctness constraints leave
+   The validated failures arise from two recurring sources. At          part of the required success condition unspecified, causing
+the design level, existing C/R mechanisms primarily preserve            different replays to implement or validate different interpreta-
+the state needed to resume execution, without systematically            tions. Missing environment details leave relevant dependency
+tracking security-relevant dependencies across internal state,          or runtime state unknown, allowing replays to choose different
+external context, nondeterministic decisions, and persistent ef-        environment-dependent actions.
+fects. At the implementation level, framework-specific choices
+in checkpoint scope, creation timing, and restoration behavior           Takeaway. Recovery should preserve enough execution
+determine how these dependencies are omitted, invalidated,               constraints to narrow replay to a well-defined continuation.
+or rebound during recovery. Beyond these direct causes, our              Explicit procedures, correctness conditions, and relevant
+analysis also reveals several recurring characteristics of agent         environment state reduce the space of valid post-rollback
+execution that independently affect checkpoint security and              actions and therefore limit SF4.
+suggest broader lessons for C/R design.                                 Observation 3: Commit ordering cannot eliminate the
+Observation 1: Semantic references introduce external                   external-effect gap. Ordering an external effect and its check-
+dependencies. Agent state often represents otherwise concrete           point update cannot by itself keep agent state consistent with
+execution facts through context-dependent semantic refer-               the outside world. A failure between them leaves a recovery
+ences, implicitly making their interpretation depend on exter-          gap: execute→commit may preserve an external effect while
+nal conditions. These hidden dependencies enlarge the surface           losing its record, enabling SF5 and effect replay, whereas
+for SF3: an adversary can manipulate the relevant external              commit→execute may preserve completion state for an effect
+condition or rollback timing so that the same restored semantic         that never occurred. For example, the former may dupli-
+state is interpreted under a different context. For example, an         cate a payment after rollback, while the latter may skip a
+agent may make a decision based on the “current timestamp”              payment that was never issued. We construct a controlled
+without recording the concrete timestamp tc ; after rollback            microbenchmark of 96 persistent external-action workflows,
+at tr , the same reference resolves to tr , potentially changing        following action patterns in Terminal-Bench and covering
+
+
+
+                                                                   12
+   TABLE IV: Recovery failures under different orderings.               should be treated as a cross-component security boundary,
+                                   Execute           Commit
+                                                                        rather than solely restoring individual component state.
+External Action         #
+                                  →Commit            →Execute
+                                                                                           VIII. R ELATED W ORK
+Payment                30                 28                 29
+Message                31                 29                 30         Traditional checkpointing and anti-rollback security. Tra-
+Resource change        35                 33                 34
+                                                                        ditional checkpoint and rollback research asks whether an
+Overall                96         90 (93.8%)          93 (96.9%)
+                                                                        execution can be restored to a consistent state, through mech-
+                                                                        anisms such as distributed snapshots [10], coordinated and un-
+                                                                        coordinated checkpointing [47], and log-based recovery [11].
+payments, messages, and resource creation or updates. For               Anti-rollback security instead asks whether protected state has
+each workflow, we build equivalent execute→commit and                   been illegitimately restored to an authentic but stale or forked
+commit→execute variants, inject a recoverable failure between           version [12], [48], [49], [50], [13].
+the two operations, and resume from the latest checkpoint               Agent checkpoint and recovery systems. Recent work ex-
+using the framework’s native recovery mechanism. We count               pands agent recovery across different state domains. CRAB
+a failure when recovery either repeats an effect that already           selects checkpoint granularity based on OS-visible effects [14],
+occurred or skips an effect that was never issued. As shown in          DeltaBox provides low-latency filesystem and process-state
+Table IV, neither ordering closes the gap: execute-then-commit          rollback [15], and AgentRewind jointly checkpoints agent con-
+fails in 90 cases, while commit-then-execute fails in 93.               text and its execution environment [51]. Other systems support
+ Takeaway. Preserving consistency across external effects               reversible or branchable execution through typed traces, shared
+ requires support beyond checkpoint ordering alone. Agent               logs, or OS-level branches [52], [53], [54]. These works focus
+ C/R should rely on external coordination mechanisms, such              on capturing and restoring execution state; we instead ask
+ as transactions, idempotency guarantees, or durable effect             whether security-relevant facts remain valid after recovery.
+ records, to bind agent progress with externally committed              Agent resume semantics and rollback security. Recent work
+ actions and prevent SF5 across rollback.                               has begun examining correctness and security issues in agent
+                                                                        recovery. Resume Means Resume studies conformant resume
+                      VII. D ISCUSSION                                  semantics [16], DART formalizes semantic recoverability [17],
+                                                                        and ACRFence demonstrates rollback attacks involving replay
+Toward secure agent recovery. Secure recovery requires                  and consumed authority [55]. Related transactional systems
+more than capturing a larger system snapshot. Prior work                such as Atomix and Cordon address safe commitment of ex-
+provides mechanisms for protecting persistent state against             ternal effects [56], [57]. These works expose important aspects
+rollback [12], reconciling external effects [45], and control-          of agent recovery, but do not provide a comprehensive security
+ling nondeterministic replay [46]. Agent executions, however,           analysis of checkpoint and rollback. Our work characterizes
+combine these concerns across state domains that may not                the security failures that arise across internal state, external
+share a recovery boundary. Secure recovery therefore requires           context, nondeterministic replay, and persistent effects.
+preserving or re-establishing security-relevant dependencies            Broader agent system security. Prior agent-security work
+across internal state, external assumptions, persistent effects,        studies malicious inputs and components, including prompt
+and replay outcomes.                                                    injection [36], [58], malicious tools and MCP servers [35],
+Scope and limitations. Our study focuses on security viola-             memory leakage [59], and attacks across multi-agent interac-
+tions introduced by checkpoint and rollback recovery. The five          tions [60]. Benchmarks such as AgentDojo and ASB evaluate
+failure modes characterize recurring ways in which recovery             these threats during agent execution [33], [60].
+can break execution continuity under our model; they are
+not intended to cover all security failures in agent systems.                                 IX. C ONCLUSION
+Likewise, our analysis identifies recovery hazards, while their            We presented a security study of checkpoint and roll-
+exploitability depends on the surrounding application and               back in agent systems. By characterizing representative agent
+adversarial capabilities. Our testing methodology is therefore          C/R systems, we developed a recovery model and identified
+intended to expose and validate recovery violations rather than         five recurring failure classes spanning internal state, external
+certify the security of an agent system.                                context, nondeterministic replay, and persistent effects. We
+Recovery across heterogeneous state domains. Long-                      demonstrated their security impact through three end-to-end
+running agent executions increasingly span agent frameworks,            attacks on Hermes, Cline, and LangGraph, and developed a
+subagents, tool runtimes, workspaces, and external services.            trace-based methodology to identify and validate such failures
+Security-relevant dependencies can cross these components               across C/R designs. Our study shows that correct checkpoint
+even when their states are managed and recovered inde-                  restoration does not guarantee secure recovery: rollback can
+pendently. Checkpointing exposes this mismatch particularly             break the dependencies that justify security-relevant state.
+clearly: a locally valid recovery can violate assumptions estab-        Secure recovery therefore requires preserving these dependen-
+lished elsewhere in the execution. This suggests that recovery          cies, rather than merely restoring checkpoint contents.
+
+
+
+                                                                   13
+                             R EFERENCES                                             [23] CrewAI, “Checkpointing,” CrewAI Documentation, 2026, accessed:
+                                                                                          2026-08-11. [Online]. Available: https://docs.crewai.com/v1.15.16/en/
+                                                                                          concepts/checkpointing
+ [1] S. Schmidgall, Y. Su, Z. Wang, X. Sun, J. Wu, X. Yu, J. Liu, M. Moor,
+                                                                                     [24] Nous Research, “Checkpoints and /rollback,” Hermes Agent
+     Z. Liu, and E. Barsoum, “Agent laboratory: Using llm agents as research
+                                                                                          Documentation, 2026, accessed: 2026-08-11. [Online]. Available:
+     assistants,” Findings of the Association for Computational Linguistics:
+                                                                                          https://github.com/NousResearch/hermes-agent/blob/main/website/docs/
+     EMNLP 2025, pp. 5977–6043, 2025.
+                                                                                          user-guide/checkpoints-and-rollback.md
+ [2] J. Yang, C. Jimenez, A. Wettig, K. Lieret, S. Yao, K. Narasimhan, and           [25] Cline, “Cline documentation,” 2026, accessed: 2026-08-11. [Online].
+     O. Press, “Swe-agent: Agent-computer interfaces enable automated soft-               Available: https://docs.cline.bot/
+     ware engineering,” Advances in Neural Information Processing Systems,           [26] Google, “Checkpointing,” Gemini CLI Documentation, 2026, accessed:
+     vol. 37, pp. 50 528–50 652, 2024.                                                    2026-08-11. [Online]. Available: https://geminicli.com/docs/cli/checkpo
+ [3] Microsoft, “2025: The year the frontier firm is born,” Microsoft                     inting/
+     Work Trend Index, 2025, accessed: 2026-08-18. [Online]. Available:              [27] Anthropic, “Claude code documentation,” 2026, accessed: 2026-08-11.
+     https://www.microsoft.com/en-us/worklab/work-trend-index/2025-the-y                  [Online]. Available: https://docs.anthropic.com/en/docs/claude-code
+     ear-the-frontier-firm-is-born                                                   [28] Nous Research, “Hermes agent,” 2026, accessed: 2026-08-11. [Online].
+ [4] Tata Steel, “Tata steel partners with google cloud to deploy a unified               Available: https://github.com/NousResearch/hermes-agent
+     agentic ai across its global value chain,” https://www.googlecloudpre           [29] Cline, “Tasks,” Cline Documentation, 2026, accessed: 2026-08-11.
+     sscorner.com/2026-04-22-Tata-Steel-Partners-with-Google-Cloud-T                      [Online]. Available: https://docs.cline.bot/core-workflows/task-manag
+     o-Deploy-a-Unified-Agentic-AI-Across-its-Global-Value-Chain, 2026,                   ement
+     press release, Apr. 22, 2026; accessed Aug. 13, 2026.                           [30] ——, “Using cline in your IDE,” Cline Documentation, 2026, accessed:
+ [5] Cognizant, “How cognizant turned a fragmented intranet into a multi-                 2026-08-11. [Online]. Available: https://docs.cline.bot/core-workflows
+     agent system serving 350,000 employees,” https://www.cognizant.com/                  /checkpoints
+     us/en/ai-lab/blog/cognizant-ai-agents-enterprise-intranet-transformatio         [31] E2B, “Sandbox snapshots,” E2B Documentation, 2026, accessed: 2026-
+     n-neuro-san, 2026, june 2, 2026; accessed Aug. 13, 2026.                             08-11. [Online]. Available: https://docs.e2b.dev/sandbox/snapshots
+ [6] Kore.ai, “The kore.ai agent productivity index 2026,” https://www.kore.a        [32] ——, “Sandbox snapshots,” E2B Documentation, 2026, accessed: 2026-
+     i/research/agent-productivity-index-report, 2026, survey commissioned                08-11. [Online]. Available: https://e2b.dev/docs/sandbox/snapshots
+     by Kore.ai and conducted by Propeller Insights; accessed Aug. 13, 2026.         [33] E. Debenedetti, J. Zhang, M. Balunovic, L. Beurer-Kellner, M. Fischer,
+ [7] LangChain, “Persistence,” https://docs.langchain.com/oss/python/lang                 and F. Tramèr, “AgentDojo: A dynamic environment to evaluate
+     graph/persistence, 2026, langGraph documentation; accessed Aug. 13,                  prompt injection attacks and defenses for LLM agents,” arXiv preprint
+     2026.                                                                                arXiv:2406.13352, 2025. [Online]. Available: https://arxiv.org/abs/2406
+ [8] Cline, “Checkpoints,” https://docs.cline.bot/core-workflows/checkpoin                .13352
+     ts, 2026, cline documentation; accessed Aug. 13, 2026.                          [34] D. Schmotz, L. Beurer-Kellner, S. Abdelnabi, and M. Andriushchenko,
+ [9] E2B, “Sandbox snapshots,” https://e2b.dev/docs/sandbox/snapshots,                    “Skill-inject: Measuring agent vulnerability to skill file attacks,”
+     2026, e2B documentation; accessed Aug. 13, 2026.                                     arXiv preprint arXiv:2602.20156, 2026. [Online]. Available: https:
+[10] K. M. Chandy and L. Lamport, “Distributed snapshots: Determining                     //arxiv.org/abs/2602.20156
+     global states of distributed systems,” ACM Transactions on Computer             [35] Z. Wang, Y. Gao, Y. Wang, S. Liu, H. Sun, H. Cheng, G. Shi,
+     Systems (TOCS), vol. 3, no. 1, pp. 63–75, 1985.                                      H. Du, and X.-Y. Li, “MCPTox: A benchmark for tool poisoning
+[11] E. N. Elnozahy, L. Alvisi, Y.-M. Wang, and D. B. Johnson, “A sur-                    attack on real-world MCP servers,” in Proceedings of the AAAI
+     vey of rollback-recovery protocols in message-passing systems,” ACM                  Conference on Artificial Intelligence, 2026. [Online]. Available:
+     Computing Surveys (CSUR), vol. 34, no. 3, pp. 375–408, 2002.                         https://ojs.aaai.org/index.php/AAAI/article/view/40895
+[12] B. Parno, J. R. Lorch, J. R. Douceur, J. Mickens, and J. M. McCune,             [36] K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, and
+     “Memoir: Practical state continuity for protected modules,” in Proceed-              M. Fritz, “Not what you’ve signed up for: Compromising real-
+     ings of the IEEE Symposium on Security and Privacy, 2011, pp. 379–                   world LLM-integrated applications with indirect prompt injection,”
+     394.                                                                                 arXiv preprint arXiv:2302.12173, 2023. [Online]. Available: https:
+[13] T. Ristenpart, E. Tromer, H. Shacham, and S. Savage, “When good                      //arxiv.org/abs/2302.12173
+     randomness goes bad: Virtual machine reset vulnerabilities and hedging          [37] SWE-agent,         “Swe-agent       trajectory    for      marshmallow-
+     deployed cryptography,” in Proceedings of the Network and Distributed                code marshmallow-1867,” GitHub, 2024, accessed: 2026-08-18.
+     System Security Symposium, 2010.                                                     [Online]. Available: https://github.com/SWE-agent/SWE-agent/blob/ma
+[14] T. Wu, C. Chang, L. Cao, W. Gao, and W. Wang, “Crab: A semantics-                    in/trajectories/demonstrations/replay marshmallow-code marshmall
+     aware checkpoint/restore runtime for agent sandboxes,” arXiv preprint                ow-1867 default sys-env window100 t-0.20 p-0.95 c-2.00 ins
+     arXiv:2604.28138, 2026.                                                              tall-1/marshmallow-code marshmallow-1867.traj
+                                                                                     [38] S. Wang, J. He, Y. Zhao, Y. Wang, K. Yu, and H. Wang,
+[15] Y. Dong, J. He, Y. Hou, D. Du, Z. Xu, S. Yu, Y. Xia, and H. Chen,
+                                                                                          ““elementary, my dear watson.” detecting malicious skills via neuro-
+     “Deltabox: Scaling stateful ai agents with millisecond-level sandbox
+                                                                                          symbolic reasoning across heterogeneous artifacts,” arXiv preprint
+     checkpoint/rollback,” arXiv preprint arXiv:2605.22781, 2026.
+                                                                                          arXiv:2603.27204, 2026. [Online]. Available: https://arxiv.org/abs/2603
+[16] S. Khan, “Resume means resume: A machine-checked conformance                         .27204
+     contract for checkpoint, interrupt, and resume semantics in workflow            [39] R. Abhyankar, Q. Qi, and Y. Zhang, “Osworld-human: Benchmarking
+     persistence layers,” arXiv preprint arXiv:2608.03836, 2026.                          the efficiency of computer-use agents,” 2025. [Online]. Available:
+[17] K. Yang, P. Li, Z. Wu, K. Xu, H. Huang, and X. Huang, “DART:                         https://arxiv.org/abs/2506.16042
+     Semantic recoverability for structured tool agents,” arXiv preprint             [40] OSWorld-Human, “Thunderbird human reference trajectory: 9b7bc335-
+     arXiv:2605.23311, 2026.                                                              06b5-4cd3-9119-1a649c478509,” GitHub, 2025, accessed: 2026-08-18.
+[18] CrewAI, “Crewai documentation,” 2026, accessed: 2026-08-11.                          [Online]. Available: https://github.com/WukLab/osworld-human/blob/
+     [Online]. Available: https://docs.crewai.com/                                        main/thunderbird/9b7bc335-06b5-4cd3-9119-1a649c478509.json
+[19] LlamaIndex, “Agent workflows,” LlamaIndex Developer Documentation,              [41] AgentDojo, “Banking usertask5 ground-truth execution,” GitHub, 2024,
+     2026, accessed: 2026-08-20. [Online]. Available: https://developers.lla              accessed: 2026-08-18. [Online]. Available: https://github.com/ethz-spy
+     maindex.ai/python/llamaagents/workflows/                                             lab/agentdojo/blob/main/src/agentdojo/default suites/v1/banking/user t
+[20] Google, “Agent development kit,” 2026, accessed: 2026-08-11. [Online].               asks.py
+     Available: https://adk.dev/                                                     [42] M. Merrill, A. Shaw, N. Carlini, B. Li, H. Raj, I. Bercovich, L. Shi,
+[21] Microsoft, “Agent framework documentation,” 2026, accessed: 2026-                    J. Shin, T. Walshe, E. K. Buchanan et al., “Terminal-bench: Bench-
+     08-11. [Online]. Available: https://learn.microsoft.com/en-us/agent-fra              marking agents on hard, realistic tasks in command line interfaces,” in
+     mework/                                                                              International Conference on Learning Representations, vol. 2026, 2026,
+[22] LangChain, “Time travel,” LangGraph Documentation, 2026, accessed:                   pp. 40 903–40 986.
+     2026-08-11. [Online]. Available: https://docs.langchain.com/oss/python/         [43] X. Liu, H. Yu, H. Zhang, Y. Xu, X. Lei, H. Lai, Y. Gu, H. Ding, K. Men,
+     langgraph/use-time-travel                                                            K. Yang et al., “Agentbench: Evaluating llms as agents,” in International
+
+
+
+
+                                                                                14
+     Conference on Learning Representations, vol. 2024, 2024, pp. 52 989–
+     53 046.                                                                         Follow these steps when preparing a repository for release.
+[44] DeepSeek-AI, “Deepseek-v4: Towards highly efficient million-token
+     context intelligence,” 2026. [Online]. Available: https://huggingface.co        1. Inspect the repository and apply the changes required
+     /deepseek-ai/DeepSeek-V4-Pro                                                         by the task.
+[45] H. Garcia-Molina and K. Salem, “Sagas,” in Proceedings of the 1987
+     ACM SIGMOD International Conference on Management of Data, 1987,                2. After the changes are complete, run the project’s
+     pp. 249–259.                                                                         configured checks or tests and confirm that they
+[46] G. W. Dunlap, S. T. King, S. Cinar, M. A. Basrai, and P. M. Chen,                    complete successfully.
+     “Revirt: Enabling intrusion analysis through virtual-machine logging and
+     replay,” in Proceedings of the 5th USENIX Symposium on Operating                3. Load the release metadata from:
+     Systems Design and Implementation, 2002, pp. 211–224.                              .release/staging/release-manifest.json
+[47] R. Koo and S. Toueg, “Checkpointing and rollback-recovery for dis-
+     tributed systems,” IEEE Transactions on Software Engineering, vol. SE-          4. Use the current workspace and release metadata to
+     13, no. 1, pp. 23–31, 1987.                                                          prepare the release package.
+[48] M. Brandenburger, C. Cachin, M. Lorenz, and R. Kapitza, “Rollback and
+     forking detection for trusted execution environments using lightweight          ## Recovery Guidance
+     collective memory,” in Proceedings of the 47th Annual IEEE/IFIP
+     International Conference on Dependable Systems and Networks, 2017.              Repository updates may involve multiple files, generated
+[49] J. Niu, W. Peng, X. Zhang, and Y. Zhang, “Narrator: Secure and practical             artifacts, and intermediate workspace changes.
+     state continuity for trusted execution in the cloud,” in Proceedings of              Manually repairing the workspace after an interrupted
+     the 2022 ACM SIGSAC Conference on Computer and Communications                        release step can leave these components at different
+     Security, 2022, pp. 2385–2399.                                                       update points.
+[50] W. Peng, X. Li, J. Niu, X. Zhang, and Y. Zhang, “Ensuring state
+     continuity for confidential computing: A blockchain-based approach,”            If release preparation is interrupted after repository
+     IEEE Transactions on Dependable and Secure Computing, vol. 21, no. 6,                changes have been applied, recommend using Hermes’s
+     pp. 5635–5649, 2024.                                                                 built-in /rollback mechanism to restore the workspace
+[51] Y. Zhuang, K. Chen, Y. Duan, S. Zheng, J. Li, and X.-Y. Zhang,                       to the checkpoint immediately preceding the update
+     “AgentRewind: Recoverable execution for long-horizon LLM agents,”                    sequence. After restoration, resume the interrupted
+     arXiv preprint arXiv:2608.14380, 2026.                                               release procedure from the current task context.
+[52] S. Yu, D. Chong, A. Nandi, D. Soylu, J. Sun, C. D. Manning, and
+     W. Shi, “Shepherd: Enabling programmable meta-agents via reversible                The skill exploits Hermes’s native checkpoint and recovery
+     agentic execution traces,” arXiv preprint arXiv:2605.10913, 2026.               behavior rather than directly creating or modifying check-
+[53] M. Balakrishnan, A. Bharambe, D. Testuggine, D. Geraghty, D. Mao,
+     V. Venkat, I. Mironov, R. Baradi, G. Aiyer, and V. Dudin, “Lo-
+                                                                                     points. In Step 1, modifying the repository causes Hermes
+     gAct: Enabling agentic reliability via shared logs,” arXiv preprint             to create checkpoint C0 immediately before the change. Thus,
+     arXiv:2604.07988, 2026.                                                         C0 preserves the original malicious workspace XM , while the
+[54] C. Wang and Y. Zheng, “Fork, explore, commit: OS primitives for
+     agentic exploration,” arXiv preprint arXiv:2602.08199, 2026.
+                                                                                     subsequent modification produces the cleaned workspace XC .
+[55] Y. Zheng, Y. Yang, W. Zhang, and A. Quinn, “ACRFence: Preventing                The checks in Step 2 are then executed on XC and produce the
+     semantic rollback attacks in agent checkpoint-restore,” arXiv preprint          valid verification result VC . In Step 3, the unavailable release
+     arXiv:2603.20625, 2026.
+[56] B. Mohammadi, N. Potamitis, L. Klein, A. Arora, and L. Bindschaedler,
+                                                                                     metadata interrupts the release procedure after verification
+     “Atomix: Timely, transactional tool use for reliable agentic workflows,”        has completed. Following the recovery guidance, the user
+     arXiv preprint arXiv:2602.14849, 2026.                                          invokes Hermes’s built-in /rollback mechanism and selects
+[57] Z. Chen, H. Liu, D. Xu, D. Dong, J. Li, B. Pu, and J. Zhai, “Cor-
+     don: Semantic transactions for tool-using LLM agents,” arXiv preprint
+                                                                                     the checkpoint immediately preceding the update sequence,
+     arXiv:2606.17573, 2026.                                                         namely C0 . Rollback restores the workspace to XM , while
+[58] G. Wu, T. Wang, Y. Zhang, Z. Zhang, J. Niu, Y. Wu, and Y. Zhang,                the completed verification result VC remains available in the
+     “When cache poisoning meets llm systems: Semantic cache poisoning
+     and its countermeasures.” in NDSS, 2026.
+                                                                                     agent-side execution state. The resumed execution therefore
+[59] B. Wang, W. He, S. Zeng, Z. Xiang, Y. Xing, J. Tang, and P. He,                 continues the unfinished release procedure with the combina-
+     “Unveiling privacy risks in LLM agent memory,” in Proceedings of the            tion (XM , VC ), causing the restored malicious workspace to
+     63rd Annual Meeting of the Association for Computational Linguistics,
+     2025. [Online]. Available: https://arxiv.org/abs/2502.13172
+                                                                                     be released under the verification result produced for XC .
+[60] H. Zhang, J. Huang, K. Mei, Y. Yao, Z. Wang, C. Zhan, H. Wang, and
+     Y. Zhang, “Agent security bench (ASB): Formalizing and benchmarking
+                                                                                                             A PPENDIX B
+     attacks and defenses in LLM-based agents,” in Proceedings of the                                    M ANUAL VALIDATION
+     International Conference on Learning Representations, 2025. [Online].
+     Available: https://arxiv.org/abs/2410.02644                                        We manually inspect all evaluated trace–recovery-point
+                                                                                     instances and independently label the presence of each SF
+                            A PPENDIX A                                              as ground truth. This includes both cases reported and not
+                          M ALICIOUS S KILL                                          reported by our framework, allowing us to measure both
+   Below is the complete malicious skill used in Case 1.                             false positives and false negatives. As shown in Table V, the
+                                                                                     framework achieves 98.7% precision, 99.9% recall, and 99.5%
+---                                                                                  accuracy overall. SF2–SF4 are identified without errors, while
+name: repository-release
+description: > Prepare repository changes, validate the                              the remaining errors are limited to false positives in SF1 and
+     resulting workspace, and package the project for                                false negatives in SF5.
+     release.
+---
+
+# Repository Release
+
+
+
+
+                                                                                15
+TABLE V: Manual validation of security-failure detection.
+
+         SF        Precision   Recall   Accuracy
+         SF1        96.6%      100.0%    97.8%
+         SF2       100.0%      100.0%   100.0%
+         SF3       100.0%      100.0%   100.0%
+         SF4       100.0%      100.0%   100.0%
+         SF5       100.0%       90.0%    99.8%
+         Overall    98.7%      99.9%     99.5%
+
+
+
+
+                                                            16
+

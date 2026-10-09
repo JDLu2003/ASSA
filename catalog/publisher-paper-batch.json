@@ -1,0 +1,52 @@
+{
+  "papers": [
+    {
+      "id": "firecracker",
+      "topic": "sandbox-systems",
+      "title": "Firecracker: Lightweight Virtualization for Serverless Applications",
+      "url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+      "pdf_url": "https://www.usenix.org/system/files/nsdi20-paper-agache.pdf",
+      "venue": "NSDI 2020"
+    },
+    {
+      "id": "murakkab",
+      "topic": "agent-systems",
+      "title": "Murakkab: Resource-Efficient Agentic Workflow Orchestration in Cloud Platforms",
+      "url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-chaudhry.pdf",
+      "venue": "OSDI 2026"
+    },
+    {
+      "id": "rlinf",
+      "topic": "rl-systems",
+      "title": "RLinf: Flexible and Efficient Large-Scale Reinforcement Learning via Macro-to-Micro Flow Transformation",
+      "url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-yu-chao.pdf",
+      "venue": "OSDI 2026"
+    },
+    {
+      "id": "dynarl",
+      "topic": "rl-systems",
+      "title": "DynaRL: Flexible and Dynamic Scheduling of Large-Scale Reinforcement Learning Training",
+      "url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-wang-yuanqing.pdf",
+      "venue": "OSDI 2026"
+    },
+    {
+      "id": "rollart",
+      "topic": "rl-systems",
+      "title": "RollArt: Disaggregated Multi-Task Agentic RL Training at Scale",
+      "url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-gao.pdf",
+      "venue": "OSDI 2026"
+    },
+    {
+      "id": "seer",
+      "topic": "rl-systems",
+      "title": "Seer: Online Context Learning for Fast Synchronous LLM Reinforcement Learning",
+      "url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-qin.pdf",
+      "venue": "OSDI 2026"
+    }
+  ]
+}

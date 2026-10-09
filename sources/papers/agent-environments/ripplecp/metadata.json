@@ -1,0 +1,71 @@
+{
+  "item": {
+    "topic": "agent-environments",
+    "id": "ripplecp",
+    "arxiv": "2610.09088v1",
+    "kind": "arxiv-paper",
+    "title": "RippleCP: Measuring Counterfactual Checkpoint Advantage in Coding Agents",
+    "landing_url": "https://arxiv.org/abs/2610.09088v1",
+    "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+    "published": "2026-10-06T20:40:51Z",
+    "authors": [
+      "Mayur Akewar",
+      "Ravi Ranjan"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:04.290533+00:00",
+  "path": "sources/papers/agent-environments/ripplecp",
+  "requested_url": "https://arxiv.org/abs/2610.09088v1",
+  "pdf_url": "https://arxiv.org/pdf/2610.09088v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "4a3777f0e3fe822278b377fce759cecb04637a820b65aaad1a6c6711b5185ba2",
+      "bytes": 73534
+    },
+    "paper.txt": {
+      "sha256": "208724be6c64bea9c05f8e07fb8872fa208aa35ea35035ad76e50b7f8a9c9788",
+      "bytes": 64791
+    },
+    "paper.pdf": {
+      "sha256": "6570a38cd214c80b8d4a62bd346d0057d7f62b63e05c1201929c7dd2fa341078",
+      "bytes": 362949
+    },
+    "landing.html": {
+      "sha256": "9577f28a481230d980fba1878aed94ee0f0a1e3cabf0fd7ed154d5ef139b2cea",
+      "bytes": 40950
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2610.09088v1",
+    "retrieved_at": "2026-10-09T13:06:17.225458+00:00",
+    "fields": {
+      "citation_title": [
+        "RippleCP: Measuring Counterfactual Checkpoint Advantage in Coding Agents"
+      ],
+      "citation_author": [
+        "Akewar, Mayur",
+        "Ranjan, Ravi"
+      ],
+      "citation_date": [
+        "2026/10/06"
+      ],
+      "citation_online_date": [
+        "2026/10/06"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2610.09088"
+      ],
+      "citation_arxiv_id": [
+        "2610.09088"
+      ],
+      "citation_abstract": [
+        "Agent checkpoint systems decide what state is recovery-relevant, how to snapshot it, and whether rollback is admissible. None decides which of the safe boundaries they expose are worth materializing. We formulate this as counterfactual checkpoint advantage, the reduction in future recovery cost obtained by checkpointing a candidate rather than skipping it, and measure it by driving a CP branch and a SKIP branch to the same logical failure and recovering both under matched model, tool, verifier, and stopping conditions. On a frozen pilot of 12 SWE-bench Verified tasks and 106 real recovery branches, checkpointing saves 49.4 s per task, and that figure resolves into two regimes two orders of magnitude apart. The first checkpoint returns 100.0 s on 156.5 s of protected work, a conversion of 0.64; a second one step later returns-1.1 s on 41.8 s, a conversion of -0.03. Recovery is a re-derivation rather than a replay, so preserved work is a poor guide to saved work, and the classical elapsed-work rule misprices the second checkpoint by its full nominal cost. We identify where placement can pay, and set the bar a placement policy must clear."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

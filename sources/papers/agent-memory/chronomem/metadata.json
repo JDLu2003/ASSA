@@ -1,0 +1,75 @@
+{
+  "item": {
+    "topic": "agent-memory",
+    "id": "chronomem",
+    "arxiv": "2607.27773v2",
+    "kind": "arxiv-paper",
+    "title": "ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory",
+    "landing_url": "https://arxiv.org/abs/2607.27773v2",
+    "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+    "published": "2026-07-30T07:07:39Z",
+    "authors": [
+      "Yongye Su",
+      "Wujiang Xu",
+      "Chaoji Zuo",
+      "Elisa Bertino"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:04.883212+00:00",
+  "path": "sources/papers/agent-memory/chronomem",
+  "requested_url": "https://arxiv.org/abs/2607.27773v2",
+  "pdf_url": "https://arxiv.org/pdf/2607.27773v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "8871ba9e88591eed60ec26e392716a6b38be3cb9014f008b95c9ffa3b6eb5f27",
+      "bytes": 269070
+    },
+    "paper.txt": {
+      "sha256": "36e2e48c24713f825f32a35e9d39566b2dc4aaa283497d3bf00bc233d360dd36",
+      "bytes": 78758
+    },
+    "paper.pdf": {
+      "sha256": "0212789228dfd4a76ab24e1a883057487095edcd0e92678cdab1c595b8596279",
+      "bytes": 854839
+    },
+    "landing.html": {
+      "sha256": "a0afbafa423238c238f56739f6f0711348fa13085bfe4d8683213042e31bc006",
+      "bytes": 42670
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2607.27773v2",
+    "retrieved_at": "2026-10-09T13:06:18.531950+00:00",
+    "fields": {
+      "citation_title": [
+        "ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory"
+      ],
+      "citation_author": [
+        "Su, Yongye",
+        "Xu, Wujiang",
+        "Zuo, Chaoji",
+        "Bertino, Elisa"
+      ],
+      "citation_date": [
+        "2026/07/30"
+      ],
+      "citation_online_date": [
+        "2026/08/05"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2607.27773"
+      ],
+      "citation_arxiv_id": [
+        "2607.27773"
+      ],
+      "citation_abstract": [
+        "LLM agents increasingly rely on long-term memory to support multi-session interaction and personalization. However, existing agent memory systems are designed around forward-only evolution, continuously accumulating, consolidating, and overwriting knowledge, with no principled mechanism to inspect, version, or revert prior states. This makes agents brittle under corrections, concept drift, and memory corruption, particularly after they have already been exposed to subsequent information. We present ChronoMem, a semantic version-control layer for agentic memory integrated into the production-ready, open-source Agent Development Kit by Google. ChronoMem commits whole-memory snapshots at each memory write, maintains structured version histories, and supports natural-language rollback requests by mapping undo intents to concrete historical versions through hybrid lexical and semantic retrieval, rank fusion, and reranking. We further introduce a post-exposure evaluation protocol that tests whether an agent can behave counterfactually after rollback by answering queries and summarizing history as if future updates had never occurred. On long-horizon conversational benchmarks augmented with evolving memory states and rollback tasks, ChronoMem substantially improves rollback-consistent question answering and history summarization relative to prompt-only and retrieval-only baselines, while achieving strong performance in semantic version selection. To our knowledge, ChronoMem is the first open-source system and benchmark for systematic semantic global memory rollback in LLM agents."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

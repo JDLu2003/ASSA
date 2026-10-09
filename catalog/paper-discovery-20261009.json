@@ -1,0 +1,1366 @@
+[
+  {
+    "query": "all:HistoRL",
+    "searched_at": "2026-10-09T12:58:13.137724+00:00",
+    "results": []
+  },
+  {
+    "query": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+    "searched_at": "2026-10-09T12:58:16.877044+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2605.22781v2",
+        "title": "DeltaBox: Scaling Stateful AI Agents with Millisecond-Level Sandbox Checkpoint/Rollback",
+        "published": "2026-05-21T17:36:17Z",
+        "updated": "2026-06-08T12:58:55Z",
+        "authors": [
+          "Yunpeng Dong",
+          "Jingkai He",
+          "Shiqi Liu",
+          "Yuze Hou",
+          "Dong Du",
+          "Zhonghu Xu",
+          "Si Yu",
+          "Baochuan Yang",
+          "Yubin Xia",
+          "Haibo Chen"
+        ],
+        "abstract": "LLM-powered AI agents require high-frequency state exploration (e.g., test-time tree search and reinforcement learning), relying on rapid checkpoint and rollback (C/R) of the complete sandbox state, including files and process state (e.g., memory, contexts, etc.). Existing mechanisms duplicate the entire state, causing hundreds of milliseconds to seconds of latency per C/R, which severely bottlenecks deep search and large-scale fan-outs. This paper observes that subsequent checkpoints in AI agents are highly similar. Therefore, instead of full duplication, a sandbox should only duplicate the changes between consecutive checkpoints (Key Insight). However, it is non-trivial to realize the idea, mainly due to the missing OS supports. This paper proposes a new OS-level abstraction, DeltaState, to enable the change-based transactional C/R for AI agents with two co-designed OS mechanisms. First, DeltaFS enables change-based filesystem C/R by organizing the file states into layers and dynamically freezing the writable layer and inserting a new one during checkpoint, reducing file updates to copy-on-write, and making rollback a simple layer switch. Second, DeltaCR enables change-based process state C/R using incremental dumps, and accelerates rollback by bypassing traditional pipelines to directly fork() from a frozen template process. We then present DeltaBox, a novel agent sandbox achieving millisecond level C/R through the two new mechanisms. Evaluations on SWE-bench and RL micro-benchmarks show DeltaBox completes checkpoint and rollback in millisecond-level latency (14ms and 5ms, respectively), empowering agents to explore substantially more nodes under fixed time budgets.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2605.22781v2",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2605.22781v2",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2604.28138v1",
+        "title": "Crab: A Semantics-Aware Checkpoint/Restore Runtime for Agent Sandboxes",
+        "published": "2026-04-30T17:20:19Z",
+        "updated": "2026-04-30T17:20:19Z",
+        "authors": [
+          "Tianyuan Wu",
+          "Chaokun Chang",
+          "Lunxi Cao",
+          "Wei Gao",
+          "Wei Wang"
+        ],
+        "abstract": "Autonomous agents act through sandboxed containers and microVMs whose state spans filesystems, processes, and runtime artifacts. Checkpoint and restore (C/R) of this state is needed for fault tolerance, spot execution, RL rollout branching, and safe rollback-yet existing approaches fall into two extremes: application-level recovery preserves chat history but misses OS-side effects, while full per-turn checkpointing is correct but too expensive under dense co-location. The root cause is an agent-OS semantic gap: agent frameworks see tool calls but not their OS effects; the OS sees state changes but lacks turn-level context to judge recovery relevance. This gap hides massive sparsity: over 75% of agent turns produce no recovery-relevant state, so most checkpoints are unnecessary. Crab (Checkpoint-and-Restore for Agent SandBoxes) is a transparent host-side runtime that bridges this gap without modifying agents or C/R backends. An eBPF-based inspector classifies each turn's OS-visible effects to decide checkpoint granularity; a coordinator aligns checkpoints with turn boundaries and overlaps C/R with LLM wait time; and a host-scoped engine schedules checkpoint traffic across co-located sandboxes. On shell-intensive and code-repair workloads, Crab raises recovery correctness from 8% (chat-only) to 100%, cuts checkpoint traffic by up to 87%, and stays within 1.9% of fault-free execution time.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2604.28138v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2604.28138v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2603.20625v1",
+        "title": "ACRFence: Preventing Semantic Rollback Attacks in Agent Checkpoint-Restore",
+        "published": "2026-03-21T03:39:36Z",
+        "updated": "2026-03-21T03:39:36Z",
+        "authors": [
+          "Yusheng Zheng",
+          "Yiwei Yang",
+          "Wei Zhang",
+          "Andi Quinn"
+        ],
+        "abstract": "LLM agent frameworks increasingly offer checkpoint-restore for error recovery and exploration, advising developers to make external tool calls safe to retry. This advice assumes that a retried call will be identical to the original, an assumption that holds for traditional programs but fails for LLM agents, which re-synthesize subtly different requests after restore. Servers treat these re-generated requests as new, enabling duplicate payments, unauthorized reuse of consumed credentials, and other irreversible side effects; we term these semantic rollback attacks. We identify two attack classes, Action Replay and Authority Resurrection, validate them in a proof of concept experiment, and confirm that the problem has been independently acknowledged by framework maintainers. We propose ACRFence, a framework-agnostic mitigation that records irreversible tool effects and enforces replay-or-fork semantics upon restoration",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2603.20625v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2603.20625v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2608.29381v1",
+        "title": "Safe to Resume? Breaking Execution Continuity of Agent Execution via Rollback",
+        "published": "2026-08-29T17:40:13Z",
+        "updated": "2026-08-29T17:40:13Z",
+        "authors": [
+          "Guanlong Wu",
+          "Dahui Li",
+          "Ke Jiang",
+          "Jianyu Niu",
+          "Cong Wang",
+          "Yinqian Zhang"
+        ],
+        "abstract": "AI agents are moving toward persistent, stateful execution across various applications, accumulating execution state and external effects that are costly to reconstruct after failures. Checkpoint and rollback (C/R) are becoming essential for recovery, yet their security implications remain largely unexplored. Correct rollback does not imply secure recovery: a faithfully restored checkpoint may resume an execution whose states, assumptions, and external effects never coexisted in any valid history. In this paper, we present the first systematic security study of checkpoint and rollback in existing agent systems. By examining representative agent C/R systems, we characterize the design space of existing C/R mechanisms and develop a general execution model that captures their recovery boundaries and state dependencies. From this model, we identify five fundamental failure modes spanning incomplete or inconsistent internal state, stale external dependencies, nondeterministic replay, and unrecorded external effects. We further demonstrate their security impact through three end-to-end attacks on Hermes, Cline, and LangGraph, enabling malware-verification bypass, unauthorized mail forwarding, and double payment. To systematically study these failures in practice, we develop a multi-agent analysis pipeline that reconstructs execution semantics, identifies violations of the five failure conditions, and validates them through actual rollback. Across five representative frameworks, our evaluation shows that these failures recur across heterogeneous C/R designs and stem from a common gap between the state restored by a checkpoint and the dependencies required for secure continuation.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2608.29381v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2608.29381v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2608.30165v1",
+        "title": "Science sandboxes measure the scientific capability of AI agents",
+        "published": "2026-08-31T02:33:38Z",
+        "updated": "2026-08-31T02:33:38Z",
+        "authors": [
+          "Arya S. Rao",
+          "Rodrigo I. Castro",
+          "Sager J. Gosai",
+          "Kenneth B. Hsu",
+          "Yasha Ektefaie",
+          "Shantanu Singh",
+          "Sangeeta N. Bhatia",
+          "Steven K. Reilly",
+          "Ryan Tewhey",
+          "Eric S. Lander",
+          "Pardis C. Sabeti"
+        ],
+        "abstract": "Scientific progress depends not only on finding solutions, but on learning the rules that explain why they work and using that understanding to design better experiments. We introduce science sandboxes, a framework for studying this capability in AI agents through repeated cycles of experimentation, feedback, and hypothesis revision. Science sandboxes invite an agent to query the natural world in different ways, ranging from \"wet\" physical experiments, to \"damp\" predictive models trained on empirical data, to \"dry\" invented rules. By establishing a common experimental loop and a protocol for evaluating agents within it, science sandboxes allow assessment of both quantitative performance on specific metrics and qualitative scientific reasoning, across a spectrum of empirical verifiability. Here, we instantiate this framework in two biological settings, models of regulatory genomics and protein fitness prediction, and examine the capabilities of frontier agents. Across these settings, we could see when agents successfully optimized a quantitative metric without understanding the rules underlying the system. In particular, their scientific reasoning deteriorated when they encountered systems whose rules fell outside familiar biological priors. By highlighting such failure modes, science sandboxes make the frontier of scientific capability measurable and provide a controlled setting in which to study and ultimately expand it.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2608.30165v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2608.30165v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2610.02456v1",
+        "title": "SideKernel: A Usable microVM Sandbox for AI Coding Agents on macOS",
+        "published": "2026-10-01T20:30:13Z",
+        "updated": "2026-10-01T20:30:13Z",
+        "authors": [
+          "Dimitrios Prasakis"
+        ],
+        "abstract": "AI coding agents are untrusted system components, yet they require autonomy on the developer machines they run on. This contradiction is a security problem. Sandboxes provide an isolated environment, but for local macOS development, the existing local, open-source options for AI coding agents are few in number and cumbersome to use. I conducted a formative online user survey which indicates that fewer than 40% of AI coding agent users run their agents in a sandbox and identifies the top usability barriers hindering AI coding agent sandbox adoption. These findings are used to develop SideKernel: an open-source, local, microVM-based macOS sandbox for AI coding agents designed for usability. To evaluate SideKernel, I compiled a list of sandboxes available on the market and filtered it against five inclusion criteria. Then I performed a comparative analysis between SideKernel and the sandboxes that satisfy these criteria, across 23 capability tests derived from the usability barriers revealed by the user survey. I discovered that only a few sandboxes are similar to SideKernel, and that among those, Docker Sandboxes and SideKernel score highest on capability features related to usability. A secondary contribution of this paper is a survey of the existing solution space for local, open-source, microVM-based macOS sandboxes for AI coding agents.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2610.02456v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2610.02456v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2610.09088v1",
+        "title": "RippleCP: Measuring Counterfactual Checkpoint Advantage in Coding Agents",
+        "published": "2026-10-06T20:40:51Z",
+        "updated": "2026-10-06T20:40:51Z",
+        "authors": [
+          "Mayur Akewar",
+          "Ravi Ranjan"
+        ],
+        "abstract": "Agent checkpoint systems decide what state is recovery-relevant, how to snapshot it, and whether rollback is admissible. None decides which of the safe boundaries they expose are worth materializing. We formulate this as counterfactual checkpoint advantage, the reduction in future recovery cost obtained by checkpointing a candidate rather than skipping it, and measure it by driving a CP branch and a SKIP branch to the same logical failure and recovering both under matched model, tool, verifier, and stopping conditions. On a frozen pilot of 12 SWE-bench Verified tasks and 106 real recovery branches, checkpointing saves 49.4 s per task, and that figure resolves into two regimes two orders of magnitude apart. The first checkpoint returns 100.0 s on 156.5 s of protected work, a conversion of 0.64; a second one step later returns-1.1 s on 41.8 s, a conversion of -0.03. Recovery is a re-derivation rather than a replay, so preserved work is a poor guide to saved work, and the classical elapsed-work rule misprices the second checkpoint by its full nominal cost. We identify where placement can pay, and set the bar a placement policy must clear.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2610.09088v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2610.09088v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2607.27773v2",
+        "title": "ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory",
+        "published": "2026-07-30T07:07:39Z",
+        "updated": "2026-08-05T04:27:17Z",
+        "authors": [
+          "Yongye Su",
+          "Wujiang Xu",
+          "Chaoji Zuo",
+          "Elisa Bertino"
+        ],
+        "abstract": "LLM agents increasingly rely on long-term memory to support multi-session interaction and personalization. However, existing agent memory systems are designed around forward-only evolution, continuously accumulating, consolidating, and overwriting knowledge, with no principled mechanism to inspect, version, or revert prior states. This makes agents brittle under corrections, concept drift, and memory corruption, particularly after they have already been exposed to subsequent information. We present ChronoMem, a semantic version-control layer for agentic memory integrated into the production-ready, open-source Agent Development Kit by Google. ChronoMem commits whole-memory snapshots at each memory write, maintains structured version histories, and supports natural-language rollback requests by mapping undo intents to concrete historical versions through hybrid lexical and semantic retrieval, rank fusion, and reranking. We further introduce a post-exposure evaluation protocol that tests whether an agent can behave counterfactually after rollback by answering queries and summarizing history as if future updates had never occurred. On long-horizon conversational benchmarks augmented with evolving memory states and rollback tasks, ChronoMem substantially improves rollback-consistent question answering and history summarization relative to prompt-only and retrieval-only baselines, while achieving strong performance in semantic version selection. To our knowledge, ChronoMem is the first open-source system and benchmark for systematic semantic global memory rollback in LLM agents.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2607.27773v2",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2607.27773v2",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query": "all:agent AND (all:filesystem OR all:\"file system\")",
+    "searched_at": "2026-10-09T12:58:20.849977+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2604.13536v5",
+        "title": "Don't Let AI Agents YOLO Your Files: Information and Control in Agent-Native Filesystems",
+        "published": "2026-04-15T06:32:07Z",
+        "updated": "2026-09-16T04:04:35Z",
+        "authors": [
+          "Shawn Wanxiang Zhong",
+          "Junxuan Liao",
+          "Jing Liu",
+          "Mai Zheng",
+          "Andrea C. Arpaci-Dusseau",
+          "Remzi H. Arpaci-Dusseau"
+        ],
+        "abstract": "AI coding agents regularly misuse their filesystem access, causing data corruption, loss, and leakage. We conduct the first systematic study of this problem through an analysis of 290 public reports. Our study reveals two fundamental gaps: users and agents have limited information about filesystem effects and insufficient control over them. To close these gaps, we propose to shift information and control from agents to filesystems. We introduce agent-native filesystems and identify three primitives they should provide: introspect effects, undo mutations, and gate accesses. These primitives let agents operate autonomously while reserving user interaction for sensitive accesses and final review. We build YoloFS, an agent-native filesystem. YoloFS stages mutations until the user commits them, snapshots intermediate states for agent self-correction, and uses progressive permission to let users adapt access rules during execution. We evaluate YoloFS with a new methodology that captures interactions among the user, agent, and filesystem. On 11 tasks with hidden side effects, YoloFS enables agents to self-correct in 8 and stages all mutations for user review. On 112 routine tasks, YoloFS reduces user interaction while matching the baseline success rate. YoloFS is open-sourced at https://github.com/YoloFS/YoloFS.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2604.13536v5",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2604.13536v5",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          },
+          {
+            "rel": "related",
+            "href": "https://doi.org/10.1145/3830418.3843858",
+            "title": "doi"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2607.26637v1",
+        "title": "Filesystem-Based Memory for LLM Agents: Organization, Evolution, and Sustainability",
+        "published": "2026-07-29T08:59:43Z",
+        "updated": "2026-07-29T08:59:43Z",
+        "authors": [
+          "Sizhe Zhou",
+          "Sheldon Yu",
+          "Hui Wei",
+          "Junda Wu",
+          "Siru Ouyang",
+          "Yizhu Jiao",
+          "Shijia Pan",
+          "Julian McAuley",
+          "Yu Zhang",
+          "Tong Yu",
+          "Jiawei Han"
+        ],
+        "abstract": "Deployed LLM agents increasingly keep their long-term memory as a filesystem: a directory tree of markdown files that the agent itself reads, writes, and reorganizes through generic file tools. Yet research has largely passed over this medium: prior systems design bespoke memory representations and study retrieval over them, leaving the default's two working assumptions untested: that an agent can keep a growing store organized as memories accumulate, conflict, and go stale, and that this organization pays. We present the first systematic exploration of filesystem-based memory for LLM agents. We formalize the setting as three roles around one memory filesystem: a management agent integrates and organizes incoming content, a search agent answers queries with cited sources, and an execution agent supplies task trajectories that are distilled into skills, unifying declarative memory and skills in a single store. Across long-conversation benchmarks and embodied tasks, we vary memory shape (agent-organized hierarchy, verbatim dump, chunk retrieval), stream scale, tool harness (sandboxed shell, memory-tool-style functions, varied search tooling), and the strengths of the management and search agents, tracking answer quality, cost, and store health as memory grows. What organization reliably buys is search economy: organized stores roughly halve retrieval cost where material is large. Today's agents, however, fall short of the default's promise: in our growth study, organization erodes for all but the strongest management agent, and no agent we measure converts organization itself into better answers. And the model is not the only lever over a store's shape: changing the tool set alone reshapes the store as strongly as swapping the model. The study turns the filesystem default from an assumption into a design space for agent memory.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2607.26637v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2607.26637v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2604.04901v1",
+        "title": "FileGram: Grounding Agent Personalization in File-System Behavioral Traces",
+        "published": "2026-04-06T17:49:31Z",
+        "updated": "2026-04-06T17:49:31Z",
+        "authors": [
+          "Shuai Liu",
+          "Shulin Tian",
+          "Kairui Hu",
+          "Yuhao Dong",
+          "Zhe Yang",
+          "Bo Li",
+          "Jingkang Yang",
+          "Chen Change Loy",
+          "Ziwei Liu"
+        ],
+        "abstract": "Coworking AI agents operating within local file systems are rapidly emerging as a paradigm in human-AI interaction; however, effective personalization remains limited by severe data constraints, as strict privacy barriers and the difficulty of jointly collecting multimodal real-world traces prevent scalable training and evaluation, and existing methods remain interaction-centric while overlooking dense behavioral traces in file-system operations; to address this gap, we propose FileGram, a comprehensive framework that grounds agent memory and personalization in file-system behavioral traces, comprising three core components: (1) FileGramEngine, a scalable persona-driven data engine that simulates realistic workflows and generates fine-grained multimodal action sequences at scale; (2) FileGramBench, a diagnostic benchmark grounded in file-system behavioral traces for evaluating memory systems on profile reconstruction, trace disentanglement, persona drift detection, and multimodal grounding; and (3) FileGramOS, a bottom-up memory architecture that builds user profiles directly from atomic actions and content deltas rather than dialogue summaries, encoding these traces into procedural, semantic, and episodic channels with query-time abstraction; extensive experiments show that FileGramBench remains challenging for state-of-the-art memory systems and that FileGramEngine and FileGramOS are effective, and by open-sourcing the framework, we hope to support future research on personalized memory-centric file-system agents.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2604.04901v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2604.04901v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2602.01566v2",
+        "title": "FS-Researcher: Test-Time Scaling for Long-Horizon Research Tasks with File-System-Based Agents",
+        "published": "2026-02-02T03:00:19Z",
+        "updated": "2026-04-17T04:03:38Z",
+        "authors": [
+          "Chiwei Zhu",
+          "Benfeng Xu",
+          "Mingxuan Du",
+          "Shaohan Wang",
+          "Xiaorui Wang",
+          "Zhendong Mao",
+          "Yongdong Zhang"
+        ],
+        "abstract": "Deep research is emerging as a representative long-horizon task for large language model (LLM) agents. However, long trajectories in deep research often exceed model context limits, compressing token budgets for both evidence collection and report writing, and preventing effective test-time scaling. We introduce FS-Researcher, a file-system-based, dual-agent framework that scales deep research beyond the context window via a persistent workspace. Specifically, a Context Builder agent acts as a librarian which browses the internet, writes structured notes, and archives raw sources into a hierarchical knowledge base that can grow far beyond context length. A Report Writer agent then composes the final report section by section, treating the knowledge base as the source of facts. In this framework, the file system serves as a durable external memory and a shared coordination medium across agents and sessions, enabling iterative refinement beyond the context window. Experiments on two open-ended benchmarks (DeepResearch Bench and DeepConsult) show that FS-Researcher achieves state-of-the-art report quality across different backbone models. Further analyses demonstrate a positive correlation between final report quality and the computation allocated to the Context Builder, validating effective test-time scaling under the file-system paradigm. The code and data are open-sourced at https://github.com/Ignoramus0817/FS-Researcher.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2602.01566v2",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2602.01566v2",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2512.05470v1",
+        "title": "Everything is Context: Agentic File System Abstraction for Context Engineering",
+        "published": "2025-12-05T06:56:45Z",
+        "updated": "2025-12-05T06:56:45Z",
+        "authors": [
+          "Xiwei Xu",
+          "Robert Mao",
+          "Quan Bai",
+          "Xuewu Gu",
+          "Yechao Li",
+          "Liming Zhu"
+        ],
+        "abstract": "Generative AI (GenAI) has reshaped software system design by introducing foundation models as pre-trained subsystems that redefine architectures and operations. The emerging challenge is no longer model fine-tuning but context engineering-how systems capture, structure, and govern external knowledge, memory, tools, and human input to enable trustworthy reasoning. Existing practices such as prompt engineering, retrieval-augmented generation (RAG), and tool integration remain fragmented, producing transient artefacts that limit traceability and accountability. This paper proposes a file-system abstraction for context engineering, inspired by the Unix notion that 'everything is a file'. The abstraction offers a persistent, governed infrastructure for managing heterogeneous context artefacts through uniform mounting, metadata, and access control. Implemented within the open-source AIGNE framework, the architecture realises a verifiable context-engineering pipeline, comprising the Context Constructor, Loader, and Evaluator, that assembles, delivers, and validates context under token constraints. As GenAI becomes an active collaborator in decision support, humans play a central role as curators, verifiers, and co-reasoners. The proposed architecture establishes a reusable foundation for accountable and human-centred AI co-work, demonstrated through two exemplars: an agent with memory and an MCP-based GitHub assistant. The implementation within the AIGNE framework demonstrates how the architecture can be operationalised in developer and industrial settings, supporting verifiable, maintainable, and industry-ready GenAI systems.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2512.05470v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2512.05470v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2410.11843v5",
+        "title": "From Commands to Prompts: LLM-based Semantic File System for AIOS",
+        "published": "2024-09-23T08:39:16Z",
+        "updated": "2025-03-19T03:17:47Z",
+        "authors": [
+          "Zeru Shi",
+          "Kai Mei",
+          "Mingyu Jin",
+          "Yongye Su",
+          "Chaoji Zuo",
+          "Wenyue Hua",
+          "Wujiang Xu",
+          "Yujie Ren",
+          "Zirui Liu",
+          "Mengnan Du",
+          "Dong Deng",
+          "Yongfeng Zhang"
+        ],
+        "abstract": "Large language models (LLMs) have demonstrated significant potential in the development of intelligent applications and systems such as LLM-based agents and agent operating systems (AIOS). However, when these applications and systems interact with the underlying file system, the file system still remains the traditional paradigm: reliant on manual navigation through precise commands. This paradigm poses a bottleneck to the usability of these systems as users are required to navigate complex folder hierarchies and remember cryptic file names. To address this limitation, we propose an LLM-based semantic file system ( LSFS ) for prompt-driven file management. Unlike conventional approaches, LSFS incorporates LLMs to enable users or agents to interact with files through natural language prompts, facilitating semantic file management. At the macro-level, we develop a comprehensive API set to achieve semantic file management functionalities, such as semantic file retrieval, file update monitoring and summarization, and semantic file rollback). At the micro-level, we store files by constructing semantic indexes for them, design and implement syscalls of different semantic operations (e.g., CRUD, group by, join) powered by vector database. Our experiments show that LSFS offers significant improvements over traditional file systems in terms of user convenience, the diversity of supported functions, and the accuracy and efficiency of file operations. Additionally, with the integration of LLM, our system enables more intelligent file management tasks, such as content summarization and version comparison, further enhancing its capabilities.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2410.11843v5",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2410.11843v5",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2512.13047v4",
+        "title": "Sharpen the Spec, Cut the Code: A Case for Generative File System with SYSSPEC",
+        "published": "2025-12-15T07:15:01Z",
+        "updated": "2026-02-10T03:07:58Z",
+        "authors": [
+          "Qingyuan Liu",
+          "Mo Zou",
+          "Hengbin Zhang",
+          "Dong Du",
+          "Yubin Xia",
+          "Haibo Chen"
+        ],
+        "abstract": "File systems are critical OS components that require constant evolution to support new hardware and emerging application needs. However, the traditional paradigm of developing features, fixing bugs, and maintaining the system incurs significant overhead, especially as systems grow in complexity. This paper proposes a new paradigm, generative file systems, which leverages Large Language Models (LLMs) to generate and evolve a file system from prompts, effectively addressing the need for robust evolution. Despite the widespread success of LLMs in code generation, attempts to create a functional file system have thus far been unsuccessful, mainly due to the ambiguity of natural language prompts. This paper introduces SYSSPEC, a framework for developing generative file systems. Its key insight is to replace ambiguous natural language with principles adapted from formal methods. Instead of imprecise prompts, SYSSPEC employs a multi-part specification that accurately describes a file system's functionality, modularity, and concurrency. The specification acts as an unambiguous blueprint, guiding LLMs to generate expected code flexibly. To manage evolution, we develop a DAG-structured patch that operates on the specification itself, enabling new features to be added without violating existing invariants. Moreover, the SYSSPEC toolchain features a set of LLM-based agents with mechanisms to mitigate hallucination during construction and evolution. We demonstrate our approach by generating SPECFS, a concurrent file system. SPECFS demonstrates equivalent level of correctness to that of a manually-coded baseline across hundreds of regression tests. We further confirm its evolvability by seamlessly integrating 10 real-world features from Ext4. Our work shows that a specification-guided approach makes generating and evolving complex systems not only feasible but also highly effective.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2512.13047v4",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2512.13047v4",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2602.08199v2",
+        "title": "Fork, Explore, Commit: OS Primitives for Agentic Exploration",
+        "published": "2026-02-09T01:46:52Z",
+        "updated": "2026-03-19T04:38:30Z",
+        "authors": [
+          "Cong Wang",
+          "Yusheng Zheng"
+        ],
+        "abstract": "AI agents increasingly perform agentic exploration: pursuing multiple solution paths in parallel and committing only the successful one. Because each exploration path may modify files and spawn processes, agents require isolated environments with atomic commit and rollback semantics for both filesystem state and process state. We introduce the branch context, a new OS abstraction that provides: (1) copy-on-write state isolation with independent filesystem views and process groups, (2) a structured lifecycle of fork, explore, and commit/abort, (3) first-commit-wins resolution that automatically invalidates sibling branches, and (4) nestable contexts for hierarchical exploration. We realize branch contexts in Linux through two complementary components. First, BranchFS is a FUSE-based filesystem that gives each branch context an isolated copy-on-write workspace, with O(1) creation, atomic commit to the parent, and automatic sibling invalidation, all without root privileges. BranchFS is open sourced in https://github.com/multikernel/branchfs, along with a Python integration library, BranchContext, that provides ready-to-use agent exploration patterns. Second, branch() is a proposed Linux syscall that spawns processes into branch contexts with reliable termination, kernel-enforced sibling isolation, and first-commit-wins coordination. Preliminary evaluation of BranchFS shows sub-350 us branch creation independent of base filesystem size, and modification-proportional commit overhead (under 1 ms for small changes).",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2602.08199v2",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2602.08199v2",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query": "all:\"agent as a service\"",
+    "searched_at": "2026-10-09T12:58:24.677441+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2507.22326v1",
+        "title": "An Explainable Emotion Alignment Framework for LLM-Empowered Agent in Metaverse Service Ecosystem",
+        "published": "2025-07-30T02:00:26Z",
+        "updated": "2025-07-30T02:00:26Z",
+        "authors": [
+          "Qun Ma",
+          "Xiao Xue",
+          "Ming Zhang",
+          "Yifan Shen",
+          "Zihan Zhao"
+        ],
+        "abstract": "Metaverse service is a product of the convergence between Metaverse and service systems, designed to address service-related challenges concerning digital avatars, digital twins, and digital natives within Metaverse. With the rise of large language models (LLMs), agents now play a pivotal role in Metaverse service ecosystem, serving dual functions: as digital avatars representing users in the virtual realm and as service assistants (or NPCs) providing personalized support. However, during the modeling of Metaverse service ecosystems, existing LLM-based agents face significant challenges in bridging virtual-world services with real-world services, particularly regarding issues such as character data fusion, character knowledge association, and ethical safety concerns. This paper proposes an explainable emotion alignment framework for LLM-based agents in Metaverse Service Ecosystem. It aims to integrate factual factors into the decision-making loop of LLM-based agents, systematically demonstrating how to achieve more relational fact alignment for these agents. Finally, a simulation experiment in the Offline-to-Offline food delivery scenario is conducted to evaluate the effectiveness of this framework, obtaining more realistic social emergence.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2507.22326v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2507.22326v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.08446v1",
+        "title": "Agent-as-a-Service based on Agent Network",
+        "published": "2025-05-13T11:15:19Z",
+        "updated": "2025-05-13T11:15:19Z",
+        "authors": [
+          "Yuhan Zhu",
+          "Haojie Liu",
+          "Jian Wang",
+          "Bing Li",
+          "Zikang Yin",
+          "Yefei Liao"
+        ],
+        "abstract": "The rise of large model-based AI agents has spurred interest in Multi-Agent Systems (MAS) for their capabilities in decision-making, collaboration, and adaptability. While the Model Context Protocol (MCP) addresses tool invocation and data exchange challenges via a unified protocol, it lacks support for organizing agent-level collaboration. To bridge this gap, we propose Agent-as-a-Service based on Agent Network (AaaS-AN), a service-oriented paradigm grounded in the Role-Goal-Process-Service (RGPS) standard. AaaS-AN unifies the entire agent lifecycle, including construction, integration, interoperability, and networked collaboration, through two core components: (1) a dynamic Agent Network, which models agents and agent groups as vertexes that self-organize within the network based on task and role dependencies; (2) service-oriented agents, incorporating service discovery, registration, and interoperability protocols. These are orchestrated by a Service Scheduler, which leverages an Execution Graph to enable distributed coordination, context tracking, and runtime task management. We validate AaaS-AN on mathematical reasoning and application-level code generation tasks, which outperforms state-of-the-art baselines. Notably, we constructed a MAS based on AaaS-AN containing agent groups, Robotic Process Automation (RPA) workflows, and MCP servers over 100 agent services. We also release a dataset containing 10,000 long-horizon multi-agent workflows to facilitate future research on long-chain collaboration in MAS.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2505.08446v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2505.08446v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2605.13618v1",
+        "title": "OpenAaaS: An Open Agent-as-a-Service Framework for Distributed Materials-Informatics Research",
+        "published": "2026-05-13T14:47:01Z",
+        "updated": "2026-05-13T14:47:01Z",
+        "authors": [
+          "Peng Kang",
+          "Bixuan Li",
+          "Xiaoya Huang",
+          "Shuo Shi",
+          "Weiqiao Zhou",
+          "Zhen Li",
+          "Yu Liu",
+          "Lei Zheng"
+        ],
+        "abstract": "The Materials Genome Initiative catalyzed the proliferation of centralized platforms--SaaS, PaaS, and IaaS--that aggregate computational and experimental resources for accelerated materials discovery. In parallel, breakthroughs in large language models (LLMs) and autonomous agents have created powerful new reasoning capabilities for scientific research. Yet a critical \"last mile\" problem remains: while we possess world-class models and vast repositories of materials data, we lack the organizational infrastructure to compose these capabilities securely across institutional boundaries. The development of structural and functional materials for harsh service environments--high-temperature alloys, radiation resistant steels, corrosion-resistant coatings--remains characterized by long-term iteration, mechanistic complexity, and high domain expertise--demands that exceed both monolithic agent systems and traditional centralized platforms. To address this gap we propose OpenAaaS, an open-source hierarchical and distributed Agent-as-a-Service framework that enables organized multi-agent collaboration for intelligent materials design. OpenAaaS is built on a single foundational principle: code flows, data stays still. A Master Agent plans and decomposes complex research tasks without requiring direct access to subordinate agents' managed data and computational resources. Sub-agents, deployed as near-data execution nodes, retain full sovereignty over local datasets, proprietary algorithms, and specialized hardware. This architecture guarantees that raw data never leaves its domain of origin while enabling cross-scale, cross-domain secure integration of previously isolated materials intelligence silos. We validate the framework through two representative case studies: (i) AlphaAgent, an evidence-grounded materials literature analysis executor that achieves 4.66/5.0 on deep analytical questions against single-pass RAG baselines; and (ii) an ultra-large-scale hexa-high-entropy alloy descriptor database service that demonstrates secure near-data execution and domain-specific scientific workflows under strict data-sovereignty constraints. OpenAaaS establishes a principled pathway toward \"organized research\" via agent collectives, offering a scalable foundation for next-generation materials intelligent design platforms. All source code is available at https://github.com/Wolido/OpenAaaS.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2605.13618v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2605.13618v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2407.19438v1",
+        "title": "Conversational AI Multi-Agent Interoperability, Universal Open APIs for Agentic Natural Language Multimodal Communications",
+        "published": "2024-07-28T09:33:55Z",
+        "updated": "2024-07-28T09:33:55Z",
+        "authors": [
+          "Diego Gosmar",
+          "Deborah A. Dahl",
+          "Emmett Coin"
+        ],
+        "abstract": "This paper analyses Conversational AI multi-agent interoperability frameworks and describes the novel architecture proposed by the Open Voice Interoperability initiative (Linux Foundation AI and DATA), also known briefly as OVON (Open Voice Network). The new approach is illustrated, along with the main components, delineating the key benefits and use cases for deploying standard multi-modal AI agency (or agentic AI) communications. Beginning with Universal APIs based on Natural Language, the framework establishes and enables interoperable interactions among diverse Conversational AI agents, including chatbots, voicebots, videobots, and human agents. Furthermore, a new Discovery specification framework is introduced, designed to efficiently look up agents providing specific services and to obtain accurate information about these services through a standard Manifest publication, accessible via an extended set of Natural Language-based APIs. The main purpose of this contribution is to significantly enhance the capabilities and scalability of AI interactions across various platforms. The novel architecture for interoperable Conversational AI assistants is designed to generalize, being replicable and accessible via open repositories.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2407.19438v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2407.19438v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.24380v3",
+        "title": "Agentic Services Computing",
+        "published": "2025-09-29T07:29:18Z",
+        "updated": "2026-07-04T03:50:21Z",
+        "authors": [
+          "Shuiguang Deng",
+          "Hailiang Zhao",
+          "Ziqi Wang",
+          "Wenzhuo Qian",
+          "Xiang Ao",
+          "Guanjie Cheng",
+          "Jianwei Yin",
+          "Albert Y. Zomaya",
+          "Schahram Dustdar"
+        ],
+        "abstract": "Services computing has evolved from Web services and microservices to cloud-native and serverless paradigms. These approaches established mature principles for describing, composing, deploying, operating, and governing reusable software functions. LLM-based agents now introduce a fundamentally different service form. Service value in this paradigm emerges not only from invoking predefined functions but also from delegating goals to autonomous entities. These entities understand context, use tools, collaborate with peers, and act across open environments. This shift raises a core question for services computing. How can goal-driven, stateful, tool-mediated, and accountable autonomous behavior be engineered and managed as a service? Recent studies on LLM agents and multi-agent systems provide important foundations. A clear service-centered research roadmap for this emerging paradigm nevertheless remains absent. This work introduces Agentic Services Computing (ASC) to address this gap. ASC extends services computing from managing reusable functional endpoints to engineering and governing autonomous service entities. It defines agentic services as service-oriented autonomous agents. Related research is organized through a lifecycle view that connects service objects, system structures, enabling infrastructure, evaluation metrics, application evidence, and open challenges. This service-centered perspective establishes a foundation for future service ecosystems. Autonomous agents can thus be systematically described, composed, delivered, monitored, audited, and evolved as first-class services.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2509.24380v3",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2509.24380v3",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2512.14323v5",
+        "title": "FUSION: Forecast-Embedded Agent Scheduling with Service Incentive Optimization over Distributed Air-Ground Edge Networks",
+        "published": "2025-12-16T11:41:39Z",
+        "updated": "2026-09-23T14:10:09Z",
+        "authors": [
+          "Houyi Qi",
+          "Minghui Liwang",
+          "Seyyedali Hosseinalipour",
+          "Liqun Fu",
+          "Sai Zou",
+          "Xianbin Wang",
+          "Wei Ni",
+          "Yiguang Hong"
+        ],
+        "abstract": "This paper introduces a forecasting-driven, incentive-aware service provisioning framework for distributed air--ground integrated networks with human--machine coexistence. Agent pairs (APs), each comprising a vehicle and its carried uncrewed aerial vehicles (UAVs), are proactively dispatched to overloaded hotspots to augment the computing capacity of edge servers (ESs). This design introduces four coupled challenges: uncertain spatio-temporal workloads, coupling between vehicular mobility and UAV capacity, forecast-driven contracting risks, and heterogeneous quality-of-service (QoS) requirements of human users (HUs) and machine users (MUs). To address these challenges, we propose FUSION, a two-stage framework with offline service preparation and online task scheduling. In the offline stage, a liquid neural network forecasts multi-step ES demand, an enhanced ant colony optimization scheme constructs AP service routes, and an auction-based mechanism establishes ES--AP contracts. In the online stage, we formulate congestion-aware scheduling as an exact-potential game among service demanders (SDs) and develop a potential-guided best-response dynamics algorithm. For a fixed online state, the algorithm converges to an $\\varepsilon$-Nash equilibrium (NE) under a positive improvement threshold and to a pure-strategy NE when the threshold is zero. Within the considered contracting model, we theoretically establish that the offline mechanism satisfies individual rationality, near-truthfulness, and weak budget balance. Experiments on synthetic data and real-world load traces show that FUSION achieves higher social welfare while maintaining interaction delay and signaling energy overheads comparable to the considered benchmarks.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2512.14323v5",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2512.14323v5",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2405.12414v2",
+        "title": "The Power of Two in Token Systems",
+        "published": "2024-05-20T23:39:30Z",
+        "updated": "2025-08-01T00:27:53Z",
+        "authors": [
+          "Itai Ashlagi",
+          "Süleyman Kerimov",
+          "Omer Tamuz",
+          "Geng Zhao"
+        ],
+        "abstract": "In economies without monetary transfers, token systems serve as an alternative to sustain cooperation, alleviate free riding, and increase efficiency. This paper studies whether a token-based economy can be effective in marketplaces with thin exogenous supply. We consider a marketplace in which at each time period one agent requests a service, one agent provides the service, and one token (artificial currency) is used to pay for service provision. The number of tokens each agent has represents the difference between the amount of service provisions and service requests by the agent. We are interested in the behavior of this economy when very few agents are available to provide the requested service. Since balancing the number of tokens across agents is key to sustain cooperation, the agent with the minimum amount of tokens is selected to provide service among the available agents. When exactly one random agent is available to provide service, we show that the token distribution is unstable. However, already when just two random agents are available to provide service, the token distribution is stable, in the sense that agents' token balance is unlikely to deviate much from their initial endowment, and agents return to their initial endowment in finite expected time. Our results mirror the power of two choices paradigm in load balancing problems. Supported by numerical simulations using kidney exchange data, our findings suggest that token systems may generate efficient outcomes in kidney exchange marketplaces by sustaining cooperation between hospitals.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2405.12414v2",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2405.12414v2",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2606.28779v1",
+        "title": "Telephony Voice Agent for Banking Services",
+        "published": "2026-06-27T07:14:04Z",
+        "updated": "2026-06-27T07:14:04Z",
+        "authors": [
+          "Nitya Dhagat",
+          "Vipul K. Dabhi",
+          "Harshadkumar B. Prajapati",
+          "Zankhana J. Barad"
+        ],
+        "abstract": "This paper proposes a voice-powered AI-based banking system based on Google Conversational Agent, Dialogflow CX, which provides safe and convenient banking by phone. The system supports essential banking functions such as balance inquiries, transaction history retrieval, card activations, PIN-based authentication of sensitive tasks, smooth live agent handoff for complex and out-of-scope queries, and ensures seamless handover to human agents when required. These tests were performed with high-duration calls, high concurrency, and noisy environments; the system proved to be scalable, responsive, and resilient. All the data used is safely stored in the cloud environment for efficiency and security in real-time voice interactions. A voice-based banking solution that is efficient and easy to use can be provided through this.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2606.28779v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2606.28779v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query": "all:agent AND (all:\"cost evaluation\" OR all:\"performance evaluation\")",
+    "searched_at": "2026-10-09T12:58:28.265995+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2401.16542v1",
+        "title": "Robust Performance Evaluation of Independent and Identical Agents",
+        "published": "2024-01-29T20:21:39Z",
+        "updated": "2024-01-29T20:21:39Z",
+        "authors": [
+          "Ashwin Kambhampati"
+        ],
+        "abstract": "A principal provides nondiscriminatory incentives for independent and identical agents. The principal cannot observe the agents' actions, nor does she know the entire set of actions available to them. It is shown, very generally, that any worst-case optimal contract is nonaffine in performances. In addition, each agent's pay must depend on the performance of another. In the case of two agents and binary output, existence of a worst-case optimal contract is established and it is proven that any such contract exhibits joint performance evaluation -- each agent's pay is strictly increasing in the performance of the other. The analysis identifies a fundamentally new channel leading to the optimality of nonlinear team-based incentive pay.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2401.16542v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2401.16542v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2512.06583v1",
+        "title": "Tournament-Based Performance Evaluation and Systematic Misallocation: Why Forced Ranking Systems Produce Random Outcomes",
+        "published": "2025-12-06T22:35:09Z",
+        "updated": "2025-12-06T22:35:09Z",
+        "authors": [
+          "Jeremy McEntire"
+        ],
+        "abstract": "Tournament-based compensation schemes with forced distributions represent a widely adopted class of relative performance evaluation mechanisms in technology and corporate environments. These systems mandate within-team ranking and fixed distributional requirements (e.g., bottom 15% terminated, top 15% promoted), ostensibly to resolve principal-agent problems through mandatory differentiation. We demonstrate through agent-based simulation that this mechanism produces systematic classification errors independent of implementation quality. With 994 engineers across 142 teams of 7, random team assignment yields 32% error in termination and promotion decisions, misclassifying employees purely through composition variance. Under realistic conditions reflecting differential managerial capability, error rates reach 53%, with false positives and false negatives each exceeding correct classifications. Cross-team calibration (often proposed as remedy) transforms evaluation into influence contests where persuasive managers secure promotions independent of merit. Multi-period dynamics produce adverse selection as employees observe random outcomes, driving risk-averse behavior and high-performer exit. The efficient solution (delegating judgment to managers with hierarchical accountability) cannot be formalized within the legal and coordination constraints that necessitated forced ranking. We conclude that this evaluation mechanism persists not through incentive alignment but through satisfying demands for demonstrable process despite producing outcomes indistinguishable from random allocation. This demonstrates how formalization intended to reduce agency costs structurally increases allocation error.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2512.06583v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2512.06583v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/1802.08822v1",
+        "title": "PSO-based Fuzzy Markup Language for Student Learning Performance Evaluation and Educational Application",
+        "published": "2018-02-24T09:26:46Z",
+        "updated": "2018-02-24T09:26:46Z",
+        "authors": [
+          "Chang-Shing Lee",
+          "Mei-Hui Wang",
+          "Chi-Shiang Wang",
+          "Olivier Teytaud",
+          "Jialin Liu",
+          "Su-Wei Lin",
+          "Pi-Hsia Hung"
+        ],
+        "abstract": "This paper proposes an agent with particle swarm optimization (PSO) based on a Fuzzy Markup Language (FML) for students learning performance evaluation and educational applications, and the proposed agent is according to the response data from a conventional test and an item response theory. First, we apply a GS-based parameter estimation mechanism to estimate the items parameters according to the response data, and then to compare its results with those of an IRT-based Bayesian parameter estimation mechanism. In addition, we propose a static-IRT test assembly mechanism to assemble a form for the conventional test. The presented FML-based dynamic assessment mechanism infers the probability of making a correct response to the item for a student with various abilities. Moreover, this paper also proposes a novel PFML learning mechanism for optimizing the parameters between items and students. Finally, we adopt a K-fold cross validation mechanism to evaluate the performance of the proposed agent. Experimental results show that the novel PFML learning mechanism for the parameter estimation and learning optimization performs favorably. We believe the proposed PFML will be a reference for education research and pedagogy and an important co-learning mechanism for future human-machine educational applications.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/1802.08822v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/1802.08822v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          },
+          {
+            "rel": "related",
+            "href": "https://doi.org/10.1109/TFUZZ.2018.2810814",
+            "title": "doi"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/0707.3852v1",
+        "title": "Performance Evaluation of a Multi-Agent Risk-Sensitive Tracking System",
+        "published": "2007-07-26T02:37:37Z",
+        "updated": "2007-07-26T02:37:37Z",
+        "authors": [
+          "Jerome Le Ny",
+          "Eric Feron"
+        ],
+        "abstract": "In this paper, we consider a simple linear exponential quadratic Gaussian (LEQG) tracking problem for a multi-agent system. We study the dynamical behaviors of the group as we vary the risk-sensitivity parameter, comparing in particular the risk averse case to the LQG case. Then we consider the evolution of the performance per agent as the number of agents in the system increases. We provide some analytical as well as simulation results. In general, more agents are beneficial only if noisy agent dynamics and/or imperfect measurements are considered. The critical value of the risk sensitivity parameter above which the cost becomes infinite increases with the number of agents. In other words, for a fixed positive value of this parameter, there is a minimum number of agents above which the cost remains finite.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/0707.3852v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/0707.3852v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2209.10485v1",
+        "title": "Towards a Standardised Performance Evaluation Protocol for Cooperative MARL",
+        "published": "2022-09-21T16:40:03Z",
+        "updated": "2022-09-21T16:40:03Z",
+        "authors": [
+          "Rihab Gorsane",
+          "Omayma Mahjoub",
+          "Ruan de Kock",
+          "Roland Dubb",
+          "Siddarth Singh",
+          "Arnu Pretorius"
+        ],
+        "abstract": "Multi-agent reinforcement learning (MARL) has emerged as a useful approach to solving decentralised decision-making problems at scale. Research in the field has been growing steadily with many breakthrough algorithms proposed in recent years. In this work, we take a closer look at this rapid development with a focus on evaluation methodologies employed across a large body of research in cooperative MARL. By conducting a detailed meta-analysis of prior work, spanning 75 papers accepted for publication from 2016 to 2022, we bring to light worrying trends that put into question the true rate of progress. We further consider these trends in a wider context and take inspiration from single-agent RL literature on similar issues with recommendations that remain applicable to MARL. Combining these recommendations, with novel insights from our analysis, we propose a standardised performance evaluation protocol for cooperative MARL. We argue that such a standard protocol, if widely adopted, would greatly improve the validity and credibility of future research, make replication and reproducibility easier, as well as improve the ability of the field to accurately gauge the rate of progress over time by being able to make sound comparisons across different works. Finally, we release our meta-analysis data publicly on our project website for future research on evaluation: https://sites.google.com/view/marl-standard-protocol",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2209.10485v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2209.10485v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2606.11672v1",
+        "title": "Can Open-Source LLM Agents Replace Static Application Security Testing Tools? An Empirical Assessment",
+        "published": "2026-06-10T05:31:24Z",
+        "updated": "2026-06-10T05:31:24Z",
+        "authors": [
+          "Derek Yohn",
+          "Luke Flancher",
+          "Mirajul Islam",
+          "Khaled Slhoub"
+        ],
+        "abstract": "This paper explores the value of agentic AI tools for cybersecurity purposes. We evaluate the efficacy of a general-purpose GenAI Large Language Model- (GenAI-) based agent when powered by three different Ollama-hosted general-purpose open source models. We assess each agent's performance using precision, recall, false positive count, and a calculated composite score based upon the interplay of the captured metrics, against the baseline performance of an existing, vetted Static Application Security Testing (SAST) tool, Bandit. Our findings refute the notion that a modern open-source GenAI LLM-based agent is currently suitable for the specialized task of SAST scanning under realistic conditions.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2606.11672v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2606.11672v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/1603.03413v1",
+        "title": "A service system with randomly behaving on-demand agents",
+        "published": "2016-03-10T20:32:37Z",
+        "updated": "2016-03-10T20:32:37Z",
+        "authors": [
+          "Lam Nguyen",
+          "Alexander Stolyar"
+        ],
+        "abstract": "We consider a service system where agents (or, servers) are invited on-demand. Customers arrive as a Poisson process and join a customer queue. Customer service times are i.i.d. exponential. Agents' behavior is random in two respects. First, they can be invited into the system exogenously, and join the agent queue after a random time. Second, with some probability they rejoin the agent queue after a service completion, and otherwise leave the system. The objective is to design a real-time adaptive agent invitation scheme that keeps both customer and agent queues/waiting-times small. We study an adaptive scheme, which controls the number of pending agent invitations, based on queue-state feedback. We study the system process fluid limits, in the asymptotic regime where the customer arrival rate goes to infinity. The fluid limit trajectories have complicated behavior -- there are two domains where they follow different ODEs, and a \"reflecting\" boundary. We use the machinery of switched linear systems and common quadratic Lyapunov functions to approach the stability of fluid limits at the desired equilibrium point (with zero queues). We derive sufficient local stability conditions for the fluid limits. We conjecture that, for our model, local stability is in fact sufficient for global stability of fluid limits; the validity of this conjecture is supported by numerical and simulation experiments. When the local stability conditions do hold, simulations show good overall performance of the scheme.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/1603.03413v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/1603.03413v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          },
+          {
+            "rel": "related",
+            "href": "https://doi.org/10.1145/2896377.2901484",
+            "title": "doi"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/1006.4538v1",
+        "title": "Computational Analysis of .NET Remoting and Mobile agent in Distributed Environment",
+        "published": "2010-06-23T14:51:03Z",
+        "updated": "2010-06-23T14:51:03Z",
+        "authors": [
+          "Vivek Tiwari",
+          "G. Shailendra",
+          "Renu Tiwari",
+          "Malam Kirar"
+        ],
+        "abstract": "A mobile agent is a program that is not bound to the system on which it began execution, but rather travels amongst the hosts in the network with its code and current execution state (i.e. Distributed Environment).The implementation of distributed applications can be based on a multiplicity of technologies, e.g. plain sockets, Remote Procedure Call (RPC), Remote Method Invocation (RMI), Java Message Service (JMS), .NET Remoting, or Web Services. These technologies differ widely in complexity, interoperability, standardization, and ease of use. The Mobile Agent technology is emerging as an alternative to build a smart generation of highly distributed systems. In this work, we investigate the performance aspect of agent-based technologies for information retrieval. We present a comparative performance evaluation model of Mobile Agents versus .Net remoting by means of an analytical approach. A quantitative measurements are performed to compare .Net remoting and mobile agents using communication time, code size (agent code), Data size, number of node as performance parameters in this research work. The results depict that Mobile Agent paradigm offers a superior performance compared to .Net remoting paradigm, offers fast computational speed; procure lower invocation cost by making local invocations instead of remote invocations over the network, thereby reducing network bandwidth.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/1006.4538v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/1006.4538v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query": "all:agent AND all:\"reinforcement learning\" AND all:environment",
+    "searched_at": "2026-10-09T12:58:31.954276+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2602.12375v1",
+        "title": "Value Bonuses using Ensemble Errors for Exploration in Reinforcement Learning",
+        "published": "2026-02-12T20:12:17Z",
+        "updated": "2026-02-12T20:12:17Z",
+        "authors": [
+          "Abdul Wahab",
+          "Raksha Kumaraswamy",
+          "Martha White"
+        ],
+        "abstract": "Optimistic value estimates provide one mechanism for directed exploration in reinforcement learning (RL). The agent acts greedily with respect to an estimate of the value plus what can be seen as a value bonus. The value bonus can be learned by estimating a value function on reward bonuses, propagating local uncertainties around rewards. However, this approach only increases the value bonus for an action retroactively, after seeing a higher reward bonus from that state and action. Such an approach does not encourage the agent to visit a state and action for the first time. In this work, we introduce an algorithm for exploration called Value Bonuses with Ensemble errors (VBE), that maintains an ensemble of random action-value functions (RQFs). VBE uses the errors in the estimation of these RQFs to design value bonuses that provide first-visit optimism and deep exploration. The key idea is to design the rewards for these RQFs in such a way that the value bonus can decrease to zero. We show that VBE outperforms Bootstrap DQN and two reward bonus approaches (RND and ACB) on several classic environments used to test exploration and provide demonstrative experiments that it can scale easily to more complex environments like Atari.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2602.12375v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2602.12375v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2203.08975v2",
+        "title": "A Survey of Multi-Agent Deep Reinforcement Learning with Communication",
+        "published": "2022-03-16T22:39:46Z",
+        "updated": "2024-10-18T10:14:58Z",
+        "authors": [
+          "Changxi Zhu",
+          "Mehdi Dastani",
+          "Shihan Wang"
+        ],
+        "abstract": "Communication is an effective mechanism for coordinating the behaviors of multiple agents, broadening their views of the environment, and to support their collaborations. In the field of multi-agent deep reinforcement learning (MADRL), agents can improve the overall learning performance and achieve their objectives by communication. Agents can communicate various types of messages, either to all agents or to specific agent groups, or conditioned on specific constraints. With the growing body of research work in MADRL with communication (Comm-MADRL), there is a lack of a systematic and structural approach to distinguish and classify existing Comm-MADRL approaches. In this paper, we survey recent works in the Comm-MADRL field and consider various aspects of communication that can play a role in designing and developing multi-agent reinforcement learning systems. With these aspects in mind, we propose 9 dimensions along which Comm-MADRL approaches can be analyzed, developed, and compared. By projecting existing works into the multi-dimensional space, we discover interesting trends. We also propose some novel directions for designing future Comm-MADRL systems through exploring possible combinations of the dimensions.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2203.08975v2",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2203.08975v2",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/1812.00922v1",
+        "title": "Multi-agent Deep Reinforcement Learning with Extremely Noisy Observations",
+        "published": "2018-12-03T17:27:41Z",
+        "updated": "2018-12-03T17:27:41Z",
+        "authors": [
+          "Ozsel Kilinc",
+          "Giovanni Montana"
+        ],
+        "abstract": "Multi-agent reinforcement learning systems aim to provide interacting agents with the ability to collaboratively learn and adapt to the behaviour of other agents. In many real-world applications, the agents can only acquire a partial view of the world. Here we consider a setting whereby most agents' observations are also extremely noisy, hence only weakly correlated to the true state of the environment. Under these circumstances, learning an optimal policy becomes particularly challenging, even in the unrealistic case that an agent's policy can be made conditional upon all other agents' observations. To overcome these difficulties, we propose a multi-agent deep deterministic policy gradient algorithm enhanced by a communication medium (MADDPG-M), which implements a two-level, concurrent learning mechanism. An agent's policy depends on its own private observations as well as those explicitly shared by others through a communication medium. At any given point in time, an agent must decide whether its private observations are sufficiently informative to be shared with others. However, our environments provide no explicit feedback informing an agent whether a communication action is beneficial, rather the communication policies must also be learned through experience concurrently to the main policies. Our experimental results demonstrate that the algorithm performs well in six highly non-stationary environments of progressively higher complexity, and offers substantial performance gains compared to the baselines.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/1812.00922v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/1812.00922v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/1810.03779v3",
+        "title": "Reinforcement Learning for Improving Agent Design",
+        "published": "2018-10-09T02:32:37Z",
+        "updated": "2019-12-02T10:49:36Z",
+        "authors": [
+          "David Ha"
+        ],
+        "abstract": "In many reinforcement learning tasks, the goal is to learn a policy to manipulate an agent, whose design is fixed, to maximize some notion of cumulative reward. The design of the agent's physical structure is rarely optimized for the task at hand. In this work, we explore the possibility of learning a version of the agent's design that is better suited for its task, jointly with the policy. We propose an alteration to the popular OpenAI Gym framework, where we parameterize parts of an environment, and allow an agent to jointly learn to modify these environment parameters along with its policy. We demonstrate that an agent can learn a better structure of its body that is not only better suited for the task, but also facilitates policy learning. Joint learning of policy and structure may even uncover design principles that are useful for assisted-design applications. Videos of results at https://designrl.github.io/",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/1810.03779v3",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/1810.03779v3",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          },
+          {
+            "rel": "related",
+            "href": "https://doi.org/10.1162/artl_a_00301",
+            "title": "doi"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/1909.11939v6",
+        "title": "MERL: Multi-Head Reinforcement Learning",
+        "published": "2019-09-26T06:57:51Z",
+        "updated": "2020-03-31T07:57:20Z",
+        "authors": [
+          "Yannis Flet-Berliac",
+          "Philippe Preux"
+        ],
+        "abstract": "A common challenge in reinforcement learning is how to convert the agent's interactions with an environment into fast and robust learning. For instance, earlier work makes use of domain knowledge to improve existing reinforcement learning algorithms in complex tasks. While promising, previously acquired knowledge is often costly and challenging to scale up. Instead, we decide to consider problem knowledge with signals from quantities relevant to solve any task, e.g., self-performance assessment and accurate expectations. $\\mathcal{V}^{ex}$ is such a quantity. It is the fraction of variance explained by the value function $V$ and measures the discrepancy between $V$ and the returns. Taking advantage of $\\mathcal{V}^{ex}$, we propose MERL, a general framework for structuring reinforcement learning by injecting problem knowledge into policy gradient updates. As a result, the agent is not only optimized for a reward but learns using problem-focused quantities provided by MERL, applicable out-of-the-box to any task. In this paper: (a) We introduce and define MERL, the multi-head reinforcement learning framework we use throughout this work. (b) We conduct experiments across a variety of standard benchmark environments, including 9 continuous control tasks, where results show improved performance. (c) We demonstrate that MERL also improves transfer learning on a set of challenging pixel-based tasks. (d) We ponder how MERL tackles the problem of reward sparsity and better conditions the feature space of reinforcement learning agents.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/1909.11939v6",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/1909.11939v6",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.20725v1",
+        "title": "A reinforcement learning agent for maintenance of deteriorating systems with increasingly imperfect repairs",
+        "published": "2025-05-27T05:14:29Z",
+        "updated": "2025-05-27T05:14:29Z",
+        "authors": [
+          "Alberto Pliego Marugán",
+          "Jesús M. Pinar-Pérez",
+          "Fausto Pedro García Márquez"
+        ],
+        "abstract": "Efficient maintenance has always been essential for the successful application of engineering systems. However, the challenges to be overcome in the implementation of Industry 4.0 necessitate new paradigms of maintenance optimization. Machine learning techniques are becoming increasingly used in engineering and maintenance, with reinforcement learning being one of the most promising. In this paper, we propose a gamma degradation process together with a novel maintenance model in which repairs are increasingly imperfect, i.e., the beneficial effect of system repairs decreases as more repairs are performed, reflecting the degradational behavior of real-world systems. To generate maintenance policies for this system, we developed a reinforcement-learning-based agent using a Double Deep Q-Network architecture. This agent presents two important advantages: it works without a predefined preventive threshold, and it can operate in a continuous degradation state space. Our agent learns to behave in different scenarios, showing great flexibility. In addition, we performed an analysis of how changes in the main parameters of the environment affect the maintenance policy proposed by the agent. The proposed approach is demonstrated to be appropriate and to significatively improve long-run cost as compared with other common maintenance strategies.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2505.20725v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2505.20725v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          },
+          {
+            "rel": "related",
+            "href": "https://doi.org/10.1016/j.ress.2024.110466",
+            "title": "doi"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2012.02527v1",
+        "title": "Demonstration-efficient Inverse Reinforcement Learning in Procedurally Generated Environments",
+        "published": "2020-12-04T11:18:02Z",
+        "updated": "2020-12-04T11:18:02Z",
+        "authors": [
+          "Alessandro Sestini",
+          "Alexander Kuhnle",
+          "Andrew D. Bagdanov"
+        ],
+        "abstract": "Deep Reinforcement Learning achieves very good results in domains where reward functions can be manually engineered. At the same time, there is growing interest within the community in using games based on Procedurally Content Generation (PCG) as benchmark environments since this type of environment is perfect for studying overfitting and generalization of agents under domain shift. Inverse Reinforcement Learning (IRL) can instead extrapolate reward functions from expert demonstrations, with good results even on high-dimensional problems, however there are no examples of applying these techniques to procedurally-generated environments. This is mostly due to the number of demonstrations needed to find a good reward model. We propose a technique based on Adversarial Inverse Reinforcement Learning which can significantly decrease the need for expert demonstrations in PCG games. Through the use of an environment with a limited set of initial seed levels, plus some modifications to stabilize training, we show that our approach, DE-AIRL, is demonstration-efficient and still able to extrapolate reward functions which generalize to the fully procedural domain. We demonstrate the effectiveness of our technique on two procedural environments, MiniGrid and DeepCrawl, for a variety of tasks.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2012.02527v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2012.02527v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/1902.03657v1",
+        "title": "A Bandit Framework for Optimal Selection of Reinforcement Learning Agents",
+        "published": "2019-02-10T19:39:28Z",
+        "updated": "2019-02-10T19:39:28Z",
+        "authors": [
+          "Andreas Merentitis",
+          "Kashif Rasul",
+          "Roland Vollgraf",
+          "Abdul-Saboor Sheikh",
+          "Urs Bergmann"
+        ],
+        "abstract": "Deep Reinforcement Learning has been shown to be very successful in complex games, e.g. Atari or Go. These games have clearly defined rules, and hence allow simulation. In many practical applications, however, interactions with the environment are costly and a good simulator of the environment is not available. Further, as environments differ by application, the optimal inductive bias (architecture, hyperparameters, etc.) of a reinforcement agent depends on the application. In this work, we propose a multi-arm bandit framework that selects from a set of different reinforcement learning agents to choose the one with the best inductive bias. To alleviate the problem of sparse rewards, the reinforcement learning agents are augmented with surrogate rewards. This helps the bandit framework to select the best agents early, since these rewards are smoother and less sparse than the environment reward. The bandit has the double objective of maximizing the reward while the agents are learning and selecting the best agent after a finite number of learning steps. Our experimental results on standard environments show that the proposed framework is able to consistently select the optimal agent after a finite number of steps, while collecting more cumulative reward compared to selecting a sub-optimal architecture or uniformly alternating between different agents.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/1902.03657v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/1902.03657v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+    "searched_at": "2026-10-09T12:58:35.774964+00:00",
+    "results": [
+      {
+        "url": "https://arxiv.org/abs/2407.09486v1",
+        "title": "ENOVA: Autoscaling towards Cost-effective and Stable Serverless LLM Serving",
+        "published": "2024-05-17T09:48:31Z",
+        "updated": "2024-05-17T09:48:31Z",
+        "authors": [
+          "Tao Huang",
+          "Pengfei Chen",
+          "Kyoka Gong",
+          "Jocky Hawk",
+          "Zachary Bright",
+          "Wenxin Xie",
+          "Kecheng Huang",
+          "Zhi Ji"
+        ],
+        "abstract": "Since the increasing popularity of large language model (LLM) backend systems, it is common and necessary to deploy stable serverless serving of LLM on multi-GPU clusters with autoscaling. However, there exist challenges because the diversity and co-location of applications in multi-GPU clusters will lead to low service quality and GPU utilization. To address them, we build ENOVA, a deployment, monitoring and autoscaling service towards serverless LLM serving. ENOVA deconstructs the execution process of LLM service comprehensively, based on which ENOVA designs a configuration recommendation module for automatic deployment on any GPU clusters and a performance detection module for autoscaling. On top of them, ENOVA implements a deployment execution engine for multi-GPU cluster scheduling. The experiment results show that ENOVA significantly outperforms other state-of-the-art methods and is suitable for wide deployment in large online systems.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2407.09486v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2407.09486v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2502.15524v2",
+        "title": "HydraServe: Minimizing Cold Start Latency for Serverless LLM Serving in Public Clouds",
+        "published": "2025-02-21T15:25:21Z",
+        "updated": "2025-09-25T09:54:14Z",
+        "authors": [
+          "Chiheng Lou",
+          "Sheng Qi",
+          "Chao Jin",
+          "Dapeng Nie",
+          "Haoran Yang",
+          "Yu Ding",
+          "Xuanzhe Liu",
+          "Xin Jin"
+        ],
+        "abstract": "With the proliferation of large language model (LLM) variants, developers are turning to serverless computing for cost-efficient LLM deployment. However, public cloud providers often struggle to provide performance guarantees for serverless LLM serving due to significant cold start latency caused by substantial model sizes and complex runtime dependencies. To address this problem, we present HydraServe, a serverless LLM serving system designed to minimize cold start latency in public clouds. HydraServe proactively distributes models across servers to quickly fetch them, and overlaps cold-start stages within workers to reduce startup latency. Additionally, HydraServe strategically places workers across GPUs to avoid network contention among cold-start instances. To minimize resource consumption during cold starts, HydraServe further introduces pipeline consolidation that can merge groups of workers into individual serving endpoints. Our comprehensive evaluations under diverse settings demonstrate that HydraServe reduces the cold start latency by 1.7$\\times$-- 4.7$\\times$ and improves service level objective attainment by 1.43$\\times$--1.74$\\times$ compared to baselines.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2502.15524v2",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2502.15524v2",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2606.30391v1",
+        "title": "Energy-Aware Scheduling for Serverless LLM Serving on Shared GPUs",
+        "published": "2026-06-29T14:44:24Z",
+        "updated": "2026-06-29T14:44:24Z",
+        "authors": [
+          "Tianyu Wang",
+          "Gourav Rattihalli",
+          "Aditya Dhakal",
+          "Longfei Shangguan",
+          "Dejan Milojicic"
+        ],
+        "abstract": "As LLM inference becomes a major cloud workload, its growing energy footprint makes cluster-wide energy optimization increasingly important. Serverless LLM serving helps platforms absorb traffic volatility by elastically sharing GPU resources across models, but this sharing also makes energy optimization difficult. Multiple co-resident models run under one device-wide operating point, while their resource demands and latency slack change across execution phases and load conditions. As a result, minimizing energy requires coordinated scheduling across request placement, runtime resource adaptation, and workload consolidation. We present Festina, a profiling-guided, power-aware control plane to minimize cluster-wide energy for serverless LLM serving. Unlike common global-local schedulers that focus on throughput or tail latency, Festina makes energy-first decisions by jointly coordinating request placement, SM partitioning, and GPU operating points under TTFT/TBT SLOs. In our system, a lightweight global scheduler performs fast, SLO-safe, energy-aware placement using constant-time lookups from offline profiles and GPU state summaries. On each GPU, a phase-aware local scheduler continuously adapts task batching and compute resources to minimize power consumption. Festina further performs energy-aware workload consolidation to reduce GPUs' static power consumption via SLO-aware migration. Comparison with four SOTA LLM serving systems and one DVFS-augmented system demonstrates that Festina reduces energy consumption by up to 56% while maintaining parity in SLO attainment (within a 2% margin)",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2606.30391v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2606.30391v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2609.23130v1",
+        "title": "From Inference Engine to Inference Control Plane: Connecting vLLM, llm-d, and the Evolution of Efficient Distributed LLM Serving",
+        "published": "2026-09-19T16:58:20Z",
+        "updated": "2026-09-19T16:58:20Z",
+        "authors": [
+          "Twinkll Sisodia"
+        ],
+        "abstract": "Large language model (LLM) inference is evolving from an engine-local optimization problem into a distributed control problem involving reusable state, phase placement, heterogeneous accelerators, networking, autoscaling, reliability, and service-level objectives. This paper connects that transition across peer-reviewed systems research, open-source implementations, and documented production studies. It treats vLLM and llm-d as complementary layers: model-serving engines optimize execution through mechanisms such as PagedAttention, continuous batching, kernels, quantization, and parallelism, while an inference control plane can optimize where, when, and under what policy execution occurs across a fleet. The contribution is synthesis rather than a new benchmark; all reported performance and deployment results remain attributed to their original sources. The combined evidence suggests that the scarce resource in modern inference is shifting from raw FLOPs alone toward managed state, placement, network movement, reliability, and decision quality. We propose an Inference Execution Planner that selects feasible execution plans rather than only endpoints, including aggregated versus disaggregated topology, KV source and transfer action, hardware variant, routing/admission policy, and slower scaling decisions. We also provide a source-local benchmark atlas, a bottleneck-migration taxonomy, practical deployment guidance, an evaluation framework based on SLO-goodput, and research questions for agentic, multimodal, heterogeneous, and resilient inference.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2609.23130v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2609.23130v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2405.04532v3",
+        "title": "QServe: W4A8KV4 Quantization and System Co-design for Efficient LLM Serving",
+        "published": "2024-05-07T17:59:30Z",
+        "updated": "2025-05-01T02:14:05Z",
+        "authors": [
+          "Yujun Lin",
+          "Haotian Tang",
+          "Shang Yang",
+          "Zhekai Zhang",
+          "Guangxuan Xiao",
+          "Chuang Gan",
+          "Song Han"
+        ],
+        "abstract": "Quantization can accelerate large language model (LLM) inference. Going beyond INT8 quantization, the research community is actively exploring even lower precision, such as INT4. Nonetheless, state-of-the-art INT4 quantization techniques only accelerate low-batch, edge LLM inference, failing to deliver performance gains in large-batch, cloud-based LLM serving. We uncover a critical issue: existing INT4 quantization methods suffer from significant runtime overhead (20-90%) when dequantizing either weights or partial sums on GPUs. To address this challenge, we introduce QoQ, a W4A8KV4 quantization algorithm with 4-bit weight, 8-bit activation, and 4-bit KV cache. QoQ stands for quattuor-octo-quattuor, which represents 4-8-4 in Latin. QoQ is implemented by the QServe inference library that achieves measured speedup. The key insight driving QServe is that the efficiency of LLM serving on GPUs is critically influenced by operations on low-throughput CUDA cores. Building upon this insight, in QoQ algorithm, we introduce progressive quantization that can allow low dequantization overhead in W4A8 GEMM. Additionally, we develop SmoothAttention to effectively mitigate the accuracy degradation incurred by 4-bit KV quantization. In the QServe system, we perform compute-aware weight reordering and take advantage of register-level parallelism to reduce dequantization latency. We also make fused attention memory-bound, harnessing the performance gain brought by KV4 quantization. As a result, QServe improves the maximum achievable serving throughput of Llama-3-8B by 1.2x on A100, 1.4x on L40S; and Qwen1.5-72B by 2.4x on A100, 3.5x on L40S, compared to TensorRT-LLM. Remarkably, QServe on L40S GPU can achieve even higher throughput than TensorRT-LLM on A100. Thus, QServe effectively reduces the dollar cost of LLM serving by 3x. Code is available at https://github.com/mit-han-lab/omniserve.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2405.04532v3",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2405.04532v3",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.09554v2",
+        "title": "Understanding the Performance and Power of LLM Inferencing on Edge Accelerators",
+        "published": "2025-06-11T09:36:32Z",
+        "updated": "2025-06-12T08:41:13Z",
+        "authors": [
+          "Mayank Arya",
+          "Yogesh Simmhan"
+        ],
+        "abstract": "Large Language Models (LLMs) have demonstrated exceptional benefits to a wide range of domains, for tasks as diverse as code generation and robot navigation. While LLMs are usually served from cloud data centers, mission-critical and privacy-sensitive applications may require local hosting of open LLM models. Given the large GPU memory footprint needed for LLMs, edge accelerators such as Nvidia Jetson Orin AGX with 64GB of shared GPU-CPU RAM are a compelling choice. However, the feasibility and performance of LLM inference on edge accelerators is under-explored. This study presents a detailed evaluation of LLM inference on the NVIDIA Jetson Orin AGX, on four SOTA models ranging from 2.7B to 32.8B parameters, such as Meta Llama3.1, Microsoft-Phi2, Deepseek-R1-Qwen. We investigate the impact of varying batch sizes, sequence lengths, and quantization levels on latency, throughput, and perplexity, and also explore various custom power modes on the Orin AGX to perform power and energy consumption analysis. Our findings offer interesting insights on the trade-offs between efficiency, inference speed and resource use, e.g., increasing the sequence length causes a decrease in token throughput and quantization causes smaller LLMs to be slower. These results can help optimize LLM serving on edge accelerators for practical applications.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2506.09554v2",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2506.09554v2",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2411.15664v1",
+        "title": "Enabling Efficient Serverless Inference Serving for LLM (Large Language Model) in the Cloud",
+        "published": "2024-11-23T22:19:37Z",
+        "updated": "2024-11-23T22:19:37Z",
+        "authors": [
+          "Himel Ghosh"
+        ],
+        "abstract": "This review report discusses the cold start latency in serverless inference and existing solutions. It particularly reviews the ServerlessLLM method, a system designed to address the cold start problem in serverless inference for large language models. Traditional serverless approaches struggle with high latency due to the size of LLM checkpoints and the overhead of initializing GPU resources. ServerlessLLM introduces a multitier checkpoint loading system, leveraging underutilized GPU memory and storage to reduce startup times by 6--8x compared to existing methods. It also proposes live inference migration and a startup-time-optimized model scheduler, ensuring efficient resource allocation and minimizing delays. This system significantly improves performance and scalability in serverless environments for LLM workloads. Besides ServerlessLLM, several other methods from recent research literature, including Rainbowcake, are reviewed in this paper. Further discussions explore how FaaS providers tackle cold starts and the possible future scopes.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2411.15664v1",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2411.15664v1",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          }
+        ]
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.03243v3",
+        "title": "Ranking Before Serving: Low-Latency LLM Serving via Pairwise Learning-to-Rank",
+        "published": "2025-09-25T07:26:38Z",
+        "updated": "2026-06-26T09:26:22Z",
+        "authors": [
+          "Yiheng Tao",
+          "Yihe Zhang",
+          "Matthew Dearing",
+          "Xin Wang",
+          "Yuping Fan",
+          "Michael E. Papka",
+          "Zhiling Lan"
+        ],
+        "abstract": "Efficient scheduling of large language model (LLM) inference tasks is critical for achieving low latency and high throughput, a challenge that is becoming increasingly acute with the rise of reasoning-capable LLMs whose generation lengths are highly variable. Traditional strategies like First Come, First-Serve (FCFS) often suffer from Head-of-Line (HOL) blocking, where long-running tasks delay shorter ones queued behind them. In this paper, we introduce PARS, a prompt-aware LLM task scheduler that mitigates HOL blocking by approximating shortest-job-first (SJF) scheduling through pairwise ranking with a margin ranking loss. PARS effectively predicts response-length-based task ordering directly from prompts, thereby optimizing scheduling decisions with minimal overhead. In addition, it integrates seamlessly with vLLM, a state-of-the-art LLM serving system, for the research community. Extensive experiments across multiple LLM models and real-world inference use cases, including chat, math, and code generation, demonstrate that PARS significantly reduces latency by up to 15.7x compared to the vLLM default scheduler. Cross-model evaluations demonstrate that our design generalizes effectively, allowing effective scheduling across diverse LLMs without requiring model-specific retraining.",
+        "links": [
+          {
+            "href": "https://arxiv.org/abs/2510.03243v3",
+            "rel": "alternate",
+            "type": "text/html"
+          },
+          {
+            "href": "https://arxiv.org/pdf/2510.03243v3",
+            "rel": "related",
+            "type": "application/pdf",
+            "title": "pdf"
+          },
+          {
+            "rel": "related",
+            "href": "https://doi.org/10.23919/ISC.2026.11520485",
+            "title": "doi"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,79 @@
+{
+  "item": {
+    "topic": "agent-filesystems",
+    "id": "sysspec",
+    "arxiv": "2512.13047v4",
+    "kind": "arxiv-paper",
+    "title": "Sharpen the Spec, Cut the Code: A Case for Generative File System with SYSSPEC",
+    "landing_url": "https://arxiv.org/abs/2512.13047v4",
+    "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+    "published": "2025-12-15T07:15:01Z",
+    "authors": [
+      "Qingyuan Liu",
+      "Mo Zou",
+      "Hengbin Zhang",
+      "Dong Du",
+      "Yubin Xia",
+      "Haibo Chen"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:15.138982+00:00",
+  "path": "sources/papers/agent-filesystems/sysspec",
+  "requested_url": "https://arxiv.org/abs/2512.13047v4",
+  "pdf_url": "https://arxiv.org/pdf/2512.13047v4",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "e8d2d56a575eab95c452e2d22a06593562c66f455e26592a9428d1e57a63e431",
+      "bytes": 4770266
+    },
+    "paper.txt": {
+      "sha256": "f43df0978e55dfe3f76d5889765be82c883fd8b757b639eb06bdce9ec42d60e1",
+      "bytes": 151183
+    },
+    "paper.pdf": {
+      "sha256": "8b040d0f07094e478843c16cbe643d2195a2d59c62c5d0cc6bd9d6dada020658",
+      "bytes": 3030921
+    },
+    "landing.html": {
+      "sha256": "fef4db3eac222b628ee81db9a0ab2d4eafe30b85223b035fe0cf26ec710cc75d",
+      "bytes": 44338
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2512.13047v4",
+    "retrieved_at": "2026-10-09T13:06:18.804338+00:00",
+    "fields": {
+      "citation_title": [
+        "Sharpen the Spec, Cut the Code: A Case for Generative File System with SYSSPEC"
+      ],
+      "citation_author": [
+        "Liu, Qingyuan",
+        "Zou, Mo",
+        "Zhang, Hengbin",
+        "Du, Dong",
+        "Xia, Yubin",
+        "Chen, Haibo"
+      ],
+      "citation_date": [
+        "2025/12/15"
+      ],
+      "citation_online_date": [
+        "2026/02/10"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2512.13047"
+      ],
+      "citation_arxiv_id": [
+        "2512.13047"
+      ],
+      "citation_abstract": [
+        "File systems are critical OS components that require constant evolution to support new hardware and emerging application needs. However, the traditional paradigm of developing features, fixing bugs, and maintaining the system incurs significant overhead, especially as systems grow in complexity. This paper proposes a new paradigm, generative file systems, which leverages Large Language Models (LLMs) to generate and evolve a file system from prompts, effectively addressing the need for robust evolution. Despite the widespread success of LLMs in code generation, attempts to create a functional file system have thus far been unsuccessful, mainly due to the ambiguity of natural language prompts. This paper introduces SYSSPEC, a framework for developing generative file systems. Its key insight is to replace ambiguous natural language with principles adapted from formal methods. Instead of imprecise prompts, SYSSPEC employs a multi-part specification that accurately describes a file system's functionality, modularity, and concurrency. The specification acts as an unambiguous blueprint, guiding LLMs to generate expected code flexibly. To manage evolution, we develop a DAG-structured patch that operates on the specification itself, enabling new features to be added without violating existing invariants. Moreover, the SYSSPEC toolchain features a set of LLM-based agents with mechanisms to mitigate hallucination during construction and evolution. We demonstrate our approach by generating SPECFS, a concurrent file system. SPECFS demonstrates equivalent level of correctness to that of a manually-coded baseline across hundreds of regression tests. We further confirm its evolvability by seamlessly integrating 10 real-world features from Ext4. Our work shows that a specification-guided approach makes generating and evolving complex systems not only feasible but also highly effective."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

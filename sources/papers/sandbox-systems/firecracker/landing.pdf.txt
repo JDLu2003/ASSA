@@ -1,0 +1,64 @@
+Firecracker: Lightweight Virtualization
+for Serverless Applications
+Alexandru Agache, Marc Brooker, Andreea Florescu, Alexandra Iordache, Anthony Liguori, Rolf
+Neugebauer, Phil Piwonka, and Diana-Maria Popa, Amazon Web Services
+
+Serverless containers and functions are widely used for deploying and managing software in the cloud.
+Their popularity is due to reduced cost of operations, improved utilization of hardware, and faster
+scaling than traditional deployment methods. The economics and scale of serverless applications
+demand that workloads from multiple customers run on the same hardware with minimal overhead,
+while preserving strong security and performance isolation. The traditional view is that there is a
+choice between virtualization with strong security and high overhead, and container technologies with
+weaker security and minimal overhead. This tradeoff is unacceptable to public infrastructure providers,
+who need both strong security and minimal overhead. To meet this need, we developed Firecracker, a
+new open source Virtual Machine Monitor (VMM) specialized for serverless workloads, but generally
+useful for containers, functions and other compute workloads within a reasonable set of constraints.
+We have deployed Firecracker in two publically-available serverless compute services at AWS (Lambda
+and Fargate), where it supports millions of production workloads, and trillions of requests per month.
+We describe how specializing for serverless informed the design of Firecracker, and what we learned
+from seamlessly migrating AWS Lambda customers to Firecracker.
+
+
+
+
+                  NSDI '20 Open Access Sponsored by NetApp
+
+
+
+Open Access Media
+USENIX is committed to Open Access to the research presented at our events. Papers and proceedings
+are freely available to everyone once the event begins. Any video, audio, and/or slides that are posted
+after the event are also free and open to everyone. Support USENIX and our commitment to Open
+Access.
+
+
+BibTeX
+
+
+    Agache PDF              View the slides
+Presentation Video
+
+
+
+
+AT T E N D                  PROGRAM                                PA R T I C I PAT E
+Registration Information    Program at a Glance                    Call for Papers
+Registration Discounts      Technical Sessions                     Call for Posters
+Venue, Hotel, and Travel    Activities                             Instructions for Presenters
+                            Poster Session and Reception
+                            Birds-of-a-Feather Sessions (BoFs)
+
+SPONSORSHIP                                      ABOUT
+Exhibitor Services                               Symposium Organizers
+                                                 Past Symposia
+                                                 Code of Conduct
+                                                 Questions
+
+
+
+
+   
+Privacy Policy Contact Us
+© USENIX 2026
+EIN 13-3055038
+

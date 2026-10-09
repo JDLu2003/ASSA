@@ -10,7 +10,7 @@
   "path": "sources/papers/agent-surveys/autonomous-agents-survey",
   "requested_url": "https://arxiv.org/abs/2308.11432",
   "pdf_url": "https://arxiv.org/pdf/2308.11432",
-  "source_status": "unavailable: CalledProcessError",
+  "source_status": "downloaded",
   "text_method": "pdftotext -layout",
   "review_status": "captured; relevance requires source review",
   "status": "captured",
@@ -22,6 +22,62 @@
     "paper.pdf": {
       "sha256": "8709507742c260a5a92b4690ffc0459a0ab9af16dc7a5478d253a6e7b57bf23a",
       "bytes": 5788348
+    },
+    "landing.html": {
+      "sha256": "30251d83d497759c4482552fa2a380455e02740acb3a87ff852f9d23cedb419c",
+      "bytes": 46496
+    },
+    "source.tar": {
+      "sha256": "6681674832b00ae4653b831d1c720573c51ad3f381b2c7ad6d86dca3682b055d",
+      "bytes": 5224394
     }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2308.11432",
+    "retrieved_at": "2026-10-09T13:06:17.436709+00:00",
+    "fields": {
+      "citation_title": [
+        "A Survey on Large Language Model based Autonomous Agents"
+      ],
+      "citation_author": [
+        "Wang, Lei",
+        "Ma, Chen",
+        "Feng, Xueyang",
+        "Zhang, Zeyu",
+        "Yang, Hao",
+        "Zhang, Jingsen",
+        "Chen, Zhiyuan",
+        "Tang, Jiakai",
+        "Chen, Xu",
+        "Lin, Yankai",
+        "Zhao, Wayne Xin",
+        "Wei, Zhewei",
+        "Wen, Ji-Rong"
+      ],
+      "citation_doi": [
+        "10.1007/s11704-024-40231-1"
+      ],
+      "citation_date": [
+        "2023/08/22"
+      ],
+      "citation_online_date": [
+        "2025/03/02"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2308.11432"
+      ],
+      "citation_arxiv_id": [
+        "2308.11432"
+      ],
+      "citation_abstract": [
+        "Autonomous agents have long been a prominent research focus in both academic and industry communities. Previous research in this field often focuses on training agents with limited knowledge within isolated environments, which diverges significantly from human learning processes, and thus makes the agents hard to achieve human-like decisions. Recently, through the acquisition of vast amounts of web knowledge, large language models (LLMs) have demonstrated remarkable potential in achieving human-level intelligence. This has sparked an upsurge in studies investigating LLM-based autonomous agents. In this paper, we present a comprehensive survey of these studies, delivering a systematic review of the field of LLM-based autonomous agents from a holistic perspective. More specifically, we first discuss the construction of LLM-based autonomous agents, for which we propose a unified framework that encompasses a majority of the previous work. Then, we present a comprehensive overview of the diverse applications of LLM-based autonomous agents in the fields of social science, natural science, and engineering. Finally, we delve into the evaluation strategies commonly used for LLM-based autonomous agents. Based on the previous studies, we also present several challenges and future directions in this field. To keep track of this field and continuously update our survey, we maintain a repository of relevant references at https://github.com/Paitesanshi/LLM-Agent-Survey."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  },
+  "source_recovery": {
+    "retrieved_at": "2026-10-09T13:08:07.425979+00:00",
+    "url": "https://arxiv.org/src/2308.11432",
+    "reason": "Previously unavailable download succeeded on retry; archive format verified"
   }
 }

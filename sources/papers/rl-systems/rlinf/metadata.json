@@ -1,0 +1,54 @@
+{
+  "item": {
+    "id": "rlinf",
+    "topic": "rl-systems",
+    "title": "RLinf: Flexible and Efficient Large-Scale Reinforcement Learning via Macro-to-Micro Flow Transformation",
+    "url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+    "pdf_url": "https://www.usenix.org/system/files/osdi26-yu-chao.pdf",
+    "venue": "OSDI 2026",
+    "kind": "publisher-paper"
+  },
+  "path": "sources/papers/rl-systems/rlinf",
+  "capture_started_at": "2026-10-09T13:08:26.761444+00:00",
+  "status": "captured",
+  "requested_url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+  "pdf_url": "https://www.usenix.org/system/files/osdi26-yu-chao.pdf",
+  "landing_capture": {
+    "requested_url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+    "final_url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao",
+    "http_status": 200,
+    "title": "RLinf: Flexible and Efficient Large-Scale Reinforcement Learning via Macro-to-Micro Flow Transformation | USENIX",
+    "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+    "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+    "review_status": "captured; relevance and completeness require source review"
+  },
+  "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+  "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+  "files": {
+    "paper.txt": {
+      "sha256": "77333d7c8a2ac320201e13cb61e740b9fd09c9da151d49900ef36017de248da8",
+      "bytes": 139115
+    },
+    "paper.pdf": {
+      "sha256": "089012384cfdee9edec090815974fccd80e9be790cdae212766f26cf105ab8c4",
+      "bytes": 1930421
+    },
+    "landing.html": {
+      "sha256": "7a2f81136b80bce3b424bcf4bd6b366bad22f4a55cb0e26386dfd47cd2ced766",
+      "bytes": 62890
+    },
+    "landing.txt": {
+      "sha256": "ecab0cbf12bf64c10fe750bde5e9055efa8ae63eaf4815d55593f3ee1b7934ca",
+      "bytes": 3647
+    },
+    "landing.pdf.txt": {
+      "sha256": "8798bfcba2e232156934ef6796d8f3be8bfeef6035d76774563c1be2b5bd4de3",
+      "bytes": 3489
+    },
+    "landing.pdf": {
+      "sha256": "63278f1e7295a2dbd1f5b0c6fb321afaf21ba8ee3104c90db877a25f54bce945",
+      "bytes": 55618
+    }
+  },
+  "capture_finished_at": "2026-10-09T13:08:31.353386+00:00"
+}

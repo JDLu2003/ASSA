@@ -1,0 +1,73 @@
+{
+  "item": {
+    "topic": "agent-performance",
+    "id": "adaptive-gpu-agents",
+    "arxiv": "2512.22149v2",
+    "kind": "arxiv-paper",
+    "title": "Adaptive GPU Resource Allocation for Multi-Agent Collaborative Reasoning in Serverless Environments",
+    "landing_url": "https://arxiv.org/abs/2512.22149v2",
+    "discovered_by": "all:agent AND all:serverless",
+    "authors": [
+      "Guilin Zhang",
+      "Wulan Guo",
+      "Ziqi Tan"
+    ],
+    "published": "2025-12-15T09:21:48Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:46.107059+00:00",
+  "path": "sources/papers/agent-performance/adaptive-gpu-agents",
+  "requested_url": "https://arxiv.org/abs/2512.22149v2",
+  "pdf_url": "https://arxiv.org/pdf/2512.22149v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "7070515a664fe1110d9f18bfdf6bc272e2b437750755b7e564467efb13009455",
+      "bytes": 511066
+    },
+    "paper.txt": {
+      "sha256": "05b6a0558b5858935d4248088c36a64ce1275095e6bd8e0b0e8de9b94ecd9879",
+      "bytes": 35940
+    },
+    "paper.pdf": {
+      "sha256": "b2e2cae8c2026890d7a069f8da894fb4a638ff5d5862fd4ef2853c8c2f68e86c",
+      "bytes": 641314
+    },
+    "landing.html": {
+      "sha256": "afd6c94f85c313c545ccd6507a95d4ad6a74eeab74dd6c20bbf3245586fa0b7d",
+      "bytes": 43620
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2512.22149v2",
+    "retrieved_at": "2026-10-09T13:06:19.214498+00:00",
+    "fields": {
+      "citation_title": [
+        "Adaptive GPU Resource Allocation for Multi-Agent Collaborative Reasoning in Serverless Environments"
+      ],
+      "citation_author": [
+        "Zhang, Guilin",
+        "Guo, Wulan",
+        "Tan, Ziqi"
+      ],
+      "citation_date": [
+        "2025/12/15"
+      ],
+      "citation_online_date": [
+        "2026/01/01"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2512.22149"
+      ],
+      "citation_arxiv_id": [
+        "2512.22149"
+      ],
+      "citation_abstract": [
+        "Multi-agent systems powered by large language models have emerged as a promising paradigm for solving complex reasoning tasks through collaborative intelligence. However, efficiently deploying these systems on serverless GPU platforms presents significant resource allocation challenges due to heterogeneous agent workloads, varying computational demands, and the need for cost-effective scaling. This paper presents an adaptive GPU resource allocation framework that achieves 85% latency reduction compared to round-robin scheduling while maintaining comparable throughput to static allocation, using an O(N) complexity algorithm for real-time adaptation. Our approach dynamically allocates GPU resources based on workload characteristics, agent priorities, and minimum resource requirements, enabling efficient utilization while maintaining quality of service. The framework addresses three key challenges: (1) heterogeneous computational demands across lightweight coordinators and heavyweight specialists, (2) dynamic workload fluctuations requiring millisecond-scale reallocation, and (3) capacity constraints in serverless environments. Through comprehensive simulations modeling realistic multi-agent workflows with four heterogeneous agents, we demonstrate that adaptive allocation outperforms static equal and round-robin strategies across latency, cost, and GPU utilization metrics. The framework provides a practical solution for deploying cost-efficient multi-agent AI systems on serverless GPU infrastructure."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

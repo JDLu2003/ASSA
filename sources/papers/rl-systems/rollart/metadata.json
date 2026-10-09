@@ -1,0 +1,54 @@
+{
+  "item": {
+    "id": "rollart",
+    "topic": "rl-systems",
+    "title": "RollArt: Disaggregated Multi-Task Agentic RL Training at Scale",
+    "url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+    "pdf_url": "https://www.usenix.org/system/files/osdi26-gao.pdf",
+    "venue": "OSDI 2026",
+    "kind": "publisher-paper"
+  },
+  "path": "sources/papers/rl-systems/rollart",
+  "capture_started_at": "2026-10-09T13:08:35.564207+00:00",
+  "status": "captured",
+  "requested_url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+  "pdf_url": "https://www.usenix.org/system/files/osdi26-gao.pdf",
+  "landing_capture": {
+    "requested_url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+    "final_url": "https://www.usenix.org/conference/osdi26/presentation/gao",
+    "http_status": 200,
+    "title": "RollArt: Disaggregated Multi-Task Agentic RL Training at Scale | USENIX",
+    "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+    "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+    "review_status": "captured; relevance and completeness require source review"
+  },
+  "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+  "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+  "files": {
+    "paper.txt": {
+      "sha256": "6fe6502c242bae07bc8e6bf0d4d0b147e5b622a1fa689f7b5fddee92568f4da8",
+      "bytes": 151783
+    },
+    "paper.pdf": {
+      "sha256": "49344555d8e08db2621b0664adcb68d0f95ce7021c06542a1da08ce75cb89e7d",
+      "bytes": 1553369
+    },
+    "landing.html": {
+      "sha256": "01685d09b7fe77f0423ef56982b6b1dcfd65844ca7cf87194918a2e9147f4299",
+      "bytes": 57717
+    },
+    "landing.txt": {
+      "sha256": "b65725e6a12d27ec0df155de2ce49c9ecff5aa6d8fe1ac757cd68f09b0e60e28",
+      "bytes": 3315
+    },
+    "landing.pdf.txt": {
+      "sha256": "7a2bf351ac6422965a98b9b0fde6e378258d96e43bd2d06922c1fc2728e2d7fa",
+      "bytes": 3170
+    },
+    "landing.pdf": {
+      "sha256": "3fd9fc582a386ec6274b05eaa1d11c5c1b2415cbf6724040c6a8dd24b65ce390",
+      "bytes": 42181
+    }
+  },
+  "capture_finished_at": "2026-10-09T13:08:39.733673+00:00"
+}

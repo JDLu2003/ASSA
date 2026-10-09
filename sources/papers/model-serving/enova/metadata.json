@@ -1,0 +1,83 @@
+{
+  "item": {
+    "topic": "model-serving",
+    "id": "enova",
+    "arxiv": "2407.09486v1",
+    "kind": "arxiv-paper",
+    "title": "ENOVA: Autoscaling towards Cost-effective and Stable Serverless LLM Serving",
+    "landing_url": "https://arxiv.org/abs/2407.09486v1",
+    "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+    "published": "2024-05-17T09:48:31Z",
+    "authors": [
+      "Tao Huang",
+      "Pengfei Chen",
+      "Kyoka Gong",
+      "Jocky Hawk",
+      "Zachary Bright",
+      "Wenxin Xie",
+      "Kecheng Huang",
+      "Zhi Ji"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:20.527955+00:00",
+  "path": "sources/papers/model-serving/enova",
+  "requested_url": "https://arxiv.org/abs/2407.09486v1",
+  "pdf_url": "https://arxiv.org/pdf/2407.09486v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "a0e995c22966bb938097c92a77c0a63f313cdc5163d65bf9f9f5e24e6a4f7eb5",
+      "bytes": 3354406
+    },
+    "paper.txt": {
+      "sha256": "349af628b9c959c7901708a00210060fd990f979dfc4307b9bf0b8a1f991e8b2",
+      "bytes": 87784
+    },
+    "paper.pdf": {
+      "sha256": "5962e4853957f002b4c764818efe62f84f7050d82a2443b679b5f3a6269b39de",
+      "bytes": 2730253
+    },
+    "landing.html": {
+      "sha256": "c769d9a03d80c8726603e4e36fef11d6672b591da75f76aa86454348071a32f5",
+      "bytes": 41370
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2407.09486v1",
+    "retrieved_at": "2026-10-09T13:06:17.837654+00:00",
+    "fields": {
+      "citation_title": [
+        "ENOVA: Autoscaling towards Cost-effective and Stable Serverless LLM Serving"
+      ],
+      "citation_author": [
+        "Huang, Tao",
+        "Chen, Pengfei",
+        "Gong, Kyoka",
+        "Hawk, Jocky",
+        "Bright, Zachary",
+        "Xie, Wenxin",
+        "Huang, Kecheng",
+        "Ji, Zhi"
+      ],
+      "citation_date": [
+        "2024/05/17"
+      ],
+      "citation_online_date": [
+        "2024/05/17"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2407.09486"
+      ],
+      "citation_arxiv_id": [
+        "2407.09486"
+      ],
+      "citation_abstract": [
+        "Since the increasing popularity of large language model (LLM) backend systems, it is common and necessary to deploy stable serverless serving of LLM on multi-GPU clusters with autoscaling. However, there exist challenges because the diversity and co-location of applications in multi-GPU clusters will lead to low service quality and GPU utilization. To address them, we build ENOVA, a deployment, monitoring and autoscaling service towards serverless LLM serving. ENOVA deconstructs the execution process of LLM service comprehensively, based on which ENOVA designs a configuration recommendation module for automatic deployment on any GPU clusters and a performance detection module for autoscaling. On top of them, ENOVA implements a deployment execution engine for multi-GPU cluster scheduling. The experiment results show that ENOVA significantly outperforms other state-of-the-art methods and is suitable for wide deployment in large online systems."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

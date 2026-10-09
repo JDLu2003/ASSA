@@ -1,0 +1,725 @@
+{
+  "run_at": "2026-10-09T13:02:09.162641+00:00",
+  "results": [
+    {
+      "item": {
+        "topic": "rl-systems",
+        "id": "rhymerl",
+        "arxiv": "2508.18588v1",
+        "kind": "arxiv-paper",
+        "title": "History Rhymes: Accelerating LLM Reinforcement Learning with RhymeRL",
+        "landing_url": "https://arxiv.org/abs/2508.18588v1",
+        "discovered_by": "all:RhymeRL",
+        "authors": [
+          "Jingkai He",
+          "Tianjian Li",
+          "Erhu Feng",
+          "Dong Du",
+          "Qian Liu",
+          "Tao Liu",
+          "Yubin Xia",
+          "Haibo Chen"
+        ],
+        "published": "2025-08-26T01:42:46Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:30.269514+00:00",
+      "path": "sources/papers/rl-systems/rhymerl",
+      "requested_url": "https://arxiv.org/abs/2508.18588v1",
+      "pdf_url": "https://arxiv.org/pdf/2508.18588v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "9024b6c80e85d923509d97ae26f93a5d382081ee747266f816370047dd8e13db",
+          "bytes": 2724085
+        },
+        "paper.txt": {
+          "sha256": "539b026ca04de0dd58defbe51bf24db777478b4685443c6efeea67b0b59c0013",
+          "bytes": 140722
+        },
+        "paper.pdf": {
+          "sha256": "204ffbafadf18e9807cee98a009887a164942f75099b4fa6f2951bb4b665a158",
+          "bytes": 3443377
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:33.255738+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "benchmark-disclosure-audit",
+        "arxiv": "2605.21404v1",
+        "kind": "arxiv-paper",
+        "title": "What Twelve LLM Agent Benchmark Papers Disclose About Themselves: A Pilot Audit and an Open Scoring Schema",
+        "landing_url": "https://arxiv.org/abs/2605.21404v1",
+        "discovered_by": "all:LLM AND all:agent AND (all:latency OR all:cost) AND all:benchmark",
+        "authors": [
+          "Mahdi Naser Moghadasi",
+          "Faezeh Ghaderi"
+        ],
+        "published": "2026-05-20T17:02:36Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:33.255838+00:00",
+      "path": "sources/papers/agent-evaluation/benchmark-disclosure-audit",
+      "requested_url": "https://arxiv.org/abs/2605.21404v1",
+      "pdf_url": "https://arxiv.org/pdf/2605.21404v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "7bd33a873d244813544d0696671a0b5752142deafe21a7b58fdeef9af8a5a2c6",
+          "bytes": 89648
+        },
+        "paper.txt": {
+          "sha256": "f51140ff23bde30cb05d839af8635895fa41e86d69c0f732b5b95434421c3352",
+          "bytes": 68731
+        },
+        "paper.pdf": {
+          "sha256": "a80dd1a1430ea20f7491e338e93af57cf751d46ae0bb9deef938604ea06c106e",
+          "bytes": 276917
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:33.867000+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-performance",
+        "id": "trajectory-reduction",
+        "arxiv": "2509.23586v2",
+        "kind": "arxiv-paper",
+        "title": "Reducing Cost of LLM Agents with Trajectory Reduction",
+        "landing_url": "https://arxiv.org/abs/2509.23586v2",
+        "discovered_by": "all:LLM AND all:agent AND (all:latency OR all:cost) AND all:benchmark",
+        "authors": [
+          "Yuan-An Xiao",
+          "Pengfei Gao",
+          "Chao Peng",
+          "Yingfei Xiong"
+        ],
+        "published": "2025-09-28T02:43:41Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:33.867073+00:00",
+      "path": "sources/papers/agent-performance/trajectory-reduction",
+      "requested_url": "https://arxiv.org/abs/2509.23586v2",
+      "pdf_url": "https://arxiv.org/pdf/2509.23586v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "d87642997f89e5f83337c8ab4639dedcd16ffb342cf443451209270735f1e4c0",
+          "bytes": 429476
+        },
+        "paper.txt": {
+          "sha256": "8c9eb4aa17a582b0b384cf3b606b1f5f4ff68c216deca5b3b913166c822cc9f6",
+          "bytes": 101155
+        },
+        "paper.pdf": {
+          "sha256": "192cfc95b0596464ff11c5b5c3e5a6f13a5c84a64a35ac7ddc7c8784761cc88a",
+          "bytes": 1040745
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:36.793377+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-performance",
+        "id": "budgetmlagent",
+        "arxiv": "2411.07464v2",
+        "kind": "arxiv-paper",
+        "title": "BudgetMLAgent: A Cost-Effective LLM Multi-Agent system for Automating Machine Learning Tasks",
+        "landing_url": "https://arxiv.org/abs/2411.07464v2",
+        "discovered_by": "all:LLM AND all:agent AND (all:latency OR all:cost) AND all:benchmark",
+        "authors": [
+          "Shubham Gandhi",
+          "Manasi Patwardhan",
+          "Lovekesh Vig",
+          "Gautam Shroff"
+        ],
+        "published": "2024-11-12T00:57:30Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:36.793469+00:00",
+      "path": "sources/papers/agent-performance/budgetmlagent",
+      "requested_url": "https://arxiv.org/abs/2411.07464v2",
+      "pdf_url": "https://arxiv.org/pdf/2411.07464v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "3354773b7e1d2701ff78ee62b3f1ce43206de96cc2ce564c0086fdbd0a7baaf6",
+          "bytes": 774867
+        },
+        "paper.txt": {
+          "sha256": "da9c5f2c7ca4bfac3d7bc1561c14b496dc75dab2fcc38ac898570eeabdab1adc",
+          "bytes": 69243
+        },
+        "paper.pdf": {
+          "sha256": "99b711c8f5ef321292eb8bb3da5108fe7946125dffccdaf9643bf300c9b3214b",
+          "bytes": 960898
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:37.605441+00:00"
+    },
+    {
+      "item": {
+        "topic": "rl-systems",
+        "id": "hetrl",
+        "arxiv": "2512.12476v2",
+        "kind": "arxiv-paper",
+        "title": "HetRL: Efficient Reinforcement Learning for LLMs in Heterogeneous Environments",
+        "landing_url": "https://arxiv.org/abs/2512.12476v2",
+        "discovered_by": "all:LLM AND all:\"reinforcement learning\" AND (all:environment OR all:sandbox) AND (all:system OR all:infrastructure)",
+        "authors": [
+          "Yongjun He",
+          "Shuai Zhang",
+          "Jiading Gai",
+          "Xiyuan Zhang",
+          "Boran Han",
+          "Bernie Wang",
+          "Huzefa Rangwala",
+          "George Karypis"
+        ],
+        "published": "2025-12-13T22:20:51Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:37.605513+00:00",
+      "path": "sources/papers/rl-systems/hetrl",
+      "requested_url": "https://arxiv.org/abs/2512.12476v2",
+      "pdf_url": "https://arxiv.org/pdf/2512.12476v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "8d975357d189121de7d400217754c6c4a4f9983feb761cb8ff00447fef303ad9",
+          "bytes": 694558
+        },
+        "paper.txt": {
+          "sha256": "57ef0c6d7249c438f6ecb61623dafc52eba0f39475937218a63b39cba6403db9",
+          "bytes": 171851
+        },
+        "paper.pdf": {
+          "sha256": "07e6cb631181772fbbd1a76fd7c794d232a39f671a018ffd7992d2df196169ed",
+          "bytes": 1085526
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:42.204998+00:00"
+    },
+    {
+      "item": {
+        "topic": "rl-systems",
+        "id": "deepseek-elastic-compute",
+        "arxiv": "2609.22978v1",
+        "kind": "arxiv-paper",
+        "title": "DeepSeek Elastic Compute (DSec): A Sandbox Infrastructure for Effective Agentic Training at Scale",
+        "landing_url": "https://arxiv.org/abs/2609.22978v1",
+        "discovered_by": "all:LLM AND all:\"reinforcement learning\" AND (all:environment OR all:sandbox) AND (all:system OR all:infrastructure)",
+        "authors": [
+          "Jialiang Huang",
+          "Hongxuan Tang",
+          "Jingchang Chen",
+          "Yuxuan Liu",
+          "Yixiao Chen",
+          "Yuan Cheng",
+          "Yi Tao",
+          "Jingli Zhou",
+          "Yupeng Chen",
+          "Haoyu Chen",
+          "Jiarui Wang",
+          "Shengkai Lin",
+          "Chuqi Zhang",
+          "Bryan Lee Teng",
+          "Lian Guo",
+          "Zhe Fu",
+          "Wenjun Gao",
+          "Yisong Wang",
+          "Liang Zhao",
+          "Zehao Wang",
+          "Ziwei Xie",
+          "Yongqiang Guo",
+          "Peixin Cong",
+          "Ziyi Gao",
+          "Shuiping Yu",
+          "Hanwei Xu",
+          "Zuofan Wu",
+          "Zhizhou Ren",
+          "Yuyang Zhou",
+          "Bowei Zhang",
+          "Zhihuan Huang",
+          "Qihao Zhu",
+          "Lei Wang",
+          "Tianle Lin",
+          "Han Yu",
+          "Jiewen Hu",
+          "Dejian Yang",
+          "Shuo Yang",
+          "Shanghao Lu",
+          "Shaoyuan Chen",
+          "Junjie Qiu",
+          "Zhangli Sha",
+          "Yinmin Zhong",
+          "Yongtong Wu",
+          "Shiyu Wang",
+          "Wei Liu",
+          "Bingzheng Xu",
+          "Longhao Chen",
+          "Qiushi Du",
+          "Yuzhen Huang",
+          "Shirong Ma",
+          "Yaohui Wang",
+          "Mingshu Chen",
+          "Tongrui Xiong",
+          "Y. C. Yan",
+          "Haowen Luo",
+          "Haofen Liang",
+          "Xiaokang Zhang",
+          "Weihao Zeng",
+          "Runxin Xu",
+          "Peiyi Wang",
+          "Jinhua Zhu",
+          "Ruoyu Zhang",
+          "Wenkai Yang",
+          "Qi Tang",
+          "Jiping Yu",
+          "Tian Ye",
+          "Ruizhe Pan",
+          "Honghui Ding",
+          "Xiaodong Liu",
+          "Lingxiao Luo",
+          "Zhihong Shao",
+          "Yuhan Wu",
+          "Jibai Lu",
+          "Wen Liu",
+          "Haoling Zhang",
+          "Jingcheng Hu",
+          "Yaoyang Ye",
+          "Chaofan Lin",
+          "Zhaochen Zhang",
+          "Jianan Tong",
+          "Hengxu Wu",
+          "Zhihao Li",
+          "Yicheng Wang",
+          "Luyao Wang",
+          "Yuzhuo Bai",
+          "Lingyue Fu",
+          "Ruifan Xu",
+          "Y. Z. Wang",
+          "Zonglin Li",
+          "Mingqi Wei",
+          "Haiyang Shen",
+          "Chengyuan Zhang",
+          "Chao Jin",
+          "Zili Zhang",
+          "R. H. Yang",
+          "Xinbo Xu",
+          "Jian Zhou",
+          "Ruidong Zhu",
+          "Yuzhe Guo",
+          "Zelun Pan",
+          "Shaoheng Nie",
+          "Erhang Li",
+          "Shuhan Lin",
+          "Zheng Liu",
+          "Anshuo Chen",
+          "Zilong Lyu",
+          "Sinuo Cao",
+          "Rui Yu",
+          "Chuhao Wang",
+          "Junyi Guo",
+          "Junxiao Song",
+          "Kaifeng Chen",
+          "Menghao Ye",
+          "Junxian Li",
+          "Di Wu",
+          "Haiyang Ma",
+          "Yilun Wang",
+          "Haoran Yang",
+          "Yizai Cai",
+          "Shichun Liu",
+          "Yiping Wang",
+          "Junbo Sun",
+          "Shicheng Xu",
+          "Xiao Bi",
+          "Ying He",
+          "Yichao Zhang",
+          "Mingxing Zhang",
+          "Liyue Zhang",
+          "Panpan Huang",
+          "Wenfeng Liang"
+        ],
+        "published": "2026-09-19T12:20:26Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:42.206382+00:00",
+      "path": "sources/papers/rl-systems/deepseek-elastic-compute",
+      "requested_url": "https://arxiv.org/abs/2609.22978v1",
+      "pdf_url": "https://arxiv.org/pdf/2609.22978v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "7b675c884d64ac45537c5e0ed79d0a29d3506da9245c6a94e149b045a1feba27",
+          "bytes": 516161
+        },
+        "paper.txt": {
+          "sha256": "005ccbd268a5f5d4ea2f88525126825bb31767291c030d11197bd0f79f0b93d3",
+          "bytes": 114299
+        },
+        "paper.pdf": {
+          "sha256": "649edc87e70b8e57f9515360b15ed5576c6c8afb3c46a3763e83c22a85a660e2",
+          "bytes": 786319
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:43.868238+00:00"
+    },
+    {
+      "item": {
+        "topic": "rl-environments",
+        "id": "envscaler",
+        "arxiv": "2601.05808v2",
+        "kind": "arxiv-paper",
+        "title": "EnvScaler: Scaling Tool-Interactive Environments for LLM Agent via Programmatic Synthesis",
+        "landing_url": "https://arxiv.org/abs/2601.05808v2",
+        "discovered_by": "all:LLM AND all:\"reinforcement learning\" AND (all:environment OR all:sandbox) AND (all:system OR all:infrastructure)",
+        "authors": [
+          "Xiaoshuai Song",
+          "Haofei Chang",
+          "Guanting Dong",
+          "Yutao Zhu",
+          "Ji-Rong Wen",
+          "Zhicheng Dou"
+        ],
+        "published": "2026-01-09T14:32:06Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:43.868310+00:00",
+      "path": "sources/papers/rl-environments/envscaler",
+      "requested_url": "https://arxiv.org/abs/2601.05808v2",
+      "pdf_url": "https://arxiv.org/pdf/2601.05808v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "64a7dde75d563eb3091e72f7c98716492a20d698fce96205ab57016b9b4ced27",
+          "bytes": 1129245
+        },
+        "paper.txt": {
+          "sha256": "fbb40f368d2e947c4de9f410f5f3912a80e42eab0534083ed06fe859f3fe070b",
+          "bytes": 214105
+        },
+        "paper.pdf": {
+          "sha256": "e5a8e9b3ae58b14ddf50fd4eeecd2bfc407b396f3ecd5b31f9b511270fc169ef",
+          "bytes": 1795884
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:46.106880+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-performance",
+        "id": "adaptive-gpu-agents",
+        "arxiv": "2512.22149v2",
+        "kind": "arxiv-paper",
+        "title": "Adaptive GPU Resource Allocation for Multi-Agent Collaborative Reasoning in Serverless Environments",
+        "landing_url": "https://arxiv.org/abs/2512.22149v2",
+        "discovered_by": "all:agent AND all:serverless",
+        "authors": [
+          "Guilin Zhang",
+          "Wulan Guo",
+          "Ziqi Tan"
+        ],
+        "published": "2025-12-15T09:21:48Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:46.107059+00:00",
+      "path": "sources/papers/agent-performance/adaptive-gpu-agents",
+      "requested_url": "https://arxiv.org/abs/2512.22149v2",
+      "pdf_url": "https://arxiv.org/pdf/2512.22149v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "7070515a664fe1110d9f18bfdf6bc272e2b437750755b7e564467efb13009455",
+          "bytes": 511066
+        },
+        "paper.txt": {
+          "sha256": "05b6a0558b5858935d4248088c36a64ce1275095e6bd8e0b0e8de9b94ecd9879",
+          "bytes": 35940
+        },
+        "paper.pdf": {
+          "sha256": "b2e2cae8c2026890d7a069f8da894fb4a638ff5d5862fd4ef2853c8c2f68e86c",
+          "bytes": 641314
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:47.333893+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "deepserve",
+        "arxiv": "2501.14417v3",
+        "kind": "arxiv-paper",
+        "title": "DeepServe: Serverless Large Language Model Serving at Scale",
+        "landing_url": "https://arxiv.org/abs/2501.14417v3",
+        "discovered_by": "all:agent AND all:serverless",
+        "authors": [
+          "Junhao Hu",
+          "Jiang Xu",
+          "Zhixia Liu",
+          "Yulong He",
+          "Yuetao Chen",
+          "Hao Xu",
+          "Jiang Liu",
+          "Jie Meng",
+          "Baoquan Zhang",
+          "Shining Wan",
+          "Gengyuan Dan",
+          "Zhiyu Dong",
+          "Zhihao Ren",
+          "Changhong Liu",
+          "Tao Xie",
+          "Dayun Lin",
+          "Qin Zhang",
+          "Yue Yu",
+          "Hao Feng",
+          "Xusheng Chen",
+          "Yizhou Shan"
+        ],
+        "published": "2025-01-24T11:34:13Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:47.333964+00:00",
+      "path": "sources/papers/model-serving/deepserve",
+      "requested_url": "https://arxiv.org/abs/2501.14417v3",
+      "pdf_url": "https://arxiv.org/pdf/2501.14417v3",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "cb740df6eea57a390cd9b3bd13458bf04eb88ad2a0069eec77e9e9cd976a1a20",
+          "bytes": 468263
+        },
+        "paper.txt": {
+          "sha256": "f815be500fdaafc777bed6d8ed2ad4714de4e863fd5592045578f55bafff5b71",
+          "bytes": 128179
+        },
+        "paper.pdf": {
+          "sha256": "bc23bcb74415a459104e5e6ae19a60a77f66abc9b1151b5d0f9be132ce97bada",
+          "bytes": 808402
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:48.730117+00:00"
+    },
+    {
+      "item": {
+        "topic": "serverless-environments",
+        "id": "trenv-x",
+        "arxiv": "2509.09525v2",
+        "kind": "arxiv-paper",
+        "title": "TrEnv-X: Transparently Share Serverless Execution Environments Across Different Functions and Nodes",
+        "landing_url": "https://arxiv.org/abs/2509.09525v2",
+        "discovered_by": "all:agent AND all:serverless",
+        "authors": [
+          "Jialiang Huang",
+          "Teng Ma",
+          "Zheng Liu",
+          "Sixing Lin",
+          "Kang Chen",
+          "Jinlei Jiang",
+          "Xia Liao",
+          "Yingdi Shan",
+          "Yongwei Wu",
+          "Ning Zhang",
+          "Mengting Lu",
+          "Tao Ma",
+          "Haifeng Gong",
+          "Mingxing Zhang"
+        ],
+        "published": "2025-09-11T15:06:03Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:48.731849+00:00",
+      "path": "sources/papers/serverless-environments/trenv-x",
+      "requested_url": "https://arxiv.org/abs/2509.09525v2",
+      "pdf_url": "https://arxiv.org/pdf/2509.09525v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "ca7ec3c1a9758d5c5cebdf0643e5ce9f39d847b62378d49dc32be38603bc7d44",
+          "bytes": 1661604
+        },
+        "paper.txt": {
+          "sha256": "5acacd57854aae9f56b4d65640ea05f03287d32af048d73d5232e1021e9d9bf8",
+          "bytes": 169460
+        },
+        "paper.pdf": {
+          "sha256": "7bfb6c09dda4c86f8b5faef64759172a676be96281b019046088be8444e9b4e7",
+          "bytes": 3330135
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:52.482324+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "talaria",
+        "arxiv": "2607.17181v1",
+        "kind": "arxiv-paper",
+        "title": "Talaria: Session-Aware Serverless Serving of Hundred-Billion-Parameter LLMs",
+        "landing_url": "https://arxiv.org/abs/2607.17181v1",
+        "discovered_by": "all:agent AND all:serverless",
+        "authors": [
+          "Utopia Meng",
+          "Unicornt Zhao",
+          "Derek Li",
+          "Goalen Gao",
+          "Frank Du"
+        ],
+        "published": "2026-07-19T10:37:33Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:52.482591+00:00",
+      "path": "sources/papers/model-serving/talaria",
+      "requested_url": "https://arxiv.org/abs/2607.17181v1",
+      "pdf_url": "https://arxiv.org/pdf/2607.17181v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "cd2ec829cbfee075e3e697119f1501497a56c7b59c8f9f3ec3212f9081c98cf0",
+          "bytes": 505863
+        },
+        "paper.txt": {
+          "sha256": "e2c7a6a2a1fbcbe62b5a890f9407246fb8f9c83e810ed737bff7df9359e1308b",
+          "bytes": 150155
+        },
+        "paper.pdf": {
+          "sha256": "012328c43d1c773d9183541a0f8c6e49629617dcf0f3daaa8dd9d19dafb50327",
+          "bytes": 708874
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:53.870037+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-surveys",
+        "id": "human-agent-collaboration-survey",
+        "arxiv": "2505.00753v5",
+        "kind": "arxiv-paper",
+        "title": "LLM-Based Human-Agent Collaboration and Interaction Systems: A Survey",
+        "landing_url": "https://arxiv.org/abs/2505.00753v5",
+        "discovered_by": "all:agent AND all:survey AND (all:systems OR all:infrastructure)",
+        "authors": [
+          "Henry Peng Zou",
+          "Wei-Chieh Huang",
+          "Yaozu Wu",
+          "Jizhou Guo",
+          "Yankai Chen",
+          "Chunyu Miao",
+          "Hoang Nguyen",
+          "Yue Zhou",
+          "Weizhi Zhang",
+          "Liancheng Fang",
+          "Hanrong Zhang",
+          "Fangxin Wang",
+          "Pengfei Zhang",
+          "Huacan Wang",
+          "Langzhou He",
+          "Yangning Li",
+          "Dongyuan Li",
+          "Renhe Jiang",
+          "Xue Liu",
+          "Philip S. Yu"
+        ],
+        "published": "2025-05-01T08:29:26Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:53.870109+00:00",
+      "path": "sources/papers/agent-surveys/human-agent-collaboration-survey",
+      "requested_url": "https://arxiv.org/abs/2505.00753v5",
+      "pdf_url": "https://arxiv.org/pdf/2505.00753v5",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "8da2626b529ea458fcfcf50c4f097280830adf80e41369cadf2c3f874b31dc5d",
+          "bytes": 2336982
+        },
+        "paper.txt": {
+          "sha256": "0bf29acc814095453a01a1fcbd4bf421ec0f0774507433c5f425dbb7bcd07215",
+          "bytes": 197799
+        },
+        "paper.pdf": {
+          "sha256": "833c41888253b7f5efce0548bb345804d26c5034d49bc677bcf4befd5abe0663",
+          "bytes": 3077161
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:56.393993+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-surveys",
+        "id": "gui-agent-survey",
+        "arxiv": "2411.18279v12",
+        "kind": "arxiv-paper",
+        "title": "Large Language Model-Brained GUI Agents: A Survey",
+        "landing_url": "https://arxiv.org/abs/2411.18279v12",
+        "discovered_by": "all:agent AND all:survey AND (all:systems OR all:infrastructure)",
+        "authors": [
+          "Chaoyun Zhang",
+          "Shilin He",
+          "Jiaxu Qian",
+          "Bowen Li",
+          "Liqun Li",
+          "Si Qin",
+          "Yu Kang",
+          "Minghua Ma",
+          "Guyue Liu",
+          "Qingwei Lin",
+          "Saravan Rajmohan",
+          "Dongmei Zhang",
+          "Qi Zhang"
+        ],
+        "published": "2024-11-27T12:13:39Z"
+      },
+      "capture_started_at": "2026-10-09T13:01:56.394080+00:00",
+      "path": "sources/papers/agent-surveys/gui-agent-survey",
+      "requested_url": "https://arxiv.org/abs/2411.18279v12",
+      "pdf_url": "https://arxiv.org/pdf/2411.18279v12",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "da7120d9109e02771f8944e6cdb61b73f9cc37006d06ac8e2b5e26516dd6c397",
+          "bytes": 12946074
+        },
+        "paper.txt": {
+          "sha256": "a1103c1a16ce4993a818dfeb2a97aab66a6404b52e2dcbec0dd68b6eb0a5e616",
+          "bytes": 928428
+        },
+        "paper.pdf": {
+          "sha256": "8419cb8f386bdc982b46ca9a4c81f5bcc026e153509ce2fc7e216fffb3950cea",
+          "bytes": 14721039
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:02:08.829525+00:00"
+    }
+  ]
+}

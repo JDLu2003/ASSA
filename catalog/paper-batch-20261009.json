@@ -1,0 +1,333 @@
+{
+  "note": "Selected from actual arXiv results for LLM agent environments, filesystems, memory, evaluation and serving; unrelated classical/vehicle-agent results were not selected. No research conclusions.",
+  "official": [],
+  "papers": [
+    {
+      "topic": "agent-environments",
+      "id": "crab",
+      "arxiv": "2604.28138v1",
+      "kind": "arxiv-paper",
+      "title": "Crab: A Semantics-Aware Checkpoint/Restore Runtime for Agent Sandboxes",
+      "landing_url": "https://arxiv.org/abs/2604.28138v1",
+      "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+      "published": "2026-04-30T17:20:19Z",
+      "authors": [
+        "Tianyuan Wu",
+        "Chaokun Chang",
+        "Lunxi Cao",
+        "Wei Gao",
+        "Wei Wang"
+      ]
+    },
+    {
+      "topic": "agent-environments",
+      "id": "acrfence",
+      "arxiv": "2603.20625v1",
+      "kind": "arxiv-paper",
+      "title": "ACRFence: Preventing Semantic Rollback Attacks in Agent Checkpoint-Restore",
+      "landing_url": "https://arxiv.org/abs/2603.20625v1",
+      "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+      "published": "2026-03-21T03:39:36Z",
+      "authors": [
+        "Yusheng Zheng",
+        "Yiwei Yang",
+        "Wei Zhang",
+        "Andi Quinn"
+      ]
+    },
+    {
+      "topic": "agent-environments",
+      "id": "safe-to-resume",
+      "arxiv": "2608.29381v1",
+      "kind": "arxiv-paper",
+      "title": "Safe to Resume? Breaking Execution Continuity of Agent Execution via Rollback",
+      "landing_url": "https://arxiv.org/abs/2608.29381v1",
+      "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+      "published": "2026-08-29T17:40:13Z",
+      "authors": [
+        "Guanlong Wu",
+        "Dahui Li",
+        "Ke Jiang",
+        "Jianyu Niu",
+        "Cong Wang",
+        "Yinqian Zhang"
+      ]
+    },
+    {
+      "topic": "agent-evaluation",
+      "id": "science-sandboxes",
+      "arxiv": "2608.30165v1",
+      "kind": "arxiv-paper",
+      "title": "Science sandboxes measure the scientific capability of AI agents",
+      "landing_url": "https://arxiv.org/abs/2608.30165v1",
+      "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+      "published": "2026-08-31T02:33:38Z",
+      "authors": [
+        "Arya S. Rao",
+        "Rodrigo I. Castro",
+        "Sager J. Gosai",
+        "Kenneth B. Hsu",
+        "Yasha Ektefaie",
+        "Shantanu Singh",
+        "Sangeeta N. Bhatia",
+        "Steven K. Reilly",
+        "Ryan Tewhey",
+        "Eric S. Lander",
+        "Pardis C. Sabeti"
+      ]
+    },
+    {
+      "topic": "agent-environments",
+      "id": "sidekernel",
+      "arxiv": "2610.02456v1",
+      "kind": "arxiv-paper",
+      "title": "SideKernel: A Usable microVM Sandbox for AI Coding Agents on macOS",
+      "landing_url": "https://arxiv.org/abs/2610.02456v1",
+      "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+      "published": "2026-10-01T20:30:13Z",
+      "authors": [
+        "Dimitrios Prasakis"
+      ]
+    },
+    {
+      "topic": "agent-environments",
+      "id": "ripplecp",
+      "arxiv": "2610.09088v1",
+      "kind": "arxiv-paper",
+      "title": "RippleCP: Measuring Counterfactual Checkpoint Advantage in Coding Agents",
+      "landing_url": "https://arxiv.org/abs/2610.09088v1",
+      "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+      "published": "2026-10-06T20:40:51Z",
+      "authors": [
+        "Mayur Akewar",
+        "Ravi Ranjan"
+      ]
+    },
+    {
+      "topic": "agent-memory",
+      "id": "chronomem",
+      "arxiv": "2607.27773v2",
+      "kind": "arxiv-paper",
+      "title": "ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory",
+      "landing_url": "https://arxiv.org/abs/2607.27773v2",
+      "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+      "published": "2026-07-30T07:07:39Z",
+      "authors": [
+        "Yongye Su",
+        "Wujiang Xu",
+        "Chaoji Zuo",
+        "Elisa Bertino"
+      ]
+    },
+    {
+      "topic": "agent-filesystems",
+      "id": "agent-native-filesystems",
+      "arxiv": "2604.13536v5",
+      "kind": "arxiv-paper",
+      "title": "Don't Let AI Agents YOLO Your Files: Information and Control in Agent-Native Filesystems",
+      "landing_url": "https://arxiv.org/abs/2604.13536v5",
+      "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+      "published": "2026-04-15T06:32:07Z",
+      "authors": [
+        "Shawn Wanxiang Zhong",
+        "Junxuan Liao",
+        "Jing Liu",
+        "Mai Zheng",
+        "Andrea C. Arpaci-Dusseau",
+        "Remzi H. Arpaci-Dusseau"
+      ]
+    },
+    {
+      "topic": "agent-memory",
+      "id": "filesystem-memory",
+      "arxiv": "2607.26637v1",
+      "kind": "arxiv-paper",
+      "title": "Filesystem-Based Memory for LLM Agents: Organization, Evolution, and Sustainability",
+      "landing_url": "https://arxiv.org/abs/2607.26637v1",
+      "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+      "published": "2026-07-29T08:59:43Z",
+      "authors": [
+        "Sizhe Zhou",
+        "Sheldon Yu",
+        "Hui Wei",
+        "Junda Wu",
+        "Siru Ouyang",
+        "Yizhu Jiao",
+        "Shijia Pan",
+        "Julian McAuley",
+        "Yu Zhang",
+        "Tong Yu",
+        "Jiawei Han"
+      ]
+    },
+    {
+      "topic": "agent-filesystems",
+      "id": "fs-researcher",
+      "arxiv": "2602.01566v2",
+      "kind": "arxiv-paper",
+      "title": "FS-Researcher: Test-Time Scaling for Long-Horizon Research Tasks with File-System-Based Agents",
+      "landing_url": "https://arxiv.org/abs/2602.01566v2",
+      "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+      "published": "2026-02-02T03:00:19Z",
+      "authors": [
+        "Chiwei Zhu",
+        "Benfeng Xu",
+        "Mingxuan Du",
+        "Shaohan Wang",
+        "Xiaorui Wang",
+        "Zhendong Mao",
+        "Yongdong Zhang"
+      ]
+    },
+    {
+      "topic": "agent-filesystems",
+      "id": "everything-is-context",
+      "arxiv": "2512.05470v1",
+      "kind": "arxiv-paper",
+      "title": "Everything is Context: Agentic File System Abstraction for Context Engineering",
+      "landing_url": "https://arxiv.org/abs/2512.05470v1",
+      "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+      "published": "2025-12-05T06:56:45Z",
+      "authors": [
+        "Xiwei Xu",
+        "Robert Mao",
+        "Quan Bai",
+        "Xuewu Gu",
+        "Yechao Li",
+        "Liming Zhu"
+      ]
+    },
+    {
+      "topic": "agent-filesystems",
+      "id": "semantic-fs-aios",
+      "arxiv": "2410.11843v5",
+      "kind": "arxiv-paper",
+      "title": "From Commands to Prompts: LLM-based Semantic File System for AIOS",
+      "landing_url": "https://arxiv.org/abs/2410.11843v5",
+      "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+      "published": "2024-09-23T08:39:16Z",
+      "authors": [
+        "Zeru Shi",
+        "Kai Mei",
+        "Mingyu Jin",
+        "Yongye Su",
+        "Chaoji Zuo",
+        "Wenyue Hua",
+        "Wujiang Xu",
+        "Yujie Ren",
+        "Zirui Liu",
+        "Mengnan Du",
+        "Dong Deng",
+        "Yongfeng Zhang"
+      ]
+    },
+    {
+      "topic": "agent-filesystems",
+      "id": "sysspec",
+      "arxiv": "2512.13047v4",
+      "kind": "arxiv-paper",
+      "title": "Sharpen the Spec, Cut the Code: A Case for Generative File System with SYSSPEC",
+      "landing_url": "https://arxiv.org/abs/2512.13047v4",
+      "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+      "published": "2025-12-15T07:15:01Z",
+      "authors": [
+        "Qingyuan Liu",
+        "Mo Zou",
+        "Hengbin Zhang",
+        "Dong Du",
+        "Yubin Xia",
+        "Haibo Chen"
+      ]
+    },
+    {
+      "topic": "agent-environments",
+      "id": "fork-explore-commit",
+      "arxiv": "2602.08199v2",
+      "kind": "arxiv-paper",
+      "title": "Fork, Explore, Commit: OS Primitives for Agentic Exploration",
+      "landing_url": "https://arxiv.org/abs/2602.08199v2",
+      "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+      "published": "2026-02-09T01:46:52Z",
+      "authors": [
+        "Cong Wang",
+        "Yusheng Zheng"
+      ]
+    },
+    {
+      "topic": "model-serving",
+      "id": "enova",
+      "arxiv": "2407.09486v1",
+      "kind": "arxiv-paper",
+      "title": "ENOVA: Autoscaling towards Cost-effective and Stable Serverless LLM Serving",
+      "landing_url": "https://arxiv.org/abs/2407.09486v1",
+      "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+      "published": "2024-05-17T09:48:31Z",
+      "authors": [
+        "Tao Huang",
+        "Pengfei Chen",
+        "Kyoka Gong",
+        "Jocky Hawk",
+        "Zachary Bright",
+        "Wenxin Xie",
+        "Kecheng Huang",
+        "Zhi Ji"
+      ]
+    },
+    {
+      "topic": "model-serving",
+      "id": "hydraserve",
+      "arxiv": "2502.15524v2",
+      "kind": "arxiv-paper",
+      "title": "HydraServe: Minimizing Cold Start Latency for Serverless LLM Serving in Public Clouds",
+      "landing_url": "https://arxiv.org/abs/2502.15524v2",
+      "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+      "published": "2025-02-21T15:25:21Z",
+      "authors": [
+        "Chiheng Lou",
+        "Sheng Qi",
+        "Chao Jin",
+        "Dapeng Nie",
+        "Haoran Yang",
+        "Yu Ding",
+        "Xuanzhe Liu",
+        "Xin Jin"
+      ]
+    },
+    {
+      "topic": "model-serving",
+      "id": "energy-aware-serverless",
+      "arxiv": "2606.30391v1",
+      "kind": "arxiv-paper",
+      "title": "Energy-Aware Scheduling for Serverless LLM Serving on Shared GPUs",
+      "landing_url": "https://arxiv.org/abs/2606.30391v1",
+      "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+      "published": "2026-06-29T14:44:24Z",
+      "authors": [
+        "Tianyu Wang",
+        "Gourav Rattihalli",
+        "Aditya Dhakal",
+        "Longfei Shangguan",
+        "Dejan Milojicic"
+      ]
+    },
+    {
+      "topic": "model-serving",
+      "id": "qserve",
+      "arxiv": "2405.04532v3",
+      "kind": "arxiv-paper",
+      "title": "QServe: W4A8KV4 Quantization and System Co-design for Efficient LLM Serving",
+      "landing_url": "https://arxiv.org/abs/2405.04532v3",
+      "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+      "published": "2024-05-07T17:59:30Z",
+      "authors": [
+        "Yujun Lin",
+        "Haotian Tang",
+        "Shang Yang",
+        "Zhekai Zhang",
+        "Guangxuan Xiao",
+        "Chuang Gan",
+        "Song Han"
+      ]
+    }
+  ]
+}

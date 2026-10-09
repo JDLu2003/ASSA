@@ -1,0 +1,89 @@
+{
+  "item": {
+    "topic": "agent-memory",
+    "id": "filesystem-memory",
+    "arxiv": "2607.26637v1",
+    "kind": "arxiv-paper",
+    "title": "Filesystem-Based Memory for LLM Agents: Organization, Evolution, and Sustainability",
+    "landing_url": "https://arxiv.org/abs/2607.26637v1",
+    "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+    "published": "2026-07-29T08:59:43Z",
+    "authors": [
+      "Sizhe Zhou",
+      "Sheldon Yu",
+      "Hui Wei",
+      "Junda Wu",
+      "Siru Ouyang",
+      "Yizhu Jiao",
+      "Shijia Pan",
+      "Julian McAuley",
+      "Yu Zhang",
+      "Tong Yu",
+      "Jiawei Han"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:07.057875+00:00",
+  "path": "sources/papers/agent-memory/filesystem-memory",
+  "requested_url": "https://arxiv.org/abs/2607.26637v1",
+  "pdf_url": "https://arxiv.org/pdf/2607.26637v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "ef77cd11a986a0dbb40501469474b61e28e91481209530be5c20e9b85b29cb3e",
+      "bytes": 1095714
+    },
+    "paper.txt": {
+      "sha256": "83f4d3b307134880d876713c8bdcc0e878b7a164c628719c00ee1dbdbf7685b0",
+      "bytes": 279874
+    },
+    "paper.pdf": {
+      "sha256": "4186ea9a8ca5b5534e644a2a8c36e5594226df440b167093ea406e0e9a9bf42c",
+      "bytes": 2232154
+    },
+    "landing.html": {
+      "sha256": "65fdb48ebdd35537fabdb79aaa49617cfb4a04b9b183fd69700c896d3cc00200",
+      "bytes": 44764
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2607.26637v1",
+    "retrieved_at": "2026-10-09T13:06:18.367614+00:00",
+    "fields": {
+      "citation_title": [
+        "Filesystem-Based Memory for LLM Agents: Organization, Evolution, and Sustainability"
+      ],
+      "citation_author": [
+        "Zhou, Sizhe",
+        "Yu, Sheldon",
+        "Wei, Hui",
+        "Wu, Junda",
+        "Ouyang, Siru",
+        "Jiao, Yizhu",
+        "Pan, Shijia",
+        "McAuley, Julian",
+        "Zhang, Yu",
+        "Yu, Tong",
+        "Han, Jiawei"
+      ],
+      "citation_date": [
+        "2026/07/29"
+      ],
+      "citation_online_date": [
+        "2026/07/29"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2607.26637"
+      ],
+      "citation_arxiv_id": [
+        "2607.26637"
+      ],
+      "citation_abstract": [
+        "Deployed LLM agents increasingly keep their long-term memory as a filesystem: a directory tree of markdown files that the agent itself reads, writes, and reorganizes through generic file tools. Yet research has largely passed over this medium: prior systems design bespoke memory representations and study retrieval over them, leaving the default's two working assumptions untested: that an agent can keep a growing store organized as memories accumulate, conflict, and go stale, and that this organization pays. We present the first systematic exploration of filesystem-based memory for LLM agents. We formalize the setting as three roles around one memory filesystem: a management agent integrates and organizes incoming content, a search agent answers queries with cited sources, and an execution agent supplies task trajectories that are distilled into skills, unifying declarative memory and skills in a single store. Across long-conversation benchmarks and embodied tasks, we vary memory shape (agent-organized hierarchy, verbatim dump, chunk retrieval), stream scale, tool harness (sandboxed shell, memory-tool-style functions, varied search tooling), and the strengths of the management and search agents, tracking answer quality, cost, and store health as memory grows. What organization reliably buys is search economy: organized stores roughly halve retrieval cost where material is large. Today's agents, however, fall short of the default's promise: in our growth study, organization erodes for all but the strongest management agent, and no agent we measure converts organization itself into better answers. And the model is not the only lever over a store's shape: changing the tool set alone reshapes the store as strongly as swapping the model. The study turns the filesystem default from an assumption into a design space for agent memory."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

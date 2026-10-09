@@ -1,0 +1,2257 @@
+                                         TrEnv-X: Transparently Share Serverless Execution
+                                         Environments Across Different Functions and Nodes
+                                         JIALIANG HUANG, Tsinghua University and Alibaba Group, China
+                                         TENG MA, Alibaba Group, China
+                                         ZHENG LIU, Alibaba Group and Zhejiang University, China
+                                         SIXING LIN, KANG CHEN, JINLEI JIANG, XIA LIAO, YINGDI SHAN, and YONGWEI
+                                         WU, Tsinghua University, China
+arXiv:2509.09525v2 [cs.DC] 21 Mar 2026
+
+
+
+
+                                         NING ZHANG, MENGTING LU, and TAO MA, Alibaba Group, China
+                                         HAIFENG GONG, Intel, China
+                                         MINGXING ZHANG, Tsinghua University, China
+                                         Serverless computing is renowned for its computation elasticity, yet its full potential is often constrained by
+                                         the requirement for functions to operate within local and dedicated background environments, resulting in
+                                         limited memory elasticity. To address this limitation, this paper introduces TrEnv-X, a co-designed integration
+                                         of the serverless platform with the operating system and CXL/RDMA-based remote memory pools. TrEnv-X’s
+                                         core innovations are repurposable sandboxes, which can be shared across different functions to decrease the
+                                         associated creation overhead, and OS-level memory templates, which enable rapid state restoration from
+                                         CXL/RDMA-based remote memory pools. To further demonstrate TrEnv-X’s versatility, we generalize its
+                                         design from traditional containers for microVM-based agent workloads and introduce new optimizations,
+                                         including browser sharing and a page cache bypassing mechanism. Our evaluation shows that TrEnv-X
+                                         achieves up to 7× reduction in P99 latency and 48% memory savings for container-based functions. When
+                                         applied to LLM agents, it reduces the P99 latency by up to 58% and memory usage by 61% compared to
+                                         state-of-the-art systems like E2B.
+                                         CCS Concepts: • Computer systems organization → Cloud computing; • Software and its engineering
+                                         → Memory management.
+                                         Additional Key Words and Phrases: Serverless, Agent, CXL, Cold Start
+                                         ACM Reference Format:
+                                         Jialiang Huang, Teng Ma, Zheng Liu, Sixing Lin, Kang Chen, Jinlei Jiang, Xia Liao, Yingdi Shan, Yongwei
+                                         Wu, Ning Zhang, Mengting Lu, Tao Ma, Haifeng Gong, and Mingxing Zhang. 2026. TrEnv-X: Transparently
+                                         ∗ This paper is a substantial extension of our previous work accepted at SOSP 2024 under the same title. In this journal version,
+
+                                         we focus on LLM agents as an emerging serverless workload and provide a comprehensive workload characterization and
+                                         cost analysis. We introduce new techniques such as browser sharing, extend TrEnv-X to support VM-based deployments,
+                                         and redesign memory sharing mechanisms using virtio-pmem. We also modify the Cloud Hypervisor restore path to support
+                                         our design. Finally, we significantly expand the evaluation, demonstrating TrEnv-X’s advantages over state-of-the-art
+                                         systems like E2B.
+
+                                         Authors’ Contact Information: Jialiang Huang, huangjl22@mails.tsinghua.edu.cn, Tsinghua University and Alibaba Group,
+                                         Beijing, China; Teng Ma, Alibaba Group, Beijing, China, sima.mt@alibaba-inc.com; Zheng Liu, Alibaba Group and Zhejiang
+                                         University, Beijing, China; Sixing Lin; Kang Chen; Jinlei Jiang; Xia Liao; Yingdi Shan; Yongwei Wu, Tsinghua University,
+                                         Beijing, China; Ning Zhang; Mengting Lu; Tao Ma, Alibaba Group, Beijing, China; Haifeng Gong, Intel, Beijing, China;
+                                         Mingxing Zhang, Tsinghua University, Beijing, China, zhang_mingxing@mail.tsinghua.edu.cn.
+
+                                         Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+                                         provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the
+                                         full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored.
+                                         Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires
+                                         prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+                                         © 2026 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+                                         ACM XXXX-XXXX/2026/3-ART
+                                         https://doi.org/XXXXXXX.XXXXXXX
+
+
+                                                                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+2                                                                                             Jialiang et al.
+
+
+Share Serverless Execution Environments Across Different Functions and Nodes. 1, 1 (March 2026), 39 pages.
+https://doi.org/XXXXXXX.XXXXXXX
+
+1     Introduction
+Serverless computing, renowned for its fine-grained resource allocation and billing, enables appli-
+cations to scale efficiently while optimizing resource utilization. Given its transformative potential,
+serverless computing is now available across all major cloud service providers [15, 19, 48] and is
+applied across a broad range of sectors[20, 21, 30, 57, 77] , such as the emerging large language
+model (LLM) agents [8, 31] workloads.
+   However, despite the utopian vision of serverless computing, its real-world implementations
+face many practical limitations. Although serverless models suggest that functions could be trans-
+parently scheduled across data centers to maximize resource utilization, this idealized elasticity is
+often compromised by the functions’ need for efficient access to local and dedicated background
+environments. This contradiction between computational elasticity and environment local-
+ization poses challenges to the full realization of serverless’s potential, and becomes especially
+critical for complex applications like LLM agents that require high-density deployment and resource
+overcommitment.
+   Precisely, the execution of a serverless function typically unfolds in three phases. (1) The sandbox
+creation phase establishes an isolated sandbox (e.g., a container); (2) The bootstrapping phase
+initializes the function, which may involve steps like launching Python/Java virtual machines; and
+finally, (3) The execution phase executes instance-specific logic according to the inputs of this
+invocation. The first two phases are essential for setting up an execution environment for each
+function invocation. However, they do not directly contribute to processing user inputs, thus their
+overheads (in both CPU time and memory consumption) should be minimized.
+   Unfortunately, studies show that the time required to create such dedicated environments can
+significantly exceed the actual execution time of a function, leading to the notorious “cold start”
+problem in serverless computing [40, 85]. This issue has prompted the development of various
+caching techniques aimed at keeping functions warm and ready for immediate reuse [2, 14, 25, 74].
+However, these mechanisms necessitate the reservation of local resources, particularly memory,
+introducing a trade-off between initialization speed and resource costs, thereby diminishing the
+system’s overall elasticity. For instance, commercial solutions like AWS Lambda’s Provisioned
+Concurrency [25], which provide caching, deviate from the ideal pay-as-you-go model of cloud
+computing by charging for these reserved resources.
+   The requirement for execution environments also gives rise to other issues, such as “memory
+stranding” [62] and “state duplication” [81]. Memory stranding occurs when a server’s computa-
+tional resources are fully engaged, but its memory remains underutilized. State duplication arises
+when concurrent serverless functions require but cannot efficiently share identical states due
+to existing isolation mechanisms. This is exacerbated when multiple instances utilize common
+toolkits or language runtimes, such as in the LLM agent workloads. Furthermore, the duplication is
+amplified in virtual machine (VM) environments where guest OS images and files are redundantly
+loaded. Recent studies have indicated that these challenges lead to significant inefficiencies, with
+up to 50% of memory resources being underutilized in the cloud [44, 56] and an 80% occurrence
+of state duplication [81]. These issues collectively pose significant obstacles to achieving genuine
+elasticity in serverless computing.
+
+1.1    Our Contribution
+In this paper, we present TrEnv-X, a serverless computing platform crafted to minimize CPU time
+and memory costs associated with serverless execution environments. The main idea is to share
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                      3
+
+
+            Table 1. The core components in current containers. The evaluation setup is detailed in §9.1.
+
+           Unit       Description                                      Overhead         TrEnv-X’s Solution
+                      Isolated network environment, such as                             Direct reuse as it does not
+           Network    independent ports, including a network         80 ms ∼ 10 s       leak any data produced
+                      namespace and a virtual ethernet device.                          during processing (§8.1.1).
+                      Root filesystem for containers, including a
+           Rootfs     mount namespace and necessary                   10 ∼ 800 ms
+ Sandbox
+
+
+
+
+                                                                                        Reuse with reconfigurations,
+                      filesystems such as sysfs under /sys.
+                                                                                        at a lower cost than creating
+                      Resource isolation, such as CPU and                               (§5.2).
+           Cgroup                                                     30 ∼ 400 ms
+                      memory usage control.
+                      Other isolated resources, such as time and
+           Other                                                         <1 ms          Create with low overhead.
+                      pid namespaces.
+                      Post-initialized state of functions,                              Introduce new kernel
+           Memory     including loaded language runtime,                >300 ms         interfaces, bypass costly
+ Process
+
+
+
+
+                      imported libraries and user code.                                 memory copy (§5.1).
+                      Multi-thread context, registers, sockets,                         Handled by CRIU with
+           Other                                                       3 ∼ 15 ms
+                      open file descriptors, etc.                                       strong generality.
+
+
+components of these environments across different functions and nodes as much as possible. Rather
+than discarding this execution environment upon the completion of a function instance, TrEnv-X
+cleanses and reallocates it to a repurposable sandbox pool. Subsequent functions can reuse these
+sandboxes by attaching function-specific memory states, which are offloaded to a shared CXL
+or RDMA-based memory pool. This process, termed “repurposing” in TrEnv-X, is depicted in
+Figure 6. Through innovative enhancements at the operating system (OS) and core libraries like
+Checkpoint/Restore In Userspace (CRIU) [35], this procedure typically takes less than 10 ms for
+containers. Only updated (writable) memory pages are instantiated per invocation, while read-only
+pages are transparently shared across multiple instances and nodes.
+   TrEnv-X’s approach of container repurposing, while bearing similarities to existing caching
+solutions, distinguishes itself in two significant ways. Firstly, TrEnv-X enables the transparent
+reuse of sandboxes not only across invocations of the same function, but also across different
+function types, regardless of whether the function runs in a container or microVM environment.
+TrEnv-X performs a systematic decomposition of sandbox creation overhead to determine which
+components are safely reusable and which require lightweight reconfiguration. To achieve this, we
+have identified crucial kernel objects that contribute to the overhead of creating isolated sandboxes.
+Some of these components are directly reusable across different functions, while others necessitate a
+tailored reconfiguration that upholds cost-effectiveness without compromising isolation properties
+relative to previous container-based systems. These components are listed in Table 1 and will be
+discussed in detail in §4.1 and §5.2.
+   Secondly, TrEnv-X offloads function-specific memory states to a shared memory pool. This
+strategy shares the states across multiple server nodes, effectively amortizing the overall expense.
+TrEnv-X also supports an effective deduplication process that eliminates redundant states across
+different functions, potentially reducing memory usage by up to 48% in our evaluated functions (Ta-
+ble 4 in §9.1). However, operating system modifications are required to rapidly instantiate serverless
+functions from snapshots stored in remote memory pools. This process resembles performing a
+“fork” but includes capabilities beyond those offered by current operating systems. To support this,
+
+                                                                    , Vol. 1, No. 1, Article . Publication date: March 2026.
+4                                                                                          Jialiang et al.
+
+
+we have extended the kernel with an mm-template API, enabling the creation of custom memory
+templates for each serverless function. These templates consist of reserved page tables that map to
+remote, potentially overlapping, non-contiguous memory segments within the pool, representing
+deduplicated snapshots of serverless functions.
+
+                                          mm-templates           No Penalty for
+                                                               Read-only Access
+                                                               Major Page Fault for
+                                          Local Mem
+                                                                  ANY Access
+                                        CXL Mem Pool           Byte Addressable
+
+
+                                                      RDMA Mem Pool
+
+                                             Network-attached Storage (NAS)
+
+
+                                   Fig. 1. Multi-layer architecture of mm-template.
+
+   The flexibility of our design is one of its key strengths. As demonstrated in Figure 1, TrEnv-
+X integrates mm-templates with both CXL and RDMA memory pools, each offering distinct
+advantages. Notably, to leverage the byte-addressable capabilities of CXL, mm-templates enable
+direct reads for read-only pages, which introduces zero additional software-level overhead during
+execution. Given our analysis showing that 24% to 90% of memory accesses are to read-only
+pages in serverless functions, this technique substantially accelerates processing times by avoiding
+unnecessary data copying or page faults, thereby significantly reducing latency. Despite this, existing
+OS primarily utilizes CXL for memory expansion as per the capabilities of CXL 1.1, thus lacking
+support for memory sharing and deduplication required in multi-node environments introduced
+since CXL 2.0. To overcome this limitation, we have enhanced the OS to allow precise control
+over the mapping between virtual and physical addresses in CXL memory and supported both
+file-backed and anonymous memory mappings to maintain a process’s complete state, including
+heap and stack areas.
+   Different from CXL, integrating RDMA-based remote memory follows a lazy paging strategy,
+where any access to remote memory triggers a major page fault that fetches a 4KB block online.
+Since all states in the memory pool are read-only, with write operations managed through copy-
+on-write mechanisms, a multi-layered architecture integrates seamlessly with our approach. This
+allows for the strategic placement of hot pages in the upper layers, such as CXL or even local
+memory, and cold pages in the lower layers, such as RDMA or even network-attached storage. The
+specific number of layers, as well as the cache eviction or page promotion strategies, are orthogonal
+to our core implementation.
+   Moreover, the ease of use is the most important attraction of serverless computing. To avoid the
+need for users to modify their code or recompile their applications, TrEnv-X decides to transparently
+incorporate repurposable sandboxes and mm-templates into the serverless platform. It implements
+a new “repurpose” command in CRIU, based on the existing “restore” command. This facilitates the
+seamless integration with many existing serverless platforms due to CRIU’s widespread adoption
+in mainstream container runtimes like Docker[71] and Podman[4].
+   While above optimizations primarily target container-based platforms, VM-based isolation
+remains the mainstream choice for public cloud providers due to its stronger security guarantees. To
+demonstrate TrEnv-X’s versatility in VM-based environments, we apply and evaluate it on emerging
+LLM agent workloads, a challenging scenario characterized by dynamic invocation patterns and
+fluctuating resource demands. This evaluation further led to two additional optimizations specific
+to the VM-based sandbox and LLM agent: page cache bypassing and browser sharing, which
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                   5
+
+
+enhance startup efficiency and memory utilization. Together, these extensions enable high-density,
+high-performance execution of LLM agent applications atop VM-based serverless platforms.
+  This paper makes the following key contributions:
+   • We analyze the performance bottlenecks and characteristics of agent and serverless applica-
+      tions on both container- (§2.2,§4.1,§4.2) and VM-based platforms (§2.3,§3,§6.1).
+   • We propose a repurposable sandbox design (§5.2) that enables transparent sharing across
+      heterogeneous function types, reducing per-invocation overhead.
+   • We design and implement the mm-template API (§5.1), which facilitates remote memory
+      state sharing with minimal restoration latency and reduced memory duplication.
+   • We introduce two optimizations for agent applications on VM-based platforms: (1) extending
+      our sharing mechanism to browser processes to reduce execution latency (§6.2), and (2)
+      integrating virtio-pmem with mm-template to enable memory state sharing while mitigating
+      page cache duplication (§6.3).
+   • We develop TrEnv-X, a serverless platform built atop faasd [75] and Cloud Hypervisor [91],
+      supporting both container and VM runtimes.
+   • Our evaluation on container-based workloads demonstrates that: (1) For prior serverless
+     workloads, TrEnv-X achieves up to 7× and 16× speedup in P99 end-to-end latency under
+      concurrent loads compared with REAP [94] and FaaSnap [22], two state-of-the-art (SOTA)
+      lazy restoration methods, respectively; TrEnv-X reduces peak memory usage by 48% on
+      average; (2) A detailed comparison between real-world CXL and RDMA memory pools reveals
+      that CXL provides more stable performance, particularly at P99, and offers up to a 3.51×
+      speedup on execution time over RDMA.
+   • Our evaluation on VM-based agent workloads demonstrates TrEnv-X achieves at most 61%
+      memory savings and 58% P99 latency reduction compared with the SOTA system, E2B, after
+      adopting our optimizations, while keeping the same efficient startup latency.
+   • We have open-sourced TrEnv-X, which is available at https://github.com/kvcache-ai/TrEnv-
+     X.
+
+2     Background and Motivation
+2.1    Dissaggregated Memory
+CXL Compute Express Link (CXL) [33, 36] is emerging as a promising technology in the realm of
+high-speed server interconnects, notable for its low latency [104], high bandwidth [89, 90], and
+ability to enable shared memory access between servers. Its adoption by industry giants [64, 69]
+also underscores its increasing significance and application in modern computing infrastructure.
+   Our research primarily concentrates on CXL’s capability of sharing memory across different
+machines, which has been supported by multi-headed devices (MHD) even with CXL 2.0 [55]. Real-
+world support for this capability has been demonstrated in previous research [104]. Collaborations
+between many companies [51, 70, 80, 99] have also led to a commercial solution that enabled up to
+7.5 TB CXL-attached memory pool shared by up to 12 servers [5]. We only need read-only sharing
+capabilities, so a Type-3 device with multiple CXL 2.0 interfaces (MHD) is sufficient without the
+hardware coherency introduced in CXL 3.0.
+   CXL’s fine-grained and efficient access capability means only the needed cache lines are retrieved,
+not entire pages. Thus, it provides a potentially faster alternative to RDMA.
+RDMA Prior to CXL, RDMA was the standard protocol for building disaggregated memory pools,
+which can be grouped into two main categories: Firstly, solutions such as Infiniswap [49] and
+Fastswap [18] enable efficient swapping over RDMA. Secondly, frameworks and runtimes like
+AsymNVM [68] and FaRM [38] offer coarse-grained abstractions that resemble key-value stores or
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+6                                                                                                              Jialiang et al.
+
+
+file interfaces. TrEnv-X tries to implement transparent and extensible in-kernel functionality to
+support various remote memory, including but not limited to RDMA.
+
+2.2    Serverless Computing
+The very idea of serverless is fragmenting applications into smaller, independent tasks that can be
+dispatched to whichever node has available CPU resources, thereby enhancing resource utilization.
+However, the pursuit of this optimal elasticity often encounters two predominant barriers:
+   (1) A target node may sometimes lack sufficient memory, preventing task dispatch, due to the
+       tight coupling between computational and memory resources.
+   (2) Additional overheads introduced by this fragmentation, such as cold starts and memory
+       duplication.
+The adoption of disaggregated memory has emerged as a viable solution to the first issue, with
+studies like Fastswap [18] and Pond [64] exploring its benefits. Our research pivots towards
+harnessing CXL/RDMA-based shared memory pool to tackle the second barrier.
+   Referring to the “Cold Start” bar in Figure 2, we identify two significant costs:
+   (1) The preparation of an isolated sandbox, including tasks like creating the rootfs.
+   (2) The cost involved in bootstrapping the function’s processes, such as launching interpreters
+       and importing libraries.
+These ancillary overheads overshadow the proportion of the function’s actual productive execution
+time, given that many studies report that most serverless functions execute in less than one
+second [59, 82]. Besides, the same cold start problem exists in LLM agent appliactions, especially
+for ones with short end-to-end latency, e.g., Blackjack in Table 2.
+
+
+
+
+1 Restores other states of processes, such as recovering multi-thread context, reopening files, and re-establishing sockets.
+
+
+
+Fig. 2. Breakdown of the latency for a Python-based function, highlighting the overhead associated with the
+sandbox. The evaluation setup is detailed in §9.1.
+
+
+
+2.3    MicroVM in Serverless
+Modern serverless platforms generally fall into two categories:
+ (1) Container-based platforms (e.g., OpenFaaS [76]), which employ Linux namespaces and
+     cgroups for lightweight isolation.
+ (2) VM-based platforms (e.g., Cloud Hypervisor [91]), which provide hardware-enforced isolation
+     through virtual machines.
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                   7
+
+
+   While container-based frameworks offer efficiency and low overhead, their shared-kernel design
+weakens security. Containers rely on software-based isolation; thus, any privilege escalation or
+kernel vulnerability (e.g., CVE-2017-5123 [1]) can allow an attacker to escape the container and
+compromise the host.
+   In contrast, VM-based serverless platforms encapsulate each function within a dedicated guest
+kernel, protected by hardware mechanisms such as extended page tables (EPT) [54]. Although such
+designs mitigate security concerns, they introduce new inefficiencies, including longer startup la-
+tency and higher memory overhead from hypervisors. Recent efforts purpose the microVM [13, 65],
+mitigating these costs by employing minimized guest kernels and simplified device models. It can
+achieve performance comparable to containers. However, our experiments reveal a persistent ineffi-
+ciency: page cache duplication among microVMs. In serverless environments, multiple instances of
+the same function often access identical binaries and data, yet each VM maintains its own virtual
+block device and guest-side page cache. As a result, identical files are redundantly cached across
+guest kernels and even duplicated within their corresponding image files on the host.
+   Despite their architectural differences, containers and microVMs share a fundamental similar-
+ity from the host’s perspective: both execute as host processes governed by Linux cgroups and
+namespaces. Consequently, both suffer comparable overheads in preparing and managing isolated
+sandboxes.
+
+2.4   Existing Research
+Cold start overhead. Historically, caching mechanisms have been extensively studied and deployed
+to mitigate cold start overheads [45, 79, 82]. However, as discussed earlier, they introduce a trade-off
+between expediting initialization and reserving resources, which in turn impedes system elasticity.
+   Prior research efforts have thus been directed towards reducing the cost of caching by eschewing
+the reservation of active containers. Instead, they created snapshots or templates of a function’s
+complete state immediately after initialization and stored them as files [43, 50, 85]. When a new
+instance needed to be started, it was restored from the snapshot, bypassing the bootstrapping
+phase.
+   Nevertheless, these strategies fail to fully conquer the aforementioned challenges. As highlighted
+by the CRIU bar in Figure 2:
+   (1) The need to establish a new isolated sandbox still exists, thereby sustaining the associated
+       overheads. Our findings also indicate that isolation costs escalate with concurrent cold starts.
+       For example, concurrently initiating 15 instances results in a network setup time of 400 ms,
+       aligning with prior studies [72, 74].
+   (2) the memory restoration overhead (“Mem” in Figure 2) is still non-negligible due to costly data
+       copying. In Figure 2, we store the snapshot files in a local DRAM-based tmpfs to avoid the
+       overhead of disk or network I/O. However, as we can see from the figure, memory copying
+       alone takes over 60 ms during container bootstrapping, even for its small 60MB memory
+       image. This overhead scales with the size of the memory image. For instance, a 360MB
+       memory image would take over 220 ms to restore.
+   Further optimizations have been suggested to alleviate these challenges. But, according to our
+investigation, a holistic solution remains elusive. Lightweight container technologies [74], for
+instance, mitigate the overhead of sandbox setup but do so at the cost of compromised isolation,
+making them unsuitable in multi-tenant contexts. In practice, serverless platforms, such as Open-
+Whisk [6], still resort to standard containers for a better level of isolation, or even opt for secure
+containers (i.e., VM) [13, 50, 65], which could entail higher initialization costs.
+   Additionally, several “lazy restore” techniques have been proposed to hide the latency of data
+copying, such as recording and prefetch-based replay [22, 94] or restoring state through efficient
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+8                                                                                        Jialiang et al.
+
+
+RDMA reads in a manner akin to a remote on-demand “fork” [98]. Nonetheless, these methodologies
+(1) merely defer the restoration overhead to the execution phase rather than reduce it, (2) do not
+leverage the potential of various remote memory pools, (3) focus on memory restoration but
+overlook the overhead associated with isolated sandboxes, such as namespaces and cgroups.
+Duplicated page cache. Prior work has addressed similar issues by implementing exclusive
+caching between the storage cache (e.g., RAM on disk arrays) and the OS page cache [23, 58]. These
+solutions estimate the contents of the guest OS page cache based on file metadata or access patterns,
+and use this information to guide which blocks should be cached in a secondary storage layer.
+However, such gray-box approaches require the hypervisor to infer guest page cache behavior from
+indirect signals (e.g., VM exits), which often leads to inaccurate decisions. Alternatively, content-
+based deduplication has been proposed to mitigate cache redundancy [83]. This method avoids
+inference by directly scanning memory for duplicate content. However, it incurs significant CPU
+overhead and introduces latency due to the time required for scanning and matching duplicated
+pages.
+   More recently, Rund [65] adopts a para-virtualization method using virtiofs [12] with DAX
+(Direct Access) support, which maps the host page cache directly into the guest’s physical address
+space, bypassing the guest page cache. While this design avoids duplication, it suffers from several
+limitations: (1) The current virtiofs architecture relies on a separate daemon that serves guest file
+requests via a FUSE interface. This design mandates the use of shared memory (e.g., memfd) to back
+guest memory, which conflicts with copy-on-write mechanisms that are essential for offloading
+memory state across distributed remote memory pools. (2) The DAX feature in virtiofs is not yet
+stable in official implementations. For example, virtiofsd [11] removed DAX support in 2024, and
+Cloud Hypervisor deprecated its DAX-based virtiofs support as early as 2022.
+
+3     Case Study: LLM Agent
+The challenges of startup overhead and memory redundancy are particularly acute in VM-based
+serverless platforms. To evaluate the effectiveness and versatility of TrEnv-X’s design in this
+demanding context, we present a case study on LLM agents, a class of emerging workloads that
+exemplifies the dynamic and resource-intensive nature of future serverless applications.
+
+3.1    Basics of LLM Agents.
+Large language models (LLMs) have demonstrated substantial capabilities across a range of tasks,
+including natural language understanding and content generation [92, 93]. These advances have
+catalyzed the emergence of a new class of LLM-driven applications for autonomous task completion,
+commonly referred to as agents (e.g., [52, 53, 63]). An agent is a system or program that leverages
+an LLM to solve user-defined tasks, incorporating capabilities such as reasoning, planning, and
+external tool usage.
+   To the best of our knowledge, this is the first work that aims to optimize serving platforms
+for LLM-based agents. Currently, no standard benchmark applications exist for evaluation. We
+therefore selected representative agents from widely used open-source frameworks, including
+LangChain [63], Browser-Use [73], OWL [53] and OpenManus [67]. The chosen agents encompass
+a broad spectrum of scenarios, covering diverse execution patterns (e.g., fixed, map-reduce, and
+ReAct), varied tool usage (e.g., browsers, RAG, and code interpreters), and different running charac-
+teristics (e.g., end-to-end latency and resource utilization). We evaluate representative agents from
+widely-used open-source frameworks, including LangChain [63], Browser-Use [73], OWL [53]
+and OpenManus [67]. LangChain offers the greatest flexibility for constructing agent applications,
+enabling users to compose custom workflows by integrating modular components. However, it
+typically requires manual programming to assemble an agent. In contrast, Browser-Use integrates
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                          9
+
+
+                 Table 2. The characteristic of representative agents evaluated on Firecracker.
+
+Agent              Framework         Description                                      E2E Lat∗      Memory        CPU Time
+Blackjack          LangChain         Play the Blackjack game.                            3.2 s       74 MB          411 ms
+Bug fixer          LangChain         Fix the bugs in given code.                        36.5 s       95 MB          809 ms
+Map reduce         LangChain         Split and summarize a document.                    56.5 s       199 MB          1.2 s
+Shop assistant     Browser-Use       Select the ideal products on a website.            140.7 s     1080 MB          10.3 s
+Blog summary       OWL               Collect and summary blogs.                         193.1 s     1246 MB          56.8 s
+Game design        OpenManus         Implement a html-based game.                       107.0 s     1389 MB          7.5 s
+∗ End-to-end latency.
+
+
+
+
+robust browser automation into the agent design. OWL and OpenManus provide out-of-the-box
+agents equipped with built-in tools, such as browsers and search engines. Table 2 summarizes
+the resource requirements of these agents deployed on a VM-based platform that leverages Fire-
+cracker’s native snapshot mechanism. Notably, we observe substantial variation in execution time
+and memory consumption across agents. Based on their resource profiles and structural complexity,
+these agents can be broadly categorized into two types:
+  (1) These agents use a minimal set of tools and exhibit low memory consumption and short end-
+      to-end execution times. For example, the “Bug Fixer” agent follows a simple static workflow:
+      (a) it executes erroneous code using a Python interpreter, and (b) sends the output to an LLM
+      API to obtain fix suggestions.
+  (2) These agents often adopt the ReAct strategy [101] and are equipped with a diverse set of
+      tools. For instance, the OWL agent employs a dynamic execution graph and integrates search
+      engines, web browsers, and document parsers (e.g., for PDF files). Unlike lightweight agents,
+      their execution is governed by real-time LLM decisions rather than a pre-defined static
+      workflow.
+
+                                                PDF parser
+            Static Step                                                                               LLM
+            Dynamic Step               Text 1      Split              Text N                      Self-Decision
+          Updated Code                                                                      Tool Using
+                                       LLM         LLM       ......   LLM
+  Code Exec             LLM                                                            Web          Search ......
+                                                                                                                      Stop
+                                                                                      Browser       Engine
+                  No                             Concat
+      Succeed                                                                                                       Output
+           Yes                                     LLM                                         Result Synthesis
+
+ Output Code                                    Summary
+
+(a) Bug fixer’s static workflow.         (b) Map reduce workflow.                    (c) ReAct Agent with tool using.
+
+                                   Fig. 3. Typical workflow of agent applications.
+
+
+
+3.2     Serverless for Agents
+In the serverless computing model, applications are structured as individual functions, each de-
+ployed independently and triggered by configurable events. The number of concurrently running
+function instances automatically scales in or out based on workload demands. Furthermore, cloud
+
+                                                                       , Vol. 1, No. 1, Article . Publication date: March 2026.
+10                                                                                        Jialiang et al.
+
+
+providers typically charge only for the actual execution time of each function, often at sub-second
+granularity. This paradigm has gained widespread adoption, particularly for applications with
+dynamic workloads and variable resource requirements.
+   Agent-based applications naturally exhibit dynamic execution characteristics, making them well-
+suited for serverless deployment. First, their execution times are highly variable. The execution
+of an agent involves multiple steps that can be represented as a directed acyclic graph (DAG). As
+illustrated in Figure 3, agents can follow diverse execution paths, depending on factors such as the
+task definition, user input, tool availability, LLM-generated content, and LLM runtime performance.
+For instance, in our experiments, the end-to-end latency of the "MapReduce" agent ranges from 42
+to 60 seconds. Despite using a fixed execution DAG and identical input across runs, the inherent
+non-determinism of LLM generation introduces significant variation in runtime. Second, agent
+memory demands vary widely. Some agents utilize only lightweight tools, resulting in minimal
+memory usage. For example, the "MapReduce" agent only relies on a simple external tool to parse
+PDF documents. In contrast, other agents require more complex tools, such as web browsers, which
+lead to higher memory consumption. For instance, the "Blog Summary" agent launches a browser
+to capture snapshots of web pages when searching for blog content on specified topics.
+   Given these execution-time fluctuations and diverse resource requirements, serverless platforms
+offer a compelling infrastructure for hosting agent applications, leveraging their elastic scalability
+and fine-grained, usage-based billing.
+
+3.3    Costs of Serverless for Agents
+Our detailed analysis reveals that deploying agents on serverless platforms can incur sub-
+stantial costs, sometimes comparable to the cost of LLM API calls. This finding is somewhat
+counterintuitive, as LLM invocation is typically considered the primary cost concern. However,
+recent advances in LLM inference techniques, such as batching [103] and disaggregation [106],
+have significantly reduced the cost of LLM usage. For instance, the price of GPT-4o was halved
+between 2024 and 2025.
+   LLM billing is based on tokens, which are also the fundamental processing unit for LLMs.
+Depending on the tokenizer, a token may represent a word, part of a word, or a phrase. Each
+LLM call incurs costs based on the number of input tokens (prompt tokens) and output tokens
+(completion tokens), which are typically priced separately. Given an input token length 𝐿𝑖𝑛 and
+output token length 𝐿𝑜𝑢𝑡 , the total cost of an LLM call is calculated as:
+                                            𝐶𝐿𝐿𝑀 = 𝐿𝑖𝑛 × 𝑃𝑖𝑛 + 𝐿𝑜𝑢𝑡 × 𝑃𝑜𝑢𝑡                           (1)
+where 𝑃𝑖𝑛 and 𝑃𝑜𝑢𝑡 denote the prices per input and output token, respectively. Table 3 reports the
+token usage across various agents.
+
+                              Table 3. The LLM token usage in representative agents.
+
+
+                                     Agent                 Input Tok   Output Tok
+                                     Blackjack               1690          8
+                                     Bug fixer               1557         530
+                                     Map reduce              8640         2644
+                                     Shop assistant         43185         1494
+                                     Blog summary           49398         2703
+                                     Game design            75121         2098
+
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                             11
+
+
+  Most existing public serverless platforms (e.g., AWS Lambda, Alibaba Function Compute and
+Google Cloud Run [15, 19, 48]) charge based on execution time and allocated resources. For example,
+AWS Lambda bills at $ 1.67×10−8 per millisecond per GB of memory. For a single function invocation
+with end-to-end execution time 𝑇 and memory allocation 𝑀, the cost is computed as:
+                                                             𝐶 𝑠 = 𝑇 × 𝑃𝑠 × 𝑀                                                   (2)
+where 𝑃𝑠 refers to the unit price per second per GB.
+
+                                              GPT-4.1-mini   GPT-4o-mini   DeepSeek-V3      Gemini-2.5-Flash
+                           50
+                                                                                            9.03E-03
+                                                                            7.37E-03
+      Relative Cost (% )
+
+
+
+
+                           40                  5.52E-04
+
+                           30
+                                                                                                               1.25E-02
+                           20                                 2.88E-03
+                                2.58E-04
+                           10
+
+                            0
+                                   ck              er         duce              t                      n
+                            Blackja        Bug fix      Map re           ssistan log summary Game desig
+                                                                   Shop a         B
+                                                                     Agents
+
+Fig. 4. The proportion of Serverless cost (𝐶𝑠 ) relative to the total cost (𝐶𝐿𝐿𝑀 + 𝐶𝑠 ), where the upper value
+denotes the total absolute cost associated with the Gemini 2.5 Flash model.
+
+   Using this cost model, we analyze the total cost of running various agents (as summarized in Table
+2), and present the results in Figure 4. We observe two key findings: Firstly, Serverless execution
+can represent a substantial portion of total expenditure. In our measurements, it accounted for
+as much as 42% of overall costs for certain agents, which is comparable to that associated with
+LLM calls. Second, complex agents incur higher serverless costs. Their latency is typically split
+between (1) waiting for LLM outputs and (2) using external tools (e.g., web browsers). Unlike
+lightweight agents, which spend most of their time waiting on LLM responses, complex agents
+perform significant non-LLM operations, thereby accumulating longer active execution time and
+higher serverless charges. As user tasks grow more complex, we expect the prevalence of complex
+agents to increase. Therefore, optimizing serverless cost efficiency, especially for agent-centric
+applications, is becoming increasingly important.
+
+3.4      Limitation of Serverless for Agents
+Further analysis of agent workloads reveals two primary contributors to the high cost of serverless
+deployment. First, CPU utilization is generally low. Although one of the key advantages of serverless
+computing is its pay-as-you-go pricing model, users are still billed for CPU resource allocation over
+the entire execution duration. However, agent workloads typically do not require exclusive CPU
+usage throughout their runtime. In fact, as shown in Table 2, agents often utilize less than 25% of
+allocated CPU resources during execution. This inefficiency is largely due to I/O-bound behavior,
+where agents spend a significant portion of their time waiting for external I/O operations rather
+than actively performing computation.
+   Second, memory consumption remains high for certain (especially complex) agents, even though
+the measurements reported in Table 2 already adopt snapshotting techniques. Specifically, memory
+that is (1) unused after initialization or (2) read-only is excluded from the usage statistics. Thus, the
+
+                                                                            , Vol. 1, No. 1, Article . Publication date: March 2026.
+12                                                                                                                                           Jialiang et al.
+
+       Linux Process
+
+      Repurposable Sandbox                                                                                                                               Host 2
+                                                                                                                      Func Y Container                  Host 1
+                       Reuse with Reconfiguration                                             Snapshot Img
+                                                                                                                   Repurposable Sandbox Y
+                                                                             A1                                                              B2
+                        Rootfs          Cgroup                                                                B3
+                                                                              Func Y Processes                            Other Y
+                                                                                                   A2
+      Reuse                                            Create                                           No Mem            Mem Y                  Sandbox Pool
+                                                                                                         Copy
+                                                    Other Isolation   CRIU   OS    MM Templates
+       veth               Other Process State                                                                B4
+    Network Env                                      Resources                                                     Repurposable Sandbox X
+                             Memory State                                     Mem Layout
+                                                                               Metadata                                   Other X
+                                                                                           Page Table                     Mem X             B1
+
+                                                                                                                      Func X Container
+Fig. 5. TrEnv-X’s view of a container. It con-
+                                                          Deduplicated Mem    Deduplicated Mem
+sists of two parts: a repurposable sandbox,                 Img of Func X       Img of Func Y  Memory Pool
+
+which is comprised of isolation resources such
+as the root filesystem (rootfs); and a group of
+processes, the critical component of which is Fig. 6. Overview of TrEnv-X. Steps A1-A2 refer to offline
+the memory state.                               preprocessing, while steps B1-B4 refer to online repurposing.
+
+
+
+reported memory footprint reflects only the dynamic memory allocated during runtime. A major
+contributor to this runtime memory usage is page cache duplication between the guest and
+host operating systems. For example, in the “Blog Summary” agent, approximately 500 MB is
+consumed by the guest kernel’s page cache and another 500 MB by the host kernel’s page cache.
+This duplication arises from the para-virtualized storage device used in Firecracker. When a file is
+accessed by an application inside the guest, the data is cached in the guest page cache. The access
+is then emulated by the host hypervisor, causing the identical data to be cached again in the host
+page cache. This redundant caching during execution leads to inefficient memory utilization, as
+both the guest and host maintain separate copies of the same content.
+
+4      Overview of the Container-Based Platform
+The key idea of TrEnv-X is an innovative repurposing strategy for reusing sandboxes and memory
+states of functions. In a traditional caching strategy, the cached instance is limited to being reused
+by the same function. TrEnv-X diverges from this by enabling an efficient transition from an idle
+function instance to any one of the pending functions, regardless of its type. Thus, it achieves a
+universal sandbox pool. By moving away from the rigid, function-type-specific model to a more
+flexible, function-type-agnostic one, our design substantially enhances the elasticity of serverless
+computing. Crucially, TrEnv-X accomplishes this with the same or stronger level of security and
+isolation compared with previous systems.
+   Implementing such a transparent and efficient state transition necessitates OS kernel changes
+and updates to vital serverless infrastructures, such as CRIU. To further elucidate our concept and
+its accompanying challenges, Figure 7 and Figure 6 present a detailed comparison of the function
+initialization workflows between current C/R (checkpoint and restore) systems and TrEnv-X.
+   The current workflow involves two phases: a preprocessing phase and an online restoration
+phase. As depicted in step A′ of Figure 7, the preprocessing phase involves creating snapshots for
+each function and storing them as files. These snapshots, representing the post-initialization state of
+a function, are used for subsequent restorations. When a function is invoked, the system performs
+two steps to start a new container: (B1′ ) it recreates a new sandbox (e.g., rootfs and cgroup) based
+on metadata in the snapshot image; and then (B2′ ) it restores the processes states. A significant
+challenge in step B2′ is restoring the memory state, which requires numerous mmap() system calls
+to recover virtual memory layouts and costly data copying to reload memory contents.
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                         13
+
+                                                                        VA-centric Interface         VA-PA-mixed Interface
+
+                                                                                                                  3
+                           Isolated Sandbox                          OS
+Preprocess                                                                                                MM Template
+                    A'              Other                               mm_struct                         VMA VMA
+                                    Mem         Isolated Sandbox                                    1
+                                                                           VMA     VMA                    Page Table
+             CRIU
+                                      B1'              Other                Page Table
+  Restore                                              Mem                                                     RDMA NIC
+
+                                      B2'   Mem Copy                                                       2
+                         Snapshot                                                          Read-Only            Read-Only
+                                                                       Local Mem               CXL Pool         RDMA Pool
+Fig. 7. Two phases of CRIU in current container runtime.
+Step A′ is the preprocessing phase, while step B1′ -B2′            Fig. 8. Three highlights in mm-template com-
+are the online restoration phase.                                  pared to the mm_struct in Linux.
+
+
+
+   While maintaining both phases, TrEnv-X introduces improvements to streamline the restoration
+phase into the more efficient repurposing phase. In the preprocessing phase, TrEnv-X generates
+snapshots for each function (step A1 in Figure 6) akin to the original CRIU. Yet, rather than saving
+memory states as files, TrEnv-X first deduplicates them into consolidated images stored on remote
+memory pools, then constructs one memory template (mm-template) per Linux process in the
+function, based on these snapshots (step A2).
+   As shown in Figure 8, each mm-template is an in-kernel object that has a structure similar to
+how traditional memory state is maintained by the kernel for each process (i.e., mm_struct). It
+has three unique features. 1 Not bound to a particular process but can be attached dynamically
+into any active process. 2 Treat all remote memory read-only and enable copy-on-write. 3
+Fine-grained control over page tables to map virtual address (VA) to physical address (PA) on
+remote memory. It only contains the metadata of the memory state, such as a page table and virtual
+memory layouts (i.e., vm_area_struct). Hence, its size is small (e.g., < 1 MB). By only copying this
+metadata instead of large memory images during function restoration, the overhead is reduced
+considerably. Additionally, copying from the same mm-template enables seamless memory sharing
+among the instances of the same function and even across different hosts. TrEnv-X leverages these
+mm-templates to expedite function transitions. As shown in Figure 6, the online restoration phase
+in TrEnv-X consists of four steps.
+ (B1) Upon completion of an instance of function X, TrEnv-X cleans its sandbox and puts it into a
+      pool instead of discarding it. This step includes terminating existing processes within the
+      container, ensuring any residual state from the predecessor will not be kept for security
+      reasons.
+ (B2) When a function Y’s invocation is pending, TrEnv-X selects a sandbox from the pool and
+      repurposes it into the pending type Y. This includes applying a unique overlay filesystem of
+      function Y (more in §5.2.1) and restoring the corresponding cgroup limits. Note that TrEnv-X
+      still offers all isolation components (e.g., cgroup and namespaces) as with a standard Docker
+      container to every function instance.
+ (B3) TrEnv-X issues a “repurpose” request to CRIU. CRIU helps the restored processes of function
+      Y to join the repurposed sandbox and recover other process states except for the memory state,
+      such as calling clone() to restore multi-thread context. This repurpose-and-join pattern
+      allows efficient reuse of sandbox units like namespaces and cgroups.
+ (B4) TrEnv-X attaches the mm-template to the restored process of function Y, efficiently restor-
+      ing its memory state. Note that TrEnv-X executes the aforementioned steps transparently,
+      requiring no code modifications or recompilation from users.
+
+                                                                   , Vol. 1, No. 1, Article . Publication date: March 2026.
+14                                                                                         Jialiang et al.
+
+
+However, the implementation of the above steps each has its challenges.
+
+4.1    Challenge on Reusing Isolated Sandbox
+As shown by the breakdown analysis in Figure 2, the cost of creating a new sandbox predominantly
+consists of three parts, namely for the rootfs, network environment, and cgroup. While network
+namespaces and virtual network devices can be safely reused without leaking private data from
+execution, reusing other resources presents unique challenges.
+   Each function comes with unique dependencies in its rootfs, such as specific libraries or files.
+This diversity, along with the requirement of isolation, complicates the possibility of a universal
+sandbox that can be seamlessly repurposed across functions. Consequently, there is a need for a
+mechanism that allows rapid filesystem transitions to accommodate these varying dependencies
+while minimizing storage overhead. Previous work [66] proposed to mount the dependencies of
+different functions into the sandbox in a read-only manner. However, it is essential to ensure write
+access to all paths in the rootfs, which is crucial for a practical serverless platform, as emphasized
+by Alibaba [65] and Amazon [27].
+   Cgroups play a critical role for resource isolation, including limiting the usage CPU, memory and
+block device. Its typical workflow involves three steps: (1) create a cgroup for each sandbox (2) spawn
+container or VMM processes, and (3) move the processes into the newly created cgroup. The third
+step is referred to as cgroup migration in Linux. Prior studies focused on alleviating the bottlenecks
+in the first step, such as maintaining a cgroup pool to amortize the creation overhead [65, 74]. Our
+investigations reveal that the cgroup migration typically incurs latency ranging from 10 to 50 ms,
+while the cgroup creation latency ranges from 16 ms to 32 ms. Therefore, there is a significant need
+to address and minimize the overhead stemming from cgroup migration.
+
+4.2    Challenge on Implementing mm-template
+The implementation of memory templates necessitates substantial modifications to existing OS
+memory management interfaces. In this section, we highlight three challenges associated with the
+implementation. First, mm-template must be extensible and capable of transparently supporting
+access interfaces of different types of remote memory. For example, CPUs can directly access
+CXL memory via load/store instructions, RDMA employs a message queue model, and NAS uses
+a block-based I/O interface. The mm-template should accommodate these different interfaces,
+establishing an extensible framework that can utilize multi-layer memory pools.
+   Second, the system should minimize additional overhead. Traditional memory systems of-
+ten adopt a lazy or on-demand approach, triggering memory loading during execution via page
+faults [18] or a userspace daemon [94] via userfaultfd. These approaches are acceptable in previous
+implementations because the predominant component of their latency remains in I/O (e.g., 60 µs
+for SSD and 6 µs for RDMA). However, the low-latency, byte-addressable features of CXL memory
+make it crucial to avoid additional overheads, such as page faults, which could drastically degrade
+performance and obscure its advantages.
+   Finally, the OS needs to be extended to support shared CXL memory. Current OS memory
+interfaces are designed primarily for single-host memory expansion (as for CXL 1.1) and hence fall
+short in supporting cross-host sharing and diverse memory mappings that TrEnv-X requires.
+   Presently, two main approaches are used for incorporating CXL memory in Linux:
+   (1) Expose the CXL memory as a CPU-less NUMA node [64, 89].
+   (2) Designate CXL memory as a special device file (e.g., /dev/dax0.1) and pass it to mmap(),
+       with the help of direct access (DAX) [7] drivers.
+   The CPU-less NUMA approach is typically suitable only for memory expansion. Due to the
+Linux memory allocator’s design for physical address transparency, it prevents the specification of
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                  15
+
+
+physical addresses during allocation. Hence, it is challenging to coordinate multiple hosts to share
+CXL memory pages. Although the DAX method permits setting physical offsets on CXL memory
+devices via mmap, it has its own set of limitations:
+   (1) The DAX driver does not support private mappings, which means it does not support copy-
+       on-write for CXL memory pages.
+   (2) DAX is incompatible with regular-file-backed and some anonymous memory mappings,
+       which are essential for critical process regions like heap and stack.
+As in Figure 9a, enforcing mm-template to restore heap areas through the DAX method could
+inadvertently cause heap growth (e.g., brk) to jump into adjacent CXL memory ranges, posing
+risks of memory disclosure or data corruption.
+
+                    Virtual Address      CXL Memory          Virtual Address      CXL Memory
+                      Space of X                               Space of X
+                                             Image X                                 Image X
+
+
+                         Heap X              Image Y             Heap X              Image Y
+
+                          Heap                                    Heap            Local Memory
+                         Growth                                  Growth
+
+                                                                                      Private
+                                   Leakage
+
+
+                              (a) Vanilla DAX                          (b) TrEnv-X
+
+Fig. 9. The result of heap growth during execution after restoring the heap area of function X on CXL memory.
+
+
+
+5     Design of Container-based Platform
+In this section, we describe how TrEnv-X solves the challenges described in §4.
+
+5.1    Memory Template Design
+To enhance transparency, we have implemented the mm-template within the OS kernel and
+integrated it into CRIU. This integration allows serverless applications to leverage the advantages
+of memory pools without the need for code modifications or recompilation. For extensibility, the
+mm-template supports various memory pool backends including CXL and RDMA. During the
+preprocessing phase, CRIU creates and fills an mm-template for each process in the serverless
+function. There is a built-in page table in the mm-template, which can be manipulated directly
+by its interface, i.e., mmt_setup_pt. The semantics of this interface is to set up page table entries
+(PTEs) in the mm-template, to point to a particular memory region on remote memory. The PTEs
+saves essential information including remote addresses and a special bit that identifies the type
+of memory pool. For slower backends like RDMA, TrEnv-X adopts a lazy approach, marking the
+corresponding PTEs as invalid. Thus, page faults are triggered during execution, allowing the kernel
+to identify these pages via the special bit in the PTE and route them to appropriate memory pool
+backends. These backends then allocate local pages and use the remote address in the PTE to load
+content from remote pools through their specific interfaces and implementations.
+   In contrast to remote memory pools like RDMA that are not directly accessible and incur page
+faults during execution, TrEnv-X leverages low-latency, byte-addressable CXL memory to eliminate
+software-level overheads for read access. During preprocessing, mm-template preconfigures valid
+page table entries (PTEs) that directly map to shared snapshot images in CXL memory. This enables
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+16                                                                                                     Jialiang et al.
+
+
+the CPU to access data via standard load instructions, avoiding context switches and minor page
+faults. By shifting the overhead of on-demand paging to the preprocessing phase, TrEnv-X achieves
+zero-cost read access during execution. To enable memory sharing across function instances without
+duplicating the entire memory image, TrEnv-X adopts a copy-on-write (CoW) strategy. When
+setting up PTEs for CXL-backed memory, write protection is applied during preprocessing. A write
+access at runtime triggers a page fault, at which point the page is copied to local RAM, preserving
+isolation across instances. To assess the potential for read-only sharing and the cost of CoW, we
+evaluate the functions listed in Table 4. For each function, we take a snapshot after initialization,
+restore a single instance from the snapshot, and then execute a complete invocation. After execution,
+we count the number of memory pages that were read and written, respectively. The results, shown
+in Figure 10, demonstrate that a significant portion of memory remains read-only, indicating that
+CoW can preserve efficiency while maintaining the integrity of single copy of remote memory
+images.
+
+                                                      Read-Only Ratio       Write Ratio
+                               IFR
+              Serverless Function
+
+
+
+
+                               JJS
+                               CR
+                                CH
+                                VP
+                                 IP
+                                 IR
+                                PR
+                                JS
+                                DH
+
+                                      10   20       30     40      50        60       70   80   90   100
+                                                                Ratio (%)
+
+
+     Fig. 10. The read-only and write memory ratio of serverless functions in Table 4, using snapshotting.
+
+   TrEnv-X also introduces a custom kernel driver to remove the limitations of the standard DAX
+driver, which requires all CXL mappings to be associated with a device file (e.g., /dev/dax0.1).
+This requirement conflicts with anonymous mappings (such as heap memory), which are inherently
+file-independent, and prohibits mapping CXL memory to other files, such as the .data section of
+executables. These restrictions stem from the design of the device-DAX driver, which configures
+PTEs at run time via callbacks functions associated with memory mappings during creation (i.e.,
+mmap). In the absence of a callback function association, the kernel defaults to allocating local
+memoryUntitled-1
+          pages, making transparent offloading to CXL infeasible. The new driver in TrEnv-X
+
+             // create a new mm-template, return an identifier of mm-template in `id`
+             int mmt_create(int *id);
+             // add a memory region to mm-template, most arguments are the same as `mmap()`
+             int mmt_add_map(int id, void *start, size_t len, int prot, int flags,
+                 int fd, off_t offset);
+             // setup page table for a particular memory region at `phys_offset` on
+             // remote memory. `pool` denotes the type of memory pool (e.g., CXL or RDMA)
+             int mmt_setup_pt(int id, void *start, size_t len, off_t phys_offset,
+                 enum mem_pool_t pool);
+             // attach the mm-template into process identified by `pid`
+             int mmt_attach(int id, int pid);
+
+                                                Fig. 11. Core API of mm-template.
+
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                  17
+
+                                                  CXL Pool
+                                                                                mm-template X
+                                        R1                       R1             mm-template Y
+                                                   Block 1
+                                        R2                       R2            0x7FFF4000
+                                 3            4
+
+                                                   Block 2                     0x88000
+                          2
+                                                      1                           PID: 666
+                                        R2'                      R2'
+                                                                                     R2'
+                                        R3         Block 3       R3        5
+                                                                                     R3
+
+                                                                                Process of Y
+                               Host 1             RDMA Pool     Host 2
+
+
+                              Fig. 12. A simplified example of using mm-template.
+
+
+ enables flexible memory management by allowing mm-template to explicitly set PTEs in advance.
+As the core mm-template API illustrated in Figure 11, the preprocessing phase uses mmt_add_map
+ to create virtual memory areas, followed by mmt_setup_pt to (1) translate offsets to physical CXL
+ addresses, (2) set valid write-protected PTEs, and (3) pin the corresponding pages. This mechanism
+ eliminates reliance on the DAX device and allows memory regions to be configured ahead of
+ execution. Thus, mm-template can support both anonymous and regular-file-backed mappings on
+ CXL memory. As shown in Figure 9b, heap areas reside in CXL memory after being attached via
+ mmt_attach, while subsequent heap expansion will default to local memory allocation, avoiding
+ interference with other shared CXL regions.
+ Usage example of mm-template. Due to the transparency of mm-template, using CXL and
+ RDMA only differs in the `pool` argument passed to mmt_setup_pt for PTE preconfiguration.
+ Most of the complexity is hidden in the kernel. Figure 12 shows the workflow to use mm-template,
+ involving two single-process functions. Initially, during the offline preprocessing phase, the system
+ generates a snapshot for each function using CRIU. TrEnv-X then deduplicates these snapshots,
+ resulting in a consolidated image stored in memory pools (step 1 in Fig 12). As shown in Fig 12,
+ the snapshots for functions X and Y include a duplicated region (R2 and R2′ , respectively) mapped
+ to the same Block 2 on remote memory. Additionally, TrEnv-X logs the physical start offset of each
+ memory block on the memory pool, such as 0x88000 for Block 2, which comprises, for example, 4
+ pages. This physical offset acts as a machine-independent pointer.
+     Subsequently, each host constructs one mm-template for each process in the function (step
+  2 ). For example, TrEnv-X calls mmt_create(&X) to initiate a memory template for function X.
+This template is then populated with specific virtual memory mappings using the mmt_add_map
+API (step 3 ). For example, to allocate the private read-only anonymous mapping R2 in X’s template,
+TrEnv-X executes mmt_add_map(X, 0x7FFF4000, 4*PAGE_SIZE, PROT_READ, MAP_PRIVATE,
+-1, 0). The address 0x7FFF4000, derived from the snapshot image, represents the original virtual
+ memory address of R2 in the checkpointed process of X. The virtual memory mappings are then
+ linked to the remote memory pool via mmt_setup_pt API (step 4 ). For example, mmt_setup_pt(X,
+ 0x7FFF4000, 4*PAGE_SIZE, 0x88000, CXL) associates R2 in X’s template with Block 2 on CXL
+ memory. Our new kernel driver helps to convert the offset 0x88000 to the corresponding physical
+ address on CXL memory and install valid PTEs. For the RDMA pool, such as R3 in mm-template Y,
+ it installs invalid PTEs with the address in the RDMA memory pools, then loads memory pages in
+ subsequent page faults.
+     During the repurposing phase (i.e., critical path), TrEnv-X attaches the mm-template to the
+ process to be restored, via mmt_attach API (step 5 ). Each mm-template can be attached multiple
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+18                                                                                                       Jialiang et al.
+
+
+                                                                       App X Overlay FS     On Host
+                                                  /                                        /home/app
+                                                                           home/app   =        +
+                    /dev/null   /sys/     /lib/       /bin/   /home/app/
+                                                                                          modification
+                                                                       App Y Overlay FS
+                    char dev    sysfs
+                                        Base Overlay FS                                   modification
+                                                                           home/app
+                                                                                      =         +
+                                  Reuse                                                    /home/app
+
+
+             Fig. 13. An example of rootfs reconfiguration. The red box indicates the mountpoint.
+
+times, and it only copies the metadata, e.g., page tables, instead of the memory pages. For instance,
+to restore the memory state of a process of function Y whose process ID (PID) is 666, TrEnv-X
+executes mmt_attach(Y, 666).
+
+5.2    Repurpose Isolated Sandbox
+Two challenges related to isolated sandbox were mentioned in §4.1. The first is that varying
+functions require different dependencies, making the reuse of rootfs non-trivial. The second is that
+the overhead of cgroup migration is non-negligible and cannot be solved by current approaches.
+5.2.1 Rootfs Reconfiguration. The standard container rootfs typically consists of multiple mount-
+points within a per-container mount namespace (mntns), often using a base union filesystem like
+overlayfs for the root directory. Notably, many dependencies (e.g., glibc and language interpreters)
+are common across functions. Instead of switching the entire rootfs, our approach focuses on swap-
+ping only the function-specific dependencies. By exploiting the flexibility of Linux mountpoints,
+we overmount another union filesystem atop an existing path, effectively “replacing” its contents,
+as shown in Figure 13. More precisely, there are three steps to reconfigure the rootfs between two
+different functions. First, TrEnv-X purges file modifications from previous instances. As overlayfs
+is a copy-on-write filesystem, all modified files are recorded in the upper directory. The purging
+process involves deleting all the files in the upper directory and remounting the overlayfs to flush
+stale inode cache. Second, TrEnv-X unmounts the function-specific overlayfs of previous function
+from the mntns. Third, TrEnv-X mounts the function-specific overlayfs of new function into the
+mntns. TrEnv-X further enhances this procedure by (1) executing the first step asynchronously, and
+(2) maintaining a pool of function-specific overlayfs, instead of discarding them after unmounting.
+Compared with Cold Start. Typically, preparing a rootfs for containers from scratch requires many
+system calls, including more than 9 mount, 6 mkdev, 6 mknod and 1 pivot_root calls to Linux. For
+example, it involves mounting a sysfs under /sys and making a character device under /dev/null.
+TrEnv-X, in contrast, requires only 2 mount at minimum for function-specific dependencies and
+/proc, efficiently reusing other mountpoints.
+Compared with Lightweight Container. Many prior studies have adopted lightweight containers to
+overcome the isolation bottleneck. For example, SOCK[74] has proposed a lean container, using
+chroot and read-only bind mounts to set up its rootfs rapidly. However, according to the Linux
+manual page [42], chroot is not intended for full process sandboxing, and Sun et al. [88] have
+underscored its security limitations, which is susceptible to several potential “escape” attacks. In
+contrast, TrEnv-X still adopts the mount namespace as standard containers, which provides more
+robust isolation.
+Compared with Zygote Container. Prior research, such as Pagurus [66], suggests a “zygote” container
+that can help various functions. In Pagurus, each function-specific directory is assigned a unique
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                  19
+
+
+owner, and the user ID of the function process is dynamically adjusted to access the corresponding
+directory. However, it merely provides read-only access, a limitation also found in lightweight
+containers. TrEnv-X, conversely, leverages the copy-on-write feature of overlayfs to emulate an
+ideal single-tenant environment with no restrictions on writable paths. While zygote containers
+improve the hit ratio of idle containers compared with conventional caching strategies, one zygote
+can only help certain types of functions with similar dependencies and the same language. TrEnv-X,
+on the other hand, supports seamless transitions to arbitrary functions, even in different languages.
+Moreover, zygote containers require additional initialization steps when helping other functions,
+such as loading unique libraries and user codes, leading to longer latency than TrEnv-X.
+
+5.2.2 New Cgroup Feature Utilization. As discussed in §4.1, cgroup migration suffers from signifi-
+cant latency. To understand the root cause of this latency, we employed ftrace [26] to analyze the
+call graph in Linux during cgroup migration. Our analysis reveals that the involvement of two
+global read-write semaphores in the critical path, as shown in Figure 14, is the main cause. The
+underlying RCU (Read-Copy Update) synchronization, integral to semaphore implementation, is
+inherently time-consuming as it necessitates waiting for a grace period to ensure successful write
+locking.
+
+
+                                                      cgroup_threadgroup_rwsem
+                                                                                      > 10ms
+
+                                 cgroup_procs_write_start   cgroup_attach_lock   synchronize_rcu
+                    Migrate
+                                     cgroup_attach_task     cpuset_can_attach    synchronize_rcu
+
+                                                                                      > 10ms
+                                                              cpuset_rwsem
+
+
+                                  Fig. 14. Call graph of the cgroup migration.
+
+
+   TrEnv-X employs the CLONE_INTO_CGROUP feature, a recent Linux enhancement for task creation.
+It significantly speeds up the procedure by assigning a specific cgroup to a process at the time of
+spawning, rather than post-creation. Now the workflow in TrEnv-X is: (1) create the cgroup and
+(2) assign the cgroup directly while spawning container processes. Since the process is still invisible
+to other OS components while spawning, the kernel can bypass the costly synchronization in
+cgroup migration. Despite its efficiency, this feature has yet to be adopted in mainstream container
+runtimes (e.g., runc). In our evaluation, it typically takes only 100 to 300 µs.
+
+6   Extending the Design to VM-Based Agent Execution
+Building on the techniques introduced in the previous section, we further extend TrEnv-X to support
+VM-based serverless platforms, the dominant model in public clouds. To evaluate the extended
+system, we take LLM agents as a representative example of emerging serverless workloads.
+   Our implementation targets KVM-based microVMs, where each hypervisor runs as a host process
+isolated by Linux namespaces and cgroups. As with containers, TrEnv-X still maintains a pool of
+repurposable sandboxes that can be recycled across hypervisors, minimizing the corresponding cre-
+ation overheads. Nevertheless, the intricate execution patterns and substantial memory demands of
+LLM agents introduce challenges that extend beyond the scope of container-oriented optimizations,
+motivating the system enhancements detailed in the following subsections.
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+20                                                                                             Jialiang et al.
+
+
+
+                                      Host Process
+                                                           VM (guest)
+                                      Mapping
+                                                                         IO
+
+                                                       Shared Memory      virtiofsd
+                                   Virtqueue
+                                    (virtio)
+                                                                        Unix Socket
+                                                             VMM
+                                                                        (vhost-user)
+
+
+
+                   Fig. 15. The architecture of virtiofs. VMM means virtual machine monitor.
+
+
+
+6.1    Challenge of Agents on VM-based Platforms
+As discussed in §3.4, two primary obstacles hinder cost-efficient serverless execution for agents:
+low CPU utilization and redundant page cache across guest and host kernels. A common strategy
+to address low CPU utilization is CPU overcommitment [16], which consolidates multiple VMs
+onto the same set of physical cores. However, overcommitment introduces two key challenges.
+   First, it increases the end-to-end execution latency of agents, particularly for complex agents that
+rely on browsers. Although the average CPU utilization is low (e.g., only 7% for “Game design”),
+the CPU demand can exhibit significant short-term spikes (e.g., exceeding 40% for “Game design”).
+Overcommitment exacerbates resource contention among co-located instances. For example, when
+200 instances of the “Game design” agent are scheduled on 20 physical cores, the average execution
+latency increases by 25% (from 107 seconds to 134 seconds).
+   Second, overcommitment amplifies the impact of redundant page caches. As the number of
+concurrently running VMs increases, so does the degree of memory redundancy. Recent hypervi-
+sors [65] employ virtiofs [12], a shared virtualized filesystem, to mitigate this issue. However, we
+find virtiofs challenging to integrate with our mm-template. As illustrated in Figure 15, the virtiofs
+delegates guest file operations to a separate userspace daemon called virtiofsd. This architectural
+decision is explicitly made to enhance security, preventing a compromised guest from exploiting
+shared file system interfaces to attack the host. About its data plane, the virtiofsd must access
+the descriptors in the virtqueue and buffers in the guest memory to serve I/O requests. To ensure
+performance, the VMM shares the guest memory with virtiofsd rather than copying data between
+each other. Unfortunately, this memory sharing model is fundamentally incompatible with our
+design, which relies on private memory mappings to enable safe copy-on-write semantics across
+instances.
+
+6.2    Browser Sharing
+To mitigate the execution time overhead introduced by overcommitment, TrEnv-X amortizes
+resource usage across multiple agents. Many complex agents rely on web browsers to render
+content or interact with websites. However, browsers are inherently memory- and CPU-intensive,
+often spawning multiple processes and some agents even needs graphic display (i.e., headed
+browsers). Following the same sharing principle underlying TrEnv-X’s design, we extend resource
+sharing to include browser instances. TrEnv-X allows multiple agents (e.g., ten) to concurrently
+share a single browser instance, with each agent operating within its own set of tabs.
+   Technically, most agents interact with browsers via automation frameworks such as Play-
+wright [10], which expose browser operations through language-specific APIs (e.g., Python or
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                  21
+
+
+JavaScript). Taking Chromium as an example, these tools communicate with the browser through
+the Chrome DevTools Protocol (CDP) over WebSocket, sending commands such as opening a new
+webpage. When CDP is enabled, the browser exposes a WebSocket endpoint that supports multiple
+concurrent clients. TrEnv-X launches several browser instances in separate sandboxes and enables
+multiple agents to connect to the same instance through a shared CDP endpoint. Because CDP is
+widely supported, this integration is straightforward. For instance, the Browser-Use framework
+employed by our “Shop Assistant” agent (Table 2) already allows users to specify a CDP endpoint.
+Since many browser components, such as network and storage subprocesses, can be multiplexed
+internally, this design reduces redundant resource consumption and alleviates CPU contention
+among co-located microVMs. In the current implementation, we focus on scenarios where agents do
+not process sensitive user data. Therefore, we do not impose additional security isolation between
+agent connections sharing a browser instance. Security implications are discussed further in §8.1.2.
+
+6.3    Page Cache Mitigation
+To address the issue of page cache duplication, we reexamine the storage architecture. As discussed
+in §6.1, the virtiofs-based design in RunD is incompatible with copy-on-write memory sharing on
+CXL. TrEnv-X employs the same block device model as Firecracker, allowing storage emulation to
+be integrated within the hypervisor itself and removing the need for shared memory. To bypass
+the guest page cache, we use the virtio-pmem device, a virtualized, byte-addressable persistent
+memory. However, simply assigning a dedicated virtio-pmem device to each VM introduces two
+drawbacks. First, each device occupies substantial host storage (typically tens of gigabytes), as it
+must store the full VM filesystem. Second, since Linux maintains the page cache at the file level,
+identical files across different devices result in duplicated host page caches.
+
+                                                                       Guest
+                                                                                     Read-only
+                                  Union Filesystem (e.g., OverlayFS)
+                                                                                     Writable
+
+                            virtio-pmem-1    virtio-pmem-2     Page Cache            Host
+
+                                                                                     Guest
+                                                                writable-blk
+                             Page Cache       Page Cache
+
+                                                                writable-file
+                            base-file-1      base-file-2
+                                                                        Host
+
+
+                           Fig. 16. The method to mitigate duplicated page cache.
+
+   To overcome this, TrEnv-X employs a union filesystem strategy, illustrated in Figure 16. Each
+VM is provisioned with two types of storage devices: a read-only base device containing shared
+files (e.g., libc, browsers), and a writable device for recording per-VM file modifications. The base
+device is shared among all VMs and mapped as a read-only virtio-pmem device, ensuring a single
+copy is cached in the host and bypassing the guest page cache. The writable device is exclusive to
+each VM and opened with the O_DIRECT flag in the hypervisor, thereby avoiding host page cache
+duplication. These two types of devices are combined using a union filesystem (e.g., overlayfs)
+within the guest, enabling efficient storage isolation and compatibility with the copy-on-write.
+
+7     Implementation
+We have implemented the mm-template mechanism in TrEnv-X based on Linux v6.1, with support
+for both CXL and RDMA memory pools. The functionality is exposed to users via a pseudo-device
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+22                                                                                          Jialiang et al.
+
+
+under /dev, using a set of ioctl interfaces as illustrated in Figure 11. Each mm-template is assigned
+a unique identifier upon creation, which must be provided for subsequent operations. Internally, all
+templates are managed using an XArray, indexed by their identifiers. The implementation consists
+of approximately 3,500 lines of code (LoC) modifications to the kernel and 700 lines for the RDMA
+memory server.
+   To optimize existing checkpoint/restore (C/R) workflows, TrEnv-X introduces both mm-template
+and repurposable sandbox mechanisms into CRIU. Rather than reconstructing the mount namespace
+and cgroup from scratch, TrEnv-X enables joining the existing environment within its sandbox pool.
+The memory remapping and data copy typically involved in CRIU restore operations are replaced
+by the efficient mmt_attach call. Furthermore, we extend CRIU to support the transformation of
+traditional CRIU checkpoints into mm-templates. This integration involves approximately 2,900
+LoC modifications to CRIU.
+   TrEnv-X integrates CRIU with faasd [75], a widely-used serverless computing platform, to
+support container-based function execution. The management of sandbox pools, function-specific
+overlayfs, and cgroups is delegated to the serverless platform, which possesses sufficient application-
+level context. For function scheduling, TrEnv-X adopts a simple yet effective policy: if available
+sandboxes exist in the pool, new function instances are launched via repurposing; otherwise,
+TrEnv-X falls back to cold start or vanilla CRIU-based startup.
+   We also extend TrEnv-X to support a VM-based agent execution platform, enabling both light-
+weight agents for rapid startup and complex agents for high-density workloads. Our survey revealed
+a lack of open-source microVMs meeting all of TrEnv-X’s requirements. Specifically, efficient C/R
+support is often missing, e.g., Kata Containers lacks native C/R support for microVMs, and gVisor
+requires costly memory copying. Moreover, support for DAX (Direct Access) to bypass the guest
+page cache is essential, which is not supported in Firecracker. Although DAX feature is standardized
+in the virtiofs specification, its official implementation [11] has removed support due to instability
+in the memory mapping command within the vhost-user protocol. To address these limitations, we
+enhance Cloud Hypervisor (CH) to satisfy all requirements. While CH supports virtio-pmem, its
+default restore mechanism relies on full memory copies. Inspired by the mm-template design, we
+extend CH to restore memory state via mmap from either a modified DAX device or a regular memory
+image file. The VM-based platform implementation consists of 6,000 LoC, with CH enhancements
+requiring an additional 100 lines.
+
+8     Discussion
+In this section, we further discuss the security and deployment costs of TrEnv-X.
+   (1) Security: TrEnv-X involves reusing or repurposing certain container components, as outlined
+       in Table 1. It is essential to assess the extent to which this reuse may introduce potential
+       security vulnerabilities.
+   (2) Deployment Costs: TrEnv-X optimizes memory restoration and utilization by leveraging
+       emerging hardware technologies (e.g., CXL and RDMA). This approach presents a tradeoff
+       between the benefits gained and the additional deployment costs incurred.
+
+8.1    Security
+The mm-template API is implemented through a set of ioctl calls on a pseudo-device driver. To
+ensure its usage is controlled, only users with root privileges can access that device. For repurposable
+sandboxes, the design aims to provide a level of security and isolation that is equivalent to or exceeds
+that of existing container-based systems. In the following, we examine the security implications
+associated with the reused kernel objects (i.e., container components). We then analyze other
+security limitations inherent in the current implementation of TrEnv-X.
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                  23
+
+
+8.1.1 Reused Kernel Objects.
+Network namespace (netns). Lightweight containers (e.g., used in Mitosis [98]) do not employ
+netns, leading all instances to share the same network environment. In contrast, TrEnv-X assigns
+a separate netns to each instance. During repurposing, the previously opened network connections
+will be forcibly terminated to prevent data leakage. However, certain states, including the network
+configurations (e.g., firewall rules and routing tables) and statistics (e.g., received bytes of the
+veth interfaces), are preserved. Many serverless functions, including all evaluated in our study, do
+not modify network configurations. Therefore, these residual states do not expose data generated
+during function execution. For other functions that customize the network or ask for extreme
+security, we need fallback to create absolutely clean network environment from scratch as usual.
+Rootfs. Each rootfs contains a mount namespace and a union filesystem. Its security implications
+has been discussed in §5.2.1. During repurposing, TrEnv-X first kills the processes, and then purges
+the file modifications of the previous instance. Thus, TrEnv-X does not leak any data, including
+memory or files, produced by the processing of the last function.
+Cgroup. The reuse of cgroup is confirmed and adopted by production systems like Rund [65]. Still,
+TrEnv-X provides a cgroup per instance, as standard Docker containers.
+   A “share” strategy has been proposed by Pagurus [66]. A pool of zygote containers is maintained
+to mitigate cold start overhead. Nevertheless, all child containers forked from the same zygote
+container share the isolated components (e.g., rootfs and netns), resulting in poorer isolation
+compared with TrEnv-X.
+
+8.1.2 Security Limitations. Although TrEnv-X prevents data leakage and enforces the proper level
+of isolation during repurposing, there are other potential security limitations.
+   (1) ASLR (Address Space Layout Randomization). In TrEnv-X, all restored container instances
+       share the same memory layout (e.g., the virtual address of the stack) as the mm-template they
+       are attached during restoring, preventing ASLR from introducing randomness. This issue
+       is prevalent in all Checkpoint/Restore and fork-based schemes, where restored or forked
+       containers inherit the virtual address layout of the snapshot or parent process.
+   (2) Side-channel attacks related to memory deduplication across functions [102]. A possible
+       solution is to only enable it for functions from the same users.
+   (3) Unintentional data sharing (e.g., cookies) among browser-sharing agents. A possible solution
+       is integrating advanced isolation mechanisms of modern browsers, like Firefox Containers [9],
+       which provide privacy separation between tabs within a single browser instance.
+   (4) Data protection during transfer. For CXL, the 2.0 specification propose security features, such
+       as IDE (Integrity and Data Encryption). For RDMA, it is possible to encrypt the memory
+       images during transfers.
+
+8.2   Deployment Cost
+For RDMA-based deployment, there is no additional cost since cloud providers already offer RDMA
+devices (e.g., eRD-MA [29], EFA [108]) in production. For CXL-based deployment, a quantitative cost
+analysis is currently not feasible because CXL 2.0 switches are still in the demo phase. However, we
+are confirmed from manufacturers that memory expanders’ and switches’ price will be comparable
+to DDR5 DIMMs and IB switches, respectively. Previous works [24] showed that the cost of switches
+and multi-headed memory controllers are within 5% of the original servers, at the scale of 16 sockets.
+Thus, we anticipate rack-level deployment of CXL memory pools will be available at an acceptable
+cost in the near future, motivating our work. A rack-level mini-cluster with around 10 machines
+and 20TB memory would be sufficient to capitalize on the benefits of TrEnv-X.
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+24                                                                                           Jialiang et al.
+
+
+   Regarding the energy cost for occupying DRAM and the comparison with pre-warm/keep-alive
+approaches, TrEnv-X reduces the overall memory footprint by enabling cross-machine-intra-rack
+deduplication. Only one copy is needed per rack if it is read-only, reducing the cost by a factor
+of the number of machines (~10). In contrast, each kept-warm container requires an independent
+copy, leading to excessive duplication and memory costs. For larger clusters, it is possible to blend
+CXL (intra-rack) and RDMA (inter-rack), by adjusting the mm-template, to further enhance the
+scalability.
+
+9     Evaluations
+In this section, we present the experimental evaluation of TrEnv-X. §9.1 to §9.5 focus on container-
+based platforms, assessing the effectiveness of repurposable sandboxes and mm-template. §9.6
+extends the evaluation to VM-based agent platforms, highlighting TrEnv-X’s enhancements for
+browser sharing and mitigation of duplicated page cache.
+
+9.1    Methodology
+Testbed. We conducted evaluations of TrEnv-X using memory pools based on both CXL and
+RDMA technologies, termed T-CXL and T-RDMA in the following sections, respectively. The test
+platform was equipped with dual 32-core Intel Xeon Gold 6454S CPUs, 256 GB of RAM, and a 7 TB
+Samsung PM9A3 SSD. Additionally, the platform was connected to a 128 GB experimental Samsung
+CXL memory device and a Soft-RoCE RDMA device. In our tests, the latency for accessing remote
+memory was 641.1 ms for CXL and 6 µs for RDMA.
+Evaluated Functions. Our method is universally applicable across diverse language runtimes
+and is able to handle multi-threaded and multi-process scenarios. Thus, for our evaluation, we
+selected a wide range of applications from SeBS [34] and Function-Bench [60] (Table 4). Given
+the prevalent use of Node.js and Python by AWS Lambda developers[37], we also ported several
+Python (Py) functions to Node.js (Node). This further highlights TrEnv-X’s ability to repurpose
+between heterogeneous languages.
+Baselines. TrEnv-X is based on faasd, a widely used serverless platform that not only provides a
+baseline for our comparative analysis but also supports CRIU natively.
+   Additionally, the current predominant approach to mitigating cold start issues in serverless
+computing is “lazy restoration”, which prioritizes the recovery of essential states and delays other
+tasks (e.g., memory content restoration) until necessary. Thus, we also compare TrEnv-X with
+
+
+ Table 4. The evaluated functions. The last column shows the number of threads that need to be restored.
+
+
+ Func       Lang           Description                               Mem Size         # Thread
+ DH         Python         Dynamic web pages generating.             50.4 M           14
+ JS         Python         Deserialize and serialize json.           94.9 M           14
+ PR         Python         Pagrank algorithm.                        116 M            395
+ IR         Python         Deep learning (ResNet).                   855 M            141
+ IP         Python         Image rotating and flipping.              67.1 M           15
+ VP         Python         Gray-scale effect on video.               324 M            204
+ CH         Python         HTML tables rendering.                    94.9 M           38
+ CR         Nodejs         AES encryption algorithm.                 124 M            16
+ JJS        Nodejs         Similar to JS.                            111 M            21
+ IFR        Nodejs         Similar to IP.                            253 M            21
+
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                  25
+
+
+REAP and FaaSnap, two state-of-the-art lazy restoration methods that utilize Firecracker. Notably,
+FaaSnap builds on top of REAP by introducing an asynchronous prefetch policy. Each guest for
+FaaSnap and REAP has 2 vCPUs and 2 GB memory.
+   During our evaluation, we noted that the network configuration phase during Firecracker
+initialization introduces significant overhead, which can reach up to 600 ms under scenarios of
+high load and concurrency. This overhead allows TrEnv-X to outperform them substantially. To
+facilitate a more meaningful comparison, we developed a network namespace pool for both REAP
+and FaaSnap. After a VM is terminated, its network environment is recycled into this pool for later
+reuse, analogous to our repurposable sandbox pool. We refer to these enhanced implementations
+as REAP+ and FaaSnap+, respectively.
+Schedule Policy. We implement a widely used scheduling policy across all evaluated methods.
+After the invocation, instances are retained in a container pool for a fixed duration (e.g., 10 minutes)
+akin to Openwhisk [3], commonly referred to as keep-alive. This approach allows for the immediate
+reutilization of cached instances for new invocations of the same function. The container pool
+works as a Least Recently Used (LRU) list, organized by the most recent activity.
+Workloads. We assessed the performance of TrEnv-X using both synthetic and real-world work-
+load traces. Specifically, bursty loads and diurnal patterns are the two most commonly observed
+patterns in real-world serverless platforms that lead to load instability and thus diminish the effec-
+tiveness of the keep-alive strategy [45, 66, 79, 82, 86, 95]. To accurately simulate these conditions, we
+designed two specific workloads: W1 and W2. W1 replicates bursty traffic patterns, with intervals
+between consecutive bursts longer than the keep-alive threshold. In contrast, W2 emulates diurnal
+traffic fluctuations, cycling through various functions under tight memory limits (a soft memory
+cap of 32GB is applied in W2, compared to the 64GB used in other tests). To further substantiate
+TrEnv-X’s utility in practical scenarios, we also incorporated industry traces from Azure [82] and
+Huawei [59] into our evaluations.
+   To ensure the effectiveness of traditional caching mechanisms, all tests include a warm-up phase
+of about 5 minutes. Additionally, snapshot images of CRIU, REAP, and FaaSnap are stored on a
+CXL-memory-backed tmpfs to eliminate disk overhead, ensuring a fair comparison with T-CXL.
+   In the following evaluation, we focus on the following aspects.
+   (1) Performance (§9.2, §9.3, §9.6.1, §9.6.2): What is the benefit of TrEnv-X on end-to-end latency,
+       especially under concurrency and the P99 latency?
+   (2) Memory utilization (§9.2, §9.3, §9.6.3): What is the benefit of TrEnv-X on the reduction of
+       memory usage?
+   (3) Optimization Breakdown (§9.4): What is the contribution of each optimization proposed
+       by TrEnv-X?
+   (4) Memory Pool Comparison (§9.5): What is the difference between CXL and RDMA memory
+       pool?
+
+9.2   Representative Workload
+Figure 17 displays the cumulative distribution function (CDF) of end-to-end (E2E) latency for
+functions within the W1 and W2 workloads, capturing over 4k invocations in 30 minutes. For
+clarity, the x-axis shows the logarithmic scale (base 2) latency, and the results for CRIU and faasd
+are partially truncated due to their relatively longer latencies.
+   As a summary, in terms of tail latency, T-CXL consistently outperforms all other solutions,
+achieving a speedup ranging from 1.11×-5.69× (1.17×-18×) for P99 latency and up to 5.9× (8.6×)
+for median latency, compared with REAP+ (FaaSnap+). The superior performance primarily stems
+from T-CXL’s reduced execution time, as FaaSnap+ and REAP+ incur more context switches and
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+26                                                                                                                                                           Jialiang et al.
+
+
+                      T-CXL                        T-RDMA                      FaaSnap+                   REAP+                       CRIU           faasd
+                      DH                                 JJS                                     JS                                 IFR                      PR
+       100%
+
+       50%
+
+        0%
+ CDF
+
+
+
+
+                23          26                      26        27          28           26         27           28         210            212          29     210     211
+                      IR                                      IP                                 CH                                 CR                       VP
+       100%
+
+       50%
+
+        0%
+               26               28               1.6 × 210          211                    29          210          28          29             210            211
+
+                      (a) W1: bursty loads with intervals longer than the keep-alive threshold.
+                     DH                                      JJS                                 JS                             IFR                          PR
+      100%
+
+       50%
+
+       0%
+               23          26                       26       27          28           26          27         28          210         212              29       210         211
+CDF
+
+
+
+
+                     IR                                      IP                                 CH                                  CR                       VP
+      100%
+
+       50%
+
+       0%
+                     27                       29 1.6 × 210         211                     29            210                   29          210       211             212
+
+                                            (b) W2: diurnal and heavy traffic under tight memory limits.
+
+Fig. 17. CDF of different functions’ E2E latency under two representative workloads, W1 and W2. The vertical
+dotted line indicates the P99 E2E latency. Note that x-axis denotes the E2E latency in milliseconds on a
+logarithmic scale with a base of 2.
+
+
+                                                                  T-CXL                     FaaSnap+                     CRIU
+                                                                  T-RDMA                    REAP+                        faasd
+                            Mem Usage(GB)
+
+
+
+
+                                            40
+                                                                                                             20
+                                            20
+                                                                                                             10
+
+                                             0                                                                 0
+                                                   W1               W2              Azure       Huawei                    IR             IFR
+                                                                              (a)                                               (b)
+
+Fig. 18. (a) Peak memory usage during four workload tests. (b) The memory usage when starting 50 instances
+of IR and IFR, respectively.
+
+
+
+on-demand restoration overheads, particularly under conditions of high concurrency. T-RDMA
+also shows promising performance; however, it does not perform as well in certain scenarios due
+to the higher latency associated with RDMA access compared to the CXL-backed tmpfs used in
+REAP+ and FaaSnap+.
+   Regarding memory utilization, as detailed in Figure 18a, T-CXL achieves an average reduction
+in memory usage relative to faasd, CRIU, REAP+, and FaaSnap+ in W1 and W2 by 37.4%, 61.2%,
+58.2%, and 51.5%, respectively. T-RDMA exhibits a comparable level of memory savings. These
+improvements are attributed to memory sharing, deduplication, and reduced number of instances
+to keep in memory, thanks to our repurposing technique that allows for the effective share of
+execution environments across various functions.
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                    27
+
+
+                                            T-CXL            FaaSnap+              REAP+
+                                1.50
+                                1.25
+                                 1.0
+                      Latency
+                                 0.5
+
+
+                                 0.0
+                                       DH   JJS   JS   IFR   PR   IR   IP    CH    CR    VP
+
+Fig. 19. Normalized E2E latency without concurrency, while the hatched region denotes the startup time.
+
+
+
+9.2.1 Comparing with CRIU and faasd. The suboptimal performance of CRIU and faasd stems
+from their high startup latency. As given in Table 1, creating isolation environments can take over
+one second under conditions of heavy loads and high concurrency. Additionally, faasd encounters
+delays due to application initialization during cold starts, whereas CRIU’s restoration process is
+hampered by the expensive copy-based memory restoration. For instance, launching a CR instance
+takes 1.7 s at P99, whereas its execution time is only about 500 ms. Thanks to our repurposable
+sandboxes and mm-templates, TrEnv-X significantly reduces the costs associated with isolation
+environment creation and memory restoration. It takes merely 15 milliseconds for T-CXL to start
+the same CR instance at P99, representing a reduction of more than 100×. In §9.4, we will explore
+the individual contributions of the repurposing and mm-template techniques.
+   T-CXL relies on CXL, which has higher latency than local DRAM, resulting in degraded execution
+performance. This explains CRIU’s better P50 IR performance in Fig 17. For instance, T-CXL nearly
+doubles the execution time of DH and IR due to their short runtimes (<100 ms), while other
+functions see about a 10% increase on average. However, during cold starts, T-CXL’s E2E latency is
+significantly lower than CRIU’s, thanks to its efficient startup process. Additionally, performance
+can be improved by configuring mm-templates to store hot regions of memory image in local
+DRAM.
+
+9.2.2 Comparing with REAP+ and FaaSnap+. Both REAP+ and FaaSnap+ are based on Firecracker.
+While the primary focus is on enhancing security, the additional layer of the hypervisor facilitates
+efficient state restoration. Despite the reduced gap, TrEnv-X, which is container-based, still achieves
+better start latency. For example, it takes only 13 ms to start an instance of CH at P99, compared
+to 49 (90) ms for FaaSnap+ (REAP+). Moreover, Firecracker leads to significantly higher memory
+consumption (as shown in Figure 18a) than containers, due to each guest OS maintaining exclusive
+resources, such as page caches. A microbenchmark, illustrated in Figure 18b, further highlights this
+issue. When starting 50 function instances, we observed that FaaSnap and REAP even doubled the
+memory usage compared to T-CXL.
+   In addition to startup latency, TrEnv-X achieves lower tail latency than both REAP+ and
+FaaSnap+ due to its much more stable and shorter execution time. REAP and FaaSnap use a lazy
+restore approach that only delays, rather than eliminates, restoration overheads during execution,
+especially for memory. For instance, handling each page fault still requires several microseconds by
+the OS, even when their snapshots are stored on a CXL-based tmpfs. In contrast, TrEnv-X eagerly
+restores most states instead of on-demand, such as opened files. Further, by leveraging CXL’s byte
+addressability, mm-template avoids page faults for read-only pages. According to our investigations,
+about 24% to 90% of the pages used during execution are read-only. Thus, as illustrated in Figure
+19, the execution time for TrEnv-X is considerably shorter than that for REAP+ and FaaSnap+.
+
+                                                                   , Vol. 1, No. 1, Article . Publication date: March 2026.
+28                                                                                                                       Jialiang et al.
+
+
+                                                        T-CXL                  FaaSnap+                   CRIU
+                                                        T-RDMA                 REAP+                      faasd
+                                                 7.00   3.50   3.02   2.44    2.21   2.08   1.39   1.18    1.17   1.06
+                      P99 E2E Latency      4.0
+                                           2.5
+                                           1.2
+                                           1.0
+
+                                           0.5
+
+                                           0.0
+                                                 DH     JJS    JS     IFR     PR     IR     IP     CH      CR     VP
+
+                                                                    (a) Azure workload
+                                                 3.47   5.20   3.38    2.64   2.21   2.01   1.41   1.15   1.19    1.20
+                                           4.0
+                         P99 E2E Latency
+
+
+
+
+                                           2.5
+                                           1.2
+                                           1.0
+
+                                           0.5
+
+                                           0.0
+                                                 DH     JJS    JS     IFR     PR     IR     IP     CH     CR      VP
+
+                                                                    (b) Huawei workload
+
+Fig. 20. P99 E2E latency for read-world workloads, normalized against REAP latency. Each bar is divided into
+two segments: the upper un-hatched represents execution time, and the lower hatched indicates startup time.
+Top numbers are the speedup of T-CXL compared to REAP+.
+
+
+9.2.3 The effect of function characteristics. Different applications exhibit distinct characteristics
+that influence their performance. The functions we evaluated can be categorized into three groups.
+   (1) Memory-insensitive applications, such as compute-intensive (like VP and IP) and I/O-intensive
+       (like CH) applications. The latency for these applications does not show a significant dispar-
+       ity among different methods, as they are primarily CPU-bound or I/O-bound rather than
+       memory-bound. As a result, the differences in E2E latency between CXL, RDMA, and even
+       userfaultfd-based page faults (used in REAP) are not evident.
+   (2) Applications with a large memory footprint and complex memory access patterns, including
+       IR, PR, and IFR. They lead to more minor page faults in REAP+ and FaaSnap+, resulting
+       in longer execution time than T-CXL. T-RDMA can also experiences longer tail latency,
+       especially during burst, due to unstable P99 latency of RDMA under high request rates.
+   (3) Applications with brief execution time, which is common in serverless scenarios, including
+       DH, JS, CR and JJS. Any extra overhead, such as minor page faults in FaaSnap or REAP, and
+       longer latency for RDMA, significantly impacts their E2E latency. The shorter startup latency
+       and zero cost for read accesses in T-CXL demonstrate more pronounced effects for these
+       functions.
+
+9.3    Real-world Workload
+To further justify the effectiveness of our designs, we tested TrEnv-X under two industrial and
+complex workloads (Figure 20). As both datasets only record the number of invocations per minute,
+we randomly distributed those within each minute, with a probability of creating skew or bursty
+loads to imitate real-world conditions.
+   In summary, for tail latency, T-CXL achieves speedups ranging from 1.06×-7.00× and 1.16×-
+9.25× compared with REAP+ and FaaSnap+, due to our shorter execution time under heavy loads.
+T-RDMA falls behind REAP+ and FaaSnap+ in JS, VP, CH, CR, and PR. The unstable P99 memory
+access latency of RDMA still incurs a delay in these heavy-load scenarios. Nevertheless, T-RDMA
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                                           29
+
+
+                                                         FaaSnap+                 Startup           Exec
+                                           1846                                          489 399
+                                    1500                                           350
+                                                  626                                                179 166
+
+                     Latency (ms)
+                                     500                410
+                                                              361                                                123 109
+                                                                                   100
+                                     250                            180
+                                                                          117
+                                       0                                             0
+                                              sd CRIU       ig    p     A     L             sd CRIU       ig    p     A     L
+                                           faa           onf Cgrou T-RDM T-CX            faa           onf Cgrou T-RDM T-CX
+                                                     Rec                                           Rec
+                                                         (a) IR                                        (b) JS
+
+Fig. 21. Optimization steps and its effects to E2E latency. The green line indicates the E2E latency of FaaSnap+.
+
+
+still achieves a speedup of 1.29×-4.28× and 1.11×-4.64× against REAP+ and FaaSnap+ for other
+functions. As shown in Figure 18, T-CXL and T-RDMA reduce memory usage by over 25% compared
+to all baselines in both workloads. Specifically, T-CXL reduces memory usage by up to 49% relative
+to REAP+ and FaaSnap+. T-RDMA consumes, on average, 10% more memory than T-CXL.
+
+9.4   Breakdown of Optimization Steps
+To delve deeper into the contribution of each optimization, we analyzed the E2E latency by enabling
+different optimizations in TrEnv-X step by step.
+   In Figure 21, the “Reconfig” optimization applies sandbox repurposing without cgroup optimiza-
+tion, reducing startup latency by approximately 200 ms. Regarding rootfs reconfiguration, one
+subtask of the repurpose, it takes more than 30 ms to restore the rootfs and mount namespace in
+CRIU. In contrast, TrEnv-X’s reconfiguration process involves only two system calls and typically
+completes rootfs preparation in less than 1 ms. Additionally, the “Cgroup” optimization employs the
+CLONE_INTO_CGROUP to bypass synchronization delays within the kernel, further reducing startup
+latency by 49 ms for IR and 13 ms for JS.
+   After that, the function’s startup latency is predominantly governed by memory restoration
+(>85%). TrEnv-X reduces this cost through mm-template. First, it only needs to copy a small amount
+of metadata rather than the memory pages. For example, the metadata is less than 400 KB, while the
+memory contents exceed 70 MB for JS. Second, it eliminates the need for reconstructing the virtual
+memory layout since it is already preserved in the mm-template, thus avoiding numerous mmap()
+system calls in CRIU. The larger the memory footprint, the greater the reduction in startup latency
+achieved by mm-template. The mm-template alone reduces startup latency by 290 ms for IR and 67
+ms for JS, allowing TrEnv-X to launch an IR and JS instance in just 18 ms and 8 ms, respectively.
+   Utilizing the mm-template with a remote memory pool leads to a slight increase in execution
+time compared to when local DRAM is used, because of the inherently longer access latencies
+associated with CXL and RDMA memory. Specifically, an additional 24 ms (88 ms) for IR and 11 ms
+(25 ms) for JS, are observed for T-CXL (T-RDMA), compared to CRIU. Nonetheless, the overall E2E
+latency still experiences a substantial reduction.
+   We also evaluated the “Cgroup” (i.e., enable repurposable sandboxes but without mm-template)
+with industrial workloads: T-CXL still outperforms “Cgroup” in all functions, achieving the speedup
+ranging from 1.04× to 2.32×.
+
+9.5   TrEnv-X-CXL vs. TrEnv-X-RDMA
+The flexibility of TrEnv-X enables it to leverage various interconnect technologies. However,
+the differing physical characteristics of CXL and RDMA lead to disparities in execution time. As
+shown in Figure 22, T-CXL outperforms T-RDMA across all functions, with speed increases ranging
+from 1.04× to 3.51× for P75 latency. This improvement is attributed to (1) the faster access latency
+
+                                                                                          , Vol. 1, No. 1, Article . Publication date: March 2026.
+30                                                                                                   Jialiang et al.
+
+
+                                                     CXL-75        RDMA-75        CXL-99   RDMA-99
+                                               3
+
+
+
+
+                          Execution Latency
+                                                2
+                                              1.5
+
+                                              1.0
+
+                                              0.5
+
+                                              0.0
+                                                    DH JJS    JS   IFR PR    IR    IP   CH CR VP
+
+Fig. 22. Normalized execution latency of T-CXL and T-RDMA. The hatched bar indicates P75 latency, while
+the un-hatched bar indicates P99 latency.
+
+
+
+
+of CXL memory, and (2) the utilization of CXL’s byte-addressable feature. The zero additional
+software-level cost for read accesses with mm-templates allows T-CXL to eliminate page faults
+that T-RDMA encounters for read-only pages. Analysis of our evaluated functions reveals that a
+significant portion of the memory pages are read-only, ranging from 24% to 90%.
+   Furthermore, the disparity in P99 latency between T-CXL and T-RDMA is even more pronounced
+than at P75. Under extreme loads at P99, the heavy RDMA traffic exacerbates CPU load and flow
+interference, and increases contention for network resources such as the switch [107] and RDMA
+NIC [32]. Several works report similar observations, with this performance cliff being nearly fivefold
+in instances of burst traffic [61]. In contrast, CXL memory offers higher IOPS and more stable
+latency at P99. CPU usage monitored during two industrial tests with mpstat shows that T-RDMA’s
+total CPU usage is 1.24× and 1.23× higher than T-CXL for Azure and Huawei traces, respectively.
+   Figure 18b also demonstrates that for read-heavy functions like IR, T-CXL primarily accesses
+remote memory directly, avoiding the allocation of local pages. It substantially saves memory
+(43.5%) compared to T-RDMA. Conversely, for write-heavy functions like IFR, T-CXL shows lesser
+memory gains (13%) as both trigger COW for write access.
+   Nonetheless, since all states in the memory pool are read-only, a multi-layered architecture that
+strategically places hot pages in CXL and cold pages in RDMA, integrates seamlessly with our
+approach. The specific cache eviction strategies are orthogonal to our core implementation.
+
+9.6    The Enhancement of TrEnv-X over VM-based Agent Platform
+Evaluated Agents. We evaluate a set of representative agents listed in Table 2, covering both
+lightweight and complex designs. Agent execution exhibits substantial non-determinism. First,
+identical user inputs may yield different execution paths due to the inherent randomness of LLM
+outputs. Second, runtime variability in the LLM inference backend may impact execution latency. To
+ensure fair and reproducible evaluation, we collect execution traces from real LLM runs, including
+the exact outputs and corresponding response times. During benchmarking, agents interact with
+a simulated inference server that replays the recorded outputs and enforces the same response
+latency. This methodology ensures deterministic execution across repeated runs, enabling reliable
+comparisons.
+Configurations. The first three agents in Table 2 (i.e., Blackjack, Bug Fixer, and MapReduce) are
+deployed in VMs provisioned with 1 vCPU, 2 GB of memory, and 5 GB of storage. The remaining
+agents, which rely on a browser runtime, are allocated 4 GB of memory, with other configurations
+remaining the same. To evaluate TrEnv-X’s optimization effectiveness under overcommitment, we
+concurrently launch 200 agent instances across 20 physical cores in the following experiments.
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                                31
+
+
+Baselines. To the best of our knowledge, there is no open-source cloud platform specifically
+designed for serving LLM-based agents. A closely related paradigm is the code interpreter, where
+code generated by an LLM is executed in an isolated environment, and the results are returned to
+the agent. Representative platforms, such as E2B [41], commonly leverage microVMs to provide
+strong isolation and predictable performance. We adopt E2B as our baseline system. Notably, E2B
+already incorporates checkpoint/restore (C/R) techniques to reduce startup latency. To improve its
+efficiency further, we enhance E2B with a key modification: the adoption of the root filesystem
+(rootfs) mapping scheme from RunD. We refer to this enhanced version as E2B+ in the remainder
+of the evaluation.
+9.6.1 The Startup Efficiency for Agents. Lightweight agents, similar to traditional serverless func-
+tions, have short execution durations and are therefore highly sensitive to startup latency. Figure 23
+shows the startup latency of all agents listed in Table 2 across different systems. TrEnv-X reduces
+startup latency by approximately 35% ∼ 49% compared to E2B and 36% ∼ 49% compared to E2B+,
+demonstrating its effectiveness in minimizing launch overhead. This improvement is primarily
+attributed to TrEnv-X’s efficient creation of isolated sandboxes. For instance, E2B introduces
+considerable startup overhead, requiring roughly 15 ms for network environment setup and an
+additional 10 ms for cgroup migration.
+   To further assess the benefits of the mm-template mechanism in VM-based environments, we
+also measure the startup latency of the vanilla Cloud Hypervisor (CH), which restores VM memory
+states via full memory copying. This results in latencies ranging from 770 ms to 1700 ms. Agents
+with larger memory footprints, such as “SA”, “BS”, and “GD”, which are equipped with double-sized
+memory, require more time for CH to start up compared to other agents. In contrast, TrEnv-X
+employs mm-template to restore memory using a single system call, avoiding full copying of
+memory. Instead, memory pages are populated lazily at runtime. This design significantly reduces
+memory restoration overhead and, in turn, startup latency, making TrEnv-X particularly well-suited
+for lightweight agent workloads.
+                                                      E2B        E2B+        TrEnv-X      CH
+                                   2000
+                                   1400
+                                    800
+                    Latency (ms)
+
+
+
+
+                                     80
+                                     60
+                                     40
+                                     20
+                                      0
+                                                  k           r                        t
+                                          Blackjac    Bug fixe Map reduceShop assistanBlog summaryGame design
+
+      Fig. 23. The startup latency of LLM agents in Table 2. CH means the vanilla Cloud Hypervisor.
+
+
+9.6.2 Browser sharing. As described in §6.2, our first optimization, browser sharing, is designed to
+mitigate performance degradation under CPU overcommitment. We evaluate this technique using
+the last three agents listed in Table 2, as only these agents utilize a browser during execution. Figure
+24 presents the results, where TrEnv-S denotes the TrEnv-X system augmented with browser
+sharing. Browser sharing reduces the P99 and average end-to-end latencies by 2%–58% and 1%–26%,
+respectively, depending on the agent. The performance gains vary significantly across agents. For
+instance, the Game Design agent shows minimal improvement compared to the other two. As
+shown in Table 2, this agent has a low CPU utilization of approximately 6%, indicating infrequent
+
+                                                                               , Vol. 1, No. 1, Article . Publication date: March 2026.
+  32                                                                                                                                                                             Jialiang et al.
+
+
+             Baseline-1: 202.68                       TrEnv-X-S: 167.55                   Baseline-1: 301.77      TrEnv-X-S: 225.85              Baseline-1: 134.13         TrEnv-X-S: 126.96
+             Baseline-2: 179.55                       TrEnv-X-w/o-S: 182.36               Baseline-2: 304.29      TrEnv-X-w/o-S: 293.71          Baseline-2: 132.42         TrEnv-X-w/o-S: 128.56
+      100%                                                                         100%                                                   100%
+      80%                                                                          80%                                                    80%
+      60%                                                                          60%                                                    60%
+CDF
+
+
+
+
+                                                                             CDF
+      40%                                                                          40%                                                    40%
+      20%                                                                          20%                                                    20%
+       0%                                                                           0%                                                     0%
+        150 160 170 180 200                                            400                 200 220 240                300      400                 110      120       130       140      150
+
+                  (a) Shop assistant.                                                          (b) Blog summary.                                       (c) Game design.
+
+  Fig. 24. The CDF of different agents’ E2E latency. The x-axis denotes the E2E latency in seconds. The vertical
+  dotted line indicates the P99 E2E latency, while numbers in the legend denotes average E2E latency.
+
+
+                                                                                            E2B                E2B+           TrEnv-X
+                                           Peak Mem Usage (GB)
+
+
+
+
+                                                                 40                                             150
+                                                                                                                100
+                                                                 20
+                                                                                                                 50
+                                                                  0                                               0
+                                                                      Blackjack Bug fixer Map reduce                         tant     mary     sign
+                                                                                                                   Shop assis Blog sum Game de
+
+                                                                      Fig. 25. The peak memory usages of different agents.
+
+
+                                                                                              E2B              E2B+           TrEnv-X
+                                  Memory usage (GB)
+
+
+
+
+                                                      40
+                                                                                                                 100
+                                                      20
+
+                                                           0                                                          0
+                                                                 0     50 100 150 200 250 300                             0   50 100 150 200 250 300
+                                                                            Map reduce                                            Shop assistant
+                                                                                                    Time (seconds)
+
+                     Fig. 26. The memory usage during execution of Map reduce and Blog summary agent.
+
+
+  browser usage. As a result, the benefits of browser sharing have limited impact on its latency.
+  In contrast, agents with more frequent browser interactions, such as Blog Summary, experience
+  substantial performance improvements. In this case, browser sharing reduces the P99 latency by
+  up to 58%, demonstrating the effectiveness of this optimization for browser-intensive workloads.
+  9.6.3 Mitigation of duplicated page cache. To address the issue of duplicated page cache, TrEnv-X
+  leverages the virtio-pmem device in combination with a union filesystem. This design allows
+  multiple VMs to share common file contents in memory, reducing redundant caching across
+  instances. As shown in Figure 25, TrEnv-X reduces peak memory usage by approximately 10%–61%
+  compared to E2B, and up to 48% compared to E2B+. The extent of memory savings varies across
+  agents, primarily depending on the proportion of file access during execution. For instance, agents
+
+  , Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                  33
+
+
+such as Blackjack and Bug Fixer perform minimal file I/O, resulting in limited memory optimization
+benefits. In addition to peak memory usage, we also track memory utilization throughout the
+agent’s execution, as illustrated in Figure 26. If memory cost is modeled as the product of usage and
+duration, TrEnv-X achieves over 50% savings in overall memory cost, highlighting its effectiveness
+in reducing resource consumption across time.
+
+
+
+10   Related Work
+Sandboxing techniques. Prior research has explored various sandboxing techniques like mi-
+croVMs [13, 47, 65], lightweight containers [74], unikernels [28], and WebAssembly-based sand-
+boxes [46, 84, 105]. The current implementation of TrEnv-X primarily focuses on containers and
+microVMs.
+Caching and pre-warm. Prior studies have sought to reduce the overhead of cold starts by employ-
+ing caching or pre-warming techniques. After execution, the platform may keep the container alive
+for a certain duration, reusing it if the same function is invoked again within that period. Besides,
+the platform may pre-start containers for functions that are likely to be executed soon. Some
+platforms utilize fixed keep-alive times or static pre-warm strategies [3, 97], while recent research
+has explored heuristic approaches [45, 79, 82], including the use of machine learning models [100].
+TrEnv-X takes a different approach by directly reducing cold start overhead, thereby eliminating
+the need for designing those complex strategies. Groundhog [17], a lightweight sequential request
+isolation system, restores memory to a “clean” state before reuse in its caching strategy. In contrast,
+TrEnv-X focuses on mitigating cold start overhead by sharing resources across different functions
+and hosts. Additionally, TrEnv-X is capable of providing functionality similar to Groundhog by
+fully restoring the container state after each execution.
+Utilization of “fork”. Several studies have investigated the use of the OS ‘fork’ primitive for
+efficiently initiating new instances from a cached container or zygote [39, 40, 66, 74]. Moreover,
+MITOSIS [98] enhances the OS by implementing a remote fork primitive that enables the use of
+states from remote machines. While TrEnv-X shares some similarities with MITOSIS, there are
+significant differences.
+   Firstly, MITOSIS utilizes less-isolated, lightweight containers to reduce isolation costs, which
+results in compromised isolation levels, as discussed in Section 5.2.1 and 8.1.1. Secondly, MITOSIS
+is currently limited to supporting single-thread functions. Overcoming this limitation typically
+requires specialized solutions that involve both the language runtime and the OS levels, complicating
+the development of a universal “fork” solution. In contrast, TrEnv-X is built upon CRIU, which
+supports the restoration of multi-threaded and multi-process environments more robustly. Although
+MITOSIS achieves startup latencies of less than 4 ms for many single-threaded functions, initializing
+real-world serverless functions that involve multiple processes and threads is inherently more
+complex and costly. Furthermore, while both MITOSIS and TrEnv-X utilize kernel-space RDMA,
+MITOSIS depends on a single container (i.e., the parent) to fork from, thus focusing primarily on
+optimizing RDMA’s scalability. In contrast, TrEnv-X leverages disaggregated memory, focusing on
+how memory is transparently shared. Moreover, TrEnv-X is designed to accommodate various
+types of disaggregated memory technologies, including RDMA and CXL.
+Storage Systems. Many researchers have tried to optimize serverless computing by enabling
+more efficient state transfer [78, 87, 96]. They build scalable and distributed storage or cache
+systems. These works are orthogonal to TrEnv-X and can be integrated to enhance TrEnv-X’s I/O
+performance.
+
+
+                                                                 , Vol. 1, No. 1, Article . Publication date: March 2026.
+34                                                                                                         Jialiang et al.
+
+
+11    Conclusion
+We presented TrEnv-X, a serverless platform that achieves extreme elasticity by sharing resources.
+It reduces isolation overhead through repurposable sandboxes and enables fast memory restoration
+via mm-templates. Evaluating LLM-based agents, a representative serverless workload, observe
+that their execution cost on existing serverless platforms is comparable to that of LLM inference.
+To address this, TrEnv-X is extended to support VM-based agents, and introduce optimizations
+such as browser sharing and DAX, which enable fast startup and high-density deployment. In our
+evaluation, TrEnv-X in a container-based setup reduces memory usage by 48% and improves P99
+latency by up to 7×, when compared against prior systems like FaaSnap and REAP. For VM-based
+scenarios, TrEnv-X reduces agents’ memory usage by up to 61% and P99 latency by 58% compared
+to E2B.
+
+Acknowledgments
+This work is supported by National Key Research & Development Program of China (2022YFB4502004),
+Natural Science Foundation of China (62141216) and Tsinghua University Initiative Scientific Re-
+search Program, Young Elite Scientists Sponsorship Program by CAST (2022QNRC001).
+
+References
+  [1] 2017. CVE-2017-5123. https://www.cvedetails.com/cve/CVE-2017-5123.
+  [2] 2023. Azure Functions Premium plan. https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-
+      plan?tabs=portal#eliminate-cold-starts
+  [3] 2023. Openwhisk Warmed Containers. https://github.com/apache/openwhisk/blob/master/docs/warmed-containers.
+      md
+  [4] 2023. Podman. https://docs.podman.io/.
+  [5] 2023. Samsung, MemVerge, H3 Platform, and XConn Demonstrate Memory Pooling and Sharing for “Endless Memory”.
+      Retrieved May 15, 2025 from https://memverge.com/samsung-memverge-h3-platform-and-xconn-demonstrate-
+      memory-pooling-and-sharing-for-endless-memory/
+  [6] 2025. Apache OpenWhisk. https://openwhisk.apache.org/
+  [7] 2025. DAX (Direct Access). https://www.kernel.org/doc/Documentation/filesystems/dax.txt
+  [8] 2025. MetaGPT X (MGX). https://mgx.dev/
+  [9] 2025. How to use Firefox containers. https://support.mozilla.org/en-US/kb/how-use-firefox-containers.
+ [10] 2025. Playwright. https://github.com/microsoft/playwright.
+ [11] 2025. Vhost-user virtio-fs device backend written in Rust. https://gitlab.com/virtio-fs/virtiofsd
+ [12] 2025. Virtiofs. https://virtio-fs.gitlab.io/
+ [13] Alexandru Agache, Marc Brooker, Alexandra Iordache, Anthony Liguori, Rolf Neugebauer, Phil Piwonka, and Diana-
+      Maria Popa. 2020. Firecracker: Lightweight virtualization for serverless applications. In 17th USENIX symposium on
+      networked systems design and implementation (NSDI 20). 419–434.
+ [14] Istemi Ekin Akkus, Ruichuan Chen, Ivica Rimac, Manuel Stein, Klaus Satzke, Andre Beck, Paarijaat Aditya, and Volker
+      Hilt. 2018. SAND: Towards high-performance serverless computing. In 2018 USENIX Annual Technical Conference
+      (USENIX ATC 18). USENIX Association, Boston, MA, 923–935. https://www.usenix.org/conference/atc18/presentation/
+      akkus
+ [15] Alibaba. 2025. Alibaba Cloud Function Compute. Retrieved May 15, 2025 from https://www.alibabacloud.com/en/
+      product/function-compute
+ [16] Alibaba. 2025. Configure the CPU overcommit ratio. https://www.alibabacloud.com/help/en/dedicated-host/user-
+      guide/configure-the-cpu-overcommit-ratio
+ [17] Mohamed Alzayat, Jonathan Mace, Peter Druschel, and Deepak Garg. 2023. Groundhog: Efficient request isolation in
+      FaaS. In 18th European Conference on Computer Systems. ACM, Rome Italy, 398–415. doi:10.1145/3552326.3567503
+ [18] Emmanuel Amaro, Christopher Branner-Augmon, Zhihong Luo, Amy Ousterhout, Marcos K. Aguilera, Aurojit Panda,
+      Sylvia Ratnasamy, and Scott Shenker. 2020. Can far memory improve job throughput?. In 15th European Conference
+      on Computer Systems. ACM, Heraklion Greece, 1–16. doi:10.1145/3342195.3387522
+ [19] Amazon. 2025. AWS Lambda. Retrieved May 15, 2025 from https://aws.amazon.com/lambda/
+ [20] Amazon. 2025. AWS Lambda Customer Case Studies. Retrieved May 15, 2025 from https://aws.amazon.com/lambda/
+      resources/customer-case-studies/
+
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                     35
+
+
+ [21] Lixiang Ao, Liz Izhikevich, Geoffrey M. Voelker, and George Porter. 2018. Sprocket: A serverless video processing
+      framework. In 2018 ACM Symposium on Cloud Computing. ACM, Carlsbad CA USA, 263–274. doi:10.1145/3267809.
+      3267815
+ [22] Lixiang Ao, George Porter, and Geoffrey M. Voelker. 2022. FaaSnap: FaaS made fast using snapshot-based VMs. In
+      17th European Conference on Computer Systems. ACM, Rennes France, 730–746. doi:10.1145/3492321.3524270
+ [23] L.N. Bairavasundaram, M. Sivathanu, A.C. Arpaci-Dusseau, and R.H. Arpaci-Dusseau. 2004. X-RAY: a non-invasive
+      exclusive caching mechanism for RAIDs. In 31st Annual International Symposium on Computer Architecture (ISCA’04).
+      176–187. doi:10.1109/ISCA.2004.1310773
+ [24] Daniel S. Berger, Daniel Ernst, Huaicheng Li, Pantea Zardoshti, Monish Shah, Samir Rajadnya, Scott Lee, Lisa Hsu,
+      Ishwar Agarwal, Mark D. Hill, and Ricardo Bianchini. 2023. Design Tradeoffs in CXL-Based Memory Pools for Public
+      Cloud Platforms. IEEE Micro 43, 2 (March 2023), 30–38. doi:10.1109/MM.2023.3241586
+ [25] James Beswick. 2023. New for AWS Lambda – Predictable start-up times with Provisioned Concurrency. https://aws.
+      amazon.com/cn/blogs/compute/new-for-aws-lambda-predictable-start-up-times-with-provisioned-concurrency/
+ [26] Tim Bird. 2009. Measuring function duration with ftrace. In Proceedings of the Linux Symposium, Vol. 1. Citeseer.
+ [27] Marc Brooker, Mike Danilov, Chris Greenwood, and Phil Piwonka. 2023. On-demand container loading in AWS
+      Lambda. In 2023 USENIX Annual Technical Conference (USENIX ATC 23). 315–328.
+ [28] James Cadden, Thomas Unger, Yara Awad, Han Dong, Orran Krieger, and Jonathan Appavoo. 2020. SEUSS: Skip
+      redundant paths to make serverless fast. In 15th European Conference on Computer Systems. ACM, Heraklion Greece,
+      1–15. doi:10.1145/3342195.3392698
+ [29] Hang Cao, Cheng Xu, Yunqi Han, Muhui Lin, Kai Shen, Geng Wang, Jinhu Li, Xiangzheng Sun, Ronghui He, Liang
+      You, et al. 2024. An efficient cloud-based elastic RDMA protocol for HPC applications. CCF Transactions on High
+      Performance Computing 6, 1 (2024), 45–53.
+ [30] Joao Carreira, Pedro Fonseca, Alexey Tumanov, Andrew Zhang, and Randy Katz. 2019. Cirrus: A serverless framework
+      for end-to-end ML workflows. In 2019 ACM Symposium on Cloud Computing. ACM, Santa Cruz CA USA, 13–24.
+      doi:10.1145/3357223.3362711
+ [31] ChatGPT. 2025. Introducing Deep Research. Retrieved May 15, 2025 from https://openai.com/index/introducing-deep-
+      research/
+ [32] Youmin Chen, Youyou Lu, and Jiwu Shu. 2019. Scalable RDMA RPC on reliable connection with efficient resource
+      sharing. In 14th European Conference on Computer Systems. 1–14.
+ [33] Compute Express Link Consortium. 2025. CXL Specification. Retrieved May 15, 2025 from https://computeexpresslink.
+      org/cxl-specification/
+ [34] Marcin Copik, Grzegorz Kwasniewski, Maciej Besta, Michal Podstawski, and Torsten Hoefler. 2021. SeBS: A serverless
+      benchmark suite for function-as-a-service computing. In 22nd International Middleware Conference. ACM, Québec
+      city Canada, 64–78. doi:10.1145/3464298.3476133
+ [35] CRIU. 2025. Checkpoint/Restore In Userspace. Retrieved May 15, 2025 from https://criu.org/
+ [36] Debendra Das Sharma, Robert Blankenship, and Daniel Berger. 2024. An Introduction to the Compute Express Link
+      (CXL) Interconnect. Comput. Surveys 56, 11 (Nov. 2024), 1–37. doi:10.1145/3669900
+ [37] Datadog. 2023. The State of Serverless. https://www.datadoghq.com/state-of-serverless/
+ [38] Aleksandar Dragojević, Dushyanth Narayanan, Orion Hodson, and Miguel Castro. 2014. FaRM: Fast remote memory.
+      In 11th USENIX Conference on Networked Systems Design and Implementation (Seattle, WA) (NSDI’14). USENIX
+      Association, USA, 401–414.
+ [39] Dong Du, Qingyuan Liu, Xueqiang Jiang, Yubin Xia, Binyu Zang, and Haibo Chen. 2022. Serverless computing
+      on heterogeneous computers. In Proceedings of the 27th ACM International Conference on Architectural Support for
+      Programming Languages and Operating Systems. ACM, Lausanne Switzerland, 797–813. doi:10.1145/3503222.3507732
+ [40] Dong Du, Tianyi Yu, Yubin Xia, Binyu Zang, Guanglu Yan, Chenggang Qin, Qixuan Wu, and Haibo Chen. 2020.
+      Catalyzer: Sub-millisecond startup for serverless computing with initialization-less booting. In Proceedings of the
+      Twenty-Fifth International Conference on Architectural Support for Programming Languages and Operating Systems.
+      ACM, Lausanne Switzerland, 467–481. doi:10.1145/3373376.3378512
+ [41] E2B. 2025. Code Interpreting for AI Apps. Retrieved May 15, 2025 from https://e2b.dev/
+ [42] Jake Edge. 2015. chroot(2) — Linux manual page. https://man7.org/linux/man-pages/man2/chroot.2.html
+ [43] Firecracker. 2025. Firecracker Snapshotting. https://github.com/firecracker-microvm/firecracker/blob/main/docs/
+      snapshotting/snapshot-support.md
+ [44] Alexander Fuerst, Stanko Novaković, Íñigo Goiri, Gohar Irfan Chaudhry, Prateek Sharma, Kapil Arya, Kevin Broas,
+      Eugene Bak, Mehmet Iyigun, and Ricardo Bianchini. 2022. Memory-harvesting VMs in cloud platforms. In 27th ACM
+      International Conference on Architectural Support for Programming Languages and Operating Systems. ACM, Lausanne
+      Switzerland, 583–594. doi:10.1145/3503222.3507725
+
+
+
+                                                                    , Vol. 1, No. 1, Article . Publication date: March 2026.
+36                                                                                                        Jialiang et al.
+
+
+ [45] Alexander Fuerst and Prateek Sharma. 2021. FaasCache: keeping serverless computing alive with greedy-dual caching.
+      In 26th ACM International Conference on Architectural Support for Programming Languages and Operating Systems.
+      ACM, Virtual USA, 386–400. doi:10.1145/3445814.3446757
+ [46] Phani Kishore Gadepalli, Sean McBride, Gregor Peach, Ludmila Cherkasova, and Gabriel Parmer. 2020. Sledge: A
+      serverless-first, light-weight Wasm runtime for the edge. In 21st International Middleware Conference. ACM, Delft
+      Netherlands, 265–279. doi:10.1145/3423211.3425680
+ [47] Google. 2025. The Container Security Platform. https://gvisor.dev/
+ [48] Google. 2025. Google Cloud Run Functions. Retrieved May 15, 2025 from https://cloud.google.com/functions
+ [49] Juncheng Gu, Youngmoon Lee, Yiwen Zhang, Mosharaf Chowdhury, and Kang G Shin. 2017. Efficient memory
+      disaggregation with infiniswap. In 14th USENIX Symposium on Networked Systems Design and Implementation (NSDI
+      17). 649–667.
+ [50] gVisor. 2025. Checkpoint/Restore. https://gvisor.dev/docs/user_guide/checkpoint_restore/
+ [51] H3. 2023. CXL 2.0 Memory Pooling Solution. Retrieved May 15, 2025 from https://www.h3platform.com/product-
+      detail/overview/35
+ [52] Sirui Hong, Mingchen Zhuge, Jonathan Chen, Xiawu Zheng, Yuheng Cheng, Jinlin Wang, Ceyao Zhang, Zili Wang,
+      Steven Ka Shing Yau, Zijuan Lin, Liyang Zhou, Chenyu Ran, Lingfeng Xiao, Chenglin Wu, and Jürgen Schmidhuber.
+      2024. MetaGPT: Meta programming for a multi-agent collaborative framework. In 12th International Conference on
+      Learning Representations. https://openreview.net/forum?id=VtmBAGCN7o
+ [53] Mengkang Hu, Yuhang Zhou, Wendong Fan, Yuzhou Nie, Bowei Xia, Tao Sun, Ziyu Ye, Zhaoxuan Jin, Yingru Li, Zeyu
+      Zhang, Yifeng Wang, Qianshuo Ye, Ping Luo, and Guohao Li. 2025. OWL: Optimized workforce learning for general
+      multi-agent assistance in real-world task automation. https://github.com/camel-ai/owl
+ [54] Intel Corporation. 2025. Intel® 64 and IA-32 Architectures Software Developer’s Manual Combined Volumes 3A, 3B,
+      3C, and 3D: System Programming Guide.
+ [55] Sunita Jain, Nagaradhesh Yeleswarapu, Hasan Al Maruf, and Rita Gupta. 2024. Memory sharing with CXL: Hardware
+      and software design approaches. doi:10.48550/arXiv.2404.03245 arXiv:2404.03245 [cs].
+ [56] Seyyed Ahmad Javadi, Amoghavarsha Suresh, Muhammad Wajahat, and Anshul Gandhi. 2019. Scavenger: A black-box
+      batch workload resource manager for improving utilization in cloud environments. In 2019 ACM Symposium on Cloud
+      Computing. ACM, Santa Cruz CA USA, 272–285. doi:10.1145/3357223.3362734
+ [57] Eric Jonas, Qifan Pu, Shivaram Venkataraman, Ion Stoica, and Benjamin Recht. 2017. Occupy the cloud: distributed
+      computing for the 99%. In 2017 Symposium on Cloud Computing. ACM, Santa Clara California, 445–451. doi:10.1145/
+      3127479.3128601
+ [58] Stephen T. Jones, Andrea C. Arpaci-Dusseau, and Remzi H. Arpaci-Dusseau. 2006. Geiger: Monitoring the buffer
+      cache in a virtual machine environment. In 12th International Conference on Architectural Support for Programming
+      Languages and Operating Systems (San Jose, California, USA) (ASPLOS XII). Association for Computing Machinery,
+      New York, NY, USA, 14–24. doi:10.1145/1168857.1168861
+ [59] Artjom Joosen, Ahmed Hassan, Martin Asenov, Rajkarn Singh, Luke Darlow, Jianfeng Wang, and Adam Barker. 2023.
+      How does it function? Characterizing long-term trends in Production serverless workloads. In 2023 ACM Symposium
+      on Cloud Computing. ACM, Santa Cruz CA USA, 443–458. doi:10.1145/3620678.3624783
+ [60] Jeongchul Kim and Kyungyong Lee. 2019. FunctionBench: A suite of workloads for serverless cloud function service.
+      In 2019 IEEE 12th International Conference on Cloud Computing (CLOUD). IEEE, Milan, Italy, 502–504. doi:10.1109/
+      CLOUD.2019.00091
+ [61] Xinhao Kong, Jingrong Chen, Wei Bai, Yechen Xu, Mahmoud Elhaddad, Shachar Raindel, Jitendra Padhye, Alvin R
+      Lebeck, and Danyang Zhuo. 2023. Understanding RDMA microarchitecture resources for performance isolation. In
+      20th USENIX Symposium on Networked Systems Design and Implementation (NSDI 23). 31–48.
+ [62] Andres Lagar-Cavilla, Junwhan Ahn, Suleiman Souhlal, Neha Agarwal, Radoslaw Burny, Shakeel Butt, Jichuan Chang,
+      Ashwin Chaugule, Nan Deng, Junaid Shahid, Greg Thelen, Kamil Adam Yurtsever, Yu Zhao, and Parthasarathy Ran-
+      ganathan. 2019. Software-defined far memory in warehouse-scale computers. In Proceedings of the 24th International
+      Conference on Architectural Support for Programming Languages and Operating Systems (Providence, RI, USA) (ASPLOS
+      ’19). Association for Computing Machinery, New York, NY, USA, 317–330. doi:10.1145/3297858.3304053
+ [63] LangChain. 2025. The platform for reliable agents. https://www.langchain.com/
+ [64] Huaicheng Li, Daniel S. Berger, Lisa Hsu, Daniel Ernst, Pantea Zardoshti, Stanko Novakovic, Monish Shah, Samir
+      Rajadnya, Scott Lee, Ishwar Agarwal, Mark D. Hill, Marcus Fontoura, and Ricardo Bianchini. 2023. Pond: CXL-based
+      memory pooling systems for cloud platforms. In 28th ACM International Conference on Architectural Support for
+      Programming Languages and Operating Systems, Volume 2. ACM, Vancouver BC Canada, 574–587. doi:10.1145/3575693.
+      3578835
+ [65] Zijun Li, Jiagan Cheng, Quan Chen, Eryu Guan, Zizheng Bian, Yi Tao, Bin Zha, Qiang Wang, Weidong Han, and
+      Minyi Guo. 2022. RunD: A lightweight secure container runtime for high-density deployment and high-concurrency
+
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                      37
+
+
+      startup in serverless computing. In 2022 USENIX Annual Technical Conference (USENIX ATC 22). USENIX Association,
+      Carlsbad, CA, 53–68. https://www.usenix.org/conference/atc22/presentation/li-zijun-rund
+ [66] Zijun Li, Linsong Guo, Quan Chen, Jiagan Cheng, Chuhao Xu, Deze Zeng, Zhuo Song, Tao Ma, Yong Yang, Chao
+      Li, et al. 2022. Help rather than recycle: Alleviating cold startup in serverless computing through Inter-Function
+      container sharing. In 2022 USENIX annual technical conference (USENIX ATC 22). 69–84.
+ [67] Xinbin Liang, Jinyu Xiang, Zhaoyang Yu, Jiayi Zhang, Sirui Hong, Sheng Fan, and Xiao Tang. 2025. OpenManus: An
+      open-source framework for building general AI agents. doi:10.5281/zenodo.15186407
+ [68] Teng Ma, Mingxing Zhang, Kang Chen, Zhuo Song, Yongwei Wu, and Xuehai Qian. 2020. AsymNVM: An efficient
+      framework for implementing persistent data structures on asymmetric NVM architecture. In 25th International
+      Conference on Architectural Support for Programming Languages and Operating Systems. ACM, Lausanne Switzerland,
+      757–773. doi:10.1145/3373376.3378511
+ [69] Hasan Al Maruf, Hao Wang, Abhishek Dhanotia, Johannes Weiner, Niket Agarwal, Pallab Bhattacharya, Chris
+      Petersen, Mosharaf Chowdhury, Shobhit Kanaujia, and Prakash Chauhan. 2023. TPP: Transparent page placement
+      for CXL-enabled tiered-memory. In 28th ACM International Conference on Architectural Support for Programming
+      Languages and Operating Systems, Volume 3. ACM, Vancouver BC Canada, 742–755. doi:10.1145/3582016.3582063
+ [70] MemVerge. 2023. MemVerge CXL Technology. Retrieved May 15, 2025 from https://memverge.com/cxl-technology/
+ [71] Dirk Merkel. 2014. Docker: Lightweight Linux containers for consistent development and deployment. Linux J. 2014,
+      239, Article 2 (mar 2014).
+ [72] Anup Mohan, Harshad Sane, Kshitij Doshi, Saikrishna Edupuganti, Naren Nayak, and Vadim Sukhomlinov. 2019.
+      Agile cold starts for scalable serverless. In 11th USENIX Workshop on Hot Topics in Cloud Computing (HotCloud 19).
+      USENIX Association, Renton, WA. https://www.usenix.org/conference/hotcloud19/presentation/mohan
+ [73] Magnus Müller and Gregor Žunič. 2024. Browser Use: Enable AI to control your browser. https://github.com/browser-
+      use/browser-use
+ [74] Edward Oakes, Leon Yang, Dennis Zhou, Kevin Houck, Tyler Harter, Andrea Arpaci-Dusseau, and Remzi Arpaci-
+      Dusseau. 2018. SOCK: Rapid task provisioning with serverless-optimized containers. In 2018 USENIX annual technical
+      conference (USENIX ATC 18). 57–70.
+ [75] OpenFaaS. 2025. faasd - a lightweight and portable version of OpenFaaS. Retrieved May 15, 2025 from https:
+      //github.com/openfaas/faasd
+ [76] OpenFaaS. 2025. OpenFaaS. Retrieved May 15, 2025 from https://www.openfaas.com/
+ [77] Qifan Pu, Shivaram Venkataraman, and Ion Stoica. 2019. Shuffling, fast and slow: Scalable analytics on serverless
+      infrastructure. In 16th USENIX symposium on networked systems design and implementation (NSDI 19). 193–206.
+ [78] Francisco Romero, Gohar Irfan Chaudhry, Íñigo Goiri, Pragna Gopa, Paul Batum, Neeraja J. Yadwadkar, Rodrigo
+      Fonseca, Christos Kozyrakis, and Ricardo Bianchini. 2021. Faa$T: A transparent auto-scaling cache for serverless
+      applications. In 2021 ACM Symposium on Cloud Computing. ACM, Seattle WA USA, 122–137. doi:10.1145/3472883.
+      3486974
+ [79] Rohan Basu Roy, Tirthak Patel, and Devesh Tiwari. 2022. IceBreaker: Warming serverless functions better with
+      heterogeneity. In 27th ACM International Conference on Architectural Support for Programming Languages and Operating
+      Systems. ACM, Lausanne Switzerland, 753–767. doi:10.1145/3503222.3507750
+ [80] Samsung. 2023. Samsung Develops Industry’s First CXL DRAM Supporting CXL 2.0. Retrieved May 15, 2025 from
+      https://news.samsung.com/global/samsung-develops-industrys-first-cxl-dram-supporting-cxl-2-0
+ [81] Divyanshu Saxena, Tao Ji, Arjun Singhvi, Junaid Khalid, and Aditya Akella. 2022. Memory deduplication for
+      serverless computing with Medes. In 17th European Conference on Computer Systems. ACM, Rennes France, 714–729.
+      doi:10.1145/3492321.3524272
+ [82] Mohammad Shahrad, Rodrigo Fonseca, Inigo Goiri, Gohar Chaudhry, Paul Batum, Jason Cooke, Eduardo Laureano,
+      Colby Tresness, Mark Russinovich, and Ricardo Bianchini. 2020. Serverless in the wild: Characterizing and optimizing
+      the serverless workload at a large cloud provider. In 2020 USENIX annual technical conference (USENIX ATC 20).
+      205–218.
+ [83] Prateek Sharma and Purushottam Kulkarni. 2012. Singleton: System-wide page deduplication in virtual environments.
+      In 21st international symposium on High-Performance Parallel and Distributed Computing. ACM, Delft The Netherlands,
+      15–26. doi:10.1145/2287076.2287081
+ [84] Simon Shillaker and Peter Pietzuch. 2020. Faasm: Lightweight isolation for efficient stateful serverless computing. In
+      2020 USENIX Annual Technical Conference (USENIX ATC 20). 419–433.
+ [85] Paulo Silva, Daniel Fireman, and Thiago Emmanuel Pereira. 2020. Prebaking functions to warm the serverless cold
+      start. In 21st International Middleware Conference. ACM, Delft Netherlands, 1–13. doi:10.1145/3423211.3425682
+ [86] Arjun Singhvi, Arjun Balasubramanian, Kevin Houck, Mohammed Danish Shaikh, Shivaram Venkataraman, and
+      Aditya Akella. 2021. Atoll: A scalable low-latency serverless platform. In 2021 ACM Symposium on Cloud Computing.
+      ACM, Seattle WA USA, 138–152. doi:10.1145/3472883.3486981
+
+
+                                                                     , Vol. 1, No. 1, Article . Publication date: March 2026.
+38                                                                                                          Jialiang et al.
+
+
+ [87] Vikram Sreekanti, Chenggang Wu, Xiayue Charles Lin, Johann Schleier-Smith, Joseph E. Gonzalez, Joseph M.
+      Hellerstein, and Alexey Tumanov. 2020. Cloudburst: Stateful functions-as-a-service. Proceedings of the VLDB
+      Endowment 13, 12 (Aug. 2020), 2438–2452. doi:10.14778/3407790.3407836
+ [88] Yuqiong Sun, David Safford, Mimi Zohar, Dimitrios Pendarakis, Zhongshu Gu, and Trent Jaeger. 2018. Security
+      Namespace: Making Linux Security Frameworks Available to Containers. In 27th USENIX Security Symposium (USENIX
+      Security 18). USENIX Association, Baltimore, MD, 1423–1439. https://www.usenix.org/conference/usenixsecurity18/
+      presentation/sun
+ [89] Yan Sun, Yifan Yuan, Zeduo Yu, Reese Kuper, Chihun Song, Jinghan Huang, Houxiang Ji, Siddharth Agarwal, Jiaqi
+      Lou, Ipoom Jeong, et al. 2023. Demystifying CXL memory with genuine CXL-ready systems and devices. In 56th
+      Annual IEEE/ACM International Symposium on Microarchitecture. 105–121.
+ [90] Yupeng Tang, Ping Zhou, Wenhui Zhang, Henry Hu, Qirui Yang, Hao Xiang, Tongping Liu, Jiaxin Shan, Ruoyun
+      Huang, Cheng Zhao, Cheng Chen, Hui Zhang, Fei Liu, Shuai Zhang, Xiaoning Ding, and Jianjun Chen. 2024. Exploring
+      performance and cost optimization with ASIC-based CXL memory. In 19th European Conference on Computer Systems.
+      ACM, Athens Greece, 818–833. doi:10.1145/3627703.3650061
+ [91] Cloud Hypervisor developers. 2025. Cloud Hypervisor. Retrieved May 15, 2025 from https://www.cloudhypervisor.org/
+ [92] DeepSeek-AI and Aixin Liu and Bei Feng and Bing Xue and Bingxuan Wang et al. 2025. DeepSeek-V3 Technical
+      Report. arXiv:2412.19437 [cs.CL] https://arxiv.org/abs/2412.19437
+ [93] OpenAI and Josh Achiam and Steven Adler and Sandhini Agarwal et al. 2024. GPT-4 Technical Report.
+      arXiv:2303.08774 [cs.CL] https://arxiv.org/abs/2303.08774
+ [94] Dmitrii Ustiugov, Plamen Petrov, Marios Kogias, Edouard Bugnion, and Boris Grot. 2021. Benchmarking, analysis,
+      and optimization of serverless function snapshots. In 26th ACM International Conference on Architectural Support for
+      Programming Languages and Operating Systems. ACM, Virtual USA, 559–572. doi:10.1145/3445814.3446714
+ [95] Ao Wang, Shuai Chang, Huangshi Tian, Hongqi Wang, Haoran Yang, Huiba Li, Rui Du, and Yue Cheng. 2021. FaaSNet:
+      Scalable and fast provisioning of custom serverless container runtimes at alibaba cloud function compute. In 2021
+      USENIX Annual Technical Conference (USENIX ATC 21). 443–457.
+ [96] Ao Wang, Jingyuan Zhang, Xiaolong Ma, Ali Anwar, Lukas Rupprecht, Dimitrios Skourtis, Vasily Tarasov, Feng Yan,
+      and Yue Cheng. 2020. InfiniCache: Exploiting ephemeral serverless functions to build a cost-effective memory cache.
+      In 18th USENIX Conference on File and Storage Technologies (FAST 20). USENIX Association, Santa Clara, CA, 267–281.
+      https://www.usenix.org/conference/fast20/presentation/wang-ao
+ [97] Liang Wang, Mengyuan Li, Yinqian Zhang, Thomas Ristenpart, and Michael Swift. 2018. Peeking behind the curtains
+      of serverless platforms. In 2018 USENIX Annual Technical Conference (USENIX ATC 18). USENIX Association, Boston,
+      MA, 133–146. https://www.usenix.org/conference/atc18/presentation/wang-liang
+ [98] Xingda Wei, Fangming Lu, Tianxia Wang, Jinyu Gu, Yuhan Yang, Rong Chen, and Haibo Chen. 2023. No provisioned
+      concurrency: Fast RDMA-codesigned remote fork for serverless computing. In 17th USENIX Symposium on Operating
+      Systems Design and Implementation (OSDI 23). USENIX Association, Boston, MA, 497–517. https://www.usenix.org/
+      conference/osdi23/presentation/wei-rdma
+ [99] Xconn. 2023. Xconn Technologies. Retrieved May 15, 2025 from https://www.xconn-tech.com/
+[100] Zhengjun Xu, Haitao Zhang, Xin Geng, Qiong Wu, and Huadong Ma. 2019. Adaptive function launching acceleration
+      in serverless computing platforms. In 2019 IEEE 25th International Conference on Parallel and Distributed Systems
+      (ICPADS). 9–16. doi:10.1109/ICPADS47876.2019.00011
+[101] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao. 2023. ReAct:
+      Synergizing reasoning and acting in language models. In International Conference on Learning Representations (ICLR).
+[102] Yuval Yarom and Katrina Falkner. 2014. FLUSH+RELOAD: A high resolution, low noise, L3 cache side-channel attack.
+      In 23rd USENIX security symposium (USENIX security 14). 719–732.
+[103] Gyeong-In Yu, Joo Seong Jeong, Geon-Woo Kim, Soojeong Kim, and Byung-Gon Chun. 2022. Orca: A distributed
+      serving system for transformer-based generative models. In 16th USENIX Symposium on Operating Systems Design
+      and Implementation (OSDI 22). 521–538.
+[104] Mingxing Zhang, Teng Ma, Jinqi Hua, Zheng Liu, Kang Chen, Ning Ding, Fan Du, Jinlei Jiang, Tao Ma, and Yongwei
+      Wu. 2023. Partial failure resilient memory management system for (CXL-based) distributed shared memory. In 29th
+      Symposium on Operating Systems Principles. ACM, Koblenz Germany, 658–674. doi:10.1145/3600006.3613135
+[105] Tian Zhang, Dong Xie, Feifei Li, and Ryan Stutsman. 2019. Narrowing the gap between serverless and its state with
+      storage functions. In 2019 ACM Symposium on Cloud Computing. ACM, Santa Cruz CA USA, 1–12. doi:10.1145/
+      3357223.3362723
+[106] Yinmin Zhong, Shengyu Liu, and Jianbo Hu. [n. d.]. DistServe: Disaggregating prefill and decoding for goodput-
+      optimized large language model serving. ([n. d.]).
+[107] Yibo Zhu, Haggai Eran, Daniel Firestone, Chuanxiong Guo, Marina Lipshteyn, Yehonatan Liron, Jitendra Padhye,
+      Shachar Raindel, Mohamad Haj Yahia, and Ming Zhang. 2015. Congestion control for large-scale RDMA deployments.
+
+
+, Vol. 1, No. 1, Article . Publication date: March 2026.
+TrEnv-X : Transparently Share Serverless Execution Environments Across Different Functions and Nodes                     39
+
+
+      ACM SIGCOMM Computer Communication Review 45, 4 (2015), 523–536.
+[108] Tobias Ziegler, Dwarakanandan Bindiganavile Mohan, Viktor Leis, and Carsten Binnig. 2022. EFA: A viable alternative
+      to RDMA over InfiniBand for DBMSs?. In 18th International Workshop on Data Management on New Hardware
+      (Philadelphia, PA, USA) (DaMoN ’22). Association for Computing Machinery, New York, NY, USA, Article 10, 5 pages.
+      doi:10.1145/3533737.3538506
+
+
+
+
+                                                                    , Vol. 1, No. 1, Article . Publication date: March 2026.
+

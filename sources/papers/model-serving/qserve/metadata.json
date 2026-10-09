@@ -1,0 +1,81 @@
+{
+  "item": {
+    "topic": "model-serving",
+    "id": "qserve",
+    "arxiv": "2405.04532v3",
+    "kind": "arxiv-paper",
+    "title": "QServe: W4A8KV4 Quantization and System Co-design for Efficient LLM Serving",
+    "landing_url": "https://arxiv.org/abs/2405.04532v3",
+    "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+    "published": "2024-05-07T17:59:30Z",
+    "authors": [
+      "Yujun Lin",
+      "Haotian Tang",
+      "Shang Yang",
+      "Zhekai Zhang",
+      "Guangxuan Xiao",
+      "Chuang Gan",
+      "Song Han"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:29.125552+00:00",
+  "path": "sources/papers/model-serving/qserve",
+  "requested_url": "https://arxiv.org/abs/2405.04532v3",
+  "pdf_url": "https://arxiv.org/pdf/2405.04532v3",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "840f8840bf54418e352e70c31002e3833d0e341357898701d4f22d78425b82b5",
+      "bytes": 4024798
+    },
+    "paper.txt": {
+      "sha256": "50c3274d02e1a6e5a0c1d51e5b60b9825a4f95621a31e62373521939ddd0bceb",
+      "bytes": 187083
+    },
+    "paper.pdf": {
+      "sha256": "2e8ff61b02bd6a0f0a4a55f94b1c77095905bfb53b77d3a324df43d789a7286d",
+      "bytes": 5354406
+    },
+    "landing.html": {
+      "sha256": "520a066f0ef01e4e2cdc0ffb24af3a77df8d8b2c7731dc63adca5e7b44d504d1",
+      "bytes": 45245
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2405.04532v3",
+    "retrieved_at": "2026-10-09T13:06:18.382451+00:00",
+    "fields": {
+      "citation_title": [
+        "QServe: W4A8KV4 Quantization and System Co-design for Efficient LLM Serving"
+      ],
+      "citation_author": [
+        "Lin, Yujun",
+        "Tang, Haotian",
+        "Yang, Shang",
+        "Zhang, Zhekai",
+        "Xiao, Guangxuan",
+        "Gan, Chuang",
+        "Han, Song"
+      ],
+      "citation_date": [
+        "2024/05/07"
+      ],
+      "citation_online_date": [
+        "2025/05/01"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2405.04532"
+      ],
+      "citation_arxiv_id": [
+        "2405.04532"
+      ],
+      "citation_abstract": [
+        "Quantization can accelerate large language model (LLM) inference. Going beyond INT8 quantization, the research community is actively exploring even lower precision, such as INT4. Nonetheless, state-of-the-art INT4 quantization techniques only accelerate low-batch, edge LLM inference, failing to deliver performance gains in large-batch, cloud-based LLM serving. We uncover a critical issue: existing INT4 quantization methods suffer from significant runtime overhead (20-90%) when dequantizing either weights or partial sums on GPUs. To address this challenge, we introduce QoQ, a W4A8KV4 quantization algorithm with 4-bit weight, 8-bit activation, and 4-bit KV cache. QoQ stands for quattuor-octo-quattuor, which represents 4-8-4 in Latin. QoQ is implemented by the QServe inference library that achieves measured speedup. The key insight driving QServe is that the efficiency of LLM serving on GPUs is critically influenced by operations on low-throughput CUDA cores. Building upon this insight, in QoQ algorithm, we introduce progressive quantization that can allow low dequantization overhead in W4A8 GEMM. Additionally, we develop SmoothAttention to effectively mitigate the accuracy degradation incurred by 4-bit KV quantization. In the QServe system, we perform compute-aware weight reordering and take advantage of register-level parallelism to reduce dequantization latency. We also make fused attention memory-bound, harnessing the performance gain brought by KV4 quantization. As a result, QServe improves the maximum achievable serving throughput of Llama-3-8B by 1.2x on A100, 1.4x on L40S; and Qwen1.5-72B by 2.4x on A100, 3.5x on L40S, compared to TensorRT-LLM. Remarkably, QServe on L40S GPU can achieve even higher throughput than TensorRT-LLM on A100. Thus, QServe effectively reduces the dollar cost of LLM serving by 3x. Code is available at https://github.com/mit-han-lab/omniserve."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

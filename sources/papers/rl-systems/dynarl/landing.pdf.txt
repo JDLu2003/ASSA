@@ -1,0 +1,71 @@
+DynaRL: Flexible and Dynamic
+Scheduling of Large-Scale
+Reinforcement Learning Training
+Yuanqing Wang, Peking University and Infinigence AI; Hao Lin, Junhao Hu, Chunyang Zhu, Quanlu Zhang,
+and Zhen Guo, Infinigence AI; Yuchen Zhang, Institute of Computing Technology, Chinese Academy of
+Sciences and Infinigence AI; Xu Fu and Si Xu, Infinigence AI; Bo Dai, Beihang University and Infinigence AI;
+Zixiao Huang, Tsinghua University and Infinigence AI; Chao Yu, Tsinghua University; Boxun Li, Infinigence AI;
+Guohao Dai, Shanghai Jiao Tong University and Infinigence AI; Zhi Yang, Peking University; Yu Wang,
+Tsinghua University
+
+Modern reinforcement learning (RL) workloads, powering large language models, long‑horizon
+reasoning, and agentic systems, exhibit extreme dynamicity due to heavy‑tailed rollouts, irregular
+multi‑turn tool interactions, and time‑varying bottlenecks. Static resource allocations in today’s
+distributed RL systems leave large fractions of compute idle and prolong training. This paper presents
+DynaRL, the first RL system that dynamically reallocates computation, memory, and communication
+resources across heterogeneous RL components. DynaRL models the entire RL pipeline with a dynamic
+hypergraph that serves as a centralized, continuously-evolving control surface. Supported by a unified
+resource migration interface and context‑aware data routing, the scheduler reallocates GPUs from
+overprovisioned components to the current bottleneck via a combination of a multi-level scheduling
+algorithm and fine-grained resource migration. Comprehensive evaluation demonstrates that DynaRL
+improves end-to-end throughput on math-reasoning and agentic RL workloads by up to 1.98×, with
+negligible online scheduling overhead.
+
+
+
+
+                  OSDI '26 Open Access Sponsored by
+      King Abdullah University of Science and Technology (KAUST)
+
+
+
+Open Access Media
+USENIX is committed to Open Access to the research presented at our events. Papers and proceedings
+are freely available to everyone once the event begins. Any video, audio, and/or slides that are posted
+after the event are also free and open to everyone. Support USENIX and our commitment to Open
+Access.
+
+
+BibTeX
+    Wang PDF               View the slides
+
+
+
+
+Presentation Video
+
+
+
+
+AT T E N D                  SCHEDULE             PA R T I C I PAT E            SPONSORS
+Registration Information    Technical Sessions   Call for Papers               Exhibitor Resources
+Registration Discounts      Activities           Requirements for Authors
+Grant Opportunities         Poster Session       Call for Artifacts
+Venue, Hotel, and Travel                         Call for Posters
+                                                 Instructions for Presenters
+                                                 Mentorship
+
+ABOUT
+Symposium Organizers
+Past Symposia
+Conference Policies
+Code of Conduct
+Questions
+
+
+
+
+Privacy Policy Contact Us
+© USENIX 2026
+EIN 13-3055038
+

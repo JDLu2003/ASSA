@@ -1,6 +1,6 @@
 {
   "updated_at": "2026-10-09T12:32:57.280369+00:00",
-  "priority": "Products first; new paper discovery paused per user instruction",
+  "priority": "Product collection retained; paper collection resumed",
   "scope_note": "Retrieval index only. Platforms, components and documented agent types are separate entries, not assumed to be separate standalone products. No architecture, cost or performance analysis.",
   "captured_entries": [
     {

@@ -1,0 +1,751 @@
+                                             ENOVA: Autoscaling towards Cost-effective and
+                                                   Stable Serverless LLM Serving
+                                                    Tao Huang                               Pengfei Chen                            Kyoka Gong, Jocky Hawk
+                                                  EmergingAI           School of Computer Science and Engineering               EmergingAI
+                                               Hong Kong, China               Sun Yat-Sen University, China                  Hong Kong, China
+                                         shendu-ht@emergingai-tech.com           chenpf7@mail.sysu.edu.cn         kyokagong,jockyhawk@emergingai-tech.com
+
+                                                 Zachary Bright                    Wenxin Xie, Kecheng Huang                                    Zhi Ji
+                                                 Exascale Labs                             EmergingAI                             Division of Engineering Science
+arXiv:2407.09486v1 [cs.DC] 17 May 2024
+
+
+
+
+                                                     USA                                Hong Kong, China                           University of Toronto, Canada
+                                              zack@exascalelabs.org           wenxinxie,kecheng@emergingai-tech.com                 whitney.ji@mail.utoronto.ca
+
+
+
+                                            Abstract—Since the increasing popularity of large language        • Unaware of the diversity of LLM tasks. Taking the
+                                         model (LLM) backend systems, it is common and necessary to             LLM agent as an example, the agent can contain a
+                                         deploy stable serverless serving of LLM on multi-GPU clusters          profiling module to identify its role, a memory module
+                                         with autoscaling. However, there exist challenges because the
+                                         diversity and co-location of applications in multi-GPU clusters        to place it into a dynamic environment, and a planning
+                                         will lead to low service quality and GPU utilization. To ad-           module to determine future actions. There is a significant
+                                         dress them, we build ENOVA, a deployment, monitoring and               difference in the context length of LLM tasks in this
+                                         autoscaling service towards serverless LLM serving. ENOVA de-          agent. This diversity of task targets in different modules
+                                         constructs the execution process of LLM service comprehensively,       will affect the performance of LLM service by the input
+                                         based on which ENOVA designs a configuration recommendation
+                                         module for automatic deployment on any GPU clusters and                and output sequence length.
+                                         a performance detection module for autoscaling. On top of            • Less focus on deployment in distributed multi-GPU
+                                         them, ENOVA implements a deployment execution engine for               clusters. The GPU clusters are mainly from multiple
+                                         multi-GPU cluster scheduling. The experiment results show that         regions with various types of GPU devices in indus-
+                                         ENOVA significantly outperforms other state-of-the-art methods         trial environments. There are differences in computing
+                                         and is suitable for wide deployment in large online systems.
+                                            Index Terms—LLM service, autoscaling, service configuration,
+                                                                                                                capabilities among various GPU devices. If without a
+                                         anomaly detection                                                      guidance on multi-cluster deployment of LLM service,
+                                                                                                                the performance of LLM service will be impacted due to
+                                                               I. I NTRODUCTION                                 this computing capacity difference.
+                                                                                                              • Unable to auto-scale LLM service. When an LLM
+                                            The rising emergence of large language models (LLMs)                service is deployed online, the requests issued to the
+                                         like GPT [1] has spawned many new applications in various              LLM service are complex and non-stationary. Without
+                                         domains such as programming [2], [3], academic [4], legal [5],         autoscaling, the service quality degrades when the num-
+                                         medical [6] assistants and embodied agents [7], which improve          ber of requests surges, while the resource waste exists
+                                         the efficiency of our work and routines. These applications            when it drops sharply.
+                                         generally run on GPU cloud in industrial environments, where
+                                                                                                               To address these challenges, we introduce ENOVA, a ser-
+                                         an LLM request can be 10× more expensive than a traditional
+                                                                                                            vice designed to enhance the stability and cost-efficiency of
+                                         query [8]. Hence, previous researchers focus on optimizing
+                                                                                                            serverless LLM serving through deployment, monitoring, and
+                                         LLM inference so that to increase the throughput and reduce
+                                                                                                            autoscaling capabilities. ENOVA comprises two primary mod-
+                                         the cost of LLM serving.
+                                                                                                            ules: the service configuration module, which determines the
+                                            Many approaches [8]–[15] have been proposed to opti-
+                                                                                                            optimal configurations for LLM services, and the performance
+                                         mize LLM inference. These techniques can be classified
+                                                                                                            detection module, tasked with monitoring service quality and
+                                         into five general categories including computation [11], [12],
+                                                                                                            resource utilization and identifying anomalies that necessitate
+                                         weight or activation quantization [13]–[15], memory manage-
+                                                                                                            autoscaling actions. On top of them, ENOVA integrates a
+                                         ment [8], kernel operator optimization [9], [11], and batching
+                                                                                                            comprehensive execution engine that manages deployment,
+                                         requests [10]. However, few of them focus on stable and auto-
+                                                                                                            monitoring, and autoscaling across multi-GPU clusters. Our
+                                         scaled serverless LLM serving in multi-GPU clusters. There
+                                                                                                            contributions are summarized as follows:
+                                         are still challenges to provide a scheduling service so that LLM
+                                         developers no longer need to spend time providing stable and         •   We have designed a service configuration recommenda-
+                                         scalable LLM services. The challenges are shown as follows.              tion module that is designed for LLMs deployed across
+    any GPU cluster. This module is also adaptable to a vari-      past tokens to generate the next token. The output oi of the
+    ety of application agents, ensuring optimal configurations     attention layer at the ith iteration can be express as:
+    and service quality in diverse environments. Notably, this                              i
+                                                                                            X
+    approach is scalable, supporting multi-agent systems and                         oi =         ai,j vj                        (1)
+    multi-GPU deployments effectively.                                                      j=1
+  • We have developed a performance detection module                                                    √
+                                                                                            exp(qiT kj / dh )
+    that continuously monitors service quality and resource                        ai,j = Pi              √                      (2)
+                                                                                                      T
+    utilization in real-time. This module is essential to ensur-                           t=1 exp(qi kt / dh )
+    ing the automatic adjustment of online-deployed LLM            where kt is the key at tth iteration, vj is the value at j th
+    services, thus maintaining optimal service reliability.        iteration, ai,j is the attention weight of vj at ith iteration, qi
+  • We have implemented a comprehensive service for the            is the query at ith iteration, and dh is the hidden dimension
+    deployment, monitoring, and autoscaling of LLMs. This          of model. The output generation at each iteration relies on the
+    service significantly reduces the workload of LLM de-          previous generated key and value vectors.
+    velopers by providing stable and scalable performance             To avoid the redundant computation in attention layer, the
+    across multi-GPU clusters. The implementation code is          key and value vectors of past tokens are often cached for
+    publicly available for further research and development        generating the next tokens, which are known as KV cache [19].
+    at https://github.com/Emerging-AI/ENOVA.                       Thus, the LLM inference involves two phases, namely the
+  • We evaluate ENOVA for various scenarios and compare            prefill phase and autoregressive generation phase. In the prefill
+    it with several state-of-the-art systems. The experiment       phase, the LLM takes the user context tokens as input and
+    results demonstrate that ENOVA outperforms the baseline        generates the first token, during which the intermediate keys
+    approaches.                                                    and values are prefilled in KV cache. In the autoregressive
+                     II. BACKGROUND                                generation phase, the LLM takes the previous generated token
+                                                                   as input and generates the following tokens at a time, until
+A. GPU Scheduling                                                  one stopping criteria is triggered.
+   A graphics processing unit (GPU) is a specialized device           This inference mode results in at least two perspectives
+that consists of several streaming multiprocessors (SMs).          that need to be optimized. The first is the GPU memory
+Multiple user contexts can run on one SM concurrently, each        requirements caused by KV cache, which is linearly growing
+of which is allocated a static share of local resources. A         with batch size and sequence length. Eventually, it leads to the
+typical user context will consist of numerous kernels, which       limitation of the throughput and long-context inputs of LLM
+are executed sequentially. The applications to process user        Service. The second is the low GPU utilization brought by
+contexts typically interact with the GPU at the kernel level.      sequential autoregressive generation, which will lead to lower
+A kernel function is scheduled to run parallelly in blocks of      throughput of LLM Service.
+threads within a grid, where thread is the smallest unit of GPU
+computation in the CUDA framework.                                 C. Optimizing the LLM Inference
+   The GPU scheduling is to submit kernels to hardware                To optimize the LLM inference, several approaches [8]–[15]
+queues within GPUs and schedule them to target SMs with            has been proposed. For instance, PagedAttention [8] is an at-
+available resources. From the macro perspective, the LLM           tention algorithm which optimizes the KV cache management
+inference tasks can be refined into tens types of kernels, such    by storing attention keys and values in non-contiguous paged
+as ”aten::add” and ”aten::transpose” in PyTorch. Each type         memory. It achieves near-zero waste in KV cache memory
+of kernel is corresponding to one basic operations defined in      and flexible sharing of KV cache within and across requests.
+PyTorch, for instance the kernel ”aten::add” is responsible        FlashAttention [9] is an IO-aware exact attention algorithm
+for executing function ”torch.add”. Eventually, the LLM            which optimizes the LLM inference computation by reducing
+inference tasks are scheduled and executed at the kernel           the number of memory reads/writes between GPU high band-
+level. Model serving systems like NVIDIA’s Triton [16] and         width memory (HBM) and GPU on-chip SRAM. OCRA [10]
+Ray Serve [17] are responsible for receiving requests and          is an iteration-level scheduling mechanism which addresses
+dispatching LLM inference executions to target GPUs.               the multi-iteration issues in autoregressive generation phase. It
+                                                                   adopts selective batching to batch arbitrary requests processing
+B. LLM Inference                                                   tokens at different positions so that the scheduler can execute
+   LLMs are always autoregressive transformer-based gener-         at the granularity of iteration instead of request. SpecInfer [20]
+ative models [18], which predict the next token based on           is an LLM serving system which focuses on accelerating
+past tokens. Since LLMs generate one token at a time, the          generative LLM inference with speculative inference and
+LLM inference generates subsequent tokens iteratively until        token tree verification. It combines various boost-tuned small
+they trigger stopping criteria. Within one iteration, the input    language models to jointly predict the LLM outputs and uses
+tokens are transmitted into the model which contains several       an LLM as a token tree verifier, so that to reduce the end-
+transformer layers with one attention, two layer norm, and         to-end latency and computational requirement. Despite many
+two feed-forward layers. Essentially, the attention layer uses     researchers are focusing on optimizing the LLM inference,
+there are still several practical challenges to be addressed
+from the perspective of serverless LLM serving, which will
+be demonstrated in the next section.
+                      III. M OTIVATION
+A. Problem Formulation
+   Instead of model inference, this paper aims at serverless
+LLM serving so that LLM developers can focus on model
+training or fine-tuning and no longer need to spend time
+providing stable and scalable LLM service in multi-GPU
+clusters. To achieve that, there are two target problems to be
+addressed.
+                                                                  Fig. 1. The monitoring metrics for running and pending requests when the
+   • Given a pre-trained or fine-tuned LLM, we need to            requests per second sent to LLM service is set to 7 and 6 respectively.
+      determine the optimal configurations so that to maximize
+      interactive performance and minimize costs. Then the
+      LLM can be dispatched to the target idle machines in        its superior computing capabilities. Due to differences in
+      multi-GPU clusters.                                         computing capacities across various GPU devices, the service
+   • Given an online LLM service, we need to observe the          configurations of an LLM service will be significantly affected.
+      service quality in real time. When we detect the anoma-     We need to recommend the optimal service configurations
+      lous resource utilization or service quality, we need to    for the LLM deployed on multi-GPU clusters, which can be
+      redetermine the optimal configuration of LLM service        understood as the multi-GPU deployment goal of serverless
+      and re-schedule it automatically.                           LLM serving.
+                                                                     Thirdly, it is essential to point out that there is an upper
+B. Goals of Serverless LLM Serving                                limit to the number of requests per second that can be sent to
+   To effectively address the two target problems and achieve     an LLM service. The previous two goals focus on increasing
+serverless LLM serving, several specific objectives need to be    this limit using fewer GPU resources when LLM services
+accomplished. Firstly, it’s important to recognize that LLM       are deployed on multi-GPU clusters and extended to various
+services require distinct service configurations when extended    application agents. When the requests per second slightly
+to different application agents. For example, the configuration   exceed this limit, the LLM service will be down, causing
+termed as maximal number of sequences (also max num seqs)         all incoming requests significant delays until the HTTP con-
+is crucial, as it determines the number of requests that can      nection times out. Fig. 1 is a practical case in an industrial
+be handled simultaneously by the LLM service. This requires       environment. Fig. 1 (A) and (B) respectively presents the
+allocating sufficient GPU memory to handle multiple requests      monitoring metrics for running and pending requests when
+in parallel. Diverse agents may have varied short-term and        the requests per second sent to LLM service are set to 7
+long-term memory structures that are critical for executing       and 6. The running requests represent the number of requests
+future actions. These differences directly impact the input       currently running on the GPU, while the pending requests are
+sequence length required for LLM tasks. During the LLM            those queued and waiting to be processed. We can observe
+generation phase, the greater the input sequence length, the      that when requests per second are set to 6, all requests can
+more GPU memory is necessary. However, it is important            be processed without any delays caused by waiting in queue.
+to point out that there is a maximum memory capacity for          However, when requests per second increase to 7, more and
+each GPU, which will limit the max num seqs by the context        more requests accumulate and pend in the queue after the
+length of LLM tasks. In practice, many service configurations     number of running requests reaches max num seqs. To handle
+will be affected when an LLM service is extended to different     these pending requests, we need to add another replica of
+application agents. We need to recommend the optimal ser-         the LLM service. In industrial environments, the requests per
+vice configurations for each application agent, which can be      second are not constant but hard to predict, varying with
+considered as the multi-agent deployment goal of serverless       demands and user activity. To provide a stable and scalable
+LLM serving.                                                      service, it’s essential to implement automatic scaling of the
+   Secondly, it’s crucial to determine the optimal service        LLM service. This can be regarded as the autoscaling goal
+configurations for deploying an LLM on multi-GPU clusters.        of serverless LLM serving.
+Still using the max num seqs as an example, the capacity
+to process multiple requests concurrently is directly propor-                        IV. A PPROACH OVERVIEW
+tional to the computing capacity of the GPUs deployed. For           To achieve the above goals, To address these challenges, we
+instance, the NVIDIA H100 80 GB can process more requests         propose ENOVA, a deployment, monitoring and autoscaling
+concurrently compared to the GeForce RTX 4090 24 GB.              service towards stable and cost-effective serverless LLM serv-
+Therefore, the max num seqs for an LLM service deployed on        ing. Fig. 2 illustrates how ENOVA deconstructs the execution
+the NVIDIA H100 80 GB should be set higher to fully utilize       process of LLM inference. The request pool collects user
+Fig. 2. The procedure by which we deconstruct the process of LLM inference led to the design of configuration module and detection module in ENOVA.
+
+
+
+inputs and dispatches them to a replica of the LLM service                 LLM service as an example, the necessary memory allocation
+deployed on GPU clusters via an HTTP load balancer. For                    can be expressed as:
+continuously incoming requests, the LLM service merges these
+newly coming requests with previously running requests into a                 mem ≈ params ∗ sizeof (dtype) + max num seqs ∗
+batch via continuous batching [10]. During the autoregressive                          seq length ∗ token mem + others,                         (3)
+generation phase, the key and value vectors of all running
+requests are stored as non-contiguous blocks using PagedAt-                where param and token mem is the parameter size and
+tention [8] and leveraged to generate attention output. When               memory of KV cache defined by deployed LLM, seq length
+generating the output in a single step, speculative decoding               is the context length of user input depended on agent tasks,
+strategies such as SpecInfer [20] are utilized to predict the              and max num seqs is specified by the computing capacity
+next k tokens, thereby accelerating the LLM inference pro-                 of GPU devices. Due to the diversity of LLM agent tasks and
+cess. These inference techniques introduce a set of service                differences in GPU devices, the memory requirements can vary
+configurations that must be carefully configured to provide                significantly, necessitating a flexible configuration approach to
+a stable and cost-effective LLM service. Therefore, ENOVA                  optimize resource allocation and ensure efficient performance
+designs two key modules: the service configuration module                  across all deployments. Therefore, it is essential to design the
+and the performance detection module. The configuration                    methodology from a scalable perspective, rather than relying
+module aims to determine the optimal configurations for                    on heuristic calculations such as those described in equation 3.
+LLM services, including the max num seqs for continuous                    In this paper, ENOVA designs and implements a monitoring
+batching and gpu memory for PagedAttention. Meanwhile,                     system which will be illustrated in section V, and determines
+the detection module is responsible for monitoring service                 the service configurations based on the monitoring metrics.
+quality and resource utilization, identifying anomalies that               Since the diversity of LLM agent tasks and GPU devices can
+trigger autoscaling actions. In this section, we will provide              be reflected in the variations in metric observations, this ap-
+a detailed exploration of these modules and their respective               proach is suitable for multi-agent and multi-GPU deployment.
+functionalities.                                                              Fig. 2 depicts the process employed by the service config-
+                                                                           uration module in ENOVA to establish configurations. These
+A. Service Configuration Module                                            configurations are meticulously derived from the deconstruc-
+   To achieve the multi-agent deployment and multi-GPU                     tion of LLM inference processes, which are critical for opti-
+deployment goals, ENOVA has designed a service configura-                  mizing resource utilization and ensuring service stability. De-
+tion recommendation module. This module is built for LLMs                  tailed information regarding the source layer, description, and
+deployed on any GPU cluster and extended to various applica-               objectives of these configurations is systematically presented
+tion agents, ensuring optimal configurations and performance               in TABLE I. In the remaining of this section, we will elaborate
+across diverse environments. Taking gpu memory allocated for               on how ENOVA determines these service configurations.
+                                                                     TABLE I
+                                                 T HE INVOLVED SERVICE CONFIGURATIONS OF ENOVA.
+
+         Source Layer          Configuration                                   Description                                        Objective
+                                parallel size           the tensor or pipeline parallel size when deploying LLM
+        LLM Deployment                                                                                                    Lower Cost, Service quality
+                                gpu memory                   the allocated GPU memory for deploying LLM
+         LLM Inference         max num seqs            the maximal number of sequences handled simultaneously             Lower Cost, Service quality
+        LLM API Service          max tokens               the maximal number of output tokens of user request                  Service quality
+                                  replicas                        the number of deployed LLM services
+      LLM Load Balancer                                                                                                   Lower Cost, Service quality
+                                  weights        the routing weights that new requests dispatched to the target replica
+
+
+
+   1) Determine max num seqs: This fundamental configu-                                                       TABLE II
+ration specifies the maximal number of sequences that can                                    T HE PART OF MONITORING METRICS IN ENOVA.
+be handled concurrently, which can directly influences the                                 Metric Description                  Symbol       Observations
+allocation of GPU memory resources and execution time per                         Number of finished requests per unit time      nf        [nft−w , · · · nft ]
+batch output token. We determine max num seqs based on the                        Number of running requests per unit time       nr        [nrt−w , · · · nrt ]
+following equation:                                                               Number of arriving requests per unit time      na        [nat−w , · · · nt ]
+                                                                                                                                                              a
+
+                                                                                  Number of pending requests per unit time       np        [npt−w , · · · npt ]
+                max num seqs ≈ nlimit × trlimit                          (4)         Execution time per user request             tr         [trt−w , · · · trt ]
+                                                                                         GPU memory utilization                  mu       [mu t−w , · · · mt ]
+                                                                                                                                                               u
+
+where nlimit represents the maximal number of requests per                                    GPU utilization                    gu           u
+                                                                                                                                           [gt−w  , · · · gtu ]
+second sent to an LLM service and tr denotes the corre-
+sponding execution time of user requests. This formula is
+straightforward, as it posits that the maximum number of                           2) Determine parallel size and gpu memory: These con-
+sequences is determined by multiplying the number of requests                   figurations define the allocated GPU memory for LLM ser-
+per second by the average execution time of each request.                       vice. If the GPU memory allocated to an LLM service is
+Meanwhile, a fundamental assumption in this equation is                         insufficient, the service quality will be negatively affected due
+that the maximum number of requests per second remains                          to inadequate memory for storing the KV cache of requests.
+constant, irrespective of any adjustments made to the service                   Conversely, excessive allocation of GPU memory results in
+configurations. This assumption will be verified and discussed                  resource waste. Therefore, it is essential to meticulously
+in section VII-A.                                                               determine this configuration. In the process of determining
+                                                                                this configuration, we meticulously analyze the relationship
+   Then, we determine nlimit and trlimit based on the monitor-
+                                                                                between the GPU memory utilization, denoted as mu , and
+ing metrics of LLM service. TABLE II presents the involved
+                                                                                number of running requests per unit time, nr , as presented in
+metrics, where nf represents the number of finished requests
+                                                                                TABLE II. The relationship is formulated as follows.
+per unit time of an LLM service, nr specifies the number of
+running requests simultaneously per unit time, and tr denotes                                                mu = g(nr )
+the execution time per user request. Theoretically, nlimit is the                              gpu memory ≈ g(max num seqs)                                 (6)
+upper limit of [nft−w , · · · nft ], and trlimit is the execution time
+tr corresponding to when nf reaches nlimit . However, in an                     We then determine the required gpu memory by setting nr
+industrial environment, the observed values of nf can deviate                   equal to max num seqs. This formula is straightforward to
+significantly from nlimit . Therefore, we first identify whether                derive, as the variance in gpu memory can be attributed to
+nf deviate from nlimit by modeling the following function.                      changes in nr . Specifically, an increase in the number of
+                                                                                running requests per unit time corresponds to greater utiliza-
+                               nf = f (nr )                              (5)    tion of GPU memory used for KV cache storage. Therefore,
+                                                                                we can calculate the maximal allocated GPU memory for
+If there is no significant relationship between nf and nr ,                     an LLM service by setting the number of running requests
+it can be inferred that nf has reached nlimit ; if not, the                     nr equal to max num seqs. In this paper, ordinary least
+opposite is deduced. In this paper, ordinary least squares                      squares regression (OLS) [21] is also adopted to model mu
+regression (OLS) [21] is used to model nf and nr , and t-                       and nr , based on which gpu memory is determined and
+test is adopted to determine whether there is a significant                     parallel size can be derived based on existing hardware
+relationship between nf and nr . If nf deviates from nlimit ,                   specifications.
+we can deduce that nlimit and trlimit are generated from                           3) Determine max tokens: This configuration specifies the
+extreme value distributions of [nft−w , · · · nft ] and [trt−w , · · · trt ].   maximal number of output tokens of each user request. We
+If not, nlimit and trlimit are generated from normal distribution.              manage this configuration because not all prompts are opti-
+Eventually, we estimate the extreme value distribution or                       mally designed. Poorly designed prompts may result in out-
+normal distribution with kernel density estimate (KDE) [22],                    put tokens reaching their maximum limit, thereby degrading
+based on which nlimit and trlimit are determined.                               the quality of service. Appropriately limiting the maximum
+number of output tokens is crucial for maintaining the service     by LLM services on GP U i ; parallal sizei indicates the
+quality. To determine the max tokens, we operate under the         designated parallel size for LLM service deployed on GP U i ;
+assumption that the number of output tokens for each type          and Ni is the total number of GPU devices of GP U i . The
+of LLM task is predetermined and should not deviate signif-        matching score is calculated based on the difference between
+icantly from the established range. We will further discuss it     the required gpu memory and the total memory of GP U i .
+in section VII-B.                                                  Eventually, the number of replicas, replicasi , is determined
+   Then, we determine the max tokens of each type of               using linear programming [25]. The weight of replicas is
+LLM task based on task clustering. ENOVA first adopts bge-         directly specified by the estimated nilimit . The new request
+large-en [23] to convert user request text into embedding          will be routed to the target GPU device based on these routing
+representations. Second, ENOVA adopts community detection          weights.
+algorithm [24] to cluster the user requests by maximizing
+the modularity. ENOVA initially constructs a request graph         B. Performance Detection Module
+by calculating the cosine similarity between embedding rep-           To achieve the autoscaling goal, ENOVA has developed a
+resentations. Subsequently, ENOVA optimizes the objective          performance detection module. This module monitors service
+function to identify communities within user requests, which       quality and resource utilization in real-time, particularly im-
+can be described as follows:                                       portant due to the complexity of user requests in industrial
+                     1 Xh           ki kj
+                                          i
+                                                                   environments. Fig. 2 illustrates the detailed procedure of per-
+             LQ =           Ai,j − 2m       · δ(i, j),     (7)
+                    2m i,j                                         formance detection module. ENOVA first identifies anomalies
+                                                                   in resource utilization or service quality using the monitoring
+where i and j denote the ith and j th requests; m is the total     metrics presented in TABLE II, then redetermine the optimal
+number of edges in the request graph; ki and kj represent the      configurations using the previously established service config-
+degrees of request i and j; and δ(i, j) equals 1 if i and j        uration module.
+are in the same community and 0 otherwise. Ultimately, user           When developing the performance detection model, it is es-
+requests will be segmented into distinct communities based on      sential to consider the rarity of anomalous samples in industrial
+their task targets. For each new request, ENOVA determines         environments, which poses challenges for collecting sufficient
+its community by calculating the cosine similarity between         data for supervised learning. Additionally, the performance of
+the request and the centroid of each existing community. For       unsupervised models can deteriorate when contaminated with
+each community, ENOVA uses KDE [22] to model the density           a few anomalous samples [26]. To address these challenges,
+function of the length of generated output tokens, based on        ENOVA utilizes a semi-supervised learning approach [27],
+which the max tokens of each community are determined.             specifically adopting a Variational Auto-Encoder (VAE) [28]
+   4) Determine replicas and weights: These configurations         as the base model. This model hypothesizes that the ob-
+control the number of replicas of deployed LLM services and        served normal performance metrics m are generated from
+the routing weights used to route new requests to the appropri-    an unobserved multivariate Gaussian distribution z, while the
+ate replica. In industrial environments, GPU clusters are often    anomalous performance data deviate from this distribution.
+distributed across multiple regions, featuring a variety of GPU    The input metrics are normalized prior to being fed into the
+device types. These devices exhibit significant disparities in     VAE. Then ENOVA optimizes the evidence of variational
+computing capabilities, unlike traditional computing devices.      lower bound (ELBO) which can be expressed as follows.
+When deploying two replicas of LLM services on two distinct
+                                                                                  1       X
+GPU devices, the absence of a strategic routing plan for user          Lvae = M                    li · Eqϕ (z|m) log(pθ (m|z))
+requests can lead to inefficiencies. The more powerful GPU                      |D |             M
+                                                                                     (mi ,li )∈D
+may underutilize its computing capacities, while the less capa-                − (1 + li )/2 · β(k) · KL(qϕ (z|mi )∥pθ (z)),    (9)
+ble GPU could result in diminished service quality. Therefore,
+it is essential to accurately determine the appropriate number     In this equation, li ∈ (1, −1) represents the label of perfor-
+of replicas and their corresponding weights for effective          mance metrics, where li = 1 indicates that mi is normal.
+multi-GPU deployment.                                              The coefficient β(k) from PI control [29] is used during the
+   Then we determine the replicas of each type of GPU based        k th training iteration to ensure convergence of the objective
+on the following equations:                                        function. The term Eqϕ (z|m) log(pθ (m|z)) represents the ex-
+                        X                                          pectation component of ELBO, while KL(qϕ (z|mi )∥pθ (z))
+                    min     scorei ∗ replicasi               (8)
+                                                                   denotes the KL-divergence component of ELBO. ENOVA
+                        i
+                      i                i                           uses these labels to manage the components, allowing the
+                                             ≤ nf
+                P
+                   i nlimit ∗ replicas                             few anomalous samples to effectively define the distribution
+               parallal size ∗ replicasi
+                             i
+                                             ≤ Ni
+                                                                   boundaries.
+where scorei represents the matching score of LLM services            When utilizing the detection model to identify anoma-
+deployed on GP U i ; replicasi denotes the number of replicas      lous performance, ENOVA focuses on the KL-divergence
+of LLM services deployed on GP U i ; nilimit specifies the         where posterior distribution qϕ (z|mi ) is deviated from prior
+maximal number of requests per second that can be processed        distribution pθ (z). The threshold for detecting anomalies is
+   Fig. 3. The implementation components of ENOVA, designed to ensure accurate execution of the deployment, monitoring, and autoscaling services.
+
+
+
+automatically set using the peaks-over-threshold method [30].              ENOVA directly adopts previous mature toolkit like dcgm
+An anomaly is detected if the KL-divergence for mi exceeds                 exporter [32] and Prometheus exporters [33]. For data collec-
+this threshold. Additionally, as the normalized values of input            tion in LLM inference layer, ENOVA provides a fine-grained
+metrics can indicate either overload or underload, ENOVA                   collection tool based on opentelemetry collector [34] in order
+uses the Mean Difference (MD) between the input metrics m                  to deconstruct the execution processes inside LLMs. Then,
+and the reconstructed metrics m′ to decide whether to scale                all collected data will be stored in time series database and
+up or down. Based on these, ENOVA then adjusts the service                 consumed via stream computing framework. The performance
+configurations using the service configuration module.                     detector is executed in streaming computing framework. Once
+                                                                           the service quality degradation or anomalous resource uti-
+                 V. S YSTEM I MPLEMENTATION                                lization is detected, ENOVA will redetermine the optimal
+   To ensure precise execution of the aforementioned method-               configurations and reschedule the LLM service via multi-level
+ologies, ENOVA has designed and implemented an advanced                    job scheduler.
+execution engine. This engine effectively manages deploy-                                            VI. E VALUATION
+ment, monitoring, and autoscaling operations within multi-
+GPU clusters. Fig. 3 illustrates the architecture of this engine,             In this section, we evaluate whether ENOVA effectively
+which is primarily composed of two main components: the                    address the practical problems mentioned in section III-A and
+LLM deployer and the monitoring system. In the subsequent                  accomplish the goal that developers no longer need to spend
+sections, we provide a detailed description of each component,             time providing stable and scalable LLM service. Experiments
+explaining their functionalities and interactions within the               are conducted to investigate the following questions.
+system.                                                                       • RQ1: Whether the service configuration module can
+   The LLM deployer enables the automatic deployment of                         achieve multi-agent and multi-GPU deployment goals
+LLM services, utilizing both multi-cluster and local-cluster                    by reducing cost and enhancing interactive performance
+schedulers. Once receiving a target LLM along with its                          of LLM service?
+recommended configurations, the multi-cluster job scheduler                   • RQ2: Whether the performance detection module can
+will start communication with designated local clusters. Con-                   achieve autoscaling goal by accurately detecting anoma-
+currently, the local-cluster job scheduler launches the LLM                     lous resource utilization or service quality and redeter-
+service on available resources, corresponding to the predefined                 mining the configurations of autoscaling?
+LLM serving framework. Notably, during the service deploy-
+ment, ENOVA will support various LLM technologies, includ-                 A. RQ1: Whether Service Configuration Module Enhances
+ing vllm [8] and TensorRT-LLM [31]. Following deployment,                  Performance Efficiently
+the LLM service becomes accessible through a multi-cluster                    1) Experiment setup: To evaluate the service configuration
+ingress system. This setup ensures that incoming user requests             module in ENOVA, we have designed experiments to assess
+are efficiently directed to the appropriate local cluster, where           the serving performance using ENOVA compared with estab-
+they are handled by a specific replica of the LLM service.                 lished baselines. First, we selected the experimental datasets
+   The monitoring system is designed for monitoring and auto-              and devices to reflect the diversity of task targets and de-
+scaling, which contains real-time data collection, storage, and            ployment in multi-GPU clusters. For this purpose, we utilize
+consumption. First, the involved data are mainly from three                two standard datasets: grade school math 8K (gsm8k) [35],
+layers, namely hardware, LLM inference, and load balancer.                 representing mathematical tasks, and mostly basic python
+For data collection in hardware and load balancer layers,                  programming (mbpp) [36], denoting programming domains.
+                   Fig. 4. The throughput and latency performance comparison between ENOVA and baselines on five LLMs.
+
+
+
+We meticulously designed the data prompts to evaluate the per-        of baselines will be executed based on deployment execution
+formance under various prompting paradigms, including zero-           module in ENOVA, while both the replicas of LLM service in
+shot, few-shot, and chain-of-thought approaches. An example           A100 80 GB and 4090 24 GB are set to 1 to avoid interference
+of zero-shot prompt is as follows:                                    from hardware factors.
+     ”You are a software development expert skilled                      Third, the evaluation metrics need to characterize the serv-
+     in Python programming. Your task is to develop                   ing performance and service accuracy. For serving perfor-
+     a Python function that meets the following                       mance, we adopt two metrics, namely throughput [8] which
+     specifications. Please ensure your code is concise,              is the average number of output tokens per GPU per sec-
+     well-documented, and accurately meets all the                    ond and latency [10] which is the average execution time
+     specified requirements.                                          of user requests divided by its output length. In addition,
+                                                                      we adopt 15 minute traces to evaluate serving performance
+      Task Description:                                               in high-throughput system. For service accuracy, we adopt
+      Write a function to find the minimum cost path to               accuracy [35] for gsm8k dataset which is the ratio of corrected
+      reach (m, n) from (0, 0) for the given cost matrix              answered requests to all requests and pass@1 [36] for mbpp
+      cost[][] and a position (m, n) in cost[][].”                    dataset which is the ratio of passed answers to all requests.
+The hardware setup includes small-scale multi-GPU clusters               2) Overall serving performance: We evaluate the serving
+built with NVIDIA A100 80 GB and NVIDIA RTX 4090                      performance of ENOVA and baselines on five LLMs and two
+24 GB, each equipped with 8 GPUs. Furthermore, to simu-               datasets in different application domains. Table III shows the
+late realistic LLM services, we deploy LLMs with multiple             part of recommended configurations of ENOVA and baselines.
+architectures such as Llama2 [37] with 7B, 13B and 70B                Since baselines can not cluster user requests, we take gsm8k
+parameters and Mistral [38] with 7B and 8 × 7B parameters.            and mbpp as two clusters, and directly recommend the max to-
+The deployment of LLM services on these clusters is tested            kens of these two datasets. We can observe that baselines have
+under certain load conditions, generated using a Poisson              higher max num seq and max tokens for higher throughput of
+distribution for request arrival times, as outlined in [8].           LLM service. Then we compare the serving performance with
+   Second, the baseline methods are selected to evaluate              recommended configurations based on ENOVA and baselines.
+configuration recommendation module in ENOVA. Here we                 Fig. 4 presents the throughput and latency on five LLMs with
+choose three baselines which are:                                     increasing requests per second (denoted as tps). First, we can
+   • Default configurations are adopted as a blank baseline,          observe that as the tps of user request increases, the throughput
+      which is set to verify the necessity of configuration           tends to the upper limit, while the latency slightly increases
+      recommendation.                                                 at first and then suddenly explodes. The is caused by that
+   • COSE [39] is a framework that uses Gaussian Process              fact that when the number of user requests being processed
+      Bayesian Optimization (GPBO) to find the optimal con-           exceeds maximal max num seq, new requests will be pended
+      figurations of LLM service.                                     until one of previous requests has completed. With more and
+   • DDPG [40] is a reinforcement learning technique which            more pending requests, the latency of LLM service explodes.
+      combines both Q-learning and policy gradients to find              Second, increasing max num seq will not result in a higher
+      optimal configurations.                                         throughput, but a higher latency. The upper five subplots
+When adopting baseline approaches to recommend configura-             in Fig. 4 have presented that the throughput of ENOVA,
+tions, the objective function is to maximize the throughput of        COSE and DDPG on five LLMs has no significant differences,
+LLM service. In addition, due to the lack of deployment and           although COSE and DDPG recommend higher values. Further
+scheduling ability of baselines, recommended configurations           analysis reveals that increasing max num seq leads to the
+                          TABLE III                                                               TABLE IV
+ T HE PART OF RECOMMENDED CONFIGURATION COMPARISON BETWEEN                T HE DETECTION PERFORMANCE COMPARISON BETWEEN ENOVA AND
+                    ENOVA AND BASELINES .                                                         BASELINES .
+
+                LLM     max num seq     max tokens      weights                                 Precision   Recall   F1 -score
+                          A100: 8       gsm8k: 256      A100: 1                       USAD        0.767     0.586     0.664
+                L-7B
+                          4090: 8       mbpp: 256       4090: 1                      SDF-VAE      0.683     0.829     0.749
+     Default
+                          A100: 8       gsm8k: 256      A100: 1                       Uni-AD      0.805     0.753     0.778
+               L-70B
+                          4090: 8       mbpp: 256       4090: 1                       ENOVA       0.899     0.849     0.873
+                         A100: 502      gsm8k: 970      A100: 1
+                L-7B
+                         4090: 462      mbpp: 1681     4090: 0.92
+     COSE
+                         A100: 42       gsm8k: 784      A100: 1
+               L-70B
+                          4090: 24      mbpp: 1879     4090: 0.57        ability to sustain tps 2× as high as those achieved with default
+                         A100: 452      gsm8k: 629      A100: 1          configurations and 1.3× higher than those of other baselines.
+                L-7B
+                         4090: 386      mbpp: 1648     4090: 0.85
+     DDPG                                                                   3) Accuracy analysis for service configuration module:
+                         A100: 34       gsm8k: 728      A100: 1
+               L-70B
+                          4090: 20      mbpp: 1938     4090: 0.59        When assessing the service configuration module in ENOVA,
+                         A100: 144      gsm8k: 414      A100: 1          an essential analysis was conducted to determine if the con-
+                L-7B
+                         4090: 128      mbpp: 956      4090: 0.89
+     ENOVA                                                               figurations recommended by ENOVA impacts the accuracy
+                         A100: 24       gsm8k: 414      A100: 1
+               L-70B
+                          4090: 16      mbpp: 956      4090: 0.67        of LLMs. Here we compare the accuracy of LLM service
+                                                                         deployed by ENOVA with those by BASELINE, where the
+                                                                         max tokens is set to the maximum supported by the LLMs.
+                                                                         The results, depicted in Fig. 5, indicate no significant dif-
+                                                                         ference in either accuracy or pass@1 performance between
+                                                                         the ENOVA and BASELINE. This finding illustrates that the
+                                                                         configurations recommended by ENOVA are robust enough
+                                                                         to support accurate output of user requests across various
+                                                                         task targets. Consequently, the service configuration module
+Fig. 5. The accuracy and pass@1 of five LLMs on gsm8k and mbpp dataset   in ENOVA has the ability to improve serving performance
+respectively.                                                            without affecting accuracy.
+
+                                                                         B. RQ2: Whether Performance Detection Module Determines
+processing of a greater number of user requests during next              autoscaling Accurately
+token generation, which consequently results in higher latency.
+                                                                            1) Experiment setup: To evaluate the performance detection
+It appears that the final throughput approaches a limit, which is
+                                                                         module in ENOVA, we design experiments to compare the
+primarily constrained by the computational capabilities of the
+                                                                         detection accuracy of ENOVA and those of baselines. Due to
+GPUs utilized. This observation underscores the critical role
+                                                                         the lack of standard datasets designed for detecting anomalies
+of ENOVA in monitoring the execution processes of LLM
+                                                                         in LLM services, the experimental datasets are collected based
+services. By integrating monitoring metrics that capture the
+                                                                         on the chatbot service deployed in industrial environments.
+diversity of tasks assigned to LLM agents and the charac-
+                                                                         This service provides 8 deployed LLMs with 2 replicas for
+teristics of different GPU devices, ENOVA can effectively
+                                                                         customers to select from. We collect the performance metrics
+map the execution dynamics of LLMs across various GPU
+                                                                         mentioned in section IV-B of these 8 LLMs in 4 weeks, and
+configurations. This capability enables ENOVA to determine
+                                                                         adopt the collected metrics in previous 2 weeks to train VAE-
+the optimal max num seq.
+                                                                         based detection model in ENOVA and baselines and those in
+   Third, improper max tokens and weight may cause lower
+                                                                         latter 2 weeks to test them. Hence, there are totally 1440 ∗
+tps and early explosion. As depicted in the lower five subplots
+                                                                         14 ∗ 8 ∗ 2 = 322560 points to be detected, including 251
+of Fig. 4, ENOVA consistently achieved higher tps compared
+                                                                         points labeled as anomalies.
+to baseline configurations. This improvement is attributed to
+                                                                            We compare ENOVA with three multivariate time series
+ENOVA’s superior handling of diverse requests. Specifically,
+                                                                         anomaly detection baselines including
+not all user requests have optimally designed prompts that
+LLMs can predict accurately, leading some requests to gen-                  • USAD [41] adopts auto-encoder architecture and adver-
+
+erate the maximum allowable output tokens. An increased                        sarial training to isolate anomalies.
+max tokens configuration is associated with higher end-to-                  • SDF-VAE [42] designs a static and dynamic factorized
+
+end execution times, which in turn results in reduced tps                      VAE to learn representations and uses reconstruction
+and potential early system overload. Moreover, an improperly                   probability to identify anomalies.
+configured load balancer weight can further exacerbate these                • Uni-AD [43] introduces transformer encoder layers and
+
+issues. If the load balancer routes new requests to already                    base layers to detect anomalies.
+heavily loaded replicas, it can lead to early explosions even               We adopt Precision, Recall and F1 -score to evaluate the de-
+when other replicas remain underutilized. The implications of            tection performance of ENOVA and baselines. When calculat-
+these configurations are essential, as evidenced by ENOVA’s              ing the performance, we adopt a point-adjusted approach [26].
+                                                                           Fig. 7. The maximal number of finished requests per second and GPU
+                                                                           memory utilization for KV cache as max num seq increases.
+
+
+                                                                           KV cache, new requests started being pended, and ENOVA
+                                                                           detected the anomalous performance at 10:22. ENOVA can
+                                                                           localize the lack of GPU memory for KV cache due to
+                                                                           anomalous resource allocation, and recalculate the required
+                                                                           GPU memory based on current requests by increasing the
+                                                                           allocated GPU memory to 95%. When receiving the input
+                                                                           to increase the allocated GPU memory, ENOVA relaunched
+                                                                           the LLM service at 10:29. Eventually, we can observe that the
+                                                                           LLM service can sustain about 1.6× more requests while only
+                                                                           one configuration was adjusted without adding new replicas.
+                                                                           Overall, this case study demonstrates the robust capability of
+Fig. 6. The KV cache utilization, number of running and pending requests
+of one LLM service which is one Mistral-7B deployed in RTX4090 24 GB.
+                                                                           ENOVA to ensure the stability of serverless LLM serving.
+                                                                                                 VII. D ISCUSSION
+                                                                           A. Maximal Number of Requests Processed by LLM services
+For any segment detected as an anomaly, if there is at least
+one point in the segment labeled as an anomaly, this segment                  The maximal number of requests per second that can be
+is detected correctly without false positives.                             processed by an LLM service is theorized to be a constant
+                                                                           value. Suboptimal service configurations can lead to a decrease
+   2) Overall detection performance: When evaluating detec-
+                                                                           in this performance metric, while optimizing configurations
+tion performance within industrial environments, the semi-
+                                                                           will not significantly increase this metric. To investigate this
+supervised learning-based performance detection model of
+                                                                           hypothesis, experiments were conducted to examine the impact
+ENOVA was compared with baselines. The comparative results
+                                                                           of varying the max num seq configuration. Fig. 7 presents
+are outlined in Table IV, which demonstrate that ENOVA
+                                                                           the experimental results, including both the maximal number
+consistently outperforms the baseline models. This enhanced
+                                                                           of finished requests per second and GPU memory utilization
+performance can be attributed to the design of ENOVA’s
+                                                                           for KV cache as max num seq increases. Notably, the ex-
+detection model, which utilizes a semi-supervised learning ap-
+                                                                           perimental data reveal that although the maximal number of
+proach to develop more robust representations. While baseline
+                                                                           finished request per second improves initially increases with
+models predominantly focus on identifying normal operational
+                                                                           higher values of max num seq, it eventually reaches a peak.
+patterns, they do not adequately handle the detection of anoma-
+                                                                           Meanwhile, GPU memory utilization continues to rise without
+lies. Due to the optimized objective function, ENOVA can
+                                                                           a corresponding increase in processing efficiency, indicating
+learn robust representations to capture the normal patterns of
+                                                                           diminishing returns on resource allocation beyond a certain
+performance metrics, while staying away from the anomalous
+                                                                           threshold. This observation emphasizes the critical importance
+metrics. Overall, the semi-supervised learning framework of
+                                                                           of determining max num seq within an optimal range to
+ENOVA can detect anomalous resource utilization or service
+                                                                           ensure maximal operational efficiency. Overall, the objective
+quality accurately in industrial environments.
+                                                                           of the proposed service configuration module is to maximize
+   3) Autoscaling case study: Beyond the evaluation of de-                 the number of requests processed per second by LLM services,
+tection performance, we conducted a comprehensive analysis                 while minimizing GPU resource consumption.
+of autoscaling efficacy by tracking the real cases in industrial
+environments. Figure 6 illustrates the performance metrics of              B. Processing Requests from Various LLM Agents
+a specific case where ENOVA effectively detect anomalous                      Requests from various LLM agents can be effectively char-
+resource utilization and dynamically scaled the LLM service.               acterized and differentiated through clustering techniques. This
+In this case, Mistral-7B is deployed in one RTX4090 24 GB                  is critical for all LLM services, as inappropriate max tokens
+with default 90% allocated GPU memory. The number of                       in user requests may lead to lower tps and early explosion, as
+user request per second rise at 10:20, and then the KV cache               explained in section VI-A. To further analyze the difference
+utilization went to 100%. Without enough GPU memory for                    among different LLM agents, we analyze requests from four
+                                                                         configuration. Lucid [47] adopts packing analyze model to
+                                                                         forecast throughput, based on which the best configuration will
+                                                                         be selected for faster deep learning job completion. However,
+                                                                         Few of them focus on LLM service, where ENOVA is designed
+                                                                         to settle.
+                                                                         B. Autoscaling
+                                                                            Autoscaling is the key technology to fine-grained cluster
+                                                                         resource management for stable and cost-effective service.
+                                                                         Many methods [48]–[51] have been proposed towards dif-
+                                                                         ferent types of workloads in clusters. FIRM [48] detects
+                                                                         SLO violations in microservice and takes actions to mitigate
+                                                                         SLO violations via dynamic reprovisioning. Sinan [50] also
+                                                                         focuses on microservice autoscaling for QoS-aware resource
+                                                                         management. Autopilot [49] aims to reduce slack, which is
+Fig. 8. The principal component comparison among embedding representa-
+tions of requests from different standard tasks.                         the difference between the limit and the actual resource usage
+                                                                         of workloads in kubernetes clusters. Cilantro [51] introduces
+                                                                         online learning mechanism to forms feedback loops with the
+standard datasets: gsm8k, mbpp, and ARC and MC TEST.                     jobs in cluster for performance-aware resource allocation.
+For these distinct types of tasks, data prompts are crafted              Inspired by these approaches, ENOVA designs performance
+based on different prompting paradigms, including zero-shot,             detection module for autoscaling towards LLM service.
+few-shot, and chain-of-thought approaches. Then, we utilize
+                                                                                                  IX. C ONCLUSION
+principal component analysis (PCA) to perform dimensionality
+reduction on the embedding representations of user requests                 This paper proposes ENOVA, a service designed to enhance
+across these tasks. Fig. 8 presents principal component com-             the stability and cost-efficiency of serverless LLM serving
+parison among embedding representations of requests from the             through deployment, monitoring, and autoscaling capacities.
+standard tasks. The analysis reveals that requests associated            ENOVA designs a service configuration module for automatic
+with the same type of task cluster together, while those from            deployment on any GPU clusters and a performance detection
+different tasks are distinctly separated. This clustering enables        module for autoscaling. On top of them, ENOVA implements
+us to effectively differentiate the requests based on their task         a deployment execution engine that manages deployment,
+types, thus enhancing the service qualities of LLM services              monitoring, and autoscaling across multi-GPU clusters. We
+via differentiated service configurations.                               conduct experiments in various scenarios and the results show
+                                                                         that ENOVA significantly outperform other state-of-the-art
+C. Limitations                                                           methods and is suitable for wide deployment in large online
+  This paper primarily proposes a deployment, monitoring,                systems. In the future, we plan to expand the deployment of
+and autoscaling service aimed at improving the stability and             LLMs across a broader spectrum of application agents and
+cost-efficiency of LLM services. However, our evaluation is              hardware platforms, thereby ensuring robust performance and
+currently limited to specific types of LLM tasks and GPU                 scalability across diverse industrial environments.
+devices. In the future, we aim to extend the deployment of                                           R EFERENCES
+LLMs to serve a broader range of application agents and
+                                                                         [1] J. Achiam, S. Adler, S. Agarwal, L. Ahmad, I. Akkaya, F. L. Aleman,
+hardware platforms, thereby enhancing both the robustness and                D. Almeida, J. Altenschmidt, S. Altman, S. Anadkat et al., “Gpt-4
+scalability across diverse industrial environments.                          technical report,” arXiv preprint arXiv:2303.08774, 2023.
+                                                                         [2] Z. Luo, C. Xu, P. Zhao, Q. Sun, X. Geng, W. Hu, C. Tao, J. Ma, Q. Lin,
+                    VIII. R ELATED W ORKS                                    and D. Jiang, “Wizardcoder: Empowering code large language models
+                                                                             with evol-instruct,” arXiv preprint arXiv:2306.08568, 2023.
+A. Cloud Configuration                                                   [3] R. Li, L. B. Allal, Y. Zi, N. Muennighoff, D. Kocetkov, C. Mou,
+                                                                             M. Marone, C. Akiki, J. Li, J. Chim et al., “Starcoder: may the source
+   Picking the right cloud configuration is essential to ser-                be with you!” arXiv preprint arXiv:2305.06161, 2023.
+vice quality and commercial competitiveness. Several ap-                 [4] L. Blecher, G. Cucurull, T. Scialom, and R. Stojnic, “Nougat: Neu-
+proaches [44]–[47] have been proposed to manage different                    ral optical understanding for academic documents,” arXiv preprint
+                                                                             arXiv:2308.13418, 2023.
+types of tasks run in cloud, such as MapReduce [46], SQL                 [5] J. Cui, Z. Li, Y. Yan, B. Chen, and L. Yuan, “Chatlaw: Open-source
+queries [44], deep learning jobs [45], [47]. MROLINE [46] de-                legal large language model with integrated external knowledge bases,”
+signs gray-box based smart hill climbing algorithm to find the               arXiv preprint arXiv:2306.16092, 2023.
+                                                                         [6] A. J. Thirunavukarasu, D. S. J. Ting, K. Elangovan, L. Gutierrez, T. F.
+near-optimal configuration of MapReduce job. CherryPick [44]                 Tan, and D. S. W. Ting, “Large language models in medicine,” Nature
+leverages Bayesian optimization to build performance models                  medicine, vol. 29, no. 8, pp. 1930–1940, 2023.
+and distinguishes the best configuration for data analytics jobs         [7] Z. Wang, S. Cai, G. Chen, A. Liu, X. Ma, and Y. Liang, “De-
+                                                                             scribe, explain, plan and select: Interactive planning with large lan-
+like SQL queries. Morphling [45] trains a meta-model to cap-                 guage models enables open-world multi-task agents,” arXiv preprint
+ture the general performance trend so that to find the optimal               arXiv:2302.01560, 2023.
+ [8] W. Kwon, Z. Li, S. Zhuang, Y. Sheng, L. Zheng, C. H. Yu, J. Gonzalez,        [32] ——, “dcgm exporter,” 2020. [Online]. Available: https://github.com/
+     H. Zhang, and I. Stoica, “Efficient memory management for large                   NVIDIA/dcgm-exporter
+     language model serving with pagedattention,” in Proceedings of the 29th      [33] Prometheus, “prometheus,” 2016. [Online]. Available: https://github.
+     Symposium on Operating Systems Principles, 2023, pp. 611–626.                     com/prometheus/prometheus
+ [9] T. Dao, D. Fu, S. Ermon, A. Rudra, and C. Ré, “Flashattention: Fast and     [34] OpenTelemetry, “opentelemetry collector,” 2019. [Online]. Available:
+     memory-efficient exact attention with io-awareness,” Advances in Neural           https://github.com/open-telemetry/opentelemetry-collector
+     Information Processing Systems, vol. 35, pp. 16 344–16 359, 2022.            [35] K. Cobbe, V. Kosaraju, M. Bavarian, M. Chen, H. Jun, L. Kaiser,
+[10] G.-I. Yu, J. S. Jeong, G.-W. Kim, S. Kim, and B.-G. Chun, “Orca: A                M. Plappert, J. Tworek, J. Hilton, R. Nakano et al., “Training verifiers
+     distributed serving system for {Transformer-Based} generative models,”            to solve math word problems,” arXiv preprint arXiv:2110.14168, 2021.
+     in 16th USENIX Symposium on Operating Systems Design and Imple-              [36] J. Austin, A. Odena, M. Nye, M. Bosma, H. Michalewski, D. Dohan,
+     mentation (OSDI 22), 2022, pp. 521–538.                                           E. Jiang, C. Cai, M. Terry, Q. Le et al., “Program synthesis with large
+[11] J. Rasley, S. Rajbhandari, O. Ruwase, and Y. He, “Deepspeed: System               language models,” arXiv preprint arXiv:2108.07732, 2021.
+     optimizations enable training deep learning models with over 100 billion     [37] H. Touvron, L. Martin, K. Stone, P. Albert, A. Almahairi, Y. Babaei,
+     parameters,” in Proceedings of the 26th ACM SIGKDD International                  N. Bashlykov, S. Batra, P. Bhargava, S. Bhosale et al., “Llama
+     Conference on Knowledge Discovery & Data Mining, 2020, pp. 3505–                  2: Open foundation and fine-tuned chat models,” arXiv preprint
+     3506.                                                                             arXiv:2307.09288, 2023.
+[12] M. Shoeybi, M. Patwary, R. Puri, P. LeGresley, J. Casper, and B. Catan-      [38] A. Q. Jiang, A. Sablayrolles, A. Mensch, C. Bamford, D. S. Chaplot,
+     zaro, “Megatron-lm: Training multi-billion parameter language models              D. d. l. Casas, F. Bressand, G. Lengyel, G. Lample, L. Saulnier et al.,
+     using model parallelism,” arXiv preprint arXiv:1909.08053, 2019.                  “Mistral 7b,” arXiv preprint arXiv:2310.06825, 2023.
+[13] T. Dettmers, M. Lewis, Y. Belkada, and L. Zettlemoyer, “Llm. int8            [39] N. Akhtar, A. Raza, V. Ishakian, and I. Matta, “Cose: Configuring
+     (): 8-bit matrix multiplication for transformers at scale,” arXiv preprint        serverless functions using statistical learning,” in IEEE INFOCOM 2020-
+     arXiv:2208.07339, 2022.                                                           IEEE Conference on Computer Communications. IEEE, 2020, pp. 129–
+[14] E. Frantar, S. Ashkboos, T. Hoefler, and D. Alistarh, “Gptq: Accurate             138.
+     post-training quantization for generative pre-trained transformers,” arXiv   [40] T. P. Lillicrap, J. J. Hunt, A. Pritzel, N. Heess, T. Erez, Y. Tassa,
+     preprint arXiv:2210.17323, 2022.                                                  D. Silver, and D. Wierstra, “Continuous control with deep reinforcement
+[15] G. Xiao, J. Lin, M. Seznec, H. Wu, J. Demouth, and S. Han,                        learning,” arXiv preprint arXiv:1509.02971, 2015.
+     “Smoothquant: Accurate and efficient post-training quantization for large    [41] J. Audibert, P. Michiardi, F. Guyard, S. Marti, and M. A. Zuluaga,
+     language models,” in International Conference on Machine Learning.                “Usad: Unsupervised anomaly detection on multivariate time series,”
+     PMLR, 2023, pp. 38 087–38 099.                                                    in Proceedings of the 26th ACM SIGKDD international conference on
+                                                                                       knowledge discovery & data mining, 2020, pp. 3395–3404.
+[16] NVIDIA, “Triton inference server,” 2020. [Online]. Available: https:
+                                                                                  [42] L. Dai, T. Lin, C. Liu, B. Jiang, Y. Liu, Z. Xu, and Z.-L. Zhang, “Sdfvae:
+     //github.com/triton-inference-server/server
+                                                                                       Static and dynamic factorized vae for anomaly detection of multivariate
+[17] RAY, “Ray serve,” 2018. [Online]. Available: https://docs.ray.io/en/
+                                                                                       cdn kpis,” in Proceedings of the Web Conference 2021, 2021, pp. 3076–
+     latest/serve/index.html
+                                                                                       3086.
+[18] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez,      [43] Z. He, P. Chen, and T. Huang, “Share or not share? towards the
+     Ł. Kaiser, and I. Polosukhin, “Attention is all you need,” Advances in            practicability of deep models for unsupervised anomaly detection in
+     neural information processing systems, vol. 30, 2017.                             modern online systems,” in 2022 IEEE 33rd International Symposium
+[19] R. Pope, S. Douglas, A. Chowdhery, J. Devlin, J. Bradbury, J. Heek,               on Software Reliability Engineering (ISSRE). IEEE, 2022, pp. 25–35.
+     K. Xiao, S. Agrawal, and J. Dean, “Efficiently scaling transformer           [44] O. Alipourfard, H. H. Liu, J. Chen, S. Venkataraman, M. Yu, and
+     inference,” Proceedings of Machine Learning and Systems, vol. 5, 2023.            M. Zhang, “{CherryPick}: Adaptively unearthing the best cloud configu-
+[20] X. Miao, G. Oliaro, Z. Zhang, X. Cheng, Z. Wang, R. Y. Y. Wong,                   rations for big data analytics,” in 14th USENIX Symposium on Networked
+     Z. Chen, D. Arfeen, R. Abhyankar, and Z. Jia, “Specinfer: Accelerating            Systems Design and Implementation (NSDI 17), 2017, pp. 469–482.
+     generative llm serving with speculative inference and token tree verifi-     [45] L. Wang, L. Yang, Y. Yu, W. Wang, B. Li, X. Sun, J. He, and L. Zhang,
+     cation,” arXiv preprint arXiv:2305.09781, 2023.                                   “Morphling: fast, near-optimal auto-configuration for cloud-native model
+[21] J. B. Ramsey, “Tests for specification errors in classical linear least-          serving,” in Proceedings of the ACM Symposium on Cloud Computing,
+     squares regression analysis,” Journal of the Royal Statistical Society            2021, pp. 639–653.
+     Series B: Statistical Methodology, vol. 31, no. 2, pp. 350–371, 1969.        [46] M. Li, L. Zeng, S. Meng, J. Tan, L. Zhang, A. R. Butt, and N. Fuller,
+[22] E. Parzen, “On estimation of a probability density function and mode,”            “Mronline: Mapreduce online performance tuning,” in Proceedings of
+     The annals of mathematical statistics, vol. 33, no. 3, pp. 1065–1076,             the 23rd international symposium on High-performance parallel and
+     1962.                                                                             distributed computing, 2014, pp. 165–176.
+[23] S. Xiao, Z. Liu, P. Zhang, and N. Muennighoff, “C-pack: Packaged             [47] Q. Hu, M. Zhang, P. Sun, Y. Wen, and T. Zhang, “Lucid: A non-intrusive,
+     resources to advance general chinese embedding,” 2023.                            scalable and interpretable scheduler for deep learning training jobs,” in
+[24] S. Fortunato, “Community detection in graphs,” Physics reports, vol.              Proceedings of the 28th ACM International Conference on Architectural
+     486, no. 3-5, pp. 75–174, 2010.                                                   Support for Programming Languages and Operating Systems, Volume 2,
+[25] G. B. Dantzig, “Linear programming,” Operations research, vol. 50,                2023, pp. 457–472.
+     no. 1, pp. 42–47, 2002.                                                      [48] H. Qiu, S. S. Banerjee, S. Jha, Z. T. Kalbarczyk, and R. K. Iyer,
+[26] T. Huang, P. Chen, and R. Li, “A semi-supervised vae based active                 “{FIRM}: An intelligent fine-grained resource management framework
+     anomaly detection framework in multivariate time series for online                for {SLO-Oriented} microservices,” in 14th USENIX symposium on
+     systems,” in Proceedings of the ACM Web Conference 2022, 2022, pp.                operating systems design and implementation (OSDI 20), 2020, pp. 805–
+     1797–1806.                                                                        825.
+[27] J. E. Van Engelen and H. H. Hoos, “A survey on semi-supervised               [49] K. Rzadca, P. Findeisen, J. Swiderski, P. Zych, P. Broniek, J. Kusmierek,
+     learning,” Machine learning, vol. 109, no. 2, pp. 373–440, 2020.                  P. Nowak, B. Strack, P. Witusowski, S. Hand et al., “Autopilot: work-
+[28] D. P. Kingma and M. Welling, “Auto-encoding variational bayes,” arXiv             load autoscaling at google,” in Proceedings of the Fifteenth European
+     preprint arXiv:1312.6114, 2013.                                                   Conference on Computer Systems, 2020, pp. 1–16.
+[29] I. Higgins, L. Matthey, A. Pal, C. Burgess, X. Glorot, M. Botvinick,         [50] Y. Zhang, W. Hua, Z. Zhou, G. E. Suh, and C. Delimitrou, “Sinan: Ml-
+     S. Mohamed, and A. Lerchner, “beta-vae: Learning basic visual concepts            based and qos-aware resource management for cloud microservices,” in
+     with a constrained variational framework,” in International conference            Proceedings of the 26th ACM international conference on architectural
+     on learning representations, 2016.                                                support for programming languages and operating systems, 2021, pp.
+[30] A. Siffer, P.-A. Fouque, A. Termier, and C. Largouet, “Anomaly detec-             167–181.
+     tion in streams with extreme value theory,” in Proceedings of the 23rd       [51] R. Bhardwaj, K. Kandasamy, A. Biswal, W. Guo, B. Hindman, J. Gonza-
+     ACM SIGKDD international conference on knowledge discovery and                    lez, M. Jordan, and I. Stoica, “Cilantro:{Performance-Aware} resource
+     data mining, 2017, pp. 1067–1075.                                                 allocation for general objectives via online feedback,” in 17th USENIX
+[31] NVIDIA, “Tensorrt-llm,” 2023. [Online]. Available: https://github.com/            Symposium on Operating Systems Design and Implementation (OSDI
+     NVIDIA/TensorRT-LLM                                                               23). USENIX Association, 2023, pp. 623–643.
+

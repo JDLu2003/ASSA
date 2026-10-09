@@ -1,0 +1,71 @@
+{
+  "item": {
+    "topic": "agent-environments",
+    "id": "fork-explore-commit",
+    "arxiv": "2602.08199v2",
+    "kind": "arxiv-paper",
+    "title": "Fork, Explore, Commit: OS Primitives for Agentic Exploration",
+    "landing_url": "https://arxiv.org/abs/2602.08199v2",
+    "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+    "published": "2026-02-09T01:46:52Z",
+    "authors": [
+      "Cong Wang",
+      "Yusheng Zheng"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:19.185932+00:00",
+  "path": "sources/papers/agent-environments/fork-explore-commit",
+  "requested_url": "https://arxiv.org/abs/2602.08199v2",
+  "pdf_url": "https://arxiv.org/pdf/2602.08199v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "04d9c52a4e1af094fe753b647e8ab9b0a9bc14889c637c003ced4a56c7b39153",
+      "bytes": 19099
+    },
+    "paper.txt": {
+      "sha256": "3d8839b0f1904430e3b1a1a4111c401cf46150232785636e19656634c78c4b77",
+      "bytes": 61483
+    },
+    "paper.pdf": {
+      "sha256": "84d1156141ddb18f97fbc51fdd759f0b0d861eea7f3ef8181dffe4f627f19ce6",
+      "bytes": 576526
+    },
+    "landing.html": {
+      "sha256": "d0ef5b06e8fe6cb46966d81066fa79c81d0e6610489a6d2fb941807e2ffc89be",
+      "bytes": 42251
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2602.08199v2",
+    "retrieved_at": "2026-10-09T13:06:17.031736+00:00",
+    "fields": {
+      "citation_title": [
+        "Fork, Explore, Commit: OS Primitives for Agentic Exploration"
+      ],
+      "citation_author": [
+        "Wang, Cong",
+        "Zheng, Yusheng"
+      ],
+      "citation_date": [
+        "2026/02/09"
+      ],
+      "citation_online_date": [
+        "2026/03/19"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2602.08199"
+      ],
+      "citation_arxiv_id": [
+        "2602.08199"
+      ],
+      "citation_abstract": [
+        "AI agents increasingly perform agentic exploration: pursuing multiple solution paths in parallel and committing only the successful one. Because each exploration path may modify files and spawn processes, agents require isolated environments with atomic commit and rollback semantics for both filesystem state and process state. We introduce the branch context, a new OS abstraction that provides: (1) copy-on-write state isolation with independent filesystem views and process groups, (2) a structured lifecycle of fork, explore, and commit/abort, (3) first-commit-wins resolution that automatically invalidates sibling branches, and (4) nestable contexts for hierarchical exploration. We realize branch contexts in Linux through two complementary components. First, BranchFS is a FUSE-based filesystem that gives each branch context an isolated copy-on-write workspace, with O(1) creation, atomic commit to the parent, and automatic sibling invalidation, all without root privileges. BranchFS is open sourced in https://github.com/multikernel/branchfs, along with a Python integration library, BranchContext, that provides ready-to-use agent exploration patterns. Second, branch() is a proposed Linux syscall that spawns processes into branch contexts with reliable termination, kernel-enforced sibling isolation, and first-commit-wins coordination. Preliminary evaluation of BranchFS shows sub-350 us branch creation independent of base filesystem size, and modification-proportional commit overhead (under 1 ms for small changes)."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

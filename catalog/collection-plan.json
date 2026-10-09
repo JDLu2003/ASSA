@@ -1,6 +1,6 @@
 {
   "phase": "primary-source collection only",
-  "status": "Product-first initial source inventory captured and verified; see collection-status.json for upload evidence and scope limits",
+  "status": "Product and paper primary sources collected; paper index and validation completed",
   "layout": {
     "official": "sources/official/<vendor>/<product>/<page-id>/{page.pdf,page.txt,page.pdf.txt,metadata.json}",
     "papers": "sources/papers/<topic>/<paper-id>/{paper.pdf,paper.txt,source.tar when available,metadata.json}"
@@ -96,9 +96,9 @@
     "Verify Git LFS pointers for PDFs and archives before committing. Upload only successfully collected evidence; no fabricated replacements."
   ],
   "pending": [
-    "This is an initial product source inventory, not an exhaustive market census.",
-    "Additional per-product API limits, resource specifications and pricing sources can be collected from the confirmed product entries.",
-    "Identify the user-mentioned IPADS paper separately when paper discovery resumes; no identification claim has been made."
+    "Initial source inventory, not an exhaustive literature or market census.",
+    "ACM publisher page for RhymeRL returned a browser access challenge; arXiv original retained.",
+    "The user-mentioned IPADS OSDI filesystem/RL paper is not conclusively identified."
   ],
-  "priority": "Products first; pause further paper discovery per latest user instruction"
+  "priority": "Paper collection resumed following user instruction"
 }

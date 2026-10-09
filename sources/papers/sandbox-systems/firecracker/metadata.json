@@ -1,0 +1,54 @@
+{
+  "item": {
+    "id": "firecracker",
+    "topic": "sandbox-systems",
+    "title": "Firecracker: Lightweight Virtualization for Serverless Applications",
+    "url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+    "pdf_url": "https://www.usenix.org/system/files/nsdi20-paper-agache.pdf",
+    "venue": "NSDI 2020",
+    "kind": "publisher-paper"
+  },
+  "path": "sources/papers/sandbox-systems/firecracker",
+  "capture_started_at": "2026-10-09T13:08:14.649230+00:00",
+  "status": "captured",
+  "requested_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+  "pdf_url": "https://www.usenix.org/system/files/nsdi20-paper-agache.pdf",
+  "landing_capture": {
+    "requested_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+    "final_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+    "http_status": 200,
+    "title": "Firecracker: Lightweight Virtualization for Serverless Applications | USENIX",
+    "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+    "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+    "review_status": "captured; relevance and completeness require source review"
+  },
+  "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+  "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+  "files": {
+    "paper.txt": {
+      "sha256": "caf05b3ed6abef674b0de86b8e1e0893b7f0c19c384a4bb7834884a52d6cef2a",
+      "bytes": 104964
+    },
+    "paper.pdf": {
+      "sha256": "05eb1dc65d9f17409ec9a293f420125c4350bf953271c9d20590b3a21900c820",
+      "bytes": 480552
+    },
+    "landing.html": {
+      "sha256": "e3b4d8bf1c7a6601a8c49e6d8ff5f2674edb1ba0899a56fd6a0fa93fcea396c4",
+      "bytes": 49169
+    },
+    "landing.txt": {
+      "sha256": "ce92a94c0cb264af3f1ad2a7edda9aab52253331d2c1ff328c2cfa7872b30725",
+      "bytes": 2877
+    },
+    "landing.pdf.txt": {
+      "sha256": "fa97d3eda35ddbd71081e53a0cd328008fec4208623b9c1f380c32462817b78f",
+      "bytes": 2914
+    },
+    "landing.pdf": {
+      "sha256": "1845aeef3770136bce3c5e262ae43a181344c58c226742ec421f4b157ffbe7a9",
+      "bytes": 39707
+    }
+  },
+  "capture_finished_at": "2026-10-09T13:08:21.932256+00:00"
+}
