@@ -110,62 +110,194 @@
   </defs>`; };
   const AH = () => `url(#ah${arrowN})`;
 
-  /* ---------------- diagram: the model ---------------- */
+  /* ---------------- shared figure kit ---------------- */
+  const LG = window.LOGOS || {};
+  const CHC = { session: "var(--c-session)", model: "var(--c-model)", env: "var(--c-env)", tool: "var(--c-tool)" };
+  let kitN = 0;
+  function kit() {
+    const id = ++kitN;
+    const markers = Object.entries(Object.assign({ ink: "var(--ink-3)", paper: "var(--paper)" }, CHC)).map(([k, c]) =>
+      `<marker id="m${id}-${k}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" style="fill:${c}"/></marker>`).join("");
+    return {
+      defs: `<defs><filter id="sh${id}" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#0b1a1d" flood-opacity="0.10"/></filter>${markers}</defs>`,
+      sh: `url(#sh${id})`,
+      m: (k) => `url(#m${id}-${k})`,
+    };
+  }
+  function tile(K, x, y, s, key, cap, capStyle) {
+    let g = `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${(s * 0.26).toFixed(1)}" style="fill:var(--tile);stroke:var(--tile-line)" filter="${K.sh}"/>`;
+    if (LG[key]) { const p = s * 0.2; g += `<image href="${LG[key]}" x="${x + p}" y="${y + p}" width="${s - 2 * p}" height="${s - 2 * p}"/>`; }
+    if (cap) g += `<text x="${x + s / 2}" y="${y + s + 14}" text-anchor="middle" font-size="10.5" style="${capStyle || "fill:var(--ink-2)"}">${esc(cap)}</text>`;
+    return `<g>${g}</g>`;
+  }
+  const ICON = {
+    session: '<path d="M5 5.5h14a1.6 1.6 0 0 1 1.6 1.6v7.6a1.6 1.6 0 0 1-1.6 1.6h-8.4L6.2 19.6v-3.3H5a1.6 1.6 0 0 1-1.6-1.6V7.1A1.6 1.6 0 0 1 5 5.5z"/><path d="M8 10.9h.01M12 10.9h.01M16 10.9h.01"/>',
+    model: '<rect x="7" y="7" width="10" height="10" rx="1.6"/><path d="M10 3.5v3.5M14 3.5v3.5M10 17v3.5M14 17v3.5M3.5 10H7M3.5 14H7M17 10h3.5M17 14h3.5"/><path d="M10.2 12h3.6"/>',
+    env: '<rect x="3" y="4.5" width="18" height="15" rx="2.2"/><path d="M7 9.6l3 2.4-3 2.4M12.6 14.8H17"/>',
+    tool: '<circle cx="12" cy="12" r="8.4"/><path d="M3.6 12h16.8M12 3.6c2.6 2.4 3.8 5.3 3.8 8.4s-1.2 6-3.8 8.4c-2.6-2.4-3.8-5.3-3.8-8.4s1.2-6 3.8-8.4z"/>',
+    config: '<path d="M4.5 7h9M17.5 7h2M15.5 5v4M4.5 12h3M11.5 12h8M9.5 10v4M4.5 17h11M19.5 17h0M17.5 15v4"/>',
+    vault: '<circle cx="8" cy="12" r="3.6"/><path d="M11.6 12h8.6M17.2 12v3M20.2 12v2.2"/>',
+    log: '<path d="M8.5 6.5h11M8.5 12h11M8.5 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/>',
+    memory: '<ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6"/>',
+  };
+  const icon = (k, x, y, s, stroke, w) => `<g transform="translate(${x},${y}) scale(${s / 24})" fill="none" style="stroke:${stroke}" stroke-width="${w || 1.7}" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</g>`;
+
+  /* ---------------- figure: the service model ---------------- */
   function drawModel() {
-    const C = { s: "var(--c-session)", m: "var(--c-model)", e: "var(--c-env)", t: "var(--c-tool)" };
-    let g = `<svg class="dgm" viewBox="0 0 1000 660" role="img" aria-label="托管智能体服务结构图：中心为 Agent Harness，四个接口分别连接应用、模型、执行环境和托管工具">${arrowDefs()}`;
-    // service boundary
-    g += `<rect class="svc" x="190" y="118" width="620" height="422" rx="18" stroke-width="1.5"/>`;
-    g += `<text x="206" y="142" font-size="13" font-weight="700">托管智能体服务 · Managed Agent Service</text>`;
-    g += `<text x="206" y="160" font-size="11.5" class="muted">厂商运行的部分（虚线框内）</text>`;
-    // state components inside boundary
-    g += chip(206, 172, "Agent 配置（模型 · 指令 · 工具）", { size: 11 }).svg;
-    g += chip(794, 172, "凭据库 Vault", { size: 11, anchor: "end" }).svg;
-    g += chip(206, 498, "会话事件日志（append-only）", { size: 11 }).svg;
-    g += chip(794, 498, "记忆 · 追踪 · 评估", { size: 11, anchor: "end" }).svg;
-    // harness box
-    g += `<rect class="harness" x="350" y="208" width="300" height="244" rx="12"/>`;
-    g += `<text x="500" y="236" text-anchor="middle" font-size="17" font-weight="700">Agent Harness</text>`;
-    g += `<text x="500" y="255" text-anchor="middle" font-size="12" class="sub">智能体执行框架（狭义 agent）</text>`;
+    const K = kit();
+    const W = 1240, H = 826;
+    const B = { x: 262, y: 176, w: 716, h: 472 };
+    let g = `<svg class="dgm" id="model-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="托管智能体服务的结构：中心为 agent harness，四角为配置、凭据、会话日志与记忆观测，四个接口分别连接应用与用户、模型服务、执行环境和托管工具">${K.defs}`;
+
+    // service area
+    g += `<rect x="${B.x}" y="${B.y}" width="${B.w}" height="${B.h}" rx="28" style="fill:var(--accent-soft);fill-opacity:.55;stroke:var(--ink-3)" stroke-width="1.4" stroke-dasharray="7 6"/>`;
+    const pill = "托管智能体服务 · Managed Agent Service";
+    const pw = textW(pill, 12) + 30;
+    g += `<rect x="292" y="164" width="${pw}" height="25" rx="12.5" style="fill:var(--ink)"/><text x="${292 + pw / 2}" y="181" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--paper)">${pill}</text>`;
+
+    // state cards in the four corners
+    const card = (x, y, k, t, sub) => `<g><rect x="${x}" y="${y}" width="158" height="74" rx="13" style="fill:var(--panel);stroke:var(--rule)" filter="${K.sh}"/>${icon(k, x + 14, y + 13, 20, "var(--ink)")}<text x="${x + 42}" y="${y + 28}" font-size="12.5" font-weight="700">${t}</text><text x="${x + 14}" y="${y + 56}" font-size="10.5" class="sub">${sub}</text></g>`;
+    g += card(282, 200, "config", "Agent 配置", "模型、指令、工具、skills");
+    g += card(800, 200, "vault", "凭据 Vault", "沙箱外保存，代理注入");
+    g += card(282, 554, "log", "会话事件日志", "append-only，可重建运行");
+    g += card(800, 554, "memory", "记忆 · 观测", "Memory、Tracing、Eval");
+
+    // channels: two lines per interface (request and response), labels
+    const chan = (ch, lines, labels) => {
+      let s = `<g class="ch ch-${ch}" data-ch="${ch}">`;
+      lines.forEach(([x1, y1, x2, y2]) => { s += `<line class="flowline" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="2.2" style="stroke:${CHC[ch]}" marker-end="${K.m(ch)}"/>`; });
+      labels.forEach(([x, y, t, cls, anchor]) => { s += `<text x="${x}" y="${y}" text-anchor="${anchor || "middle"}" class="${cls}" font-size="${cls === "chl" ? 13 : 10.5}"${cls === "chl" ? ' font-weight="700"' : ' font-family="var(--f-mono)"'}>${t}</text>`; });
+      return s + `</g>`;
+    };
+    g += chan("session", [[285, 405, 436, 405], [438, 419, 287, 419]], [[361, 388, "会话接口", "chl"], [361, 441, "Session · Events", "muted"]]);
+    g += chan("env", [[804, 405, 955, 405], [953, 419, 802, 419]], [[879, 388, "执行环境", "chl"], [879, 441, "tool calls · results", "muted"]]);
+    g += chan("model", [[614, 284, 614, 199], [626, 201, 626, 282]], [[640, 232, "模型推理", "chl", "start"], [640, 249, "Inference", "muted", "start"]]);
+    g += chan("tool", [[614, 542, 614, 625], [626, 623, 626, 544]], [[640, 584, "托管工具", "chl", "start"], [640, 601, "Hosted tools", "muted", "start"]]);
+
+    // harness core
+    const C = { x: 440, y: 286, w: 360, h: 256 };
+    g += `<rect x="${C.x}" y="${C.y}" width="${C.w}" height="${C.h}" rx="20" style="fill:var(--ink)" filter="${K.sh}"/>`;
+    g += `<text x="620" y="318" text-anchor="middle" font-size="19" font-weight="700" style="fill:var(--paper)">Agent Harness</text>`;
+    g += `<text x="620" y="337" text-anchor="middle" font-size="11.5" style="fill:var(--paper);fill-opacity:.72">智能体执行框架 · 狭义 agent</text>`;
     // loop
-    const lx = 500, ly = 334, r = 34;
-    g += `<circle cx="${lx}" cy="${ly}" r="${r}" fill="none" style="stroke:var(--ink-3)" stroke-width="1.4" stroke-dasharray="4 4"/>`;
-    g += `<path d="M ${lx + r} ${ly - 4} l 5 8 l 5 -8" fill="none" style="stroke:var(--ink-3)" stroke-width="1.4"/>`;
-    g += `<text x="${lx}" y="${ly - r - 8}" text-anchor="middle" font-size="11.5">调用模型</text>`;
-    g += `<text x="${lx + r + 14}" y="${ly + 22}" font-size="11.5">执行工具</text>`;
-    g += `<text x="${lx - r - 14}" y="${ly + 22}" text-anchor="end" font-size="11.5">结果写回上下文</text>`;
-    g += `<text x="${lx}" y="${ly + 5}" text-anchor="middle" font-size="11" class="muted">循环</text>`;
-    g += chipRow(500, 394, ["Codex harness", "Claude Code / Agent SDK", "Antigravity"], { size: 10.5 });
-    g += chipRow(500, 420, ["LangGraph", "ADK", "Strands", "Agent Framework"], { size: 10.5 });
-    // links port -> harness
-    g += `<line x1="212" y1="329" x2="350" y2="329" stroke-width="2" style="stroke:${C.s}"/>`;
-    g += `<line x1="500" y1="140" x2="500" y2="208" stroke-width="2" style="stroke:${C.m}"/>`;
-    g += `<line x1="650" y1="329" x2="788" y2="329" stroke-width="2" style="stroke:${C.e}"/>`;
-    g += `<line x1="500" y1="452" x2="500" y2="518" stroke-width="2" style="stroke:${C.t}"/>`;
-    // ports
-    const port = (x, y, col, n, lab, lx2, ly2, anchor) =>
-      `<g class="port"><rect x="${x - 12}" y="${y - 12}" width="24" height="24" rx="4" style="fill:${col}"/><text x="${x}" y="${y + 4.5}" text-anchor="middle" font-size="12" font-weight="700" style="fill:#fff">${n}</text><text x="${lx2}" y="${ly2}" text-anchor="${anchor}" font-size="12.5" font-weight="700" style="fill:${col}">${lab}</text></g>`;
-    g += port(190, 329, C.s, "1", "会话接口", 205, 316, "start");
-    g += port(500, 118, C.m, "2", "模型推理", 518, 112, "start");
-    g += port(810, 329, C.e, "3", "执行环境", 795, 316, "end");
-    g += port(500, 540, C.t, "4", "托管工具", 518, 562, "start");
-    // outside: session (left)
-    g += `<text x="12" y="210" font-size="12" font-weight="700">应用 / 用户</text>`;
-    g += chipColumn(12, 222, ["ChatGPT / claude.ai", "企业后端服务", "Slack / Teams 机器人", "GitHub issue / PR", "定时任务"], { size: 11 });
-    g += `<line x1="160" y1="329" x2="176" y2="329" stroke-width="1.4" style="stroke:${C.s}" marker-end="${AH()}"/>`;
-    // outside: model (top)
-    g += `<text x="500" y="22" text-anchor="middle" font-size="12" font-weight="700">模型服务</text>`;
-    g += chipRow(500, 34, ["OpenAI GPT", "Claude", "Gemini", "Bedrock 模型", "Foundry 模型目录"], { size: 11 });
-    g += chipRow(500, 64, ["自建推理：vLLM · SGLang"], { size: 11 });
-    // outside: env (right)
-    g += `<text x="988" y="190" text-anchor="end" font-size="12" font-weight="700">沙箱 / 机器</text>`;
-    g += chipColumn(988, 202, ["OpenAI 托管沙箱", "Anthropic 云沙箱", "AgentCore microVM", "Foundry 会话沙箱", "E2B · Daytona", "Modal · Cloudflare · Vercel", "用户自己的机器"], { size: 11, anchor: "end" });
-    g += `<line x1="840" y1="329" x2="824" y2="329" stroke-width="1.4" style="stroke:${C.e}" marker-end="${AH()}"/>`;
-    // outside: tools (bottom)
-    g += chipRow(500, 580, ["Google Search 接地", "Bing 搜索", "Exa · Tavily", "代码解释器", "浏览器", "MCP 服务器 / 网关"], { size: 11 });
-    g += `<text x="500" y="636" text-anchor="middle" font-size="12" font-weight="700">其他云服务</text>`;
+    const lc = { x: 620, y: 402, r: 32 };
+    const pt = (deg) => [lc.x + lc.r * Math.cos((deg * Math.PI) / 180), lc.y + lc.r * Math.sin((deg * Math.PI) / 180)];
+    [[-90, 30], [30, 150], [150, 270]].forEach(([a, b]) => {
+      const [x1, y1] = pt(a + 16), [x2, y2] = pt(b - 16);
+      g += `<path d="M${x1.toFixed(1)},${y1.toFixed(1)} A${lc.r},${lc.r} 0 0 1 ${x2.toFixed(1)},${y2.toFixed(1)}" fill="none" style="stroke:var(--paper);stroke-opacity:.75" stroke-width="1.6" marker-end="${K.m("paper")}"/>`;
+    });
+    const nodes = [[-90, CHC.model, "调用模型", 0, -12, "middle"], [30, CHC.env, "执行工具", 12, 14, "start"], [150, "var(--paper)", "写回上下文", -12, 14, "end"]];
+    nodes.forEach(([a, c, t, dx, dy, an]) => {
+      const [x, y] = pt(a);
+      g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" style="fill:${c};stroke:var(--ink)" stroke-width="2"/>`;
+      g += `<text x="${(x + dx).toFixed(1)}" y="${(y + dy).toFixed(1)}" text-anchor="${an}" font-size="11" style="fill:var(--paper)">${t}</text>`;
+    });
+    g += `<text x="620" y="406" text-anchor="middle" font-size="10" font-family="var(--f-mono)" style="fill:var(--paper);fill-opacity:.6">loop</text>`;
+    // harness implementations
+    g += `<line x1="462" y1="452" x2="778" y2="452" style="stroke:var(--paper);stroke-opacity:.18"/>`;
+    const impl = [["codex", "Codex"], ["claudecode", "Claude Code"], ["antigravity", "Antigravity"], ["langgraph", "LangGraph"], ["crewai", "CrewAI"], ["strands", "Strands"]];
+    impl.forEach(([k, n], i) => { g += tile(K, 455 + i * 62, 464, 28, k, n, "fill:var(--paper);fill-opacity:.82;font-size:9.5px"); });
+
+    // ports on the boundary
+    const port = (ch, x, y) => `<g class="ch ch-${ch}" data-ch="${ch}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="21" style="fill:${CHC[ch]};stroke:var(--panel)" stroke-width="4"/>${icon(ch, x - 10.5, y - 10.5, 21, "#ffffff", 1.9)}</g>`;
+    g += port("session", B.x, 412) + port("model", 620, B.y) + port("env", B.x + B.w, 412) + port("tool", 620, B.y + B.h);
+
+    // docks outside the boundary
+    const dock = (o) => {
+      let s = `<g class="ch ch-${o.ch}" data-ch="${o.ch}">`;
+      s += `<rect x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" rx="16" style="fill:var(--panel);stroke:${CHC[o.ch]};stroke-opacity:.5" stroke-width="1.4" filter="${K.sh}"/>`;
+      s += `<circle cx="${o.x + 18}" cy="${o.y + 21}" r="4.5" style="fill:${CHC[o.ch]}"/><text x="${o.x + 30}" y="${o.y + 25.5}" font-size="12.5" font-weight="700">${o.title}</text>`;
+      s += `<text x="${o.x + o.w - 14}" y="${o.y + 25.5}" text-anchor="end" font-size="10" font-family="var(--f-mono)" class="muted">${o.en}</text>`;
+      const rows = [];
+      for (let i = 0; i < o.items.length; i += o.cols) rows.push(o.items.slice(i, i + o.cols));
+      rows.forEach((row, r) => {
+        const rw = row.length * o.t + (row.length - 1) * o.gx;
+        const x0 = o.x + (o.w - rw) / 2;
+        row.forEach(([k, n], i) => { s += tile(K, x0 + i * (o.t + o.gx), o.y + 40 + r * o.rh, o.t, k, n); });
+      });
+      if (o.link) { const [x1, y1, x2, y2] = o.link; s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="2" style="stroke:${CHC[o.ch]}" marker-start="${K.m(o.ch)}" marker-end="${K.m(o.ch)}"/>`; }
+      return s + `</g>`;
+    };
+    g += dock({ ch: "model", x: 352, y: 8, w: 536, h: 128, title: "模型服务", en: "LLM APIs", cols: 7, t: 42, gx: 30, rh: 72, link: [620, 137, 620, 152],
+      items: [["openai", "OpenAI"], ["claude", "Claude"], ["gemini", "Gemini"], ["bedrock", "Bedrock"], ["azureai", "Foundry"], ["vllm", "vLLM"], ["sglang", "SGLang"]] });
+    g += dock({ ch: "session", x: 20, y: 314, w: 204, h: 196, title: "应用与用户", en: "Clients", cols: 3, t: 42, gx: 20, rh: 74, link: [225, 412, 239, 412],
+      items: [["openai", "ChatGPT"], ["claude", "claude.ai"], ["github", "GitHub"], ["notion", "Notion"], ["icon-server", "企业后端"], ["icon-clock", "定时任务"]] });
+    g += dock({ ch: "env", x: 1016, y: 246, w: 208, h: 332, title: "执行环境", en: "Sandboxes", cols: 3, t: 40, gx: 22, rh: 72, link: [1015, 412, 1001, 412],
+      items: [["openai", "OpenAI"], ["anthropic", "Anthropic"], ["aws", "AgentCore"], ["azureai", "Foundry"], ["googlecloud", "Google"], ["e2b", "E2B"], ["daytona", "Daytona"], ["modal", "Modal"], ["cloudflare", "Cloudflare"], ["vercel", "Vercel"], ["icon-laptop", "自有机器"]] });
+    g += dock({ ch: "tool", x: 322, y: 688, w: 596, h: 128, title: "托管工具与云服务", en: "Search · Browser · Code · MCP", cols: 8, t: 42, gx: 28, rh: 72, link: [620, 671, 620, 686],
+      items: [["google", "Google 搜索"], ["bing", "Bing 搜索"], ["exa", "Exa"], ["tavily", "Tavily"], ["chrome", "浏览器"], ["python", "代码执行"], ["mcp", "MCP 服务器"], ["icon-server", "网关"]] });
+
     g += `</svg>`;
     $("#model-dgm").innerHTML = g;
+
+    // highlight one interface on hover or legend click
+    const svg = $("#model-svg");
+    const lg = $("#model-legend");
+    const names = [["session", "会话接口", "Session"], ["model", "模型推理", "Inference"], ["env", "执行环境", "Sandbox"], ["tool", "托管工具", "Hosted tools"]];
+    lg.innerHTML = names.map(([k, t, e]) => `<button type="button" data-ch="${k}" aria-pressed="false"><i style="background:${CHC[k]}"></i>${t}<small>${e}</small></button>`).join("");
+    let pinned = null;
+    const setHl = (k) => { if (k) svg.setAttribute("data-hl", k); else svg.removeAttribute("data-hl"); };
+    svg.addEventListener("mouseover", (e) => { const t = e.target.closest("[data-ch]"); setHl(t ? t.dataset.ch : pinned); });
+    svg.addEventListener("mouseleave", () => setHl(pinned));
+    lg.addEventListener("mouseover", (e) => { const b = e.target.closest("button"); if (b) setHl(b.dataset.ch); });
+    lg.addEventListener("mouseleave", () => setHl(pinned));
+    lg.addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      pinned = pinned === b.dataset.ch ? null : b.dataset.ch;
+      $$("button", lg).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.ch === pinned)));
+      setHl(pinned);
+    });
+  }
+
+  /* ---------------- figure: Anthropic brain / session / hands ---------------- */
+  function drawAnthropic() {
+    const K = kit();
+    let g = `<svg class="dgm" viewBox="0 0 600 310" role="img" aria-label="Anthropic Managed Agents：harness 与沙箱分别运行，由会话日志连接，凭据在 vault 中">${K.defs}`;
+    const box = (x, y, w, h, lg, t, sub, note, stroke) => `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" style="fill:var(--panel);stroke:${stroke}" stroke-width="1.5" filter="${K.sh}"/>${lg}<text x="${x + 62}" y="${y + 33}" font-size="14" font-weight="700">${t}</text><text x="${x + 62}" y="${y + 51}" font-size="11" class="sub">${sub}</text><text x="${x + 16}" y="${y + h - 16}" font-size="10.5" class="muted">${note}</text></g>`;
+    g += box(16, 48, 182, 112, tile(K, 30, 62, 36, "claude"), "Harness", "调用 Claude 的循环", "brain · Anthropic 托管", "var(--ink)");
+    const sb = `<g>${tile(K, 416, 62, 36, "icon-terminal")}</g>`;
+    g += box(402, 48, 182, 112, sb, "沙箱", "执行代码与工具", "hands · 云沙箱或自托管", "var(--c-env)");
+    g += `<line x1="200" y1="96" x2="398" y2="96" stroke-width="2" style="stroke:var(--c-env)" marker-end="${K.m("env")}"/><text x="299" y="88" text-anchor="middle" font-size="11" class="sub">工具调用</text>`;
+    g += `<line x1="400" y1="114" x2="202" y2="114" stroke-width="2" style="stroke:var(--c-env)" marker-end="${K.m("env")}"/><text x="299" y="132" text-anchor="middle" font-size="11" class="sub">结果</text>`;
+    // vault
+    g += `<g><rect x="230" y="4" width="140" height="34" rx="17" style="fill:var(--panel);stroke:var(--rule)" filter="${K.sh}"/>${icon("vault", 244, 11, 20, "var(--ink)")}<text x="270" y="25.5" font-size="11.5" font-weight="700">Vault · 代理</text></g>`;
+    g += `<path d="M370 21 C 420 21, 452 26, 470 46" fill="none" stroke-width="1.5" stroke-dasharray="4 4" style="stroke:var(--ink-3)" marker-end="${K.m("ink")}"/><text x="440" y="18" font-size="10" class="muted">按需注入凭据</text>`;
+    // session log
+    g += `<rect x="16" y="196" width="568" height="100" rx="14" style="fill:var(--panel);stroke:var(--c-session)" stroke-width="1.5" filter="${K.sh}"/>`;
+    g += `${icon("log", 30, 208, 20, "var(--ink)")}<text x="58" y="223" font-size="13.5" font-weight="700">Session</text><text x="118" y="223" font-size="11" class="sub">append-only 日志，存放在 harness 进程之外</text>`;
+    const ev = [["用户消息", CHC.session], ["模型调用", CHC.model], ["工具调用", CHC.env], ["工具结果", CHC.env], ["模型调用", CHC.model], ["…", "var(--ink-3)"]];
+    let ex = 30;
+    g += `<line x1="30" y1="262" x2="570" y2="262" style="stroke:var(--rule)" stroke-width="1.5"/>`;
+    ev.forEach(([t, c]) => {
+      const w = textW(t, 11) + 26;
+      g += `<rect x="${ex}" y="250" width="${w}" height="24" rx="12" style="fill:var(--paper);stroke:var(--rule)"/><circle cx="${ex + 11}" cy="262" r="4" style="fill:${c}"/><text x="${ex + 19}" y="266" font-size="11">${t}</text>`;
+      ex += w + 10;
+    });
+    g += `<line x1="107" y1="162" x2="107" y2="194" stroke-width="1.6" stroke-dasharray="4 4" style="stroke:var(--c-session)" marker-end="${K.m("session")}"/><text x="115" y="183" font-size="10.5" class="muted">追加事件</text>`;
+    g += `<line x1="493" y1="194" x2="493" y2="162" stroke-width="1.6" stroke-dasharray="4 4" style="stroke:var(--c-session)" marker-end="${K.m("session")}"/><text x="485" y="183" text-anchor="end" font-size="10.5" class="muted">从日志恢复</text>`;
+    g += `</svg>`;
+    $("#anthropic-dgm").innerHTML = g;
+  }
+
+  /* ---------------- table: vendor terminology ---------------- */
+  function drawTmap() {
+    const cols = [["openai", "OpenAI", "Agents API"], ["anthropic", "Anthropic", "Claude Managed Agents"], ["gemini", "Google", "Managed Agents API"], ["aws", "AWS", "Bedrock Managed Agents"], ["aws", "AWS", "AgentCore Runtime"], ["googlecloud", "Google", "Agent Runtime"], ["microsoft", "Microsoft", "Foundry Hosted agents"]];
+    const c = (t) => t.replace(/`([^`]+)`/g, "<code>$1</code>");
+    const rows = [
+      ["Harness", "智能体执行框架", "var(--c-harness)", ["`Codex harness`，OpenAI 托管", "`agent harness`，Anthropic 托管", "`Antigravity harness`", "`OpenAI Harness`（Runtime 层的 `Agentic Loop`）", "用户的 agent 代码（LangGraph、Strands 等）", "用户的 agent（ADK、LangGraph 等）", "用户的容器（Agent Framework、LangGraph 等）"]],
+      ["Agent 配置", "模型、指令、工具", "var(--ink-3)", ["`Agent`", "`Agent`", "Agents API 保存的 agent config", "—", "`agent runtime` 与 runtime version", "`ReasoningEngine` 资源", "`agent version`"]],
+      ["会话接口", "Session · Events", "var(--c-session)", ["`Session`、`Events and items`；流式事件或 webhook", "`Session`、`Events`；SSE", "`Interactions API`", "`Client`", "`InvokeAgentRuntime`、`runtimeSessionId`", "Sessions；双向流", "`Responses` / `Invocations` 协议；session ID、conversation ID"]],
+      ["模型推理", "Inference", "var(--c-model)", ["OpenAI 模型", "Claude 模型", "Agent Platform 上的模型", "Latest OpenAI Models；Runtime 层的 `Inference`", "任意模型", "`Models (Gemini/3rd party)`", "Foundry 模型目录"]],
+      ["执行环境", "Sandbox", "var(--c-env)", ["`Environment`：none / openai_hosted / self_hosted", "`Environment`：cloud / self-hosted sandbox", "`sandbox environment`，`env_id`", "`Environment`：Compute、Storage、Networking、Security", "microVM 或 Instances", "Agent Runtime + `Sandbox`", "按会话分配的 VM 隔离 `sandbox`"]],
+      ["托管工具", "Hosted tools", "var(--c-tool)", ["web search、remote MCP、function tools", "Bash、file ops、web search / fetch、MCP tunnels", "bash、file_system、MCP、Skill Registry", "`Tools / MCP`", "Gateway、Browser、Code Interpreter、Web Search", "Agent Gateway、Code Execution、Computer Use", "Toolbox MCP 端点"]],
+      ["凭据与身份", "Vault · Identity", "var(--ink-3)", ["vault", "Vaults", "范围受限的授权令牌", "agent 的 AWS identity", "AgentCore Identity", "Agent Identity（SPIFFE）", "Microsoft Entra agent identity"]],
+      ["记忆与观测", "Memory · Observability", "var(--ink-3)", ["Observability and usage、Tracing", "memory stores、事件历史、观测控制台", "—", "`Memory`；Governance & Observability", "AgentCore Memory、Observability", "Memory Bank、AI Observability", "state store、Application Insights"]],
+    ];
+    let h = `<table><thead><tr><th>部件</th>${cols.map(([k, v, p]) => `<th><span class="lg">${LG[k] ? `<img src="${LG[k]}" alt="">` : ""}<span>${esc(v)}<small>${esc(p)}</small></span></span></th>`).join("")}</tr></thead><tbody>`;
+    rows.forEach(([n, en, col, cells]) => {
+      h += `<tr><th style="border-left-color:${col}">${esc(n)}<small>${esc(en)}</small></th>${cells.map((t) => (t === "—" ? `<td class="na">—</td>` : `<td>${c(esc(t))}</td>`)).join("")}</tr>`;
+    });
+    $("#tmap").innerHTML = h + `</tbody></table>`;
   }
 
   /* ---------------- diagram: evolution ---------------- */
@@ -234,9 +366,9 @@
   /* ---------------- diagram: isolation tiers ---------------- */
   function drawIso() {
     const rows = [
-      { t: "共享宿主内核", s: "Linux 容器 · namespaces/cgroups · Landlock · macOS Seatbelt", p: ["Anthropic 云沙箱（隔离 Linux 容器）"] },
-      { t: "用户态应用内核", s: "gVisor：用户态实现的内核处理应用的系统调用", p: ["GKE Agent Sandbox"] },
-      { t: "客户机内核", s: "microVM（Firecracker）· 完整 VM（QEMU/KVM）", p: ["AgentCore Runtime microVM", "Foundry 会话沙箱（VM 隔离）", "E2B（基于 Firecracker）"] },
+      { t: "共享宿主内核", s: "Linux 容器 · namespaces/cgroups · Landlock · macOS Seatbelt", p: [["anthropic", "Anthropic 云沙箱（隔离 Linux 容器）"]] },
+      { t: "用户态应用内核", s: "gVisor：用户态实现的内核处理应用的系统调用", p: [["googlecloud", "GKE Agent Sandbox"]] },
+      { t: "客户机内核", s: "microVM（Firecracker）· 完整 VM（QEMU/KVM）", p: [["aws", "AgentCore Runtime microVM"], ["azureai", "Foundry 会话沙箱（VM 隔离）"], ["e2b", "E2B（基于 Firecracker）"]] },
     ];
     let g = `<svg class="dgm" viewBox="0 0 620 330" role="img" aria-label="隔离层级与产品">`;
     rows.forEach((r, i) => {
@@ -246,7 +378,13 @@
       g += `<text x="24" y="${y + 24}" font-size="13.5" font-weight="700">${r.t}</text>`;
       g += `<text x="24" y="${y + 43}" font-size="11" class="sub">${r.s}</text>`;
       let x = 24;
-      r.p.forEach((p) => { const c = chip(x, y + 52, p, { size: 11 }); g += c.svg; x += c.w + 8; });
+      r.p.forEach(([k, p]) => {
+        const w = textW(p, 11) + 40;
+        g += `<rect x="${x}" y="${y + 51}" width="${w}" height="24" rx="7" style="fill:var(--tile);stroke:var(--tile-line)"/>`;
+        if (LG[k]) g += `<image href="${LG[k]}" x="${x + 7}" y="${y + 55}" width="16" height="16"/>`;
+        g += `<text x="${x + 30}" y="${y + 67}" font-size="11" style="fill:#1f2328">${esc(p)}</text>`;
+        x += w + 8;
+      });
     });
     g += `<text x="610" y="324" text-anchor="end" font-size="10.5" class="muted">隔离强度自上而下增加</text>`;
     g += `</svg>`;
@@ -548,6 +686,7 @@
     { g: "app", p: "Kiro Web", v: "AWS", r: ["aws/kiro-web/overview", "aws/kiro-web/sandbox"],
       c: [["h", "Kiro"], ["h", "网页，可从任意界面重新接入会话"], ["n", ""], ["h", "按任务分配隔离沙箱，内置 headless Chrome 与 Playwright MCP"], ["h", "浏览器自动化工具"], "—"] },
   ];
+  const PL = { "OpenAI Agents API": "openai", "Claude Managed Agents": "anthropic", "Managed Agents API on Agent Platform": "gemini", "Bedrock Managed Agents, powered by OpenAI": "aws", "AgentCore Runtime": "aws", "Agent Runtime（原 Agent Engine）": "googlecloud", "Foundry Hosted agents": "azureai", "E2B": "e2b", "Daytona": "daytona", "Cloud Run sandboxes": "googlecloud", "GKE Agent Sandbox": "googlecloud", "Exa": "exa", "Tavily": "tavily", "Codex Cloud": "codex", "Claude Code 云会话": "claudecode", "Copilot cloud agent": "githubcopilot", "Jules": "google", "Kiro Web": "kiro" };
   const OWN = { h: ["h", "托管"], b: ["b", "自带"], o: ["o", "可选"], n: ["n", "无"] };
   function drawMatrix(filter) {
     const cols = [["Harness", "var(--c-harness)"], ["会话接口", "var(--c-session)"], ["模型推理", "var(--c-model)"], ["执行环境", "var(--c-env)"], ["托管工具", "var(--c-tool)"], ["计费", "var(--rule)"]];
@@ -556,7 +695,8 @@
       if (filter !== "all" && row.g !== filter) return;
       if (row.name) { h += `<tr class="grp"><td colspan="7">${esc(row.name)}</td></tr>`; return; }
       const refs = row.r.map((r) => `<button class="ref" data-r="${esc(r)}"></button>`).join("");
-      h += `<tr><th>${esc(row.p)}<small>${esc(row.v)}</small><span class="mrefs">来源 ${refs}</span></th>`;
+      const lgk = PL[row.p];
+      h += `<tr><th>${lgk && LG[lgk] ? `<img class="mlogo" src="${LG[lgk]}" alt="">` : ""}${esc(row.p)}<small>${esc(row.v)}</small><span class="mrefs">来源 ${refs}</span></th>`;
       row.c.forEach((cell) => {
         if (typeof cell === "string") { h += `<td>${esc(cell)}</td>`; return; }
         const [k, t] = cell;
@@ -628,6 +768,7 @@
     fp.textContent = cur > 0 ? "← " + pages[cur - 1].dataset.title : "";
     fn.textContent = cur < pages.length - 1 ? pages[cur + 1].dataset.title + " →" : "";
     pop.hidden = true;
+    $$(".dgm-wrap[data-center]", pages[cur]).forEach((w) => { if (w.scrollWidth > w.clientWidth) w.scrollLeft = (w.scrollWidth - w.clientWidth) / 2; });
     if (push) {
       try { history.replaceState(null, "", "#" + pages[cur].dataset.id); } catch (e) { /* ignore */ }
       window.scrollTo(0, 0);
@@ -669,6 +810,8 @@
 
   /* ---------------- init ---------------- */
   drawModel();
+  drawAnthropic();
+  drawTmap();
   drawEvo();
   drawLife();
   drawIso();
@@ -677,5 +820,42 @@
   drawCharts();
   drawMatrix("all");
   drawSources("");
+
+  /* ---------------- logos in text blocks ---------------- */
+  $$(".vlogo[data-logo]").forEach((el) => { const u = LG[el.dataset.logo]; if (u) el.innerHTML = `<img src="${u}" alt="">`; });
+
+  /* ---------------- figure / table numbers and cross references ---------------- */
+  const numMap = {};
+  (function () {
+    const n = { 图: 0, 表: 0 };
+    $$(".page .figure").forEach((el) => {
+      const kind = el.dataset.num === "tab" ? "表" : "图";
+      const label = `${kind} ${++n[kind]}`;
+      if (!el.id) el.id = `num-${kind === "表" ? "t" : "f"}${n[kind]}`;
+      numMap[el.id] = label;
+      const target = el.querySelector(":scope > .chart-title") || el.querySelector(":scope > figcaption");
+      if (target) target.insertAdjacentHTML("afterbegin", `<span class="fignum">${label}</span>`);
+    });
+  })();
+  function goTo(el) {
+    const i = pages.indexOf(el.closest(".page"));
+    if (i < 0) return;
+    show(i, true);
+    requestAnimationFrame(() => el.scrollIntoView({ block: "center" }));
+  }
+  $$(".xref").forEach((x) => {
+    const el = document.getElementById(x.dataset.x);
+    x.textContent = numMap[x.dataset.x] || "";
+    x.setAttribute("role", "link");
+    x.tabIndex = 0;
+    x.addEventListener("click", () => el && goTo(el));
+  });
+  $$(".pref").forEach((a) => {
+    const i = pages.findIndex((p) => p.dataset.id === a.dataset.p);
+    a.textContent = `第 ${i + 1} 页`;
+    a.href = "#" + a.dataset.p;
+    a.addEventListener("click", (e) => { e.preventDefault(); show(i, true); });
+  });
+
   show(fromHash(), false);
 })();

@@ -19,6 +19,8 @@
   --c-tool: #4a3aa7;
   --c-harness: #15181b;
   --figure-ground: #ffffff;
+  --tile: #ffffff;
+  --tile-line: #dfe2dc;
   --f-display: "Noto Serif SC", "Songti SC", "STSong", Georgia, serif;
   --f-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -35,6 +37,7 @@
     --accent: #5bb7c2; --accent-soft: #1b3236;
     --c-session: #3987e5; --c-model: #d95926; --c-env: #199e70; --c-tool: #9085e9; --c-harness: #eceeec;
     --figure-ground: #f3f4f2;
+    --tile: #f1f2ef; --tile-line: #3a4044;
     color-scheme: dark;
   }
 }
@@ -43,6 +46,7 @@
   --accent: #5bb7c2; --accent-soft: #1b3236;
   --c-session: #3987e5; --c-model: #d95926; --c-env: #199e70; --c-tool: #9085e9; --c-harness: #eceeec;
   --figure-ground: #f3f4f2;
+  --tile: #f1f2ef; --tile-line: #3a4044;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -137,6 +141,58 @@ p { margin: 0; }
 .dgm .port:hover { opacity: .85; }
 .dgm-wrap { overflow-x: auto; }
 #model-dgm > svg, #evo-dgm > svg { min-width: 680px; }
+
+/* figure numbers and cross references */
+.fignum { font-family: var(--f-mono); font-weight: 600; color: var(--ink); margin-right: .6em; white-space: nowrap; }
+.xref { margin: 0 .2em; }
+.xref, .pref { color: var(--accent); cursor: pointer; text-decoration: none; border-bottom: 1px dotted currentColor; }
+.xref:hover, .pref:hover { border-bottom-style: solid; }
+
+/* vendor definitions */
+.vdef { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 32px; align-items: start; border-top: 1px solid var(--rule); padding-top: 22px; }
+@media (max-width: 880px) { .vdef { grid-template-columns: minmax(0, 1fr); } }
+.vdef-text { display: grid; gap: 12px; min-width: 0; }
+.vhead { display: flex; gap: 12px; align-items: center; }
+.vhead h3 { margin: 0; font-size: var(--step-1); }
+.vmeta { font-family: var(--f-mono); font-size: var(--step--1); color: var(--ink-3); }
+.vlogo { width: 44px; height: 44px; flex: none; border-radius: 11px; background: var(--tile); border: 1px solid var(--tile-line); display: grid; place-items: center; }
+.vlogo img { width: 26px; height: 26px; display: block; }
+.vdef blockquote { margin: 0; padding: 4px 0 4px 16px; border-left: 3px solid var(--accent); font-family: Georgia, "Times New Roman", var(--f-display); font-size: 1.02rem; line-height: 1.6; color: var(--ink); font-style: italic; }
+.vdef .tr { color: var(--ink-2); font-size: var(--step--1); line-height: 1.75; }
+.vterms { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.vt-label { font-size: 12px; color: var(--ink-3); margin-right: 4px; }
+.vt { font-family: var(--f-mono); font-size: 12px; padding: 2px 8px; border-radius: 4px; background: var(--accent-soft); color: var(--ink); }
+
+/* term map */
+.tmap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); }
+.tmap table { border-collapse: collapse; width: 100%; min-width: 980px; font-size: 12.5px; }
+.tmap th, .tmap td { padding: 10px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; line-height: 1.5; }
+.tmap thead th { background: var(--panel); font-weight: 700; vertical-align: bottom; }
+.tmap thead th .lg { display: flex; gap: 8px; align-items: center; }
+.tmap thead th img { width: 18px; height: 18px; }
+.tmap thead th small { display: block; font-weight: 400; color: var(--ink-3); font-size: 11px; }
+.tmap tbody th { width: 150px; font-weight: 700; border-left: 4px solid var(--rule); }
+.tmap tbody th small { display: block; font-weight: 400; color: var(--ink-3); }
+.tmap td code { font-family: var(--f-mono); font-size: 11.5px; background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; line-height: 1.9; }
+.tmap td { min-width: 128px; }
+.tmap td.na { color: var(--ink-3); }
+
+/* model figure */
+.model-frame { padding: 8px; background-image: radial-gradient(var(--rule) 1px, transparent 1.2px); background-size: 18px 18px; }
+#model-dgm > svg { min-width: 920px; }
+.ch-legend { display: flex; flex-wrap: wrap; gap: 8px; }
+.ch-legend button { font: inherit; font-size: 12.5px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); padding: 5px 12px 5px 6px; border-radius: 999px; cursor: pointer; }
+.ch-legend button i { width: 18px; height: 18px; border-radius: 50%; display: inline-block; }
+.ch-legend button small { color: var(--ink-3); font-family: var(--f-mono); font-size: 11px; }
+.ch-legend button[aria-pressed="true"] { border-color: var(--ink); }
+.dgm .ch { transition: opacity .2s ease; }
+.dgm[data-hl] .ch { opacity: .16; }
+.dgm[data-hl="session"] .ch-session, .dgm[data-hl="model"] .ch-model, .dgm[data-hl="env"] .ch-env, .dgm[data-hl="tool"] .ch-tool { opacity: 1; }
+.dgm .flowline { stroke-dasharray: 5 6; animation: flow 1.6s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -22; } }
+@media (prefers-reduced-motion: reduce) { .dgm .flowline { animation: none; } .dgm .ch { transition: none; } }
+.matrix tbody th .mlogo { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
+.tmap thead th img { display: block; flex: none; }
 .matrix .ref { vertical-align: baseline; font-size: 11px; line-height: 1.4; border: 1px solid var(--rule); border-radius: 3px; padding: 0 5px; margin: 0 2px 0 0; }
 .matrix .mrefs { display: block; font-weight: 400; font-size: 11px; color: var(--ink-3); margin-top: 4px; }
 
@@ -218,19 +274,133 @@ p { margin: 0; }
   <p class="note">翻页：顶部箭头、键盘 ← →，或在手机上左右滑动。正文中的上标链接指向原始资料，点开后显示原文链接、存档 PDF 和提取全文。</p>
 </section>
 
-<!-- ============ 2 服务结构 ============ -->
+<!-- ============ 厂商定义：模型厂商 ============ -->
+<section class="page" data-id="defs-labs" data-title="厂商定义：模型厂商">
+  <div class="kicker"><span>定义</span><span>模型厂商</span></div>
+  <h2>模型厂商对托管 agent 的定义</h2>
+  <p class="lede">OpenAI、Anthropic 和 Google 推出了由厂商托管 harness 的 agent 服务。本页摘录三家文档中的定义原文与架构图，中文为译文。</p>
+
+  <article class="vdef">
+    <div class="vdef-text">
+      <header class="vhead"><span class="vlogo" data-logo="openai"></span><div><h3>OpenAI Agents API</h3><span class="vmeta">OpenAI · beta</span></div></header>
+      <blockquote lang="en">The Agents API gives your application access to the Codex harness through an OpenAI-managed API. OpenAI manages sessions, orchestration, context compaction, and recovery while your application provides tools and chooses its execution environment.<button class="ref" data-r="openai/agents-api/overview"></button></blockquote>
+      <p class="tr">Agents API 通过 OpenAI 托管的 API 向应用提供 Codex harness。OpenAI 负责会话、编排、上下文压缩与恢复，应用提供工具并选择执行环境。</p>
+      <div class="vterms"><span class="vt-label">文档中的核心概念</span><span class="vt">Agent</span><span class="vt">Environment</span><span class="vt">Session</span><span class="vt">Events and items</span></div>
+    </div>
+    <figure class="figure">
+      <div class="frame photo"><img src="assets/vendor/openai-agents-api-hosted.png" alt="OpenAI 原图：Application 通过 Sessions 调用 Agents API 中托管的 Codex harness，harness 向 Sandbox 发出工具调用；Agents API 与 Sandbox 由 OpenAI 提供和管理" loading="lazy"></div>
+      <figcaption>OpenAI 原图：OpenAI 托管沙箱时的 Agents API。虚线框内的 harness 与沙箱由 OpenAI 提供和管理。<button class="ref" data-r="openai/agents-api/overview"></button></figcaption>
+    </figure>
+  </article>
+
+  <article class="vdef">
+    <div class="vdef-text">
+      <header class="vhead"><span class="vlogo" data-logo="anthropic"></span><div><h3>Claude Managed Agents</h3><span class="vmeta">Anthropic · beta</span></div></header>
+      <blockquote lang="en">Pre-built, configurable agent harness that runs in managed infrastructure.<button class="ref" data-r="anthropic/claude-managed-agents/overview"></button></blockquote>
+      <blockquote lang="en">Managed Agents solves these problems by decoupling the brain from the hands. The harness that calls Claude runs separately from the sandbox where code executes, and the session–an append-only log of every model call, tool call, and result–connects the two.<button class="ref" data-r="anthropic/claude-managed-agents/product-blog"></button></blockquote>
+      <p class="tr">预置、可配置、运行在托管基础设施上的 agent harness。Managed Agents 把“大脑”与“双手”分开：调用 Claude 的 harness 与执行代码的沙箱分别运行，二者由会话连接；会话是记录每次模型调用、工具调用与结果的 append-only 日志。</p>
+      <div class="vterms"><span class="vt-label">文档中的核心概念</span><span class="vt">Agent</span><span class="vt">Environment</span><span class="vt">Session</span><span class="vt">Events</span></div>
+    </div>
+    <figure class="figure">
+      <div class="frame dgm-wrap" id="anthropic-dgm"></div>
+      <figcaption>依据 Anthropic 文章的文字描述绘制：harness、会话日志与沙箱分别运行，凭据存放在沙箱之外的 vault 中。<button class="ref" data-r="anthropic/claude-managed-agents/product-blog"></button></figcaption>
+    </figure>
+  </article>
+
+  <article class="vdef">
+    <div class="vdef-text">
+      <header class="vhead"><span class="vlogo" data-logo="gemini"></span><div><h3>Managed Agents API on Agent Platform</h3><span class="vmeta">Google · Pre-GA</span></div></header>
+      <blockquote lang="en">Managed Agents API on Agent Platform lets you build managed, autonomous agents with a single API call. Powered by the Antigravity harness, each agent runs with a sandbox environment where it reasons, plans, uses agent skills, executes code, searches the web, and reads and writes files.<button class="ref" data-r="google/managed-agents/overview"></button></blockquote>
+      <p class="tr">Agent Platform 上的 Managed Agents API 通过一次 API 调用构建托管的自主 agent。agent 由 Antigravity harness 驱动，运行在沙箱环境中，在其中推理、规划、使用 skills、执行代码、搜索网页、读写文件。</p>
+      <div class="vterms"><span class="vt-label">文档中的核心概念</span><span class="vt">Agents API（控制面）</span><span class="vt">Interactions API（数据面）</span><span class="vt">sandbox environment</span><span class="vt">env_id</span></div>
+    </div>
+    <figure class="figure">
+      <div class="frame photo"><img src="assets/vendor/google-managed-agents.png" alt="Google 原图：用户通过 Agents API 存储 agent 配置；使用时通过 Interactions API 发起请求，Harness + Runtime 取回配置并返回响应" loading="lazy"></div>
+      <figcaption>Google 原图：Agents API 存储可复用的 agent 配置，Interactions API 在运行时取回配置并交给 Harness + Runtime。<button class="ref" data-r="google/managed-agents/overview"></button></figcaption>
+    </figure>
+  </article>
+</section>
+
+<!-- ============ 厂商定义：云平台 ============ -->
+<section class="page" data-id="defs-cloud" data-title="厂商定义：云平台">
+  <div class="kicker"><span>定义</span><span>云平台</span></div>
+  <h2>云平台对托管 agent 的定义</h2>
+  <p class="lede">AWS、Google 和 Microsoft 的云平台托管用户自己的 agent 代码，并提供会话隔离、身份、网关、记忆与观测等配套服务。AWS 另与 OpenAI 合作推出托管 harness 的 Bedrock Managed Agents。</p>
+
+  <article class="vdef">
+    <div class="vdef-text">
+      <header class="vhead"><span class="vlogo" data-logo="aws"></span><div><h3>Bedrock Managed Agents 与 AgentCore Runtime</h3><span class="vmeta">AWS</span></div></header>
+      <blockquote lang="en">Developed jointly by AWS and OpenAI, Bedrock Managed Agents combines OpenAI models with the Codex harness and Amazon Bedrock AgentCore.<button class="ref" data-r="aws/bedrock-managed-agents/overview"></button></blockquote>
+      <blockquote lang="en">Amazon Bedrock AgentCore Runtime provides a secure, serverless and purpose-built hosting environment for deploying and running AI agents or tools.<button class="ref" data-r="aws/agentcore-runtime/runtime"></button></blockquote>
+      <p class="tr">Bedrock Managed Agents 由 AWS 与 OpenAI 联合开发，组合了 OpenAI 模型、Codex harness 与 Amazon Bedrock AgentCore。AgentCore Runtime 是用于部署和运行 AI agent 或工具的托管环境，安全、serverless，专为此用途构建。</p>
+      <div class="vterms"><span class="vt-label">文档中的核心概念</span><span class="vt">Runtime</span><span class="vt">Environment</span><span class="vt">runtimeSessionId</span><span class="vt">microVM / Instances</span></div>
+    </div>
+    <div class="stack">
+      <figure class="figure">
+        <div class="frame photo"><img src="assets/vendor/aws-bedrock-managed-agents.png" alt="AWS 原图：Managed Agent 分为 Runtime（Agentic Loop、Inference、Memory、Skills，即 OpenAI Harness）、Environment（Compute、Storage、Networking、Security、Tools/MCP）与 OpenAI 模型三层，上方连接 Client，底部为 Amazon Bedrock 的治理与观测" loading="lazy"></div>
+        <figcaption>AWS 原图：Bedrock Managed Agents 的分层。Runtime 层是 OpenAI harness，Environment 层包含计算、存储、网络、安全与工具，下层为 OpenAI 模型。<button class="ref" data-r="aws/bedrock-managed-agents/overview"></button></figcaption>
+      </figure>
+    <figure class="figure">
+      <div class="frame photo"><img src="assets/vendor/aws-agentcore-sessions.png" alt="AWS 原图：多个用户经 Deep Agents UI 访问 AgentCore 端点，每个会话分配到独立的 AgentCore Runtime microVM" loading="lazy"></div>
+      <figcaption>AWS 原图：AgentCore Runtime 为每个新会话分配新的 microVM。<button class="ref" data-r="aws/agentcore-runtime/deep-research-blog"></button></figcaption>
+    </figure>
+    </div>
+  </article>
+
+  <article class="vdef">
+    <div class="vdef-text">
+      <header class="vhead"><span class="vlogo" data-logo="googlecloud"></span><div><h3>Gemini Enterprise Agent Platform</h3><span class="vmeta">Google · Agent Runtime、Sandboxes、Agent Gateway</span></div></header>
+      <blockquote lang="en">Agent Runtime is a fully-managed, opinionated runtime that you can use to deploy, operate, and scale agentic applications.<button class="ref" data-r="google/agent-runtime/overview"></button></blockquote>
+      <blockquote lang="en">Sandboxes provide secure, isolated execution environments that are spawned to perform specific tasks on behalf of an agent.<button class="ref" data-r="google/agent-platform-sandbox/overview"></button></blockquote>
+      <p class="tr">Agent Runtime 是全托管、预设了做法的运行时，用于部署、运维和扩展 agent 应用。沙箱是代 agent 执行特定任务时启动的安全隔离执行环境。文档区分二者：agent 的核心逻辑运行在受信任的 Agent Runtime 中，可能不安全的代码运行在沙箱中。</p>
+      <div class="vterms"><span class="vt-label">文档中的核心概念</span><span class="vt">Agent Runtime</span><span class="vt">Sandbox</span><span class="vt">Sessions · Memory Bank</span><span class="vt">Agent Gateway</span></div>
+    </div>
+    <figure class="figure">
+      <div class="frame photo"><img src="assets/vendor/google-agent-platform.png" alt="Google 原图：User 经 Front End 与 Agent Gateway 访问 Agent Platform Runtime 中的 agent；出站经 Agent Gateway 访问 Agents、Tools、Models、APIs；配套 Agent registry、AI security、Access authorization、Memory & Sessions、Models 与 AI Observability" loading="lazy"></div>
+      <figcaption>Google 原图：Agent Platform 的组成。agent 运行在 Agent Platform Runtime 中，入站与出站流量都经过 Agent Gateway。<button class="ref" data-r="google/agent-gateway/overview"></button></figcaption>
+    </figure>
+  </article>
+
+  <article class="vdef">
+    <div class="vdef-text">
+      <header class="vhead"><span class="vlogo" data-logo="microsoft"></span><div><h3>Foundry Hosted agents</h3><span class="vmeta">Microsoft · preview</span></div></header>
+      <blockquote lang="en">Hosted agents are containerized agentic AI applications that run on Agent Service.<button class="ref" data-r="microsoft/foundry-hosted-agents/hosted-agents"></button></blockquote>
+      <blockquote lang="en">You own the code that runs inside the sandbox. The platform owns the endpoint, identity, scaling, and session state around it.<button class="ref" data-r="microsoft/foundry-hosted-agents/hosted-agents"></button></blockquote>
+      <p class="tr">Hosted agents 是运行在 Agent Service 上的容器化 agent 应用。用户负责沙箱内运行的代码，平台负责其周围的端点、身份、扩缩容与会话状态。</p>
+      <div class="vterms"><span class="vt-label">文档中的核心概念</span><span class="vt">agent version</span><span class="vt">session / conversation</span><span class="vt">Responses · Invocations</span><span class="vt">Toolbox</span></div>
+    </div>
+    <figure class="figure">
+      <div class="frame photo"><img src="assets/vendor/microsoft-hosted-agents-network.png" alt="Microsoft 原图：Client 经 Foundry Endpoint 进入 Micro-VM Host Layer，经 Tools Service 与 Data Proxy 访问客户 VNet 内的私有端点；Hosted agent 的 micro-VM 位于客户 VNet 的委派子网中" loading="lazy"></div>
+      <figcaption>Microsoft 原图：Hosted agents 的网络结构。agent 运行在 micro-VM 中，工具调用经 Tools Service，数据访问经 Data Proxy 进入客户网络。<button class="ref" data-r="microsoft/foundry-hosted-agents/networking"></button></figcaption>
+    </figure>
+  </article>
+</section>
+
+<!-- ============ 术语对照 ============ -->
+<section class="page" data-id="terms" data-title="术语对照">
+  <div class="kicker"><span>定义</span><span>对照</span></div>
+  <h2>各家术语对照</h2>
+  <p class="lede">各家文档对同一类部件使用不同的名称。按部件的职责对齐后，各家的服务都由 harness、会话、模型推理、执行环境、托管工具，以及配置、凭据、记忆、观测等状态与治理部件组成。<span class="xref" data-x="fig-model"></span>按这一对齐结果绘制。</p>
+  <div class="figure" data-num="tab" id="fig-terms">
+    <div class="tmap" id="tmap"></div>
+    <figcaption>各厂商文档中对应部件的名称，保留原文术语。“—”表示文档中没有对应的独立部件。</figcaption>
+  </div>
+</section>
+
+<!-- ============ 服务结构 ============ -->
 <section class="page" data-id="model" data-title="服务结构">
   <div class="kicker"><span>概念模型</span></div>
   <h2>托管智能体服务的结构</h2>
-  <div class="figure">
-    <div class="frame dgm-wrap" id="model-dgm"></div>
-    <figcaption>托管智能体服务的结构模型。虚线框内是厂商运行的部分，彩色方块是服务的对外接口，框外为各接口上的产品示例。各厂商托管的范围不同：OpenAI 与 Anthropic 托管 harness，执行环境可换成用户的机器；AWS、Google、Microsoft 的运行平台托管执行环境，harness 由用户提供。</figcaption>
+  <div class="figure" id="fig-model">
+    <div class="frame dgm-wrap model-frame" id="model-dgm" data-center></div>
+    <div class="ch-legend" id="model-legend"></div>
+    <figcaption>托管智能体服务的结构，依据<span class="xref" data-x="fig-terms"></span>的对齐结果绘制。虚线框内为厂商运行的部分：中心是 harness，四角是配置、凭据、会话日志、记忆与观测；边框上的彩色圆标是服务的对外接口，框外为各接口上的产品示例。各厂商托管的范围不同：OpenAI 与 Anthropic 托管 harness，执行环境可换成用户的机器；AWS、Google、Microsoft 的运行平台托管执行环境，harness 由用户提供。鼠标移到图例或接口上可单独显示该接口。</figcaption>
   </div>
   <div class="cols even">
     <div class="prose">
       <h3>术语</h3>
       <p><strong>Agent Harness（智能体执行框架）</strong>：图中心的部分，对应通常所说的“狭义 agent”。harness 运行 agent 循环：把上下文发给模型，解析模型请求的工具调用，执行工具，把结果写回上下文，直到任务结束。Claude Code、Codex 和用 LangGraph 编排的程序都属于这一层。OpenAI 文档称之为 “managed Codex harness”，Anthropic 称为 “agent harness”，Google 的 Managed Agents API 由 “Antigravity harness” 驱动。<button class="ref" data-r="openai/agents-api/architecture"></button><button class="ref" data-r="anthropic/claude-managed-agents/overview"></button><button class="ref" data-r="google/managed-agents/overview"></button></p>
-      <p><strong>托管智能体服务（Managed Agent Service，又称 Agent-as-a-Service）</strong>：图中虚线框的范围，对应“广义 agent”。Anthropic 与 Google 的产品名为 Managed Agents，AWS 的产品为 Bedrock Managed Agents，Microsoft 称为 Hosted agents。学术文献中的 “Agent-as-a-Service” 指多个 agent 组成的服务网络，见第 15 页。<button class="ref" data-r="aws/bedrock-managed-agents/overview"></button><button class="ref" data-r="microsoft/foundry-hosted-agents/hosted-agents"></button></p>
+      <p><strong>托管智能体服务（Managed Agent Service，又称 Agent-as-a-Service）</strong>：图中虚线框的范围，对应“广义 agent”。Anthropic 与 Google 的产品名为 Managed Agents，AWS 的产品为 Bedrock Managed Agents，Microsoft 称为 Hosted agents。学术文献中的 “Agent-as-a-Service” 指多个 agent 组成的服务网络，见<a class="pref" data-p="aaas"></a>。<button class="ref" data-r="aws/bedrock-managed-agents/overview"></button><button class="ref" data-r="microsoft/foundry-hosted-agents/hosted-agents"></button></p>
     </div>
     <div class="prose">
       <h3>接口</h3>
@@ -267,12 +437,8 @@ p { margin: 0; }
     </div>
     <div class="stack">
       <figure class="figure">
-        <div class="frame photo"><img src="assets/openai-arch-sandbox.png" alt="OpenAI Agents API 架构图：Application 发起 Sessions，Agents API 中的托管 Codex harness 向 Sandbox 发出工具调用，自托管时由应用控制计算资源" loading="lazy"></div>
+        <div class="frame photo"><img src="assets/vendor/openai-agents-api-self-hosted.png" alt="OpenAI Agents API 架构图：Application 发起 Sessions，Agents API 中的托管 Codex harness 向 Sandbox 发出工具调用，自托管时由应用控制计算资源" loading="lazy"></div>
         <figcaption>OpenAI 原图：带沙箱的 Agents API。虚线表示自托管时由应用管理环境的生命周期。<button class="ref" data-r="openai/agents-api/architecture"></button></figcaption>
-      </figure>
-      <figure class="figure">
-        <div class="frame photo"><img src="assets/google-managed-agents-arch.png" alt="Google Managed Agents API 架构图：Agents API 存储 agent 配置，Interactions API 在运行时取回配置并交给 Harness + Runtime" loading="lazy"></div>
-        <figcaption>Google 原图：Managed Agents API 中，Agents API 管理 agent 配置，Interactions API 处理运行时交互。<button class="ref" data-r="google/managed-agents/overview"></button></figcaption>
       </figure>
     </div>
   </div>
@@ -291,8 +457,10 @@ p { margin: 0; }
     <button data-f="tool" aria-pressed="false">搜索 API</button>
     <button data-f="app" aria-pressed="false">云端编程应用</button>
   </div>
-  <div class="matrix" id="matrix"></div>
-  <p class="cap"><span class="own h">托管</span>由服务方运行 <span class="own o">可选</span>服务方托管或用户自带 <span class="own b">自带</span>由用户提供。单元格内容摘自官方页面，行首“来源”后的编号链接到对应页面。</p>
+  <div class="figure" data-num="tab">
+    <div class="matrix" id="matrix"></div>
+    <figcaption>各产品的 harness 与各接口由谁运行。<span class="own h">托管</span>由服务方运行 <span class="own o">可选</span>服务方托管或用户自带 <span class="own b">自带</span>由用户提供。单元格内容摘自官方页面，行首“来源”后的编号链接到对应页面。</figcaption>
+  </div>
 </section>
 
 <!-- ============ 5 Harness ============ -->
@@ -380,7 +548,7 @@ p { margin: 0; }
       <h3>产品</h3>
       <p>OpenAI Agents API 使用 OpenAI 模型，按所选模型的 API 价计费；Claude Managed Agents 使用 Claude 模型，token 按模型价目表计费，prompt caching 的倍率也适用。<button class="ref" data-r="openai/agents-api/overview"></button><button class="ref" data-r="anthropic/claude-api/pricing"></button> 云平台上的模型与 harness 分开选择：AgentCore Runtime 可接入 Bedrock、Claude、Gemini、OpenAI 等模型；Microsoft Hosted agents 调用 Foundry 模型目录中的模型。<button class="ref" data-r="aws/agentcore-runtime/runtime"></button><button class="ref" data-r="microsoft/foundry-hosted-agents/hosted-agents"></button> Bedrock Managed Agents 在 Bedrock 内运行 OpenAI 的 harness 和模型推理。<button class="ref" data-r="openai/agents-api/bedrock-managed-agents"></button></p>
       <h3>agent 请求的特点</h3>
-      <p>从推理服务看，agent 任务是一串间隔短、前缀逐步增长且高度重复的请求（第 5 页 Talaria 的数据），前缀缓存的命中情况影响费用。Anthropic 价目表中，缓存命中按标准输入价的 10% 计费，Fable 5.1 为 2.5%，Opus 5.5 与 Sonnet 5.5 为 5%。<button class="ref" data-r="anthropic/claude-api/pricing"></button> 下方 vLLM、SGLang、Talaria 等论文研究的是 KV cache 的管理与复用。</p>
+      <p>从推理服务看，agent 任务是一串间隔短、前缀逐步增长且高度重复的请求（<a class="pref" data-p="harness"></a> Talaria 的数据），前缀缓存的命中情况影响费用。Anthropic 价目表中，缓存命中按标准输入价的 10% 计费，Fable 5.1 为 2.5%，Opus 5.5 与 Sonnet 5.5 为 5%。<button class="ref" data-r="anthropic/claude-api/pricing"></button> 下方 vLLM、SGLang、Talaria 等论文研究的是 KV cache 的管理与复用。</p>
       <p>Talaria 指出，按请求调度的 serverless 多模型系统可能把会话的后续调用路由到缺少该模型权重和 KV 前缀的实例。在 Qwen3-235B、TP=8 上重算 25K tokens 的中位前缀需要 4.3 秒 TTFT，而工具间隔的中位数为 0.39 秒。<button class="ref" data-r="talaria"></button></p>
     </div>
     <div class="stack">
@@ -488,7 +656,7 @@ p { margin: 0; }
   <div class="works">
     <div class="work"><h4>Firecracker</h4><div class="where">NSDI 2020</div><p>为 serverless 设计的轻量 VMM，用于 AWS Lambda 和 Fargate。Crab 论文提到 E2B 基于 Firecracker。<button class="ref" data-r="firecracker"></button><button class="ref" data-r="aws/firecracker/announcement"></button><button class="ref" data-r="crab"></button></p></div>
     <div class="work"><h4>TrEnv-X</h4><div class="where">arXiv 2509.09525</div><p>可跨函数复用的沙箱，加上基于 CXL/RDMA 远端内存的 OS 级内存模板；扩展到 microVM 上的 agent 负载时，增加了浏览器共享和页缓存旁路。与 E2B 相比，P99 延迟最多降低 58%，内存减少 61%。<button class="ref" data-r="trenv-x"></button></p></div>
-    <div class="work"><h4>DSec（DeepSeek Elastic Compute）</h4><div class="where">arXiv 2609.22978</div><p>SDK 后端包括函数调用、容器、microVM 和完整 VM，镜像从 3FS 按需加载。详见第 14 页。<button class="ref" data-r="deepseek-elastic-compute"></button></p></div>
+    <div class="work"><h4>DSec（DeepSeek Elastic Compute）</h4><div class="where">arXiv 2609.22978</div><p>SDK 后端包括函数调用、容器、microVM 和完整 VM，镜像从 3FS 按需加载。详见<a class="pref" data-p="training"></a>。<button class="ref" data-r="deepseek-elastic-compute"></button></p></div>
     <div class="work"><h4>SideKernel</h4><div class="where">arXiv 2610.02456</div><p>面向 macOS 本地开发的 microVM 沙箱。作者的问卷中，在沙箱中运行编程 agent 的用户不到 40%。<button class="ref" data-r="sidekernel"></button></p></div>
   </div>
 </section>
@@ -667,7 +835,7 @@ p { margin: 0; }
     </div>
     <div class="figure">
       <div class="frame dgm-wrap" id="lens-dgm"></div>
-      <figcaption>三类文献的关注范围。综述文献描述 harness 内部；AaaS 论文描述多个 agent 组成的服务网络；厂商文档描述托管 agent 与模型、环境、工具之间的资源边界，对应本综述第 2 页的结构模型。</figcaption>
+      <figcaption>三类文献的关注范围。综述文献描述 harness 内部；AaaS 论文描述多个 agent 组成的服务网络；厂商文档描述托管 agent 与模型、环境、工具之间的资源边界，对应<span class="xref" data-x="fig-model"></span>的结构模型。</figcaption>
     </div>
   </div>
 </section>
@@ -692,4 +860,5 @@ p { margin: 0; }
 </main>
 
 <script src="sources.js"></script>
+<script src="logos.js"></script>
 <script src="app.js"></script>
