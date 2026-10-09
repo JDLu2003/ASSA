@@ -121,7 +121,7 @@
     // state components inside boundary
     g += chip(206, 172, "Agent 配置（模型 · 指令 · 工具）", { size: 11 }).svg;
     g += chip(794, 172, "凭据库 Vault", { size: 11, anchor: "end" }).svg;
-    g += chip(206, 498, "会话事件日志（仅追加）", { size: 11 }).svg;
+    g += chip(206, 498, "会话事件日志（append-only）", { size: 11 }).svg;
     g += chip(794, 498, "记忆 · 追踪 · 评估", { size: 11, anchor: "end" }).svg;
     // harness box
     g += `<rect class="harness" x="350" y="208" width="300" height="244" rx="12"/>`;
@@ -176,19 +176,19 @@
     const box = (x, y, w, h, t, s, cls, col) => `<rect class="${cls || "boxline"}" x="${x}" y="${y}" width="${w}" height="${h}" rx="8"${col ? ` style="stroke:${col}"` : ""}/><text x="${x + w / 2}" y="${y + (s ? h / 2 - 2 : h / 2 + 4)}" text-anchor="middle" font-size="12.5" font-weight="700">${t}</text>${s ? `<text x="${x + w / 2}" y="${y + h / 2 + 15}" text-anchor="middle" font-size="11" class="sub">${s}</text>` : ""}`;
     const arrow = (x1, y1, x2, y2, col) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="flow"${col ? ` style="stroke:${col}"` : ""} marker-end="${AH()}"/>`;
     // panel 1
-    g += panel(10, "① 模型 API", "一次请求一轮；循环由开发者编写");
+    g += panel(10, "① 模型 API", "请求–响应；agent 循环由开发者编写");
     g += `<rect x="10" y="60" width="290" height="250" rx="10" fill="none" style="stroke:var(--rule)"/>`;
-    g += box(30, 90, 250, 92, "开发者的应用", "自写循环 · 自己执行工具 · 自管状态", "boxline");
+    g += box(30, 90, 250, 92, "开发者的应用", "agent 循环 · 工具执行 · 状态管理", "boxline");
     g += box(80, 232, 150, 50, "模型 API", "tokens in / out", "boxline", "var(--c-model)");
     g += arrow(155, 182, 155, 230, "var(--c-model)");
     // panel 2
-    g += panel(350, "② harness 与沙箱在同一容器", "agent-in-a-sandbox");
+    g += panel(350, "② harness 运行在沙箱内", "agent-in-a-sandbox");
     g += `<rect x="350" y="60" width="290" height="250" rx="10" fill="none" style="stroke:var(--rule)"/>`;
     g += `<rect x="368" y="74" width="254" height="150" rx="8" fill="none" style="stroke:var(--c-env)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
-    g += `<text x="380" y="92" font-size="11" class="muted">一个容器</text>`;
+    g += `<text x="380" y="92" font-size="11" class="muted">容器</text>`;
     g += box(380, 102, 110, 52, "harness", "Agent SDK", "harness");
     g += box(500, 102, 110, 52, "文件 · 进程", "", "boxline");
-    g += box(380, 162, 230, 46, "凭据（与生成的代码同处）", "", "boxline");
+    g += box(380, 162, 230, 46, "凭据", "", "boxline");
     g += box(420, 252, 150, 46, "模型 API", "", "boxline", "var(--c-model)");
     g += arrow(495, 224, 495, 250, "var(--c-model)");
     // panel 3
@@ -196,13 +196,13 @@
     g += `<rect x="690" y="60" width="300" height="250" rx="10" fill="none" style="stroke:var(--rule)"/>`;
     g += box(706, 78, 128, 66, "harness", "厂商托管", "harness");
     g += box(852, 78, 124, 66, "沙箱", "厂商或用户的机器", "boxline", "var(--c-env)");
-    g += box(706, 168, 270, 40, "会话事件日志（进程外，仅追加）", "", "boxline", "var(--c-session)");
+    g += box(706, 168, 270, 40, "会话事件日志（append-only）", "", "boxline", "var(--c-session)");
     g += box(706, 232, 128, 54, "模型 API", "", "boxline", "var(--c-model)");
     g += box(852, 232, 124, 54, "Vault + 出站代理", "", "boxline");
     g += arrow(834, 104, 850, 104, "var(--c-env)");
     g += arrow(770, 144, 770, 166);
     g += arrow(770, 208, 770, 230, "var(--c-model)");
-    g += arrow(914, 230, 914, 146);
+    g += arrow(958, 230, 958, 146);
     g += `</svg>`;
     $("#evo-dgm").innerHTML = g;
   }
@@ -223,9 +223,9 @@
     g += ar("M290 84 L290 178", "一轮结束", 282, 135, "end");
     g += ar("M330 178 L330 86", "新输入 · 恢复", 338, 135, "start");
     g += ar("M385 207 L448 207", "长期闲置", 417, 200);
-    g += `<text x="20" y="268" font-size="11" class="sub">Anthropic：运行时长只计 running；空闲时容器打检查点。</text>`;
+    g += `<text x="20" y="268" font-size="11" class="sub">Anthropic：按 running 时长计费；idle 时容器打检查点。</text>`;
     g += `<text x="20" y="286" font-size="11" class="sub">Microsoft：空闲 2–60 分钟释放计算，恢复时还原 $HOME；30 天未活动删除。</text>`;
-    g += `<text x="20" y="304" font-size="11" class="sub">OpenAI：自托管时由 environment_connection 事件触发启动执行器，最多等 5 分钟。</text>`;
+    g += `<text x="20" y="304" font-size="11" class="sub">OpenAI：自托管时 environment_connection 事件触发执行器启动，等待上限 5 分钟。</text>`;
     g += `<text x="20" y="322" font-size="11" class="sub">AgentCore：stop 后 microVM 终止，挂载在 /mnt 的会话存储保留 14 天。</text>`;
     g += `</svg>`;
     $("#life-dgm").innerHTML = g;
@@ -235,8 +235,8 @@
   function drawIso() {
     const rows = [
       { t: "共享宿主内核", s: "Linux 容器 · namespaces/cgroups · Landlock · macOS Seatbelt", p: ["Anthropic 云沙箱（隔离 Linux 容器）"] },
-      { t: "用户态应用内核", s: "gVisor：系统调用由独立内核实现拦截处理", p: ["GKE Agent Sandbox"] },
-      { t: "独立客户机内核", s: "microVM（Firecracker）· 完整 VM（QEMU/KVM）", p: ["AgentCore Runtime microVM", "Foundry 会话沙箱（VM 隔离）", "E2B（基于 Firecracker）"] },
+      { t: "用户态应用内核", s: "gVisor：用户态实现的内核处理应用的系统调用", p: ["GKE Agent Sandbox"] },
+      { t: "客户机内核", s: "microVM（Firecracker）· 完整 VM（QEMU/KVM）", p: ["AgentCore Runtime microVM", "Foundry 会话沙箱（VM 隔离）", "E2B（基于 Firecracker）"] },
     ];
     let g = `<svg class="dgm" viewBox="0 0 620 330" role="img" aria-label="隔离层级与产品">`;
     rows.forEach((r, i) => {
@@ -248,14 +248,14 @@
       let x = 24;
       r.p.forEach((p) => { const c = chip(x, y + 52, p, { size: 11 }); g += c.svg; x += c.w + 8; });
     });
-    g += `<text x="610" y="324" text-anchor="end" font-size="10.5" class="muted">隔离强度自上而下增加 · OpenAI 托管沙箱与 Cloud Run sandboxes 的文档未写明隔离技术</text>`;
+    g += `<text x="610" y="324" text-anchor="end" font-size="10.5" class="muted">隔离强度自上而下增加</text>`;
     g += `</svg>`;
     $("#iso-dgm").innerHTML = g;
   }
 
   /* ---------------- diagram: credential proxy ---------------- */
   function drawCred() {
-    let g = `<svg class="dgm" viewBox="0 0 620 200" role="img" aria-label="沙箱内只有占位符，出站代理替换为真实凭据">${arrowDefs()}`;
+    let g = `<svg class="dgm" viewBox="0 0 620 200" role="img" aria-label="沙箱内的程序使用占位符，出站代理替换为真实凭据">${arrowDefs()}`;
     g += `<rect x="10" y="40" width="200" height="120" rx="8" style="fill:var(--paper);stroke:var(--c-env)" stroke-width="1.5"/>`;
     g += `<text x="24" y="62" font-size="13" font-weight="700">沙箱</text>`;
     g += `<text x="24" y="84" font-size="11" class="sub">agent 生成的代码</text>`;
@@ -272,7 +272,7 @@
     g += `<text x="520" y="112" text-anchor="middle" font-size="10.5" font-family="var(--f-mono)">Bearer ghp_••••</text>`;
     g += `<line x1="210" y1="100" x2="238" y2="100" class="flow" marker-end="${AH()}"/>`;
     g += `<line x1="400" y1="100" x2="428" y2="100" class="flow" marker-end="${AH()}"/>`;
-    g += `<text x="10" y="188" font-size="10.5" class="muted">沙箱内的进程读不到真实凭据；自托管环境需要用户自己提供这层代理（OpenAI 文档）。</text>`;
+    g += `<text x="10" y="188" font-size="10.5" class="muted">真实凭据保存在代理一侧；自托管环境中的代理由用户部署（OpenAI 文档）。</text>`;
     g += `</svg>`;
     $("#cred-dgm").innerHTML = g;
   }
@@ -285,7 +285,7 @@
     g += `<rect x="20" y="36" width="240" height="110" rx="10" class="harness"/>`;
     ["profile", "memory", "planning", "action"].forEach((m, i) => { g += chip(34 + (i % 2) * 112, 50 + Math.floor(i / 2) * 40, m, { size: 11.5 }).svg; });
     // vendor view
-    g += `<text x="300" y="24" font-size="13" font-weight="700">厂商文档：单个服务的资源边界</text>`;
+    g += `<text x="300" y="24" font-size="13" font-weight="700">厂商文档：服务的资源边界</text>`;
     g += `<rect x="300" y="36" width="240" height="110" rx="10" class="svc"/>`;
     g += `<rect x="370" y="66" width="100" height="50" rx="8" class="harness"/><text x="420" y="96" text-anchor="middle" font-size="11.5" font-weight="700">harness</text>`;
     [["var(--c-session)", 300, 91], ["var(--c-model)", 420, 36], ["var(--c-env)", 540, 91], ["var(--c-tool)", 420, 146]].forEach(([c, x, y]) => { g += `<rect x="${x - 8}" y="${y - 8}" width="16" height="16" rx="3" style="fill:${c}"/>`; });
@@ -368,7 +368,7 @@
     ], { max: 100, unit: "%", fmt: (v) => v + "%", ticks: [0, 25, 50, 75, 100], aria: "成本降低比例" });
 
     // limits (log hours)
-    legend($("#lg-limits"), [[S1, "单次运行上限"], [S2, "空闲回收计算"], [INK, "状态保留期限"]]);
+    legend($("#lg-limits"), [[S1, "运行时长上限"], [S2, "空闲回收时间"], [INK, "状态保留期限"]]);
     barChart($("#ch-limits"), [
       { label: "Copilot cloud agent", bars: [{ v: 59 / 60, color: S1, label: "59 分钟" }] },
       { label: "E2B Hobby / Pro", bars: [{ v: 1, color: S1, label: "1 小时" }, { v: 24, color: S1, label: "24 小时" }] },
@@ -412,7 +412,7 @@
     barChart($("#ch-crab"), [
       { label: "从头重跑", bars: [{ v: 100, color: S1 }, { v: 100, color: S2 }] },
       { label: "恢复对话 + 文件系统", bars: [{ v: 48, color: S1 }, { v: 34, color: S2 }] },
-      { label: "只恢复对话", bars: [{ v: 6, color: S1 }, { v: 28, color: S2 }] },
+      { label: "恢复对话历史", bars: [{ v: 6, color: S1 }, { v: 28, color: S2 }] },
     ], { max: 100, fmt: (v) => v + "%", ticks: [0, 25, 50, 75, 100], labelW: 130, aria: "恢复成功率" });
 
     // deltabox
@@ -422,7 +422,7 @@
     ], { max: 50, fmt: (v) => v + "%", ticks: [0, 10, 20, 30, 40, 50], labelW: 100, barH: 18, aria: "状态管理时间占比" });
 
     // search
-    legend($("#lg-search"), [[S2, "模型厂商的内置搜索"], [S4, "云平台 / 第三方搜索 API"]]);
+    legend($("#lg-search"), [[S2, "模型厂商的服务端搜索"], [S4, "云平台与第三方搜索 API"]]);
     barChart($("#ch-search"), [
       { label: "Google 搜索接地", sub: "每次查询，月免 5,000", bars: [{ v: 14, color: S2, label: "$14" }] },
       { label: "OpenAI web search", sub: "每次调用", bars: [{ v: 10, color: S2, label: "$10" }] },
@@ -508,45 +508,45 @@
 
   /* ---------------- vendor matrix ---------------- */
   const M = [
-    { g: "managed", name: "厂商提供 harness 的托管服务" },
+    { g: "managed", name: "托管 harness 的服务" },
     { g: "managed", p: "OpenAI Agents API", v: "beta", r: ["openai/agents-api/overview", "openai/agents-api/architecture", "openai/agents-api/hosted-sandbox"],
       c: [["h", "OpenAI 托管的 Codex harness"], ["h", "Session、事件流与 webhook，运行中可插话引导"], ["h", "OpenAI 模型"], ["o", "none / OpenAI 托管 Linux 沙箱（可选容器规格）/ 自托管执行器 codex exec-server"], ["h", "web search、远程 MCP、子 agent；函数工具由应用执行"], "模型 token + 工具标准价 + 容器价"] },
     { g: "managed", p: "Claude Managed Agents", v: "beta", r: ["anthropic/claude-managed-agents/overview", "anthropic/claude-managed-agents/self-hosted-sandboxes", "anthropic/claude-api/pricing"],
       c: [["h", "Anthropic 托管 harness，内置缓存与 compaction"], ["h", "Session 与 SSE 事件，历史存于服务端"], ["h", "Claude 模型"], ["o", "Anthropic 云沙箱（Ubuntu 容器）或自托管 worker（Cloudflare、Daytona、Modal、Vercel）"], ["h", "Bash、文件操作、web search / fetch、MCP、MCP tunnels"], "token + $0.08/会话小时（仅 running）"] },
     { g: "managed", p: "Managed Agents API on Agent Platform", v: "Google · Pre-GA", r: ["google/managed-agents/overview", "google/managed-agents/sandbox-environment"],
-      c: [["h", "Antigravity harness"], ["h", "Interactions API（数据面）；Agents API 管理配置"], ["h", "Agent Platform 模型，预览期按标准价"], ["h", "托管 Linux 沙箱，默认无网络，TTL 7 天，可挂载 Cloud Storage"], ["h", "bash、file_system、MCP、Skill Registry、网页搜索"], "预览期按模型标准价"] },
+      c: [["h", "Antigravity harness"], ["h", "Interactions API（数据面）；Agents API 管理配置"], ["h", "Agent Platform 模型，预览期按标准价"], ["h", "托管 Linux 沙箱，网络按域名白名单开启，TTL 7 天，可挂载 Cloud Storage"], ["h", "bash、file_system、MCP、Skill Registry、网页搜索"], "预览期按模型标准价"] },
     { g: "managed", p: "Bedrock Managed Agents, powered by OpenAI", v: "AWS", r: ["aws/bedrock-managed-agents/overview", "openai/agents-api/bedrock-managed-agents"],
-      c: [["h", "OpenAI Codex harness，运行在 Bedrock 内"], ["h", "Bedrock 服务端点，IAM SigV4 认证"], ["h", "OpenAI 模型，经 Amazon Bedrock 推理"], ["o", "默认 AgentCore Runtime，或自托管计算"], ["h", "可接 AgentCore 的授权、发现、观测、评估等能力"], "见 AWS 页面"] },
-    { g: "runtime", name: "运行平台：用户自带 harness" },
+      c: [["h", "OpenAI Codex harness，运行在 Bedrock 内"], ["h", "Bedrock 服务端点，IAM SigV4 认证"], ["h", "OpenAI 模型，经 Amazon Bedrock 推理"], ["o", "默认 AgentCore Runtime，或自托管计算"], ["h", "AgentCore 的授权、发现、观测、评估等能力"], "见 AWS 页面"] },
+    { g: "runtime", name: "运行平台" },
     { g: "runtime", p: "AgentCore Runtime", v: "AWS", r: ["aws/agentcore-runtime/runtime", "aws/agentcore-runtime/instances", "aws/agentcore/pricing"],
-      c: [["b", "LangGraph、Strands、CrewAI、OpenAI Agents SDK、Claude Agent SDK 等"], ["h", "InvokeAgentRuntime，HTTP 或 WebSocket，按 runtimeSessionId 区分会话"], ["b", "任意模型：Bedrock、Claude、Gemini、OpenAI"], ["h", "每会话一个 microVM（≤ 8 小时），或账户内 EC2 实例（≤ 14 天，可用 GPU）"], ["h", "Gateway、Browser、Code Interpreter、Web Search、Memory、Identity"], "活跃 vCPU 小时 + GB 小时，组件分别计价"] },
+      c: [["b", "LangGraph、Strands、CrewAI、OpenAI Agents SDK、Claude Agent SDK 等"], ["h", "InvokeAgentRuntime，HTTP 或 WebSocket，按 runtimeSessionId 区分会话"], ["b", "任意模型：Bedrock、Claude、Gemini、OpenAI"], ["h", "按会话分配 microVM（≤ 8 小时）或账户内 EC2 实例（≤ 14 天，支持 GPU）"], ["h", "Gateway、Browser、Code Interpreter、Web Search、Memory、Identity"], "活跃 vCPU 小时 + GB 小时，组件分别计价"] },
     { g: "runtime", p: "Agent Runtime（原 Agent Engine）", v: "Google", r: ["google/agent-runtime/overview", "google/agent-platform/runtime-scaling", "google/agent-platform-sandbox/overview"],
-      c: [["b", "ADK（完全集成）、LangChain、LangGraph、AG2、LlamaIndex、CrewAI、任意容器"], ["h", "查询 API、双向流；Sessions 与 Memory Bank 另行提供"], ["b", "agent 代码自行调用"], ["h", "托管运行时（min_instances、container_concurrency 可调）+ 独立沙箱（代码执行、Computer Use、自定义容器）"], ["h", "Agent Gateway、Code Execution、Computer Use"], "见 Agent Platform 价格页"] },
+      c: [["b", "ADK（完全集成）、LangChain、LangGraph、AG2、LlamaIndex、CrewAI、任意容器"], ["h", "查询 API、双向流；Sessions 与 Memory Bank 为配套服务"], ["b", "由 agent 代码调用"], ["h", "托管运行时（min_instances、container_concurrency 可调）+ 独立沙箱（代码执行、Computer Use、自定义容器）"], ["h", "Agent Gateway、Code Execution、Computer Use"], "见 Agent Platform 价格页"] },
     { g: "runtime", p: "Foundry Hosted agents", v: "Microsoft · preview", r: ["microsoft/foundry-hosted-agents/hosted-agents", "microsoft/foundry-hosted-agents/runtime-contract"],
-      c: [["b", "Agent Framework、LangGraph、Semantic Kernel、自定义代码（Python / C#）"], ["h", "Responses、Invocations、WebSocket、A2A、Activity 协议"], ["h", "Foundry 模型目录"], ["h", "每会话 VM 隔离沙箱，0.5–2 vCPU，$HOME 持久，空闲 2–60 分钟回收"], ["h", "Toolbox MCP 端点：Code Interpreter、Bing 搜索、AI Search、MCP、A2A"], "活跃会话的 CPU + 内存"] },
-    { g: "sandbox", name: "沙箱：只提供执行环境" },
+      c: [["b", "Agent Framework、LangGraph、Semantic Kernel、自定义代码（Python / C#）"], ["h", "Responses、Invocations、WebSocket、A2A、Activity 协议"], ["h", "Foundry 模型目录"], ["h", "按会话分配 VM 隔离沙箱，0.5–2 vCPU，$HOME 持久化，空闲 2–60 分钟后回收计算"], ["h", "Toolbox MCP 端点：Code Interpreter、Bing 搜索、AI Search、MCP、A2A"], "活跃会话的 CPU + 内存"] },
+    { g: "sandbox", name: "沙箱服务" },
     { g: "sandbox", p: "E2B", v: "", r: ["e2b/sandbox/overview", "e2b/sandbox/persistence", "e2b/sandbox/pricing"],
-      c: [["b", "外部 harness 调用 SDK"], ["n", ""], ["n", ""], ["h", "按秒计费；Hobby 会话 ≤ 1 小时 / 20 并发，Pro ≤ 24 小时 / 100 并发"], ["n", ""], "$0.000014/vCPU·秒"] },
+      c: [["b", "外部 harness 通过 SDK 调用"], ["n", ""], ["n", ""], ["h", "按秒计费；Hobby 会话 ≤ 1 小时 / 20 并发，Pro ≤ 24 小时 / 100 并发"], ["n", ""], "$0.000014/vCPU·秒"] },
     { g: "sandbox", p: "Daytona", v: "", r: ["daytona/sandbox/overview", "daytona/sandbox/pricing"],
-      c: [["b", "外部 harness 调用 SDK"], ["n", ""], ["n", ""], ["h", "按秒计费，提供 GPU 与 Windows 规格"], ["n", ""], "vCPU $0.0504/时，内存 $0.0162/GiB·时"] },
+      c: [["b", "外部 harness 通过 SDK 调用"], ["n", ""], ["n", ""], ["h", "按秒计费，提供 GPU 与 Windows 规格"], ["n", ""], "vCPU $0.0504/时，内存 $0.0162/GiB·时"] },
     { g: "sandbox", p: "Cloud Run sandboxes", v: "Google · preview", r: ["google/cloud-run-sandboxes/announcement"],
-      c: [["b", "运行在 Cloud Run 服务内的 agent"], ["n", ""], ["n", ""], ["h", "在服务实例内启动，只读文件系统 + 内存覆盖层，默认无出站网络"], ["n", ""], "用服务已分配的 CPU 与内存，无额外费用"] },
+      c: [["b", "运行在 Cloud Run 服务内的 agent"], ["n", ""], ["n", ""], ["h", "在服务实例内启动；文件系统只读挂载，写入落在内存覆盖层；出站网络默认关闭"], ["n", ""], "使用服务实例已分配的 CPU 与内存"] },
     { g: "sandbox", p: "GKE Agent Sandbox", v: "Google", r: ["google/gke-agent-sandbox/pod-snapshot-blog"],
-      c: [["b", "部署在 GKE 上的 agent（如 ADK）"], ["n", ""], ["n", ""], ["h", "gVisor 隔离的 pod，Pod Snapshots 快速恢复"], ["n", ""], "GKE 资源计费"] },
-    { g: "tool", name: "工具：搜索 API" },
+      c: [["b", "部署在 GKE 上的 agent（如 ADK）"], ["n", ""], ["n", ""], ["h", "gVisor 隔离的 pod，Pod Snapshots 用于状态恢复"], ["n", ""], "GKE 资源计费"] },
+    { g: "tool", name: "搜索 API" },
     { g: "tool", p: "Exa", v: "", r: ["exa/search/overview", "exa/search/pricing"], c: [["n", ""], ["n", ""], ["n", ""], ["n", ""], ["h", "搜索、Deep Search、Contents、Answer、Monitors"], "$4–15/千次请求"] },
     { g: "tool", p: "Tavily", v: "", r: ["tavily/search/overview", "tavily/search/pricing"], c: [["n", ""], ["n", ""], ["n", ""], ["n", ""], ["h", "Search、Extract、Map、Crawl、Research"], "$0.008/积分（按量）"] },
     { g: "app", name: "面向开发者的云端编程 agent" },
     { g: "app", p: "Codex Cloud", v: "OpenAI", r: ["openai/codex-cloud/overview", "openai/codex-cloud/environments"],
-      c: [["h", "Codex"], ["h", "ChatGPT 网页、桌面与手机，终端也可发起"], ["h", "OpenAI 模型"], ["h", "发布的云环境（仓库、依赖、工具），每个任务独立工作区"], ["h", "network secret 经代理替换"], "—"] },
+      c: [["h", "Codex"], ["h", "ChatGPT 网页、桌面与手机，终端也可发起"], ["h", "OpenAI 模型"], ["h", "发布的云环境（仓库、依赖、工具），按任务分配工作区"], ["h", "network secret 经代理替换"], "—"] },
     { g: "app", p: "Claude Code 云会话", v: "Anthropic", r: ["anthropic/claude-code-web/overview"],
       c: [["h", "Claude Code"], ["h", "claude.ai/code、桌面、手机；CLI --cloud 与 --teleport"], ["h", "Claude 模型"], ["o", "Anthropic 托管或组织自托管环境"], ["h", "GitHub 代理在服务端附加凭据"], "随 Pro、Max、Team、Enterprise 方案提供"] },
     { g: "app", p: "Copilot cloud agent", v: "GitHub", r: ["github/copilot-cloud-agent/overview", "github/copilot-cloud-agent/api"],
-      c: [["h", "Copilot cloud agent"], ["h", "GitHub.com 的 issue、PR、agents 面板与 API"], ["h", "可选模型，取决于方案"], ["h", "临时云开发环境，单次 ≤ 59 分钟"], ["h", "GitHub MCP 服务器，可配置更多 MCP"], "按 Copilot 方案"] },
+      c: [["h", "Copilot cloud agent"], ["h", "GitHub.com 的 issue、PR、agents 面板与 API"], ["h", "可选模型，取决于方案"], ["h", "临时云开发环境，会话最长 59 分钟"], ["h", "GitHub MCP 服务器，可配置更多 MCP"], "按 Copilot 方案"] },
     { g: "app", p: "Jules", v: "Google", r: ["google/jules/overview"],
       c: [["h", "Jules"], ["h", "网页、CLI、API，或用 issue 标签分配"], ["h", "Gemini 3 Pro"], ["h", "在 Cloud VM 中克隆仓库并验证修改"], ["n", ""], "按方案"] },
     { g: "app", p: "Kiro Web", v: "AWS", r: ["aws/kiro-web/overview", "aws/kiro-web/sandbox"],
-      c: [["h", "Kiro"], ["h", "网页，可从任意界面重新接入会话"], ["n", ""], ["h", "每个任务一个隔离沙箱，内置 headless Chrome 与 Playwright MCP"], ["h", "浏览器自动化工具"], "—"] },
+      c: [["h", "Kiro"], ["h", "网页，可从任意界面重新接入会话"], ["n", ""], ["h", "按任务分配隔离沙箱，内置 headless Chrome 与 Playwright MCP"], ["h", "浏览器自动化工具"], "—"] },
   ];
   const OWN = { h: ["h", "托管"], b: ["b", "自带"], o: ["o", "可选"], n: ["n", "无"] };
   function drawMatrix(filter) {
@@ -560,6 +560,7 @@
       row.c.forEach((cell) => {
         if (typeof cell === "string") { h += `<td>${esc(cell)}</td>`; return; }
         const [k, t] = cell;
+        if (k === "n") { h += `<td class="na">—</td>`; return; }
         const [cls, lab] = OWN[k];
         h += `<td><span class="own ${cls}">${lab}</span>${esc(t)}</td>`;
       });
