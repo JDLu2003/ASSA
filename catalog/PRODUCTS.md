@@ -47,3 +47,7 @@
 - OpenAI 与 Kiro 某些页面的默认 PDF 会裁切文字，默认版仍保留；目录链接优先使用注明打印样式调整的 page.complete.pdf。原始 HTML、工具提取全文和打印元数据另存。
 - GitHub 旧 coding-agent 链接跳转到 GitHub.com 产品总览；目录另引用已成功采集的 [云代理 API 文档](../sources/official/github/copilot-cloud-agent/api/page.txt)。
 - 此目录不是完整市场清单。未核实的名称不会写成已确认产品，也不据访问失败判断产品不存在。
+
+## 补充官方文档
+
+- Google Gemini Enterprise Agent Platform：[智能体评估（中文）](https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn) · [浏览器打印 PDF](../sources/official/google/gemini-enterprise-agent-platform/agent-evaluation-zh-cn/page.pdf) · [完整页面文本](../sources/official/google/gemini-enterprise-agent-platform/agent-evaluation-zh-cn/page.txt) · [元数据](../sources/official/google/gemini-enterprise-agent-platform/agent-evaluation-zh-cn/metadata.json)

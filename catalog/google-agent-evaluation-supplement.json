@@ -1,0 +1,12 @@
+{
+  "official": [
+    {
+      "vendor": "google",
+      "product": "gemini-enterprise-agent-platform",
+      "id": "agent-evaluation-zh-cn",
+      "kind": "official-documentation",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn"
+    }
+  ],
+  "papers": []
+}

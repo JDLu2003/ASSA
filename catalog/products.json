@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-09T12:32:57.280369+00:00",
+  "updated_at": "2026-10-09T13:58:31.929216+00:00",
   "priority": "Product collection retained; paper collection resumed",
   "scope_note": "Retrieval index only. Platforms, components and documented agent types are separate entries, not assumed to be separate standalone products. No architecture, cost or performance analysis.",
   "captured_entries": [
@@ -509,6 +509,18 @@
       "status": "official_source_captured",
       "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
       "title": "What is Microsoft Foundry Agent Service? - Microsoft Foundry | Microsoft Learn"
+    }
+  ],
+  "supplemental_documents": [
+    {
+      "vendor": "google",
+      "parent_name": "Gemini Enterprise Agent Platform",
+      "name": "智能体评估",
+      "official_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn",
+      "local_path": "sources/official/google/gemini-enterprise-agent-platform/agent-evaluation-zh-cn",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
     }
   ]
 }

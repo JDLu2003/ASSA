@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-09T13:12:54.843728+00:00",
+  "generated_at": "2026-10-09T13:58:31.929216+00:00",
   "priority": "Paper collection resumed following user instruction",
-  "captured_webpages": 89,
+  "captured_webpages": 90,
   "captured_papers": 57,
   "products_index": "catalog/PRODUCTS.md",
-  "git_upload_status": "Paper originals, extracted text and indexes uploaded; source commit verified against remote branch",
+  "git_upload_status": "Google Chinese agent evaluation supplement verified locally; upload pending",
   "remaining": [
     "Initial source inventory, not an exhaustive literature or market census.",
     "ACM publisher page for RhymeRL returned a browser access challenge; arXiv original retained.",
@@ -15,7 +15,8 @@
     "browser_tls": "verification retained; NSS database write access required in sandbox",
     "print_completeness": "Default and adjusted browser PDFs retained. PDF/DOM text screening passed; Kiro sandbox document uses full body line matching because printed sidebar is omitted. Kiro Web expanded reading layout visually inspected. Dynamic variants and text in images are not guaranteed by these checks.",
     "git_lfs": "New batch: 79 staged PDF/archive LFS pointers verified; Git LFS fsck passed; push succeeded and remote source commit matched.",
-    "paper_integrity": "240 paper file hashes verified; all paper PDFs parsed, extracted titles matched, all source archives listed."
+    "paper_integrity": "240 paper file hashes verified; all paper PDFs parsed, extracted titles matched, all source archives listed.",
+    "google_agent_evaluation": "4 source hashes checked; PDF parsed; all substantive body lines matched in PDF text"
   },
   "paper_source_archives": 51,
   "offering_index_entries": 16,

@@ -1,0 +1,145 @@
+Google    会使用 AI 技术将内容翻译成您偏好的语言。AI 翻译可能包含错误。                                               Switch to English
+
+
+
+
+智能体评估                            content_copy arrow_drop_down
+
+
+如需查看端到端智能体评估的示例， 请在以下任一环境中运行“使用用户模拟、指标注册和自动损失分析进行多轮
+智能体评估”笔记本：
+
+在 Colab 中打开
+    (https://colab.research.google.com/github/GoogleCloudPlatform/generative-
+ai/blob/main/gemini/evaluation/multi_turn_agent_evaluation_with_user_simulation_metric_registration_auto_loss
+_analysis.ipynb?hl=zh-cn)
+|
+
+
+在 Colab Enterprise 中打开
+    (https://console.cloud.google.com/agent-
+platform/colab/import/https%3A%2F%2Fraw.githubusercontent.com%2FGoogleCloudPlatform%2Fgenerative-
+ai%2Fmain%2Fgemini%2Fevaluation%2Fmulti_turn_agent_evaluation_with_user_simulation_metric_registration_a
+uto_loss_analysis.ipynb?hl=zh-cn)
+|
+
+
+在 Agent Platform Workbench 中打开
+    (https://console.cloud.google.com/agent-platform/workbench/deploy-notebook?
+download_url=https%3A%2F%2Fraw.githubusercontent.com%2FGoogleCloudPlatform%2Fgenerative-
+ai%2Fmain%2Fgemini%2Fevaluation%2Fmulti_turn_agent_evaluation_with_user_simulation_metric_registration_a
+uto_loss_analysis.ipynb&hl=zh-cn)
+|
+
+
+在 GitHub 上查看
+    (https://github.com/GoogleCloudPlatform/generative-
+ai/blob/main/gemini/evaluation/multi_turn_agent_evaluation_with_user_simulation_metric_registration_auto_loss
+_analysis.ipynb)
+
+
+
+本文档介绍了如何使用智能体评估来衡量和改进智能体的性能、安全性和质量。
+如需详细了解模型评估，请参阅 Gen AI Evaluation Service 概览
+    (https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/evaluation-overview?hl=zh-cn)   。
+
+流程摘要
+阶段 活动       目标
+设计 定义评估案例   指定智能体任务和预期结果。
+执行 运行推理     生成真实或模拟的对话轨迹。
+评分 计算指标     使用自动评分器（任务成功率、安全性）对轨迹进行评分。
+优化 优化智能体    提出并验证对指令或工具的改进建议。
+
+
+评估流程
+评估遵循结构化的迭代工作流：
+ 1. 定义评估案例：评估案例是一种规范，用于定义 智能体的任务。评估案例可以包含一个或多个
+    对话步骤、对话上下文（智能体的状态），以及用于在推理期间模拟用户响应的规范。
+ 2. 运行推理：推理 是指执行评估案例。如果评估案例包含对话计划，则在推理期间会模拟用户响
+    应。
+ 3. 生成轨迹：每次推理运行都会在轨迹中捕获智能体的行为 。轨迹 是智能体行为的真实且不可变
+    记录，包括模型输入、响应和工具调用。
+ 4. 计算指标：指标是使用 预构建或自定义评分器为每个轨迹计算的分数。某些指标（例如完全匹
+    配）是 基于参考答案的，需要包含参考答案的评估案例。 其他指标（例如实用性）是不基于参
+    考答案的，会自行评估轨迹 。借助这种自动评估，您可以对从生产流量或外部日志捕获的轨迹
+    进行评分，而无需使用受管测试环境。
+ 5. 进行分析：分析指标、评分准则和判定，以 找出关键智能体问题，将智能体问题与测试用例关
+    联起来， 并生成改进洞见。
+ 6. 优化智能体：使用优化来管理整个 评估周期。此自动化流程会分析结果，提出对智能体的改进
+    建议，并以迭代方式重新运行该流程，以验证性能提升。
+评估工作流
+您可以将评估集成到工作流的两个主要阶段：
+  本地开发迭代：在本地评估基于智能体开发套件 (ADK) 的 智能体，以快速迭代提示工程和工具
+  配置。
+  已部署智能体评估：通过 分析历史轨迹或针对智能体 端点运行合成基准，衡量已部署智能体的
+  质量。
+
+核心功能
+即使没有现有测试数据，智能体评估也能帮助您构建初始评估套件。以下功能有助于自动生成测试用
+例和优化智能体系统：
+  场景生成和用户模拟：根据智能体的指令和工具定义，自动生成 多样化的多轮合成测试场景。
+  借助这种自动化，您可以立即开始测试，而无需手动编写初始测试用例。
+  环境模拟：拦截特定的工具调用，以注入 自定义行为、模拟数据或模拟错误（例如 HTTP 503
+  错误或延迟峰值）。借助这种模拟，您可以在不影响生产后端的情况下验证智能体的弹性。
+  多轮评估：使用多轮自动评分器自动评估整个对话 历史记录。这些评分器会分析意图提取，动
+  态生成评分准则，并提供客观的验证判定，以帮助确保指令遵循情况。
+  提示优化：通过使用提示优化，以编程方式生成和验证优化的 系统指令。优化框架会找出失败
+  点，并以迭代方式提出有针对性的更新。
+
+使用 AI 编码助理进行评估
+如果您使用 Gemini CLI 或其他 AI 编码助理，则可以安装智能体 技能
+                                         ，让您的 助理
+(https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/skill-registry?hl=zh-cn)
+学习本页面介绍的智能体评估方法。每项技能都会在编码会话中直接提供评估工作流、数据集架构、
+指标选择指南和失败分析步骤，因此您的助理无需离开编辑器即可构建、评分和改进评估。
+每项技能后都有安装说明。
+Agents CLI     评估技能
+一种 CLI 驱动的工作流，用于使用 agents-cli eval 命令评估和优化智能体开发套件 (ADK) 智能
+体。此技能涵盖：
+   准备评估数据集，并通过用户模拟合成多轮场景
+   运行推理、对轨迹进行评分和分析失败集群
+   使用 eval-fix 循环迭代提示和工具
+如需安装 ，请运行以下命令：
+
+npx skills add https://github.com/google/agents-cli --skill google-agents-cli-eval
+
+
+
+Agent Platform GenAI Evaluation Service                   飞轮技能
+一种 SDK 驱动的剧本，用于通过 Agent Platform GenAI Evaluation Service 评估和改进模型和智能
+体，使用 Agent Platform GenAI Evaluation SDK (client.evals.evaluate())。此技能涵盖：
+  从会话轨迹、DataFrame 或合成生成构建评估数据集
+  使用 LLM 作为评判员评分来选择、配置和编写自定义指标
+  分析评分准则判定和损失模式，以推动具体改进
+如需安装 ，请运行以下命令：
+
+npx skills add https://github.com/google/skills --skill agent-platform-eval-flywheel
+
+
+
+
+后续步骤
+     模拟智能体行为
+     (https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-
+     simulated?hl=zh-cn)
+
+     运行评估
+     (https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-agents?
+     hl=zh-cn)
+
+     管理评估指标
+     (https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/manage-metrics?
+     hl=zh-cn)
+
+     查看评估结果
+     (https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/view-results?hl=zh-
+     cn)
+
+
+
+如未另行说明，那么本页面中的内容已根据知识共享署名 4.0 许可 (https://creativecommons.org/licenses/by/4.0/)获得
+了许可，并且代码示例已根据 Apache 2.0 许可 (https://www.apache.org/licenses/LICENSE-2.0)获得了许可。有关详
+情，请参阅 Google 开发者网站政策 (https://developers.google.com/site-policies?hl=zh-cn)。Java 是 Oracle 和/或其关
+联公司的注册商标。
+最后更新时间 (UTC)：2026-10-07。
+
