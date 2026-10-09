@@ -1,6 +1,6 @@
 {
   "phase": "primary-source collection only",
-  "status": "Collection in progress; see collection-status.json for current evidence and limitations",
+  "status": "Product-first initial source inventory captured and verified; see collection-status.json for upload evidence and scope limits",
   "layout": {
     "official": "sources/official/<vendor>/<product>/<page-id>/{page.pdf,page.txt,page.pdf.txt,metadata.json}",
     "papers": "sources/papers/<topic>/<paper-id>/{paper.pdf,paper.txt,source.tar when available,metadata.json}"
@@ -96,10 +96,9 @@
     "Verify Git LFS pointers for PDFs and archives before committing. Upload only successfully collected evidence; no fabricated replacements."
   ],
   "pending": [
-    "Verify and capture product candidates when proxy upstream recovers",
-    "Verify product-specific pricing links redirected to generic documentation",
-    "Identify and obtain the user-mentioned IPADS paper; no identification claim made",
-    "Upload successfully collected material through Git LFS"
+    "This is an initial product source inventory, not an exhaustive market census.",
+    "Additional per-product API limits, resource specifications and pricing sources can be collected from the confirmed product entries.",
+    "Identify the user-mentioned IPADS paper separately when paper discovery resumes; no identification claim has been made."
   ],
   "priority": "Products first; pause further paper discovery per latest user instruction"
 }

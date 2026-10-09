@@ -1,20 +1,25 @@
 {
-  "generated_at": "2026-10-09T12:12:12.458237+00:00",
-  "priority": "products first; paper discovery paused",
-  "captured_webpages": 57,
+  "generated_at": "2026-10-09T12:38:59.830383+00:00",
+  "priority": "products first; paper discovery remains paused",
+  "captured_webpages": 89,
   "captured_papers": 18,
   "products_index": "catalog/PRODUCTS.md",
-  "git_upload_status": "not yet uploaded; GitHub proxy read operation returned HTTP 503",
+  "git_upload_status": "Source files and product index uploaded and verified on remote branch; this report records verification of the cited source commit",
   "remaining": [
-    "Verify and capture product candidates when proxy upstream recovers",
-    "Verify product-specific pricing links redirected to generic documentation",
-    "Identify and obtain the user-mentioned IPADS paper; no identification claim made",
-    "Upload successfully collected material through Git LFS"
+    "This is an initial product source inventory, not an exhaustive market census.",
+    "Additional per-product API limits, resource specifications and pricing sources can be collected from the confirmed product entries.",
+    "Identify the user-mentioned IPADS paper separately when paper discovery resumes; no identification claim has been made."
   ],
   "checks": {
-    "source_hashes": "275 file hashes verified; all PDFs parsed and all downloaded source archives listed successfully",
+    "source_hashes": "415 file hashes verified; all PDFs parsed and all downloaded source archives listed successfully",
     "browser_tls": "verification retained; NSS database write access required in sandbox",
-    "print_completeness": "OpenAI clipped originals reprinted; PDF/text length screening passed for captured documents"
+    "print_completeness": "Default and adjusted browser PDFs retained. PDF/DOM text screening passed; Kiro sandbox document uses full body line matching because printed sidebar is omitted. Kiro Web expanded reading layout visually inspected. Dynamic variants and text in images are not guaranteed by these checks.",
+    "git_lfs": "136 PDF/archive files represented as Git LFS pointers; source commit LFS fsck passed; both uploads confirmed"
   },
-  "paper_source_archives": 17
+  "paper_source_archives": 17,
+  "offering_index_entries": 16,
+  "component_and_agent_type_entries": 11,
+  "previous_product_candidates_resolved": 15,
+  "git_branch": "source-collection-20261009",
+  "verified_uploaded_source_commit": "0f2ee3d9b2d33d51ad6e4b098e6688266289d5d5"
 }

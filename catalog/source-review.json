@@ -1,349 +1,65 @@
 {
-  "review": "File integrity, error page screening, redirect identities, printable PDF validity, and PDF/DOM text length screening. Length screening is not a guarantee of all dynamic tabs or images.",
+  "review": "File integrity, error page screening, redirects, PDF validity and printable text length screening. This is not a guarantee of all dynamic variants, code-language tabs, images or diagrams. Kiro expanded print layout was visually inspected and original layout retained.",
   "results": [
     {
-      "path": "sources/official/google/agent-platform-sandbox/templates",
-      "title": "Manage sandbox templates  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "path": "sources/official/anthropic/claude-api/code-execution",
+      "title": "Code execution tool - Claude Platform Docs",
       "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
-      "pdf_text_to_dom_text_length_ratio": 0.709,
-      "notes": []
+      "requested_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+      "final_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+      "pdf_text_to_dom_text_length_ratio": 0.9,
+      "notes": [],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/google/agent-platform-sandbox/management",
-      "title": "Manage sandboxes  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "path": "sources/official/anthropic/claude-api/pricing",
+      "title": "Pricing - Claude Platform Docs",
       "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-sandboxes",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-sandboxes",
-      "pdf_text_to_dom_text_length_ratio": 0.777,
-      "notes": []
+      "requested_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "final_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "pdf_text_to_dom_text_length_ratio": 0.963,
+      "notes": [],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/google/agent-platform-sandbox/shell-quickstart",
-      "title": "Shell sandbox quickstart  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "path": "sources/official/anthropic/claude-api/web-search",
+      "title": "Web search tool - Claude Platform Docs",
       "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
-      "pdf_text_to_dom_text_length_ratio": 0.964,
-      "notes": []
+      "requested_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+      "final_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+      "pdf_text_to_dom_text_length_ratio": 0.874,
+      "notes": [],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/google/vertex-agent-engine/session-management",
-      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "path": "sources/official/anthropic/claude-code-web/overview",
+      "title": "Use Claude Code in the cloud - Claude Code Docs",
       "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
-      "pdf_text_to_dom_text_length_ratio": 0.975,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
+      "requested_url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+      "final_url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+      "pdf_text_to_dom_text_length_ratio": 0.956,
+      "notes": [],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/google/vertex-agent-engine/evaluation",
-      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "path": "sources/official/anthropic/claude-managed-agents/cloud-sandbox-reference",
+      "title": "Cloud sandbox reference - Claude Platform Docs",
       "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
-      "pdf_text_to_dom_text_length_ratio": 0.975,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
+      "requested_url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+      "final_url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+      "pdf_text_to_dom_text_length_ratio": 0.643,
+      "notes": [],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/google/vertex-agent-engine/pricing-update",
-      "title": "New Enhanced Tool Governance in Vertex AI Agent Builder | Google Cloud Blog",
+      "path": "sources/official/anthropic/claude-managed-agents/overview",
+      "title": "Claude Managed Agents overview - Claude Platform Docs",
       "status": "captured",
-      "requested_url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
-      "final_url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
-      "pdf_text_to_dom_text_length_ratio": 1.001,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/vertex-agent-engine/overview",
-      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "status": "captured",
-      "requested_url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
-      "pdf_text_to_dom_text_length_ratio": 0.975,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
-    },
-    {
-      "path": "sources/official/google/cloud-run-sandboxes/announcement",
-      "title": "Google Cloud Run sandboxes are in public preview | Google Cloud Blog",
-      "status": "captured",
-      "requested_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
-      "final_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
-      "pdf_text_to_dom_text_length_ratio": 1.013,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/agent-platform/session-management",
-      "title": "Manage sessions using Google Cloud console or API calls  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
-      "pdf_text_to_dom_text_length_ratio": 0.866,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/agent-platform/runtime-scaling",
-      "title": "Optimize and scale Agent Runtime performance  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
-      "pdf_text_to_dom_text_length_ratio": 1.006,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/agent-platform/sessions",
-      "title": "Agent Platform Sessions overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
-      "pdf_text_to_dom_text_length_ratio": 0.649,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/agent-platform/runtime-quickstart",
-      "title": "Quickstart: Develop and deploy agents on Agent Runtime  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart",
-      "pdf_text_to_dom_text_length_ratio": 1.102,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/agent-platform/agent-evaluation",
-      "title": "Agent evaluation  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "status": "captured",
-      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
-      "pdf_text_to_dom_text_length_ratio": 0.93,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/gemini-api/pricing",
-      "title": "Gemini Developer API pricing  |  Gemini API  |  Google AI for Developers",
-      "status": "captured",
-      "requested_url": "https://ai.google.dev/gemini-api/docs/pricing",
-      "final_url": "https://ai.google.dev/gemini-api/docs/pricing",
-      "pdf_text_to_dom_text_length_ratio": 0.967,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/gemini-api/search-grounding",
-      "title": "Grounding with Google Search - Interactions API | Google AI for Developers",
-      "status": "captured",
-      "requested_url": "https://ai.google.dev/gemini-api/docs/google-search",
-      "final_url": "https://ai.google.dev/gemini-api/docs/google-search",
-      "pdf_text_to_dom_text_length_ratio": 0.765,
-      "notes": []
-    },
-    {
-      "path": "sources/official/google/agent-engine/pricing",
-      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "status": "captured",
-      "requested_url": "https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/pricing",
-      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
-      "pdf_text_to_dom_text_length_ratio": 0.975,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
-    },
-    {
-      "path": "sources/official/google/gke-agent-sandbox/pod-snapshot-blog",
-      "title": "Agent Factory Recap: Supercharging Agents on GKE with Agent Sandbox and Pod Snapshots | Google Cloud Blog",
-      "status": "captured",
-      "requested_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
-      "final_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
-      "pdf_text_to_dom_text_length_ratio": 1.045,
-      "notes": []
-    },
-    {
-      "path": "sources/official/ipads/publications/index",
-      "title": "Publications [IPADS]",
-      "status": "captured",
-      "requested_url": "https://ipads.se.sjtu.edu.cn/pub/publication",
-      "final_url": "https://ipads.sjtu.edu.cn/pub/publication",
-      "pdf_text_to_dom_text_length_ratio": 1.002,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
-    },
-    {
-      "path": "sources/official/sglang/inference/overview",
-      "title": "Welcome to SGLang - SGLang Documentation",
-      "status": "captured",
-      "requested_url": "https://docs.sglang.ai/",
-      "final_url": "https://docs.sglang.io/",
-      "pdf_text_to_dom_text_length_ratio": 0.723,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
-    },
-    {
-      "path": "sources/official/microsoft/foundry/pricing",
-      "title": "Microsoft Foundry - Pricing | Microsoft Azure",
-      "status": "captured",
-      "requested_url": "https://azure.microsoft.com/en-us/pricing/details/ai-foundry/",
-      "final_url": "https://azure.microsoft.com/en-us/pricing/details/microsoft-foundry/",
-      "pdf_text_to_dom_text_length_ratio": 0.647,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
-    },
-    {
-      "path": "sources/official/microsoft/foundry-hosted-agents/runtime-contract",
-      "title": "Hosted agent runtime contract - Microsoft Foundry | Microsoft Learn",
-      "status": "captured",
-      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
-      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract?tabs=python",
-      "pdf_text_to_dom_text_length_ratio": 0.962,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
-    },
-    {
-      "path": "sources/official/microsoft/foundry-hosted-agents/management",
-      "title": "Manage hosted agents - Microsoft Foundry | Microsoft Learn",
-      "status": "captured",
-      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
-      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent?pivots=rest",
-      "pdf_text_to_dom_text_length_ratio": 0.908,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
-    },
-    {
-      "path": "sources/official/microsoft/foundry-hosted-agents/hosted-agents",
-      "title": "Hosted agents in Foundry Agent Service - Microsoft Foundry | Microsoft Learn",
-      "status": "captured",
-      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
-      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
-      "pdf_text_to_dom_text_length_ratio": 1.082,
-      "notes": []
-    },
-    {
-      "path": "sources/official/microsoft/foundry-hosted-agents/networking",
-      "title": "Deep dive into Foundry Agent Service networking - Microsoft Foundry | Microsoft Learn",
-      "status": "captured",
-      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
-      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
-      "pdf_text_to_dom_text_length_ratio": 0.983,
-      "notes": []
-    },
-    {
-      "path": "sources/official/openai/agents-sdk/overview",
-      "title": "Agents | OpenAI API",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/guides/agents-sdk",
-      "final_url": "https://developers.openai.com/api/docs/guides/agents",
-      "pdf_text_to_dom_text_length_ratio": 0.779,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic",
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/openai/tools/code-interpreter",
-      "title": "Code Interpreter | OpenAI API",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
-      "final_url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
-      "pdf_text_to_dom_text_length_ratio": 0.913,
-      "notes": [
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/openai/tools/web-search",
-      "title": "Web search | OpenAI API",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/guides/tools-web-search",
-      "final_url": "https://developers.openai.com/api/docs/guides/tools-web-search?api-mode=responses",
-      "pdf_text_to_dom_text_length_ratio": 0.897,
-      "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic",
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/openai/api/pricing",
-      "title": "Pricing | OpenAI API",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/pricing",
-      "final_url": "https://developers.openai.com/api/docs/pricing",
-      "pdf_text_to_dom_text_length_ratio": 0.909,
-      "notes": [
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/openai/agents-api/self-hosted-sandbox",
-      "title": "Self-hosted sandboxes | OpenAI API",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
-      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
-      "pdf_text_to_dom_text_length_ratio": 0.832,
-      "notes": [
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/openai/agents-api/overview",
-      "title": "Agents API | OpenAI API",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
-      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
-      "pdf_text_to_dom_text_length_ratio": 0.781,
-      "notes": [
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/openai/agents-api/hosted-sandbox",
-      "title": "OpenAI-hosted sandboxes",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
-      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
-      "pdf_text_to_dom_text_length_ratio": 0.859,
-      "notes": [
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/openai/agents-api/architecture",
-      "title": "Architecture | OpenAI API",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
-      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
-      "pdf_text_to_dom_text_length_ratio": 0.805,
-      "notes": [
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/openai/agents-api/configuration",
-      "title": "Configuring Agents | OpenAI API",
-      "status": "captured",
-      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
-      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
-      "pdf_text_to_dom_text_length_ratio": 0.852,
-      "notes": [
-        "Use page.complete.pdf; original page.pdf is clipped"
-      ]
-    },
-    {
-      "path": "sources/official/anthropic/claude-managed-agents/self-hosted-sandboxes",
-      "title": "Self-hosted sandboxes - Claude Platform Docs",
-      "status": "captured",
-      "requested_url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
-      "final_url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
-      "pdf_text_to_dom_text_length_ratio": 0.881,
-      "notes": []
+      "requested_url": "https://platform.claude.com/docs/en/managed-agents/overview",
+      "final_url": "https://platform.claude.com/docs/en/managed-agents/overview",
+      "pdf_text_to_dom_text_length_ratio": 0.861,
+      "notes": [],
+      "body_content_check": null
     },
     {
       "path": "sources/official/anthropic/claude-managed-agents/product-blog",
@@ -352,7 +68,18 @@
       "requested_url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
       "final_url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
       "pdf_text_to_dom_text_length_ratio": 1.035,
-      "notes": []
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/anthropic/claude-managed-agents/self-hosted-sandboxes",
+      "title": "Self-hosted sandboxes - Claude Platform Docs",
+      "status": "captured",
+      "requested_url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+      "final_url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+      "pdf_text_to_dom_text_length_ratio": 0.881,
+      "notes": [],
+      "body_content_check": null
     },
     {
       "path": "sources/official/anthropic/claude-managed-agents/updates",
@@ -363,97 +90,8 @@
       "pdf_text_to_dom_text_length_ratio": 0.757,
       "notes": [
         "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
-    },
-    {
-      "path": "sources/official/anthropic/claude-managed-agents/overview",
-      "title": "Claude Managed Agents overview - Claude Platform Docs",
-      "status": "captured",
-      "requested_url": "https://platform.claude.com/docs/en/managed-agents/overview",
-      "final_url": "https://platform.claude.com/docs/en/managed-agents/overview",
-      "pdf_text_to_dom_text_length_ratio": 0.861,
-      "notes": []
-    },
-    {
-      "path": "sources/official/anthropic/claude-api/pricing",
-      "title": "Pricing - Claude Platform Docs",
-      "status": "captured",
-      "requested_url": "https://platform.claude.com/docs/en/about-claude/pricing",
-      "final_url": "https://platform.claude.com/docs/en/about-claude/pricing",
-      "pdf_text_to_dom_text_length_ratio": 0.963,
-      "notes": []
-    },
-    {
-      "path": "sources/official/anthropic/claude-api/code-execution",
-      "title": "Code execution tool - Claude Platform Docs",
-      "status": "captured",
-      "requested_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
-      "final_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
-      "pdf_text_to_dom_text_length_ratio": 0.9,
-      "notes": []
-    },
-    {
-      "path": "sources/official/anthropic/claude-api/web-search",
-      "title": "Web search tool - Claude Platform Docs",
-      "status": "captured",
-      "requested_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
-      "final_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
-      "pdf_text_to_dom_text_length_ratio": 0.874,
-      "notes": []
-    },
-    {
-      "path": "sources/official/daytona/sandbox/pricing",
-      "title": "Daytona - Secure Infrastructure for Running AI-Generated Code",
-      "status": "captured",
-      "requested_url": "https://www.daytona.io/pricing",
-      "final_url": "https://www.daytona.io/pricing",
-      "pdf_text_to_dom_text_length_ratio": 1.064,
-      "notes": []
-    },
-    {
-      "path": "sources/official/daytona/sandbox/overview",
-      "title": "Documentation · Daytona",
-      "status": "captured",
-      "requested_url": "https://www.daytona.io/docs/",
-      "final_url": "https://www.daytona.io/docs/",
-      "pdf_text_to_dom_text_length_ratio": 0.744,
-      "notes": []
-    },
-    {
-      "path": "sources/official/tavily/search/pricing",
-      "title": "Credits & Pricing - Tavily Docs",
-      "status": "captured",
-      "requested_url": "https://docs.tavily.com/documentation/api-credits",
-      "final_url": "https://docs.tavily.com/documentation/api-credits",
-      "pdf_text_to_dom_text_length_ratio": 1.175,
-      "notes": []
-    },
-    {
-      "path": "sources/official/tavily/search/overview",
-      "title": "Tavily Search - Tavily Docs",
-      "status": "captured",
-      "requested_url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
-      "final_url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
-      "pdf_text_to_dom_text_length_ratio": 1.128,
-      "notes": []
-    },
-    {
-      "path": "sources/official/vllm/inference/overview",
-      "title": "vLLM",
-      "status": "captured",
-      "requested_url": "https://docs.vllm.ai/en/latest/",
-      "final_url": "https://docs.vllm.ai/en/latest/",
-      "pdf_text_to_dom_text_length_ratio": 0.973,
-      "notes": []
-    },
-    {
-      "path": "sources/official/aws/agentcore/pricing",
-      "title": "Amazon Bedrock AgentCore Pricing - AWS",
-      "status": "captured",
-      "requested_url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
-      "final_url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
-      "pdf_text_to_dom_text_length_ratio": 0.963,
-      "notes": []
+      ],
+      "body_content_check": null
     },
     {
       "path": "sources/official/aws/agentcore/overview",
@@ -462,16 +100,48 @@
       "requested_url": "https://aws.amazon.com/bedrock/agentcore/",
       "final_url": "https://aws.amazon.com/bedrock/agentcore/",
       "pdf_text_to_dom_text_length_ratio": 0.821,
-      "notes": []
+      "notes": [],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/aws/agentcore-runtime/persistent-filesystem",
-      "title": "Persist session state with filesystem configuration and execute shell commands | Artificial Intelligence",
+      "path": "sources/official/aws/agentcore/pricing",
+      "title": "Amazon Bedrock AgentCore Pricing - AWS",
       "status": "captured",
-      "requested_url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
-      "final_url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
-      "pdf_text_to_dom_text_length_ratio": 0.894,
-      "notes": []
+      "requested_url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+      "final_url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+      "pdf_text_to_dom_text_length_ratio": 0.963,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/agentcore-browser/overview",
+      "title": "Interact with web applications using Amazon Bedrock AgentCore Browser - Amazon Bedrock AgentCore",
+      "status": "captured",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+      "pdf_text_to_dom_text_length_ratio": 1.406,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/agentcore-code-interpreter/overview",
+      "title": "Execute code and analyze data using Amazon Bedrock AgentCore Code Interpreter - Amazon Bedrock AgentCore",
+      "status": "captured",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+      "pdf_text_to_dom_text_length_ratio": 1.762,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/agentcore-gateway/overview",
+      "title": "Amazon Bedrock AgentCore Gateway: A secure AI gateway for agents, tools, and models - Amazon Bedrock AgentCore",
+      "status": "captured",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+      "pdf_text_to_dom_text_length_ratio": 1.362,
+      "notes": [],
+      "body_content_check": null
     },
     {
       "path": "sources/official/aws/agentcore-runtime/deep-research-blog",
@@ -480,25 +150,8 @@
       "requested_url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
       "final_url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
       "pdf_text_to_dom_text_length_ratio": 0.955,
-      "notes": []
-    },
-    {
-      "path": "sources/official/aws/agentcore-runtime/shell-commands",
-      "title": "Execute shell commands in AgentCore Runtime sessions - Amazon Bedrock AgentCore",
-      "status": "captured",
-      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
-      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
-      "pdf_text_to_dom_text_length_ratio": 0.942,
-      "notes": []
-    },
-    {
-      "path": "sources/official/aws/agentcore-runtime/runtime",
-      "title": "Host agent or tools with Amazon Bedrock AgentCore Runtime - Amazon Bedrock AgentCore",
-      "status": "captured",
-      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
-      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
-      "pdf_text_to_dom_text_length_ratio": 0.936,
-      "notes": []
+      "notes": [],
+      "body_content_check": null
     },
     {
       "path": "sources/official/aws/agentcore-runtime/instances",
@@ -507,27 +160,127 @@
       "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
       "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
       "pdf_text_to_dom_text_length_ratio": 0.943,
-      "notes": []
+      "notes": [],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/e2b/sandbox/persistence",
-      "title": "Sandbox persistence - E2B Docs",
+      "path": "sources/official/aws/agentcore-runtime/persistent-filesystem",
+      "title": "Persist session state with filesystem configuration and execute shell commands | Artificial Intelligence",
       "status": "captured",
-      "requested_url": "https://e2b.dev/docs/sandbox/persistence",
-      "final_url": "https://docs.e2b.dev/sandbox/persistence",
-      "pdf_text_to_dom_text_length_ratio": 0.899,
+      "requested_url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+      "final_url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+      "pdf_text_to_dom_text_length_ratio": 0.894,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/agentcore-runtime/runtime",
+      "title": "Host agent or tools with Amazon Bedrock AgentCore Runtime - Amazon Bedrock AgentCore",
+      "status": "captured",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+      "pdf_text_to_dom_text_length_ratio": 0.936,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/agentcore-runtime/shell-commands",
+      "title": "Execute shell commands in AgentCore Runtime sessions - Amazon Bedrock AgentCore",
+      "status": "captured",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+      "pdf_text_to_dom_text_length_ratio": 0.942,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/bedrock-agents/overview",
+      "title": "Automate tasks in your application using AI agents - Amazon Bedrock",
+      "status": "captured",
+      "requested_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "pdf_text_to_dom_text_length_ratio": 1.478,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/bedrock-managed-agents/overview",
+      "title": "Amazon Bedrock Managed Agents",
+      "status": "captured",
+      "requested_url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+      "final_url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+      "pdf_text_to_dom_text_length_ratio": 0.88,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/firecracker/announcement",
+      "title": "Firecracker – Lightweight Virtualization for Serverless Computing | AWS News Blog",
+      "status": "captured",
+      "requested_url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+      "final_url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+      "pdf_text_to_dom_text_length_ratio": 0.826,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/kiro/overview",
+      "title": "Kiro: Move beyond AI coding to agentic engineering",
+      "status": "captured",
+      "requested_url": "https://kiro.dev/",
+      "final_url": "https://kiro.dev/",
+      "pdf_text_to_dom_text_length_ratio": 1.001,
       "notes": [
-        "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/e2b/sandbox/pricing",
-      "title": "Pricing | E2B — The AI Agent Cloud",
+      "path": "sources/official/aws/kiro-web/overview",
+      "title": "Web - Kiro",
       "status": "captured",
-      "requested_url": "https://e2b.dev/pricing",
-      "final_url": "https://e2b.dev/pricing",
-      "pdf_text_to_dom_text_length_ratio": 0.92,
-      "notes": []
+      "requested_url": "https://kiro.dev/web/",
+      "final_url": "https://kiro.dev/web/",
+      "pdf_text_to_dom_text_length_ratio": 1.006,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/aws/kiro-web/sandbox",
+      "title": "Sandbox - Web - Docs - Kiro",
+      "status": "captured",
+      "requested_url": "https://kiro.dev/docs/web/sandbox/",
+      "final_url": "https://kiro.dev/docs/web/sandbox/",
+      "pdf_text_to_dom_text_length_ratio": 0.535,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": {
+        "method": "All substantive lines between the documented opening paragraph and update footer matched in PDF; sidebar omission explains low total-length ratio",
+        "matched_lines": 22
+      }
+    },
+    {
+      "path": "sources/official/daytona/sandbox/overview",
+      "title": "Documentation · Daytona",
+      "status": "captured",
+      "requested_url": "https://www.daytona.io/docs/",
+      "final_url": "https://www.daytona.io/docs/",
+      "pdf_text_to_dom_text_length_ratio": 0.744,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/daytona/sandbox/pricing",
+      "title": "Daytona - Secure Infrastructure for Running AI-Generated Code",
+      "status": "captured",
+      "requested_url": "https://www.daytona.io/pricing",
+      "final_url": "https://www.daytona.io/pricing",
+      "pdf_text_to_dom_text_length_ratio": 1.064,
+      "notes": [],
+      "body_content_check": null
     },
     {
       "path": "sources/official/e2b/sandbox/overview",
@@ -538,18 +291,30 @@
       "pdf_text_to_dom_text_length_ratio": 0.83,
       "notes": [
         "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
+      ],
+      "body_content_check": null
     },
     {
-      "path": "sources/official/exa/search/pricing",
-      "title": "Pricing - Exa",
+      "path": "sources/official/e2b/sandbox/persistence",
+      "title": "Sandbox persistence - E2B Docs",
       "status": "captured",
-      "requested_url": "https://docs.exa.ai/reference/pricing",
-      "final_url": "https://exa.ai/docs/admin/pricing",
-      "pdf_text_to_dom_text_length_ratio": 0.829,
+      "requested_url": "https://e2b.dev/docs/sandbox/persistence",
+      "final_url": "https://docs.e2b.dev/sandbox/persistence",
+      "pdf_text_to_dom_text_length_ratio": 0.899,
       "notes": [
         "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/e2b/sandbox/pricing",
+      "title": "Pricing | E2B — The AI Agent Cloud",
+      "status": "captured",
+      "requested_url": "https://e2b.dev/pricing",
+      "final_url": "https://e2b.dev/pricing",
+      "pdf_text_to_dom_text_length_ratio": 0.92,
+      "notes": [],
+      "body_content_check": null
     },
     {
       "path": "sources/official/exa/search/overview",
@@ -560,7 +325,634 @@
       "pdf_text_to_dom_text_length_ratio": 0.807,
       "notes": [
         "Redirected; source identifies final page and may not fulfill requested topic"
-      ]
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/exa/search/pricing",
+      "title": "Pricing - Exa",
+      "status": "captured",
+      "requested_url": "https://docs.exa.ai/reference/pricing",
+      "final_url": "https://exa.ai/docs/admin/pricing",
+      "pdf_text_to_dom_text_length_ratio": 0.829,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/github/copilot-cloud-agent/api",
+      "title": "Using Copilot cloud agent via the API - GitHub Docs",
+      "status": "captured",
+      "requested_url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+      "final_url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+      "pdf_text_to_dom_text_length_ratio": 0.867,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/github/copilot-cloud-agent/overview",
+      "title": "GitHub Copilot on GitHub.com - GitHub Docs",
+      "status": "captured",
+      "requested_url": "https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent",
+      "final_url": "https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-on-github",
+      "pdf_text_to_dom_text_length_ratio": 0.964,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-engine/pricing",
+      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/pricing",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+      "pdf_text_to_dom_text_length_ratio": 0.975,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-gateway/overview",
+      "title": "Agent Gateway overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+      "pdf_text_to_dom_text_length_ratio": 1.06,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform/agent-evaluation",
+      "title": "Agent evaluation  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
+      "pdf_text_to_dom_text_length_ratio": 0.93,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform/runtime-quickstart",
+      "title": "Quickstart: Develop and deploy agents on Agent Runtime  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart",
+      "pdf_text_to_dom_text_length_ratio": 1.102,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform/runtime-scaling",
+      "title": "Optimize and scale Agent Runtime performance  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+      "pdf_text_to_dom_text_length_ratio": 1.006,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform/session-management",
+      "title": "Manage sessions using Google Cloud console or API calls  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
+      "pdf_text_to_dom_text_length_ratio": 0.866,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform/sessions",
+      "title": "Agent Platform Sessions overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
+      "pdf_text_to_dom_text_length_ratio": 0.649,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform-sandbox/code-execution-overview",
+      "title": "Code Execution  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+      "pdf_text_to_dom_text_length_ratio": 0.936,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform-sandbox/computer-use",
+      "title": "Computer Use  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+      "pdf_text_to_dom_text_length_ratio": 0.672,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform-sandbox/management",
+      "title": "Manage sandboxes  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-sandboxes",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-sandboxes",
+      "pdf_text_to_dom_text_length_ratio": 0.777,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform-sandbox/overview",
+      "title": "Sandboxes overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+      "pdf_text_to_dom_text_length_ratio": 0.815,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform-sandbox/shell-quickstart",
+      "title": "Shell sandbox quickstart  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
+      "pdf_text_to_dom_text_length_ratio": 0.964,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-platform-sandbox/templates",
+      "title": "Manage sandbox templates  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
+      "pdf_text_to_dom_text_length_ratio": 0.709,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/agent-runtime/overview",
+      "title": "Agent Runtime  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+      "pdf_text_to_dom_text_length_ratio": 1.607,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/cloud-run-sandboxes/announcement",
+      "title": "Google Cloud Run sandboxes are in public preview | Google Cloud Blog",
+      "status": "captured",
+      "requested_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+      "final_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+      "pdf_text_to_dom_text_length_ratio": 1.013,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/gemini-api/pricing",
+      "title": "Gemini Developer API pricing  |  Gemini API  |  Google AI for Developers",
+      "status": "captured",
+      "requested_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "final_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "pdf_text_to_dom_text_length_ratio": 0.967,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/gemini-api/search-grounding",
+      "title": "Grounding with Google Search - Interactions API | Google AI for Developers",
+      "status": "captured",
+      "requested_url": "https://ai.google.dev/gemini-api/docs/google-search",
+      "final_url": "https://ai.google.dev/gemini-api/docs/google-search",
+      "pdf_text_to_dom_text_length_ratio": 0.765,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/gemini-enterprise-agent-platform/generative-ai-pricing",
+      "title": "Agent Platform Pricing | Google Cloud",
+      "status": "captured",
+      "requested_url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+      "final_url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+      "pdf_text_to_dom_text_length_ratio": 0.891,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/gemini-enterprise-agent-platform/overview",
+      "title": "Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+      "pdf_text_to_dom_text_length_ratio": 0.613,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/gemini-enterprise-agent-platform/vertex-ai-name-changes",
+      "title": "Gemini Enterprise Agent Platform name changes  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes",
+      "pdf_text_to_dom_text_length_ratio": 0.876,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/gke-agent-sandbox/pod-snapshot-blog",
+      "title": "Agent Factory Recap: Supercharging Agents on GKE with Agent Sandbox and Pod Snapshots | Google Cloud Blog",
+      "status": "captured",
+      "requested_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+      "final_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+      "pdf_text_to_dom_text_length_ratio": 1.045,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/jules/overview",
+      "title": "Jules - An Autonomous Coding Agent",
+      "status": "captured",
+      "requested_url": "https://jules.google/",
+      "final_url": "https://jules.google/",
+      "pdf_text_to_dom_text_length_ratio": 0.962,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/managed-agents/overview",
+      "title": "Managed Agents API on Agent Platform overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+      "pdf_text_to_dom_text_length_ratio": 0.889,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/managed-agents/sandbox-environment",
+      "title": "Managed Agents API on Agent Platform sandbox environment  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+      "pdf_text_to_dom_text_length_ratio": 0.848,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/vertex-agent-engine/evaluation",
+      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+      "pdf_text_to_dom_text_length_ratio": 0.975,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/vertex-agent-engine/overview",
+      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+      "pdf_text_to_dom_text_length_ratio": 0.975,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/vertex-agent-engine/pricing-update",
+      "title": "New Enhanced Tool Governance in Vertex AI Agent Builder | Google Cloud Blog",
+      "status": "captured",
+      "requested_url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+      "final_url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+      "pdf_text_to_dom_text_length_ratio": 1.001,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/google/vertex-agent-engine/session-management",
+      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+      "pdf_text_to_dom_text_length_ratio": 0.975,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/ipads/publications/index",
+      "title": "Publications [IPADS]",
+      "status": "captured",
+      "requested_url": "https://ipads.se.sjtu.edu.cn/pub/publication",
+      "final_url": "https://ipads.sjtu.edu.cn/pub/publication",
+      "pdf_text_to_dom_text_length_ratio": 1.002,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/microsoft/foundry/pricing",
+      "title": "Microsoft Foundry - Pricing | Microsoft Azure",
+      "status": "captured",
+      "requested_url": "https://azure.microsoft.com/en-us/pricing/details/ai-foundry/",
+      "final_url": "https://azure.microsoft.com/en-us/pricing/details/microsoft-foundry/",
+      "pdf_text_to_dom_text_length_ratio": 0.647,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/microsoft/foundry-agent-service/overview",
+      "title": "What is Microsoft Foundry Agent Service? - Microsoft Foundry | Microsoft Learn",
+      "status": "captured",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "pdf_text_to_dom_text_length_ratio": 0.95,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/microsoft/foundry-hosted-agents/hosted-agents",
+      "title": "Hosted agents in Foundry Agent Service - Microsoft Foundry | Microsoft Learn",
+      "status": "captured",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+      "pdf_text_to_dom_text_length_ratio": 1.082,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/microsoft/foundry-hosted-agents/management",
+      "title": "Manage hosted agents - Microsoft Foundry | Microsoft Learn",
+      "status": "captured",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent?pivots=rest",
+      "pdf_text_to_dom_text_length_ratio": 0.908,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/microsoft/foundry-hosted-agents/networking",
+      "title": "Deep dive into Foundry Agent Service networking - Microsoft Foundry | Microsoft Learn",
+      "status": "captured",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+      "pdf_text_to_dom_text_length_ratio": 0.983,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/microsoft/foundry-hosted-agents/runtime-contract",
+      "title": "Hosted agent runtime contract - Microsoft Foundry | Microsoft Learn",
+      "status": "captured",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract?tabs=python",
+      "pdf_text_to_dom_text_length_ratio": 0.962,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-api/architecture",
+      "title": "Architecture | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+      "pdf_text_to_dom_text_length_ratio": 0.805,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-api/bedrock-managed-agents",
+      "title": "Bedrock Managed Agents | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+      "pdf_text_to_dom_text_length_ratio": 0.692,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-api/configuration",
+      "title": "Configuring Agents | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+      "pdf_text_to_dom_text_length_ratio": 0.852,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-api/hosted-sandbox",
+      "title": "OpenAI-hosted sandboxes",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+      "pdf_text_to_dom_text_length_ratio": 0.859,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-api/overview",
+      "title": "Agents API | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+      "pdf_text_to_dom_text_length_ratio": 0.781,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-api/sandbox-lifecycle",
+      "title": "Sandbox lifecycle | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+      "pdf_text_to_dom_text_length_ratio": 0.821,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-api/sandbox-security",
+      "title": "Sandbox security | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+      "pdf_text_to_dom_text_length_ratio": 0.687,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-api/self-hosted-sandbox",
+      "title": "Self-hosted sandboxes | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+      "pdf_text_to_dom_text_length_ratio": 0.832,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-sdk/overview",
+      "title": "Agents | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents",
+      "pdf_text_to_dom_text_length_ratio": 0.779,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic",
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/agents-sdk/sdk-overview",
+      "title": "Agents SDK | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+      "pdf_text_to_dom_text_length_ratio": 0.795,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/api/pricing",
+      "title": "Pricing | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/pricing",
+      "final_url": "https://developers.openai.com/api/docs/pricing",
+      "pdf_text_to_dom_text_length_ratio": 0.909,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/codex-cloud/environments",
+      "title": "Cloud environments | ChatGPT Learn",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/codex/environments/cloud-environments",
+      "final_url": "https://learn.chatgpt.com/docs/environments/cloud-environments",
+      "pdf_text_to_dom_text_length_ratio": 0.947,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/codex-cloud/overview",
+      "title": "Codex Cloud | ChatGPT Learn",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/codex/cloud",
+      "final_url": "https://learn.chatgpt.com/docs/cloud",
+      "pdf_text_to_dom_text_length_ratio": 0.881,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/responses/migration-guide",
+      "title": "Migrate to the Responses API | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/migrate-to-responses",
+      "final_url": "https://developers.openai.com/api/docs/guides/migrate-to-responses",
+      "pdf_text_to_dom_text_length_ratio": 0.914,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/tools/code-interpreter",
+      "title": "Code Interpreter | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+      "final_url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+      "pdf_text_to_dom_text_length_ratio": 0.913,
+      "notes": [
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/openai/tools/web-search",
+      "title": "Web search | OpenAI API",
+      "status": "captured",
+      "requested_url": "https://developers.openai.com/api/docs/guides/tools-web-search",
+      "final_url": "https://developers.openai.com/api/docs/guides/tools-web-search?api-mode=responses",
+      "pdf_text_to_dom_text_length_ratio": 0.897,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic",
+        "Use page.complete.pdf; original page.pdf has clipping. Print adjustment is recorded in metadata; originals retained."
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/sglang/inference/overview",
+      "title": "Welcome to SGLang - SGLang Documentation",
+      "status": "captured",
+      "requested_url": "https://docs.sglang.ai/",
+      "final_url": "https://docs.sglang.io/",
+      "pdf_text_to_dom_text_length_ratio": 0.723,
+      "notes": [
+        "Redirected; source identifies final page and may not fulfill requested topic"
+      ],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/tavily/search/overview",
+      "title": "Tavily Search - Tavily Docs",
+      "status": "captured",
+      "requested_url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+      "final_url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+      "pdf_text_to_dom_text_length_ratio": 1.128,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/tavily/search/pricing",
+      "title": "Credits & Pricing - Tavily Docs",
+      "status": "captured",
+      "requested_url": "https://docs.tavily.com/documentation/api-credits",
+      "final_url": "https://docs.tavily.com/documentation/api-credits",
+      "pdf_text_to_dom_text_length_ratio": 1.175,
+      "notes": [],
+      "body_content_check": null
+    },
+    {
+      "path": "sources/official/vllm/inference/overview",
+      "title": "vLLM",
+      "status": "captured",
+      "requested_url": "https://docs.vllm.ai/en/latest/",
+      "final_url": "https://docs.vllm.ai/en/latest/",
+      "pdf_text_to_dom_text_length_ratio": 0.973,
+      "notes": [],
+      "body_content_check": null
     },
     {
       "path": "sources/official/anthropic/claude-managed-agents/pricing",
