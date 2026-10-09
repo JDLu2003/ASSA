@@ -17,3 +17,7 @@ Primary-source collection only. This repository stores vendor webpages as browse
 Git LFS tracks PDFs and paper source archives. A GitHub Actions workflow downloads and commits sources (including LFS objects) on demand. Failed captures remain visible as errors in metadata, never silently replaced with fabricated material.
 
 To run: Actions → **Capture original sources** → Run workflow. No credentials other than the repository GitHub Actions token are needed for public sources. External sites may block archiving; check the run log and `capture-results.json` for gaps.
+
+## Survey
+
+`survey/index.html` is the survey built from this archive: a paged web document (open it in a browser; ← → to turn pages). Every citation in it links to the archived PDF and extracted text under `sources/`. After adding sources, regenerate the citation index with `python3 survey/build_sources.py`.
