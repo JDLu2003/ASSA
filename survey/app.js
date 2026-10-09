@@ -69,7 +69,7 @@
   }
   function srcMeta(s) {
     if (s.kind === "paper") return [s.venue, s.date, (s.authors || []).slice(0, 3).join(", ") + ((s.authors || []).length > 3 ? " 等" : "")].filter(Boolean).join(" · ");
-    return [s.vendor, s.product, "抓取 " + s.captured].join(" · ");
+    return [s.vendor, s.product].filter(Boolean).join(" · ");
   }
   document.addEventListener("click", (e) => {
     const b = e.target.closest(".ref");
@@ -125,29 +125,26 @@
   /* ---------------- figure: the service structure ---------------- */
   function drawModel() {
     const K = kit();
-    const W = 1200, H = 528;
-    let g = `<svg class="dgm lt" viewBox="0 0 ${W} ${H}" role="img" aria-label="托管智能体服务的结构：左侧应用经会话接口连接服务；虚线框内为服务方运行的 harness 与其保存的状态；右侧为模型推理、执行环境与托管工具三类外部资源">${K.defs}`;
+    const W = 1200, H = 556;
+    let g = `<svg class="dgm lt" viewBox="0 0 ${W} ${H}" role="img" aria-label="托管智能体服务的结构：应用经会话接口连接 harness 的上下文与会话；harness 调用模型、在执行环境中执行命令、调用搜索与 MCP，分别对应右侧三类外部资源；服务另外保存配置、会话日志、凭据与记忆">${K.defs}`;
 
     // service boundary
-    g += R(300, 18, 520, 498, { fill: P.soft, stroke: P.mute, dash: "6 5", rx: 16 });
+    g += R(300, 18, 520, 520, { fill: P.soft, stroke: P.mute, dash: "6 5", rx: 16 });
     g += T(322, 46, "托管智能体服务", { size: 14, weight: 700 }) + T(432, 46, "虚线框内由服务方运行", { size: 12, cls: "m" });
 
     // harness
-    g += R(330, 66, 460, 266, { stroke: P.ink, sw: 1.5, rx: 12 });
-    g += T(352, 98, "Agent harness", { size: 18, weight: 700 });
-    g += T(352, 120, "调用模型、执行工具、管理上下文与会话", { size: 12.5, cls: "s" });
-    const steps = [[352, "调用模型", P.model], [502, "执行工具", P.env], [652, "结果写回上下文", P.mute]];
-    steps.forEach(([x, t, c]) => { g += R(x, 138, 118, 36, { stroke: c, sw: 1.4, rx: 18 }) + T(x + 59, 161, t, { size: 12.5, anchor: "middle" }); });
-    g += L("M472,156 H498", P.mute, K) + L("M622,156 H648", P.mute, K);
-    g += L("M711,175 V192 H411 V179", P.mute, K, { sw: 1.2 });
-    g += T(561, 207, "循环，直到任务完成或需要外部输入", { size: 11, anchor: "middle", cls: "m" });
-    // capabilities
-    g += T(352, 242, "常见能力", { size: 11.5, cls: "m" });
-    let cx = 414;
-    ["上下文压缩", "子 agent", "skills", "会话恢复", "权限策略"].forEach((t) => {
-      const w = textW(t, 11.5) + 18;
-      g += R(cx, 226, w, 23, { rx: 11.5, fill: P.soft }) + T(cx + w / 2, 242, t, { size: 11.5, anchor: "middle" });
-      cx += w + 7;
+    g += R(330, 62, 460, 318, { stroke: P.ink, sw: 1.5, rx: 12 });
+    g += T(352, 92, "Agent harness", { size: 18, weight: 700 });
+    g += T(352, 112, "以上下文为中心，循环调用模型与工具", { size: 12, cls: "s" });
+    // context and session
+    g += R(352, 126, 196, 188, { stroke: P.session, sw: 1.4, fill: P.soft, rx: 10 });
+    g += T(366, 150, "上下文与会话", { size: 13, weight: 700 });
+    ["系统提示与 skills", "对话与工具结果", "上下文压缩", "子 agent", "中断后恢复"].forEach((t, i) => { g += T(366, 176 + i * 24, t, { size: 11.5, cls: "s" }); });
+    // steps, one per external interface
+    const steps = [[144, "调用模型", P.model], [220, "执行命令、读写文件", P.env], [296, "调用搜索与 MCP", P.tool]];
+    steps.forEach(([cy, t, c]) => {
+      g += L(`M550,${cy} H596`, P.mute, K, { start: true, sw: 1.3 });
+      g += R(598, cy - 18, 172, 36, { stroke: c, sw: 1.5, rx: 18 }) + T(684, cy + 4.5, t, { size: 12.5, anchor: "middle" });
     });
     // implementations
     const implRow = (y, label, items) => {
@@ -155,30 +152,30 @@
       items.forEach(([k, n]) => { s += img(k, x, y, 18) + T(x + 24, y + 13.5, n, { size: 12 }); x += 24 + textW(n, 12) + 18; });
       return s;
     };
-    g += implRow(266, "厂商托管", [["codex", "Codex"], ["claudecode", "Claude Code"], ["antigravity", "Antigravity"]]);
-    g += implRow(296, "用户自带", [["langgraph", "LangGraph"], ["crewai", "CrewAI"], ["strands", "Strands"], ["langchain", "LangChain"]]);
+    g += implRow(324, "厂商托管", [["codex", "Codex"], ["claudecode", "Claude Code"], ["antigravity", "Antigravity"]]);
+    g += implRow(350, "用户自带", [["langgraph", "LangGraph"], ["crewai", "CrewAI"], ["strands", "Strands"], ["langchain", "LangChain"]]);
 
     // state kept by the service
-    g += T(330, 360, "服务保存的状态", { size: 12.5, weight: 700, fill: P.sub });
+    g += T(330, 408, "服务保存的状态", { size: 12.5, weight: 700, fill: P.sub });
     const st = [["config", "Agent 配置", "模型、指令、工具"], ["log", "会话日志", "append-only 事件"], ["vault", "凭据 vault", "在沙箱之外保存"], ["memory", "记忆与观测", "记忆、追踪、评估"]];
     st.forEach(([k, t, s], i) => {
       const x = 330 + i * 117.7;
-      g += R(x, 372, 107, 62) + icon(k, x + 10, 380, 18) + T(x + 34, 394, t, { size: 12.5, weight: 700 }) + T(x + 10, 422, s, { size: 11, cls: "s" });
+      g += R(x, 420, 107, 62) + icon(k, x + 10, 428, 18) + T(x + 34, 442, t, { size: 12.5, weight: 700 }) + T(x + 10, 470, s, { size: 11, cls: "s" });
     });
-    g += T(330, 466, "托管范围因产品而异：OpenAI、Anthropic、Google 托管框内的全部部分；", { size: 11.5, cls: "m" });
-    g += T(330, 486, "AgentCore、Foundry 等运行平台托管会话与状态，harness 由用户提供。", { size: 11.5, cls: "m" });
+    g += T(330, 508, "OpenAI、Anthropic、Google Managed Agents 托管框内的全部部分；", { size: 11.5, cls: "m" });
+    g += T(330, 526, "AgentCore、Foundry 等运行平台托管会话与状态，harness 由用户提供。", { size: 11.5, cls: "m" });
 
     // applications (left)
-    g += R(16, 92, 210, 222, { rx: 10 });
-    g += T(32, 118, "应用与用户", { size: 13.5, weight: 700 }) + T(32, 137, "经 API、网页或 IDE 调用", { size: 11, cls: "m" });
+    g += R(16, 110, 210, 222, { rx: 10 });
+    g += T(32, 136, "应用与用户", { size: 13.5, weight: 700 }) + T(32, 155, "经 API、网页或 IDE 调用", { size: 11, cls: "m" });
     [["openai", "ChatGPT"], ["claude", "claude.ai"], ["github", "GitHub"], ["notion", "Notion"], ["icon-server", "企业后端"], ["icon-clock", "定时任务"]].forEach(([k, n], i) => {
-      const y = 164 + i * 25;
+      const y = 182 + i * 25;
       g += img(k, 32, y - 13, 17) + T(58, y, n, { size: 12 });
     });
-    g += L("M226,200 H326", P.session, K, { mk: "session", start: true, sw: 1.8 });
-    g += T(262, 190, "提交任务", { size: 11, anchor: "middle", cls: "s" }) + T(262, 220, "事件流", { size: 11, anchor: "middle", cls: "s" });
-    g += num(300, 200, "1", P.session);
-    g += T(300, 176, "会话接口", { size: 11.5, weight: 700, anchor: "middle", fill: P.session, halo: P.soft });
+    g += L("M226,220 H350", P.session, K, { mk: "session", start: true, sw: 1.8 });
+    g += T(262, 210, "提交任务", { size: 11, anchor: "middle", cls: "s" }) + T(262, 240, "事件流", { size: 11, anchor: "middle", cls: "s" });
+    g += num(300, 220, "1", P.session);
+    g += T(300, 196, "会话接口", { size: 11.5, weight: 700, anchor: "middle", fill: P.session, halo: P.soft });
 
     // external resources (right)
     const dock = (o) => {
@@ -193,13 +190,13 @@
       return { svg: s, h };
     };
     const d2 = dock({ y: 18, n: "2", c: P.model, t: "模型推理", en: "Inference", items: [["openai", "OpenAI"], ["claude", "Claude"], ["gemini", "Gemini"], ["bedrock", "Bedrock"], ["azureai", "Foundry"], ["vllm", "vLLM"], ["sglang", "SGLang"]] });
-    const d3 = dock({ y: 174, n: "3", c: P.env, t: "执行环境", en: "Sandbox", items: [["openai", "OpenAI"], ["anthropic", "Anthropic"], ["aws", "AgentCore"], ["azureai", "Foundry"], ["googlecloud", "Google"], ["e2b", "E2B"], ["daytona", "Daytona"], ["modal", "Modal"], ["cloudflare", "Cloudflare"], ["vercel", "Vercel"], ["icon-laptop", "自有机器"]] });
-    const d4 = dock({ y: 368, n: "4", c: P.tool, t: "托管工具", en: "Hosted tools", items: [["google", "Google 搜索"], ["bing", "Bing 搜索"], ["exa", "Exa"], ["tavily", "Tavily"], ["chrome", "浏览器"], ["python", "代码执行"], ["mcp", "MCP 服务器"], ["icon-server", "网关"]] });
+    const d3 = dock({ y: 168, n: "3", c: P.env, t: "执行环境", en: "Sandbox", items: [["openai", "OpenAI"], ["anthropic", "Anthropic"], ["aws", "AgentCore"], ["azureai", "Foundry"], ["googlecloud", "Google"], ["e2b", "E2B"], ["daytona", "Daytona"], ["modal", "Modal"], ["cloudflare", "Cloudflare"], ["vercel", "Vercel"], ["icon-laptop", "自有机器"]] });
+    const d4 = dock({ y: 344, n: "4", c: P.tool, t: "托管工具", en: "Hosted tools", items: [["google", "Google 搜索"], ["bing", "Bing 搜索"], ["exa", "Exa"], ["tavily", "Tavily"], ["chrome", "浏览器"], ["python", "代码执行"], ["mcp", "MCP 服务器"], ["icon-server", "网关"]] });
     g += d2.svg + d3.svg + d4.svg;
-    const link = (y1, y2, c, mk, n) => L(`M792,${y1} H820 L866,${y2}`, c, K, { mk, start: true, sw: 1.8 }) + num(820, y1, n, c);
-    g += link(104, 18 + d2.h / 2, P.model, "model", "2");
-    g += link(200, 174 + d3.h / 2, P.env, "env", "3");
-    g += link(296, 368 + d4.h / 2, P.tool, "tool", "4");
+    const link = (y1, y2, c, mk, n) => L(`M772,${y1} H820 L866,${y2}`, c, K, { mk, start: true, sw: 1.8 }) + num(820, y1, n, c);
+    g += link(144, 18 + d2.h / 2, P.model, "model", "2");
+    g += link(220, 168 + d3.h / 2, P.env, "env", "3");
+    g += link(296, 344 + d4.h / 2, P.tool, "tool", "4");
     g += `</svg>`;
     $("#model-dgm").innerHTML = g;
   }
@@ -342,7 +339,7 @@
     g += ar("M395,218 H468", "长期无活动", 431, 210);
     const notes = (x, y, lines) => lines.map((l, i) => T(x, y + i * 17, l, { size: 11, cls: "m" })).join("");
     g += notes(20, 112, ["OpenAI 自托管：发出 environment_", "connection 后最多等待 5 分钟"]);
-    g += notes(20, 206, ["Anthropic：不计运行时长，", "容器打检查点", "Microsoft：2–60 分钟后释放计算", "AgentCore：microVM 终止，", "/mnt 会话存储保留"]);
+    g += notes(20, 206, ["Anthropic：停止计运行时长，", "容器打检查点", "Microsoft：2–60 分钟后释放计算", "AgentCore：microVM 终止，", "/mnt 会话存储保留"]);
     g += notes(470, 266, ["Microsoft：30 天无活动", "AgentCore 存储：空闲 14 天", "Google 沙箱：TTL 7 天"]);
     g += R(20, 334, 44, 20, { rx: 10, stroke: P.session, sw: 1.8 }) + T(72, 349, "占用计算资源", { size: 11, cls: "s" });
     g += R(190, 334, 44, 20, { rx: 10, stroke: P.mute, dash: "5 4" }) + T(242, 349, "可以释放计算，保留会话日志与持久化文件", { size: 11, cls: "s" });
@@ -588,7 +585,7 @@
   const M = [
     { g: "managed", name: "托管 harness 的服务" },
     { g: "managed", p: "OpenAI Agents API", v: "beta", r: ["openai/agents-api/overview", "openai/agents-api/architecture", "openai/agents-api/hosted-sandbox"],
-      c: [["h", "OpenAI 托管的 Codex harness"], ["h", "Session、事件流与 webhook，运行中可插话引导"], ["h", "OpenAI 模型"], ["o", [["h", "OpenAI 托管 Linux 沙箱，可选容器规格"], ["b", "自托管执行器 codex exec-server"], ["n", "none：不配环境，只用远程 MCP 与函数工具"]]], ["h", "web search、远程 MCP、子 agent；函数工具由应用执行"], "模型 token + 工具标准价 + 容器价"] },
+      c: [["h", "OpenAI 托管的 Codex harness"], ["h", "Session、事件流与 webhook，运行中可插话引导"], ["h", "OpenAI 模型"], ["o", [["h", "OpenAI 托管 Linux 沙箱，可选容器规格"], ["b", "自托管执行器 codex exec-server"], ["n", "none：使用远程 MCP 与函数工具"]]], ["h", "web search、远程 MCP、子 agent；函数工具由应用执行"], "模型 token + 工具标准价 + 容器价"] },
     { g: "managed", p: "Claude Managed Agents", v: "beta", r: ["anthropic/claude-managed-agents/overview", "anthropic/claude-managed-agents/self-hosted-sandboxes", "anthropic/claude-api/pricing"],
       c: [["h", "Anthropic 托管 harness，内置缓存与 compaction"], ["h", "Session 与 SSE 事件，历史存于服务端"], ["h", "Claude 模型"], ["o", [["h", "Anthropic 云沙箱（Ubuntu 容器）"], ["b", "自托管 worker，可运行在 Cloudflare、Daytona、Modal、Vercel 等"]]], ["h", "Bash、文件操作、web search / fetch、MCP、MCP tunnels"], "token + $0.08/会话小时（仅 running）"] },
     { g: "managed", p: "Managed Agents API on Agent Platform", v: "Google · Pre-GA", r: ["google/managed-agents/overview", "google/managed-agents/sandbox-environment"],
@@ -627,7 +624,7 @@
       c: [["h", "Kiro"], ["h", "网页，可从任意界面重新接入会话"], ["n", ""], ["h", "按任务分配隔离沙箱，内置 headless Chrome 与 Playwright MCP"], ["h", "浏览器自动化工具"], "—"] },
   ];
   const PL = { "OpenAI Agents API": "openai", "Claude Managed Agents": "anthropic", "Managed Agents API on Agent Platform": "gemini", "Bedrock Managed Agents, powered by OpenAI": "aws", "AgentCore Runtime": "aws", "Agent Runtime（原 Agent Engine）": "googlecloud", "Foundry Hosted agents": "azureai", "E2B": "e2b", "Daytona": "daytona", "Cloud Run sandboxes": "googlecloud", "GKE Agent Sandbox": "googlecloud", "Exa": "exa", "Tavily": "tavily", "Codex Cloud": "codex", "Claude Code 云会话": "claudecode", "Copilot cloud agent": "githubcopilot", "Jules": "google", "Kiro Web": "kiro" };
-  const WHO = { h: "服务方运行", b: "用户提供", o: "两者可选", n: "不涉及" };
+  const WHO = { h: "服务方运行", b: "用户提供", o: "两者可选", n: "空缺" };
   function drawMatrix(filter) {
     const cols = [["Harness", "var(--c-harness)"], ["会话接口", "var(--c-session)"], ["模型推理", "var(--c-model)"], ["执行环境", "var(--c-env)"], ["托管工具", "var(--c-tool)"], ["计费", "var(--rule)"]];
     let h = `<table><thead><tr><th>产品</th>${cols.map(([n, c]) => `<th><span class="bar" style="background:${c}"></span>${n}</th>`).join("")}</tr></thead><tbody>`;
@@ -674,7 +671,7 @@
     const prods = M.filter((r) => r.p);
     const byG = (g) => prods.filter((r) => r.g === g).length;
     const count = (col, k) => prods.filter((r) => r.c[col][0] === k).length;
-    const own = (col) => [["服务方运行", count(col, "h"), "var(--accent)"], ["用户提供", count(col, "b"), "#c49a52"], ["两者可选", count(col, "o"), "var(--c-model)"], ["不涉及", count(col, "n"), "var(--rule)"]];
+    const own = (col) => [["服务方运行", count(col, "h"), "var(--accent)"], ["用户提供", count(col, "b"), "#c49a52"], ["两者可选", count(col, "o"), "var(--c-model)"], ["空缺", count(col, "n"), "var(--rule)"]];
     $("#donuts").innerHTML =
       donut("产品类别", [["托管 harness 的服务", byG("managed"), "var(--ink)"], ["运行平台", byG("runtime"), "var(--c-session)"], ["沙箱服务", byG("sandbox"), "var(--c-env)"], ["搜索 API", byG("tool"), "var(--c-tool)"], ["云端编程应用", byG("app"), "var(--ink-3)"]]) +
       donut("Harness 由谁提供", own(0)) +
@@ -685,16 +682,9 @@
   function drawSources(q) {
     q = (q || "").trim().toLowerCase();
     const match = (s) => !q || (cleanTitle(s.title) + " " + s.id + " " + (s.vendor || "") + " " + (s.topic || "")).toLowerCase().includes(q);
-    const item = (s, n) => `<div class="src-item"><div class="t">${n ? `<span class="n">[${n}]</span>` : ""}${esc(cleanTitle(s.title))}</div><div class="m">${esc(srcMeta(s))}</div><div class="l">${srcLinks(s)}</div></div>`;
-    let h = "", n = 0;
-    const cited = refOrder.map((id) => SRC[id]).filter((s) => s && match(s));
-    if (cited.length) h += `<div class="src-group">正文引用</div>`;
-    cited.forEach((s) => { n++; h += item(s, REFN[s.id]); });
-    const rest = (window.SOURCES || []).filter((s) => !(s.id in REFN) && match(s));
-    if (rest.length) h += `<div class="src-group">存档但未在正文引用</div>`;
-    rest.forEach((s) => { n++; h += item(s, 0); });
-    $("#src-list").innerHTML = h || `<p class="note">没有匹配的资料。</p>`;
-    $("#src-count").textContent = `${n} 条`;
+    const items = refOrder.map((id) => SRC[id]).filter((s) => s && match(s));
+    $("#src-list").innerHTML = items.map((s) => `<div class="src-item"><div class="t"><span class="n">[${REFN[s.id]}]</span>${esc(cleanTitle(s.title))}</div><div class="m">${esc(srcMeta(s))}</div><div class="l">${srcLinks(s)}</div></div>`).join("") || `<p class="note">没有匹配的条目。</p>`;
+    $("#src-count").textContent = `${items.length} 条`;
   }
   $("#src-q").addEventListener("input", (e) => drawSources(e.target.value));
 
@@ -702,18 +692,26 @@
   const pages = $$(".page");
   const sel = $("#toc-select");
   const toc = $("#toc");
+  let lastPart = null;
   pages.forEach((p, i) => {
     const n = String(i + 1).padStart(2, "0");
     const o = document.createElement("option");
     o.value = p.dataset.id;
     o.textContent = `${n} ${p.dataset.title}`;
     sel.appendChild(o);
-    if (i > 0) {
-      const a = document.createElement("a");
-      a.href = "#" + p.dataset.id;
-      a.innerHTML = `<span>${n}</span><span>${esc(p.dataset.title)}</span>`;
-      toc.appendChild(a);
+    if (i === 0) return;
+    const part = p.dataset.part || "";
+    if (part !== lastPart) {
+      const h = document.createElement("div");
+      h.className = "toc-part";
+      h.textContent = part;
+      toc.appendChild(h);
+      lastPart = part;
     }
+    const a = document.createElement("a");
+    a.href = "#" + p.dataset.id;
+    a.innerHTML = `<span>${n}</span><span>${esc(p.dataset.title)}</span>`;
+    toc.appendChild(a);
   });
   let cur = 0;
   function show(i, push) {
