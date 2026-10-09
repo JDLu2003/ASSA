@@ -1,0 +1,140 @@
+AGENTS                 ENTERPRISE    PRICING    DOCS
+         APPS                                           COMMUNITY          RESOURCES
+
+
+
+
+ SIGN
+  IN
+
+
+DOWNLOADS
+
+
+
+
+ Docs        Web        Sandbox
+
+
+
+Sandbox
+
+The sandbox provides a secure, isolated environment where the Kiro Web agent executes tasks.
+Each task runs in its own sandbox with configurable access controls, ensuring your code and
+resources remain protected.
+
+You can configure sandbox settings from the Agent settings page under Sandbox.
+
+
+
+
+How it works
+
+
+When you assign a task, the agent:
+
+1. Spins up an isolated sandbox environment
+2. Clones authorized repositories into the sandbox
+3. Configures the environment based on detected project settings
+4. Executes the task with access only to explicitly permitted resources
+5. Keeps the sandbox's file state with the session, so you can reattach from any surface and
+     browse its workspace. Deleting the session removes its sandbox
+
+
+
+
+Browser automation
+
+
+Every sandbox includes a headless Chrome browser, running inside the same isolated environment,
+with browser automation tooling preinstalled: the Playwright MCP server, the agent-browser CLI,
+and the Chrome DevTools MCP server. The agent can use them to open and interact with web
+applications running in the sandbox — validating UI changes it just made, reproducing browser-
+based bugs, and driving multi-step web workflows.
+
+No setup is required; ask the agent to verify a page or interact with a running web app and it picks
+the right tool. For reaching pages outside the sandbox, see internet access.
+
+
+
+
+Configuration
+
+
+Configure sandbox access and behavior for your tasks.
+
+
+
+   Internet Access
+   Control which domains the agent can reach
+
+
+
+
+   Powers and MCP
+   Install Powers or configure custom MCP servers
+
+
+
+
+   Environment Variables
+   Configure environment variables and secrets for task execution
+
+
+
+
+   Environment Configuration
+   Configure the sandbox environment for your project
+ Page updated: October 1, 2026
+
+
+
+
+          Configuration Sync
+
+ Internet access
+
+
+
+
+PRODUCT                          FOR               SOCIAL
+
+About Kiro                       Enterprise
+
+Agents                           Startups
+
+IDE                              Students
+
+CLI
+
+Web
+
+Mobile
+
+Crew
+
+Pricing
+
+Downloads
+
+
+
+COMMUNITY                        RESOURCES
+
+Overview                         Docs
+
+Ambassadors                      Blog
+
+Case studies                     Changelog
+
+Discord                          FAQs
+
+Events                           Report a bug
+
+Powers                           Suggest an idea
+
+Shop                             Billing support
+
+Showcase
+Site TermsLicenseResponsible AI PolicyLegalPrivacy PolicyCookie PreferencesYour Privacy Choices
+

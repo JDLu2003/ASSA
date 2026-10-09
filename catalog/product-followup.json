@@ -1,0 +1,29 @@
+{
+  "official": [
+    {
+      "vendor": "aws",
+      "product": "bedrock-managed-agents",
+      "id": "overview",
+      "url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+      "kind": "official-web",
+      "discovery": "Linked by captured OpenAI Bedrock Managed Agents page"
+    },
+    {
+      "vendor": "google",
+      "product": "gemini-enterprise-agent-platform",
+      "id": "vertex-ai-name-changes",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes",
+      "kind": "official-web",
+      "discovery": "Linked by captured platform overview"
+    },
+    {
+      "vendor": "google",
+      "product": "gemini-enterprise-agent-platform",
+      "id": "generative-ai-pricing",
+      "url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+      "kind": "official-web",
+      "discovery": "Linked by captured Managed Agents API overview"
+    }
+  ],
+  "papers": []
+}

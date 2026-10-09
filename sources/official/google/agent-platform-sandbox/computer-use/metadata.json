@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform-sandbox",
+    "id": "computer-use",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:20:32.761215+00:00",
+  "path": "sources/official/google/agent-platform-sandbox/computer-use",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+  "http_status": 200,
+  "title": "Computer Use  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "919f4e541680a4790e3aea83f5c893374622760451e7506c4b41d1c46ee4dec9",
+      "bytes": 4350
+    },
+    "page.txt": {
+      "sha256": "b753b484423cbdfa41648c133b4ef9de06ba69299622275056bbfc4c1f2da94a",
+      "bytes": 5697
+    },
+    "page.pdf": {
+      "sha256": "4c83489e40e7d332db80083e85a3881cac2fecf5b9f4a4ed3d16bb95ddc4a0ec",
+      "bytes": 129438
+    },
+    "page.html": {
+      "sha256": "504cd22e46cc90338fd3997d2d1cfde76b232ef928e367d30ef9dcc741bda223",
+      "bytes": 237408
+    }
+  }
+}

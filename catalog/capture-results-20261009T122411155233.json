@@ -1,0 +1,157 @@
+{
+  "run_at": "2026-10-09T12:24:11.155282+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-code-web",
+        "id": "overview",
+        "url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:23:23.413730+00:00",
+      "path": "sources/official/anthropic/claude-code-web/overview",
+      "requested_url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+      "final_url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+      "http_status": 200,
+      "title": "Use Claude Code in the cloud - Claude Code Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "ecb49321043850a999ca2acbf0aea77662b75f01e92f79a0b3cd3aa496a3a6b8",
+          "bytes": 38037
+        },
+        "page.txt": {
+          "sha256": "20602adb0ed7db6faa2fcf6a72a60d6935db48b24694f5032e921bf937b3331d",
+          "bytes": 37198
+        },
+        "page.pdf": {
+          "sha256": "46d4d1875608d0c391d8e3f64e6064d6940d02e163666e5e7afc902e9d4f80c3",
+          "bytes": 657953
+        },
+        "page.html": {
+          "sha256": "a56edab6ae09ab46a735f93252697ae1cedeaf041ca6b8339a2458cf60f6f23c",
+          "bytes": 712201
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:23:34.404435+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "jules",
+        "id": "overview",
+        "url": "https://jules.google/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:23:34.404549+00:00",
+      "path": "sources/official/google/jules/overview",
+      "requested_url": "https://jules.google/",
+      "final_url": "https://jules.google/",
+      "http_status": 200,
+      "title": "Jules - An Autonomous Coding Agent",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "97e184d68a8894792166d936eb06f356679715fe8391d2663986317a34c516ef",
+          "bytes": 4924
+        },
+        "page.txt": {
+          "sha256": "8978483eb1b4d6485ce8ca3da56234f0fbd996ca0ea524a890ba174af72e0eed",
+          "bytes": 3116
+        },
+        "page.pdf": {
+          "sha256": "4210c925dd5e881cc7d2e424bf4340d9a58773b926a57c4cf1fa2330ae092e4e",
+          "bytes": 2956061
+        },
+        "page.html": {
+          "sha256": "a9225213b0b59ae81be03ab511756349c43aa24617fff662c603166e1eda4770",
+          "bytes": 59589
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:23:41.833273+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "kiro",
+        "id": "overview",
+        "url": "https://kiro.dev/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:23:41.833343+00:00",
+      "path": "sources/official/aws/kiro/overview",
+      "requested_url": "https://kiro.dev/",
+      "final_url": "https://kiro.dev/",
+      "http_status": 200,
+      "title": "Kiro: Move beyond AI coding to agentic engineering",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "6a36dcd8c0461fdfe676aebd7a3f491a787857679c471f26cd72f6956f5d456b",
+          "bytes": 22134
+        },
+        "page.txt": {
+          "sha256": "38e05f4b1fd573ce91fd93f45788046756f65d613ccafcae5a53922c95be5aa5",
+          "bytes": 37892
+        },
+        "page.pdf": {
+          "sha256": "9a3adfd4f0141f4eeda598890b86005d21b27d543c4b34f8a573421d9801a1fb",
+          "bytes": 1626085
+        },
+        "page.html": {
+          "sha256": "297c913a6bc440c00130f399f6d6e19a4e53534a7f07daaa70cae7f02a12f229",
+          "bytes": 539517
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:24:03.128395+00:00"
+    },
+    {
+      "item": {
+        "vendor": "github",
+        "product": "copilot-cloud-agent",
+        "id": "overview",
+        "url": "https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:24:03.128496+00:00",
+      "path": "sources/official/github/copilot-cloud-agent/overview",
+      "requested_url": "https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent",
+      "final_url": "https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-on-github",
+      "http_status": 200,
+      "title": "GitHub Copilot on GitHub.com - GitHub Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "52b59399079200b52be3caf9b9ffa7b157d1afb84c489aae3eb37ca49a285938",
+          "bytes": 12352
+        },
+        "page.txt": {
+          "sha256": "8afb89df4e8b6058491c5d4472251c06af9197f912addb75265d0cf39341fa17",
+          "bytes": 11752
+        },
+        "page.pdf": {
+          "sha256": "e549fc96f183b1005d0c447b141ca09e27caa724d339644a99c2945ae3f082ab",
+          "bytes": 395340
+        },
+        "page.html": {
+          "sha256": "decc88424b9b8c5938cdc521e7837dde7a1b0524806537d0fac9d180449a27a6",
+          "bytes": 629686
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:24:10.856165+00:00"
+    }
+  ]
+}

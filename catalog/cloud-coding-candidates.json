@@ -1,0 +1,34 @@
+{
+  "note": "Complementary cloud coding product candidates, to verify from official page contents; do not infer service capabilities from product name.",
+  "official": [
+    {
+      "vendor": "anthropic",
+      "product": "claude-code-web",
+      "id": "overview",
+      "url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "jules",
+      "id": "overview",
+      "url": "https://jules.google/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "kiro",
+      "id": "overview",
+      "url": "https://kiro.dev/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "github",
+      "product": "copilot-cloud-agent",
+      "id": "overview",
+      "url": "https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent",
+      "kind": "official-web"
+    }
+  ],
+  "papers": []
+}

@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "microsoft",
+    "product": "foundry-agent-service",
+    "id": "overview",
+    "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:48.888691+00:00",
+  "path": "sources/official/microsoft/foundry-agent-service/overview",
+  "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+  "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+  "http_status": 200,
+  "title": "What is Microsoft Foundry Agent Service? - Microsoft Foundry | Microsoft Learn",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "ec35587b073c2f179f0f013911822c752046f2163ac2ce5c4d20c321a949f5d8",
+      "bytes": 21975
+    },
+    "page.txt": {
+      "sha256": "5694aeb0d3458c195ce2e45c95c4ab3af06adf0e1b89044250238398757a583d",
+      "bytes": 20479
+    },
+    "page.pdf": {
+      "sha256": "c62f9fbdaa5c7239243666a1b1464645e43fa1be4de50416e3733756e896454c",
+      "bytes": 240692
+    },
+    "page.html": {
+      "sha256": "557981e0c3a8d1418b840083ade2b07a99bc0d4cfb2af2b2386ca5eabdce4f33",
+      "bytes": 164888
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-api",
+    "id": "bedrock-managed-agents",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:17.214096+00:00",
+  "path": "sources/official/openai/agents-api/bedrock-managed-agents",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+  "http_status": 200,
+  "title": "Bedrock Managed Agents | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "053cee14681e94c59539ad1feb55cb980d0ebe59846748040712a4159626dae3",
+      "bytes": 2375
+    },
+    "page.txt": {
+      "sha256": "59e7946ca53fc75df3c8f86542b5cc88767b7a6a4dbe5bf6fdd2d3f419cc1c38",
+      "bytes": 2606
+    },
+    "page.pdf": {
+      "sha256": "7f386ed355d7a74114a50e7d34eabf4c1a34a082313999ed0e69eefb23c9fb66",
+      "bytes": 54879
+    },
+    "page.html": {
+      "sha256": "da94820d718b59c7f47fac228cbafaa82943706574885e273f6966af5c21f028",
+      "bytes": 358082
+    }
+  }
+}

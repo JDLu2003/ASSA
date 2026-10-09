@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "codex-cloud",
+    "id": "overview",
+    "url": "https://developers.openai.com/codex/cloud",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:00.097455+00:00",
+  "path": "sources/official/openai/codex-cloud/overview",
+  "requested_url": "https://developers.openai.com/codex/cloud",
+  "final_url": "https://learn.chatgpt.com/docs/cloud",
+  "http_status": 200,
+  "title": "Codex Cloud | ChatGPT Learn",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "069ced2d268884dfb020cffe7fe90bfdef9090e934cd23169847e092bd85e10d",
+      "bytes": 8121
+    },
+    "page.txt": {
+      "sha256": "704f441fa0deda749986d78c26ba3dd2cfb71c9bfda54ce473e0eadd50353891",
+      "bytes": 5424
+    },
+    "page.pdf": {
+      "sha256": "9d1898b733966842904f556bca021871850b020cbf20d00a9cf5c08060fc387d",
+      "bytes": 1021612
+    },
+    "page.html": {
+      "sha256": "e05111b493508fdea97c31ad9fd817f5a29a6b86bebb43e78a584ad2f45ad7f2",
+      "bytes": 393028
+    }
+  }
+}

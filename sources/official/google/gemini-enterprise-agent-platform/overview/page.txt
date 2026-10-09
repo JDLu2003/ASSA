@@ -1,0 +1,129 @@
+Skip to main content
+Documentation
+/
+Console
+Sign in
+Gemini Enterprise Agent Platform
+Start free
+Overview
+Studio
+Agents
+Models
+Notebooks
+API reference
+Pricing
+Engineering Blog
+Home
+Platform overview
+Agent Platform documentation
+Studio
+Agents
+Models
+Notebooks
+API reference
+Resources
+All resources
+Glossary
+Billing questions
+Agent-related support and resources
+Model-related support and resources
+Agent Platform and zero data retention
+Release notes
+Name changes from Vertex AI
+Pricing
+Build, scale, govern, and optimize with Gemini Enterprise Agent Platform
+
+Gemini Enterprise Agent Platform is our open and comprehensive platform that empowers businesses to rapidly build, scale, govern, and optimize enterprise-grade agents grounded in your enterprise data. It provides the full-stack foundation and extensive developer choice you need to transform your applications and workflows into powerful, reliable agentic systems at global scale.
+
+API quickstart Get started in Agent Studio Get an API key
+
+Everything you need to build
+production-ready agents
+Build
+Scale
+Govern
+Optimize
+Build with Agent Platform
+Learn about the different tools and services you can use to build agents with Agent Platform.
+arrow_outward
+Agent Development Kit
+The Agent Development Kit (ADK) is a modular, model-agnostic framework designed to make building and deploying complex AI agents feel just like standard software development.
+arrow_outward
+Agent Garden
+Explore Google's library of pre-built agents.
+arrow_outward
+Agent Studio
+Low-code canvas for designing complex multi-agent reasoning loops.
+arrow_outward
+Skill Registry
+Skill Registry serves as a secure, private, and low-latency repository for managing and discovering agent skills.
+arrow_outward
+RAG Engine
+RAG Engine helps you securely connect your private data to LLMs, reducing hallucinations and improving answer accuracy by providing the model with relevant, context-rich information.
+arrow_outward
+Vector Search
+Vector Search is an AI-native search engine that combines storage and retrieval into one scalable, auto-tuned platform, simplifying how you store, search, and manage your data for AI applications.
+arrow_outward
+Managed Agents API
+A config-driven, REST-first API for building autonomous agents inside a fully managed sandbox.
+arrow_outward
+Built for developers,
+designed for enterprise
+Gemini
+Advanced reasoning-first models optimized for complex agentic workflows and coding. Features Gemini 3.1 Pro and Gemini 3 Flash.
+arrow_outward
+Veo
+High-quality video generation models that create cinematic video from text or image prompts. Features Veo 3.1.
+arrow_outward
+Lyria
+Generate full-length music tracks and audio clips from simple text and image prompts. Features Lyria 3.
+arrow_outward
+Partner models
+Access curated third-party models offered as managed APIs. Includes Claude, Grok, and Mistral.
+arrow_outward
+Open models
+Choose from a variety of open weight models and select the best serving option. Includes Llama, DeepSeek, Mistral, and Qwen.
+arrow_outward
+Learn more about Agent Platform
+
+For high-level product overviews and marketing details across Google Cloud products, visit the Gemini Enterprise Agent Platform product page.
+
+Go to the Agent Platform product page
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+
+Products and pricing
+See all products
+Google Cloud pricing
+Google Cloud Marketplace
+Contact sales
+Support
+Community forums
+Support
+Release Notes
+System status
+Resources
+GitHub
+Getting Started with Google Cloud
+Code samples
+Cloud Architecture Center
+Training and Certification
+Engage
+Blog
+Events
+X (Twitter)
+Google Cloud on YouTube
+Google Cloud Tech on YouTube
+Android
+Chrome
+Firebase
+Google AI
+About Google
+Privacy
+Site terms
+Google Cloud terms
+Our third decade of climate action: join us
+Sign up for the Google Cloud newsletter
+Subscribe

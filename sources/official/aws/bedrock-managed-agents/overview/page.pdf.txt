@@ -1,0 +1,172 @@
+                                                                         English        Contact us      AWS Marketplace     Support          My account
+
+
+
+                re:Invent   Discover AWS     Products        Solutions      Pricing       Resources               Search         Sign in to console       Create accoun
+
+
+
+
+     Amazon Bedrock          Overview      Getting Started      Capabilities            Agents          Pricing      Resources       More
+
+
+
+
+Generative AI     Amazon Bedrock   Managed Agents
+
+
+
+Amazon Bedrock Managed Agents,
+powered by OpenAI (Preview)
+OpenAI intelligence, customized for AWS-native agents
+
+
+   Get started
+
+
+
+
+Bring greater agency to
+                                                                               Missing alt text value
+
+
+demanding work
+Developed jointly by AWS and OpenAI, Bedrock
+Managed Agents combines OpenAI models with the
+Codex harness and Amazon Bedrock AgentCore. You
+can build agents that preserve context, coordinate
+specialized work, and continue through long-
+running assignments, entirely inside AWS with the
+identities, permissions, and governance controls you
+already use.
+
+
+
+
+Quickly deploy production-ready agents
+powered by OpenAI
+With the Codex harness at its core, the managed runtime handles inference,
+memory, and skills within your environment, so you ship faster.
+     Amazon Bedrock            Overview       Getting Started     Capabilities       Agents          Pricing    Resources      More
+
+
+
+
+                                                                                                                      100%
+
+
+
+
+    Download
+
+
+
+
+      Stop setting up. Start building.                                                                                                              Stop setti
+      AWS Builder Center gives you access to free sandbox environments inside a real account. No credit card,    Explore Workshops                  AWS Builder
+      no setup. Launch an eligible Workshop and build for up to 8 hours.                                                                            no setup. Lau
+
+
+
+
+What makes Bedrock Managed Agents
+different?
+
+
+
+
+Frontier intelligence                                                      Secure from day one
+Bedrock Managed Agents combines OpenAI models with the Codex               Each agent operates with its own AWS identity and defined permissions,
+harness to preserve context, coordinate tools and specialized agents,      helping you control the resources it can access and the actions it can
+and guide complex assignments across multiple steps and decisions.         take. The agent runtime and model inference remain inside AWS.
+     Amazon Bedrock           Overview      Getting Started    Capabilities      Agents        Pricing    Resources    More
+
+
+
+
+The breadth and scale of AWS
+Bedrock Managed Agents runs on globally available AWS infrastructure,
+close to the data, applications, and services your agents need. It
+connects directly to AWS compute and data services your teams already
+use and rely on.
+
+
+
+
+                                                                        Designed to work with
+                                                                        AgentCore
+                                                                        Bedrock AgentCore is the open platform to build, connect, and
+                                                                        optimize agents at scale using any model and framework. It
+                                                                        provides the default compute environment for Bedrock
+                                                                        Managed Agents. As your agent footprint grows, you can draw
+                                                                        on broader AgentCore capabilities, including authorization,
+                                                                        agent and tool discovery, observability, evaluation, and more.
+
+
+
+
+Customer Testimonials
+
+
+
+Salesforce
+"Salesforce sits at the center of our customers' agentic
+infrastructure, powering the customer context, enterprise logic,
+and trust controls that make enterprise agents reliable across
+any platform or model. We've partnered deeply with OpenAI
+and AWS to build this category over the past few years, and
+Amazon Bedrock Managed Agents is a really exciting step
+forward in agent infrastructure. With Salesforce Headless 360,
+our joint customers can pair OpenAI's frontier models and AWS
+infrastructure with the Salesforce data, workflows, and controls
+that make agents work in real enterprise use cases. As
+enterprises scale from pilots to production, security and
+governance are built in from day one, data never leaves AWS,
+and security stops being the bottleneck between our customers
+and what comes next."
+
+— Joe Inzerillo, President, Enterprise & AI Technology,
+Salesforce
+
+
+
+
+Learn more
+            Amazon Bedrock             Overview       Getting Started       Capabilities         Agents          Pricing   Resources   More
+
+
+
+
+    Create an AWS account                                                                                                                     English
+
+
+
+
+Learn
+
+
+
+Resources
+
+
+
+Developers
+
+
+
+Help
+
+
+
+
+                                                                            Back to top
+
+
+Amazon is an equal opportunity employer and does not discriminate on the basis of protected veteran
+status, disability or other legally protected status. Veterans, military spouses, and people with disabilities
+are encouraged to apply.
+
+Privacy   Site terms    Your Privacy Choices            Cookie Preferences
+
+© 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+

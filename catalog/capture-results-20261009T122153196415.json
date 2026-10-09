@@ -1,0 +1,575 @@
+{
+  "run_at": "2026-10-09T12:21:53.196863+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gemini-enterprise-agent-platform",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:18:55.244450+00:00",
+      "path": "sources/official/google/gemini-enterprise-agent-platform/overview",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+      "http_status": 200,
+      "title": "Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "d19cfc29fcfdeab7c1b38d1d37a18184bbb55b6d3ae5e4db2bb233e5bb0cf22e",
+          "bytes": 3824
+        },
+        "page.txt": {
+          "sha256": "42e0cc0fabfb2ea3674010f8bd32b5c69d4b12c84237e23b6d28a6cc70222dd5",
+          "bytes": 4098
+        },
+        "page.pdf": {
+          "sha256": "c562a4b3e3845474776896112064e3d89db746269c7e591a2bad0f302b65461a",
+          "bytes": 1846914
+        },
+        "page.html": {
+          "sha256": "2b5127a22c63e3da58fa7025f1b142134e1059cbf759311b9fd4a156ee3814a2",
+          "bytes": 176238
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:19:18.329115+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "managed-agents",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:19:18.329899+00:00",
+      "path": "sources/official/google/managed-agents/overview",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+      "http_status": 200,
+      "title": "Managed Agents API on Agent Platform overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "16e8b6feaef245357cc30dc26786d52c9a7aeb4da0da46330e5945e525287870",
+          "bytes": 9214
+        },
+        "page.txt": {
+          "sha256": "95587eaca95a991804ef68387d721fb2a8165fa3fcad1040bb467412f733fe3b",
+          "bytes": 8999
+        },
+        "page.pdf": {
+          "sha256": "376436d9f7f1282b834f12f269058203fb48183718c960c2581432aee54e44c3",
+          "bytes": 292705
+        },
+        "page.html": {
+          "sha256": "040527d00e658a933c6354adc3a910c785d81ced71749511c224f0cdf65a2bee",
+          "bytes": 243820
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:19:36.481919+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-runtime",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:19:36.482344+00:00",
+      "path": "sources/official/google/agent-runtime/overview",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+      "http_status": 200,
+      "title": "Agent Runtime  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "7ad6090fdfc4220b0e18065f91923e890b97fe779372f1758cb4745e5ddcf7b2",
+          "bytes": 17419
+        },
+        "page.txt": {
+          "sha256": "a7ef18bbd21439b4f29b2e21a27b919fd0cb32b62a8a7865b64aa3764b42ce3e",
+          "bytes": 8799
+        },
+        "page.pdf": {
+          "sha256": "21720e49a55e580d9d6b80459f49e3ebc3c7630ebddb3289289ef0ad3ba9388a",
+          "bytes": 282460
+        },
+        "page.html": {
+          "sha256": "6744c1e23ee975850ad53fa0abae6a47c5a37da281e6266814e8aed7c05059a3",
+          "bytes": 252672
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:19:56.298358+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:19:56.298508+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/overview",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+      "http_status": 200,
+      "title": "Sandboxes overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "5054f9237a70c8e77af11ce358b6f69bc167867e4b7db91780f319d455137424",
+          "bytes": 4899
+        },
+        "page.txt": {
+          "sha256": "56a7d0f4ae961eeb7261c1c7c61fa2ff3ccc5d795b4d68a73a6107378e16b862",
+          "bytes": 5673
+        },
+        "page.pdf": {
+          "sha256": "b37f36dc3d193a1ed78939fe44ff3da9498c849692c6ede5678f4fa59eaf771f",
+          "bytes": 105953
+        },
+        "page.html": {
+          "sha256": "3facef9d31ccf9e245d8c97c45b3f83a32c1bb2a8769231ed9ef9d0c9c4f0c79",
+          "bytes": 214720
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:20:11.069293+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "code-execution-overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:11.069675+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/code-execution-overview",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+      "http_status": 200,
+      "title": "Code Execution  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "34a10d3aac9f3a1fc9894751f554024b392508ec42c04a673dde72e5ce8bdecd",
+          "bytes": 18024
+        },
+        "page.txt": {
+          "sha256": "b09673e0bb5a84f949eca3df4687e93ff9a3b82680956b136ce0fdae3ccb7187",
+          "bytes": 17714
+        },
+        "page.pdf": {
+          "sha256": "eeea28d113a6a1e7b094c7ef49a281f0b2a2901576f848c50c5e6402d139c197",
+          "bytes": 243226
+        },
+        "page.html": {
+          "sha256": "8d25c398ffdbcc7e96020b85c5f00b0622c132435e925566167c661577bad1ef",
+          "bytes": 255625
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:20:32.761106+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "computer-use",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:32.761215+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/computer-use",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+      "http_status": 200,
+      "title": "Computer Use  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "919f4e541680a4790e3aea83f5c893374622760451e7506c4b41d1c46ee4dec9",
+          "bytes": 4350
+        },
+        "page.txt": {
+          "sha256": "b753b484423cbdfa41648c133b4ef9de06ba69299622275056bbfc4c1f2da94a",
+          "bytes": 5697
+        },
+        "page.pdf": {
+          "sha256": "4c83489e40e7d332db80083e85a3881cac2fecf5b9f4a4ed3d16bb95ddc4a0ec",
+          "bytes": 129438
+        },
+        "page.html": {
+          "sha256": "504cd22e46cc90338fd3997d2d1cfde76b232ef928e367d30ef9dcc741bda223",
+          "bytes": 237408
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:20:53.725190+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-gateway",
+        "id": "overview",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:53.725258+00:00",
+      "path": "sources/official/google/agent-gateway/overview",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+      "http_status": 200,
+      "title": "Agent Gateway overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "78e1db30fe641d88a7a792f8f491d1bca9942ce11a58144871d77c1905a245c5",
+          "bytes": 18189
+        },
+        "page.txt": {
+          "sha256": "2cf7943d649fa356c335e523341d2125d64746cce36972e36f180fbb4875656c",
+          "bytes": 15070
+        },
+        "page.pdf": {
+          "sha256": "10b199abc2edc0e78da98781424034d22fe3a9421f93962490971280516f735b",
+          "bytes": 558234
+        },
+        "page.html": {
+          "sha256": "f8e8b1b4ae136f227df1a58eefa9f9c870499cc327c2b301d304d13eda82fd68",
+          "bytes": 218151
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:00.096360+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "codex-cloud",
+        "id": "overview",
+        "url": "https://developers.openai.com/codex/cloud",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:00.097455+00:00",
+      "path": "sources/official/openai/codex-cloud/overview",
+      "requested_url": "https://developers.openai.com/codex/cloud",
+      "final_url": "https://learn.chatgpt.com/docs/cloud",
+      "http_status": 200,
+      "title": "Codex Cloud | ChatGPT Learn",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "069ced2d268884dfb020cffe7fe90bfdef9090e934cd23169847e092bd85e10d",
+          "bytes": 8121
+        },
+        "page.txt": {
+          "sha256": "704f441fa0deda749986d78c26ba3dd2cfb71c9bfda54ce473e0eadd50353891",
+          "bytes": 5424
+        },
+        "page.pdf": {
+          "sha256": "9d1898b733966842904f556bca021871850b020cbf20d00a9cf5c08060fc387d",
+          "bytes": 1021612
+        },
+        "page.html": {
+          "sha256": "e05111b493508fdea97c31ad9fd817f5a29a6b86bebb43e78a584ad2f45ad7f2",
+          "bytes": 393028
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:10.089538+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "codex-cloud",
+        "id": "environments",
+        "url": "https://developers.openai.com/codex/environments/cloud-environments",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:10.089631+00:00",
+      "path": "sources/official/openai/codex-cloud/environments",
+      "requested_url": "https://developers.openai.com/codex/environments/cloud-environments",
+      "final_url": "https://learn.chatgpt.com/docs/environments/cloud-environments",
+      "http_status": 200,
+      "title": "Cloud environments | ChatGPT Learn",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "6665e5b643e7c69e38fb66f99e4957f570c582ee2113af4ddeab1f4360db4233",
+          "bytes": 23728
+        },
+        "page.txt": {
+          "sha256": "44f68360d243b059c5037a774d3d3450b91eeeba8d38975a0ae9c41af95d4fb9",
+          "bytes": 19406
+        },
+        "page.pdf": {
+          "sha256": "a3671b0cfb74e2213540cb2fee0a7a0be389ef788ce4b8a3b4a249bf96b42096",
+          "bytes": 1186854
+        },
+        "page.html": {
+          "sha256": "3200bb1e393c62acadc847f20130881d8b39baae022dea333bb116fd671b88b8",
+          "bytes": 465449
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:17.214043+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "bedrock-managed-agents",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:17.214096+00:00",
+      "path": "sources/official/openai/agents-api/bedrock-managed-agents",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+      "http_status": 200,
+      "title": "Bedrock Managed Agents | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "053cee14681e94c59539ad1feb55cb980d0ebe59846748040712a4159626dae3",
+          "bytes": 2375
+        },
+        "page.txt": {
+          "sha256": "59e7946ca53fc75df3c8f86542b5cc88767b7a6a4dbe5bf6fdd2d3f419cc1c38",
+          "bytes": 2606
+        },
+        "page.pdf": {
+          "sha256": "7f386ed355d7a74114a50e7d34eabf4c1a34a082313999ed0e69eefb23c9fb66",
+          "bytes": 54879
+        },
+        "page.html": {
+          "sha256": "da94820d718b59c7f47fac228cbafaa82943706574885e273f6966af5c21f028",
+          "bytes": 358082
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:21.735036+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "bedrock-agents",
+        "id": "overview",
+        "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:21.735265+00:00",
+      "path": "sources/official/aws/bedrock-agents/overview",
+      "requested_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "http_status": 200,
+      "title": "Automate tasks in your application using AI agents - Amazon Bedrock",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "90b375e6cf5368e338a00faddc6e6d87a9be91ae79065fbc79dca1581be78494",
+          "bytes": 13656
+        },
+        "page.txt": {
+          "sha256": "463cb4ec138833627b6b5541ee29a24f1c09da10688ec4b6bafe830609ad8f36",
+          "bytes": 5749
+        },
+        "page.pdf": {
+          "sha256": "d616545d13cc7792e868a08023be6874aa7e6d2b736386f30ab2ea49d94af1af",
+          "bytes": 131494
+        },
+        "page.html": {
+          "sha256": "2026edc4066b489048915230b2575dcd2e2a23dd6b80f0ffc655293de37d39e4",
+          "bytes": 892410
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:33.016387+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-browser",
+        "id": "overview",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:33.016609+00:00",
+      "path": "sources/official/aws/agentcore-browser/overview",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+      "http_status": 200,
+      "title": "Interact with web applications using Amazon Bedrock AgentCore Browser - Amazon Bedrock AgentCore",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "1d792980b46e2e90b7b755e0c4e58e9d9123ea696aaf73d4875e4a8e2242b1af",
+          "bytes": 13101
+        },
+        "page.txt": {
+          "sha256": "6bc4254b57f7f17a24440c4306546d91b9b97fc557abf3b5b8ef952aa794a3b3",
+          "bytes": 5400
+        },
+        "page.pdf": {
+          "sha256": "5504ebdb25340a36e29540ac9b0f6617cc1d4424dee3aad2b1c73b37fcd55698",
+          "bytes": 214678
+        },
+        "page.html": {
+          "sha256": "0a531368d6db190bc7602154d9c809d10c299cdaf893b31b55fa022ec52b74d7",
+          "bytes": 501398
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:40.010561+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-code-interpreter",
+        "id": "overview",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:40.010613+00:00",
+      "path": "sources/official/aws/agentcore-code-interpreter/overview",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+      "http_status": 200,
+      "title": "Execute code and analyze data using Amazon Bedrock AgentCore Code Interpreter - Amazon Bedrock AgentCore",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "4847927c5a4c9818288475cea708da6d399903eb68863eb47ab46cdde0b79eca",
+          "bytes": 16810
+        },
+        "page.txt": {
+          "sha256": "1a562f1f510a17a75bb12ba6af6f862b908a71b2d2670bb95b449b8735069a4c",
+          "bytes": 5594
+        },
+        "page.pdf": {
+          "sha256": "9b89a51d4b7a475615ab9e086eb0eb766b08f953c7d9cebf8230c6adf50796da",
+          "bytes": 238778
+        },
+        "page.html": {
+          "sha256": "f5bb7546221a4eb23d6d05464ef0acf927aeb47fe82d14c5a2564b2d8b408748",
+          "bytes": 510999
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:45.604361+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-gateway",
+        "id": "overview",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:45.604449+00:00",
+      "path": "sources/official/aws/agentcore-gateway/overview",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+      "http_status": 200,
+      "title": "Amazon Bedrock AgentCore Gateway: A secure AI gateway for agents, tools, and models - Amazon Bedrock AgentCore",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "9a3556953a6fa239575a7c20c859e0e53e34b2de81ebb333acb5ab5e1383aab2",
+          "bytes": 16804
+        },
+        "page.txt": {
+          "sha256": "edae3bf767d621da4ab0130d6ee151b0d1629d6d29ba90b86e43f10015b6519b",
+          "bytes": 7100
+        },
+        "page.pdf": {
+          "sha256": "568906728dab7746a132e3021be48ffa3cb7baa69c4f3917730256314d466230",
+          "bytes": 127843
+        },
+        "page.html": {
+          "sha256": "ed01c41d9304649b2ba3c5d4a18b1c5dc503b08f6d84788f06af5271c8ee7517",
+          "bytes": 504453
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:48.887666+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-agent-service",
+        "id": "overview",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:48.888691+00:00",
+      "path": "sources/official/microsoft/foundry-agent-service/overview",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "http_status": 200,
+      "title": "What is Microsoft Foundry Agent Service? - Microsoft Foundry | Microsoft Learn",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "ec35587b073c2f179f0f013911822c752046f2163ac2ce5c4d20c321a949f5d8",
+          "bytes": 21975
+        },
+        "page.txt": {
+          "sha256": "5694aeb0d3458c195ce2e45c95c4ab3af06adf0e1b89044250238398757a583d",
+          "bytes": 20479
+        },
+        "page.pdf": {
+          "sha256": "c62f9fbdaa5c7239243666a1b1464645e43fa1be4de50416e3733756e896454c",
+          "bytes": 240692
+        },
+        "page.html": {
+          "sha256": "557981e0c3a8d1418b840083ade2b07a99bc0d4cfb2af2b2386ca5eabdce4f33",
+          "bytes": 164888
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:52.773218+00:00"
+    }
+  ]
+}

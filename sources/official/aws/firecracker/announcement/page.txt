@@ -1,0 +1,191 @@
+Skip to Main Content
+English
+Contact us
+AWS Marketplace
+Support
+My account
+re:Invent
+Discover AWS
+Products
+Solutions
+Pricing
+Resources
+
+Search
+
+Sign in to console
+Create account
+Feedback
+
+AWS Blogs
+
+Home
+Blogs
+Editions
+AWS News Blog
+Firecracker – Lightweight Virtualization for Serverless Computing
+by Jeff Barr on 26 NOV 2018 in Amazon EC2, AWS re:Invent, Firecracker, Launch, News, Open Source, Top Posts Permalink  Share |  Add AWS as a preferred source on search
+
+One of my favorite Amazon Leadership Principles is Customer Obsession. When we launched AWS Lambda, we focused on giving developers a secure serverless experience so that they could avoid managing infrastructure. In order to attain the desired level of isolation we used dedicated EC2 instances for each customer. This approach allowed us to meet our security goals but forced us to make some tradeoffs with respect to the way that we managed Lambda behind the scenes. Also, as is the case with any new AWS service, we did not know how customers would put Lambda to use or even what they would think of the entire serverless model. Our plan was to focus on delivering a great customer experience while making the backend ever-more efficient over time.
+
+Just four years later (Lambda was launched at re:Invent 2014) it is clear that the serverless model is here to stay. Today, Lambda processes trillions of executions for hundreds of thousands of active customers every month. Last year we extended the benefits of serverless to containers with the launch of AWS Fargate, which now runs tens of millions of containers for AWS customers every week.
+
+As our customers increasingly adopted serverless, it was time to revisit the efficiency issue. Taking our Invent and Simplify principle to heart, we asked ourselves what a virtual machine would look like if it was designed for today’s world of containers and functions!
+
+Introducing Firecracker
+Today I would like to tell you about Firecracker, a new virtualization technology that makes use of KVM. You can launch lightweight micro-virtual machines (microVMs) in non-virtualized environments in a fraction of a second, taking advantage of the security and workload isolation provided by traditional VMs and the resource efficiency that comes along with containers.
+
+Here’s what you need to know about Firecracker:
+
+Secure – This is always our top priority! Firecracker uses multiple levels of isolation and protection, and exposes a minimal attack surface.
+
+High Performance – You can launch a microVM in as little as 125 ms today (and even faster in 2019), making it ideal for many types of workloads, including those that are transient or short-lived.
+
+Battle-Tested – Firecracker has been battled-tested and is already powering multiple high-volume AWS services including AWS Lambda and AWS Fargate.
+
+Low Overhead – Firecracker consumes about 5 MiB of memory per microVM. You can run thousands of secure VMs with widely varying vCPU and memory configurations on the same instance.
+
+Open Source – Firecracker is an active open source project. We are already ready to review and accept pull requests, and look forward to collaborating with contributors from all over the world.
+
+Firecracker was built in a minimalist fashion. We started with crosvm and set up a minimal device model in order to reduce overhead and to enable secure multi-tenancy. Firecracker is written in Rust, a modern programming language that guarantees thread safety and prevents many types of buffer overrun errors that can lead to security vulnerabilities.
+
+Firecracker Security
+As I mentioned earlier, Firecracker incorporates a host of security features! Here’s a partial list:
+
+Simple Guest Model – Firecracker guests are presented with a very simple virtualized device model in order to minimize the attack surface: a network device, a block I/O device, a Programmable Interval Timer, the KVM clock, a serial console, and a partial keyboard (just enough to allow the VM to be reset).
+
+Process Jail – The Firecracker process is jailed using cgroups and seccomp BPF, and has access to a small, tightly controlled list of system calls.
+
+Static Linking – The firecracker process is statically linked, and can be launched from a jailer to ensure that the host environment is as safe and clean as possible.
+
+Firecracker in Action
+To get some experience with Firecracker, I launch an i3.metal instance and download three files (the firecracker binary, a root file system image, and a Linux kernel):
+
+I need to set up the proper permission to access /dev/kvm:
+
+$  sudo setfacl -m u:${USER}:rw /dev/kvm
+
+I start firecracker in one PuTTY session, and then issue commands in another (the process listens on a Unix-domain socket and implements a REST API). The first command sets the configuration for my first guest machine:
+
+$ curl --unix-socket /tmp/firecracker.sock -i \
+    -X PUT "http://localhost/machine-config" \
+    -H "accept: application/json" \
+    -H "Content-Type: application/json" \
+    -d "{
+        \"vcpu_count\": 1,
+        \"mem_size_mib\": 512
+    }"
+
+And, the second sets the guest kernel:
+
+$ curl --unix-socket /tmp/firecracker.sock -i \
+    -X PUT "http://localhost/boot-source" \
+    -H "accept: application/json" \
+    -H "Content-Type: application/json" \
+    -d "{
+        \"kernel_image_path\": \"./hello-vmlinux.bin\",
+        \"boot_args\": \"console=ttyS0 reboot=k panic=1 pci=off\"
+    }"
+
+And, the third one sets the root file system:
+
+$ curl --unix-socket /tmp/firecracker.sock -i \
+    -X PUT "http://localhost/drives/rootfs" \
+    -H "accept: application/json" \
+    -H "Content-Type: application/json" \
+    -d "{
+        \"drive_id\": \"rootfs\",
+        \"path_on_host\": \"./hello-rootfs.ext4\",
+        \"is_root_device\": true,
+        \"is_read_only\": false
+    }"
+
+With everything set to go, I can launch a guest machine:
+
+# curl --unix-socket /tmp/firecracker.sock -i \
+    -X PUT "http://localhost/actions" \
+    -H  "accept: application/json" \
+    -H  "Content-Type: application/json" \
+    -d "{
+        \"action_type\": \"InstanceStart\"
+     }"
+
+And I am up and running with my first VM:
+
+In a real-world scenario I would script or program all of my interactions with Firecracker, and I would probably spend more time setting up the networking and the other I/O. But re:Invent awaits and I have a lot more to do, so I will leave that part as an exercise for you.
+
+Collaborate with Us
+As you can see this is a giant leap forward, but it is just a first step. The team is looking forward to telling you more, and to working with you to move ahead. Star the repo, join the community, and send us some code!
+
+— Jeff;
+
+ 
+
+ 
+
+ 
+
+ 
+
+TAGS: AWS re:Invent
+Jeff Barr
+
+Jeff Barr is Chief Evangelist for AWS. He started this blog in 2004 and has been writing posts just about non-stop ever since.
+
+Resources
+Getting Started
+What's New
+Top Posts
+Official AWS Podcast
+Case Studies
+AWS re:Post
+Follow
+ Twitter
+ Facebook
+ LinkedIn
+ Twitch
+ RSS Feed
+ Email Updates
+Create an AWS account
+Learn
+What Is AWS?
+What Is Cloud Computing?
+What Is Agentic AI?
+Cloud Computing Concepts Hub
+AWS Cloud Security
+What's New
+Blogs
+Press Releases
+Resources
+Getting Started
+Training
+AWS Trust Center
+AWS Solutions Library
+Architecture Center
+Product and Technical FAQs
+Analyst Reports
+AWS Partners
+Developers
+Builder Center
+SDKs & Tools
+.NET on AWS
+Python on AWS
+Java on AWS
+PHP on AWS
+JavaScript on AWS
+Help
+Contact Us
+File a Support Ticket
+AWS re:Post
+Knowledge Center
+AWS Support Overview
+Get Expert Help
+AWS Accessibility
+Legal
+English
+Back to top
+Amazon is an Equal Opportunity Employer: Minority / Women / Disability / Veteran / Gender Identity / Sexual Orientation / Age.
+Privacy
+Site terms
+Cookie Preferences
+© 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.

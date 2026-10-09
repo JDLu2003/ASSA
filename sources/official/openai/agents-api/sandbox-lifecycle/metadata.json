@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-api",
+    "id": "sandbox-lifecycle",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:16.835620+00:00",
+  "path": "sources/official/openai/agents-api/sandbox-lifecycle",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+  "http_status": 200,
+  "title": "Sandbox lifecycle | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "07761fd91470d008bb010622af410f36432e1d6993be72c671ae6f98a88f7fbc",
+      "bytes": 4660
+    },
+    "page.txt": {
+      "sha256": "1ecfd131c5bd279d57e07dcc70a8985b158677e2688709b327f11b4c1935b154",
+      "bytes": 5467
+    },
+    "page.pdf": {
+      "sha256": "1561eda14a93fca14e92f51d39a8e8cacbe45cea9962ce7ce7c20d50f0810fc3",
+      "bytes": 268825
+    },
+    "page.html": {
+      "sha256": "ab321abe5305a16a79d65da2621022afd10a0ccbdba540e7c7528f9026a2eae5",
+      "bytes": 366369
+    }
+  }
+}

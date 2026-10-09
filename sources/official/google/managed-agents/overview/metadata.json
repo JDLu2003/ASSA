@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "managed-agents",
+    "id": "overview",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:19:18.329899+00:00",
+  "path": "sources/official/google/managed-agents/overview",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+  "http_status": 200,
+  "title": "Managed Agents API on Agent Platform overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "16e8b6feaef245357cc30dc26786d52c9a7aeb4da0da46330e5945e525287870",
+      "bytes": 9214
+    },
+    "page.txt": {
+      "sha256": "95587eaca95a991804ef68387d721fb2a8165fa3fcad1040bb467412f733fe3b",
+      "bytes": 8999
+    },
+    "page.pdf": {
+      "sha256": "376436d9f7f1282b834f12f269058203fb48183718c960c2581432aee54e44c3",
+      "bytes": 292705
+    },
+    "page.html": {
+      "sha256": "040527d00e658a933c6354adc3a910c785d81ced71749511c224f0cdf65a2bee",
+      "bytes": 243820
+    }
+  }
+}

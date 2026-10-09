@@ -1,0 +1,138 @@
+Skip to main content
+Documentation
+Console
+Gemini Enterprise Agent Platform
+Start free
+Overview
+Studio
+Agents
+Models
+Notebooks
+API reference
+Pricing
+Engineering Blog
+Overview
+Get an API key
+Get started
+Build an agent with ADK and Agents CLI
+Build
+Overview
+Create agents
+Skill Registry
+Authentication
+RAG Engine
+Tokenizer
+Multimodal datasets
+Use Agent Search
+Perform vector similarity searches
+Agent Retrieval (formerly Vector Search 2.0) - Intelligent Retrieval for AI Applications
+Scale
+Overview
+Agent Runtime
+Sessions
+Feedback service
+Memory Bank
+Sandbox
+Autonomous agent scheduling
+Govern
+Overview
+Safety (Responsible AI)
+Share an agent
+Agent Identity
+Agent Registry
+Topology graphs
+Policies
+Agent Gateway
+Guides
+Security
+Agent Audit
+Optimize
+Overview
+Observability
+Evaluation
+Example Store
+Troubleshooting
+Overview
+Agent Platform Runtime environment setup
+Create an agent
+Agent deployment
+Agent Gateway connectivity
+IAM access policies
+Manage deployed agents
+Code Execution
+Memory Bank
+Home
+Documentation
+AI and ML
+Gemini Enterprise Agent Platform
+Agents
+Send feedback
+Sandboxes overview
+
+Many agent tasks involve executing untrusted code, running commands, using a web browser, or interacting with external environments in ways that could pose security risks. The Gemini Enterprise Agent Platform provides isolated sandboxes to handle these workloads securely.
+
+Sandboxes provide secure, isolated execution environments that are spawned to perform specific tasks on behalf of an agent. By running these operations in a sandbox, you can protect your infrastructure and data from potentially malicious or erroneous actions performed by the agent. Sandboxes mitigate these risks by:
+
+Isolation: Each sandbox is isolated from other sandboxes and the host system. Actions taken by one agent in a sandbox doesn't affect other agents or users sharing the same runtime resources.
+Security: Operations within the sandbox are restricted, preventing unauthorized access to your resources. All sandbox environments use secure container sandboxing, providing a strong security boundary. Malicious code can't access sensitive data or credentials within the runtime.
+Safety: If an agent executes a harmful command or infinite loop, the impact is contained within the sandbox. For example, poorly written or malicious code could consume all available CPU or memory.
+Sandbox compared to runtime
+
+The agent runtime and a sandbox differ in their purpose and usage:
+
+Agent Runtime: This is the environment where the agent's core logic, decision-making, and orchestration run. It is a trusted environment that executes your code and manages the agent's lifecycle.
+Sandbox: This is an auxiliary environment spawned by the agent or the platform to execute specific, potentially unsafe tasks. Sandboxes can be short-lived, session-based, or stateful for several days.
+
+For example, if an agent needs to calculate a complex formula by generating and running a custom Python script, it should run that script in a code execution sandbox, not in its own runtime. Additionally, if the agent uses a skill and a shell script, it must run them in an environment provisioned specifically for that session, using the end user's access.
+
+TTL and Sandbox provisioning speeds
+TTL: Sandbox TTLs vary, ranging from 7 days for a custom container image to 14 days for a code execution sandbox. This allows you to resume state on a sandbox environment several days later for long-horizon tasks and resumable shell environments.
+Provisioning: Creating a new sandbox takes up to 2 minutes to provision resources from a cold start, but after they are provisioned, sandboxes usually spin up in seconds. You can view the underlying architecture in the following open source projects: AX and Substrate.
+Features
+
+Sandboxes offer several features such as predefined sandboxes, custom containers, enterprise security controls, and lifecycle management:
+
+Code execution: Allows the agent to generate and run code in a secure environment. This is useful for complex mathematical calculations, data analysis, and other tasks that require computation.
+Computer use: Enables the agent to interact with a web browser to perform tasks such as filling out forms, searching the web, or navigating complex UI workflows.
+Custom containers: You can "Bring Your Own Container" to customize the execution environment with specific libraries, tools, or configurations. Use this to give your agent a shell environment containing the commands and tools in your custom image.
+VPC Service Controls: Configure security perimeters to protect sensitive data and prevent unauthorized egress from sandbox environments.
+Customer-managed encryption keys (CMEK): Protect sandbox data at rest with encryption keys managed in Cloud Key Management Service (Cloud KMS).
+Send feedback
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+
+Products and pricing
+See all products
+Google Cloud pricing
+Google Cloud Marketplace
+Contact sales
+Support
+Community forums
+Support
+Release Notes
+System status
+Resources
+GitHub
+Getting Started with Google Cloud
+Code samples
+Cloud Architecture Center
+Training and Certification
+Engage
+Blog
+Events
+X (Twitter)
+Google Cloud on YouTube
+Google Cloud Tech on YouTube
+Android
+Chrome
+Firebase
+Google AI
+About Google
+Privacy
+Site terms
+Google Cloud terms
+Our third decade of climate action: join us
+Sign up for the Google Cloud newsletter
+Subscribe

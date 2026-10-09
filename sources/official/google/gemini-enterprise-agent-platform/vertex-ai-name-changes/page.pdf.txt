@@ -1,0 +1,184 @@
+Gemini Enterprise Agent Platform
+name changes content_copy arrow_drop_down
+With the introduction of Gemini Enterprise Agent Platform, some Vertex AI products and
+features have been renamed. The following table lists the previous and new names.
+
+
+Previous name                                     New name
+
+
+Vertex AI Platform                                Gemini Enterprise Agent Platform
+
+Generative AI on Vertex AI                        Generative AI on Gemini Enterprise Agent
+                                                  Platform
+
+Vertex AI Studio                                  Agent Studio on Gemini Enterprise Agent
+                                                  Platform
+
+Vertex AI API                                     Gemini Enterprise Agent Platform API
+
+Vertex AI Model Garden                            Gemini Enterprise Agent Platform Model
+                                                  Garden
+
+Vertex AI MaaS (Model as a Service)               Model as a Service on Gemini Enterprise
+                                                  Agent Platform
+
+Gemini/Imagen/Veo on Vertex AI                    [Model Name] on Gemini Enterprise Agent
+                                                  Platform
+
+Claude/Llama/Deepseek/etc on Vertex AI            [Model Name], available on Gemini Enterprise
+                                                  Agent Platform
+
+Pre-trained APIs on Vertex AI                     Pre-trained APIs on Gemini Enterprise Agent
+                                                  Platform
+
+[Consumption Model Type] on Vertex AI             [Consumption Model Type] on Gemini
+                                                  Enterprise Agent Platform
+
+Gemini Live API on Vertex AI                      Gemini Live API on Gemini Enterprise Agent
+                                                  Platform
+
+Vertex AI Search                                  Agent Search on Gemini Enterprise Agent
+                                                  Platform
+
+Vertex AI Search for Industry                     Agent Search for Industry on Gemini
+                                                  Enterprise Agent Platform
+
+Vertex AI Search for Commerce                     AI Commerce Search on Gemini Enterprise
+                                                  for Customer Experience
+Previous name                                    New name
+
+
+Recommendations from Vertex AI Search            Recommendations from Agent Search (or
+                                                 Recommendations AI)
+
+Vertex AI Conversation                           Agent Conversation on Gemini Enterprise
+                                                 Agent Platform
+
+RAG Engine on Gemini Enterprise Agent Platform   RAG Engine on Gemini Enterprise Agent
+                                                 Platform
+
+Vertex AI Vector Search                          Vector Search on Gemini Enterprise Agent
+                                                 Platform
+
+Vertex AI Vector Search 2.0                      Agent Retrieval on Gemini Enterprise Agent
+                                                 Platform
+
+Vertex AI Agent Engine                           Agent Runtime on Gemini Enterprise Agent
+                                                 Platform
+
+Vertex AI Studio App Builder                     App Builder in Agent Studio on Gemini
+                                                 Enterprise Agent Platform
+
+Vertex AI Agent Engine Memory Bank               Gemini Enterprise Agent Platform Memory
+                                                 Bank
+
+Vertex AI Agent Engine Sessions                  Gemini Enterprise Agent Platform Sessions
+
+Vertex AI Agent Engine Code Execution            Gemini Enterprise Agent Platform Code
+                                                 Execution
+
+Grounding with Google X in Vertex AI             Grounding with Google X in Gemini Enterprise
+                                                 Agent Platform
+
+Grounding with Google X in Vertex AI Search      Grounding with Google X in Agent Search on
+                                                 Gemini Enterprise Agent Platform
+
+Grounding with Google X in Vertex AI Studio      Grounding with Google X in Agent Studio on
+                                                 Gemini Enterprise Agent Platform
+
+Vertex AI Training                               Gemini Enterprise Agent Platform Managed
+                                                 Training
+
+Vertex AI Serverless Training                    Gemini Enterprise Agent Platform Serverless
+                                                 Training
+
+Vertex AI Training Clusters (VTC)                Managed Training Clusters on Gemini
+                                                 Enterprise Agent Platform
+
+Ray on Vertex AI                                 Ray on Gemini Enterprise Agent Platform
+Previous name                                         New name
+
+
+Reinforcement Learning from Human Feedback (RLHF) /   Reinforcement Learning on Gemini Enterprise
+Reinformcement Learning (RL) on Vertex AI             Agent Platform
+
+Vertex AI Neural Architecture Search                  Neural Architecture Search on Gemini
+                                                      Enterprise Agent Platform
+
+Vertex AI Inference / Vertex AI Inference             Gemini Enterprise Agent Platform Inference
+
+Vertex AI Vision                                      Gemini Enterprise Agent Platform Vision
+
+Vertex AI Batch Inference                             Gemini Enterprise Agent Platform Batch
+                                                      Inference
+
+Vertex AI Online Inference                            Gemini Enterprise Agent Platform Online
+                                                      Inference
+
+Vertex AI Endpoints                                   Gemini Enterprise Agent Platform Endpoints
+
+Vertex AI Forecasting / Forecasting with AutoML       Forecasting on Gemini Enterprise Agent
+                                                      Platform
+
+Vertex AI Pipelines                                   Gemini Enterprise Agent Platform Pipelines
+
+Vertex AI Notebooks                                   Gemini Enterprise Agent Platform Notebooks
+
+Vertex AI Colab Enterprise                            Gemini Enterprise Agent Platform Colab
+                                                      Enterprise
+
+Vertex AI Workbench                                   Gemini Enterprise Agent Platform Workbench
+
+Vertex AI Workbench Instances                         Gemini Enterprise Agent Platform Workbench
+                                                      Instances
+
+Vertex AI Feature Store                               Feature Store on Gemini Enterprise Agent
+                                                      Platform
+
+Vertex AI Model Registry                              Model Registry on Gemini Enterprise Agent
+                                                      Platform
+
+Vertex AI Model Evaluation                            Model Evaluation on Gemini Enterprise Agent
+                                                      Platform
+
+Gen AI evaluation service on Vertex AI                Gemini Enterprise Agent Platform Evals
+
+Vertex AI AutoML (Vision/Video/Tables)                AutoML on Gemini Enterprise Agent Platform
+
+Data Labeling on Vertex AI                            Data Labeling on Gemini Enterprise Agent
+                                                      Platform
+Previous name                                                  New name
+
+
+Prompt management in Vertex AI                                 Prompt management in Gemini Enterprise
+                                                               Agent Platform
+
+Vertex AI on GDC                                               Gemini Enterprise Agent Platform on Google
+                                                               Distributed Cloud / Distributed Cloud
+
+Vertex AI Experiments                                          Experiments on Agent Platform
+
+Vertex AI in Firebase                                          Gemini Enterprise Agent Platform in Firebase
+
+Vertex AI Model Monitoring                                     Model Monitoring on Gemini Enterprise
+                                                               Agent Platform
+
+Vertex AI Media Studio                                         Agent Media Studio on Gemini Enterprise
+                                                               Agent Platform
+
+Vertex AI                                                      Agent Platform
+
+Vertex AI Generative AI                                        Agent Platform Generative AI
+
+
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0
+License (https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the Apache
+2.0 License (https://www.apache.org/licenses/LICENSE-2.0). For details, see the Google Developers Site
+Policies (https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its
+affiliates.
+
+
+Last updated 2026-10-07 UTC.
+

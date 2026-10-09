@@ -1,0 +1,228 @@
+Skip to main content
+Documentation
+/
+Console
+Sign in
+Gemini Enterprise Agent Platform
+Start free
+Overview
+Studio
+Agents
+Models
+Notebooks
+API reference
+Pricing
+Engineering Blog
+Overview
+Get an API key
+Get started
+Build an agent with ADK and Agents CLI
+Build
+Overview
+Create agents
+Skill Registry
+Authentication
+RAG Engine
+Tokenizer
+Multimodal datasets
+Use Agent Search
+Perform vector similarity searches
+Agent Retrieval (formerly Vector Search 2.0) - Intelligent Retrieval for AI Applications
+Scale
+Overview
+Agent Runtime
+Overview
+Deploy agents
+Provision agents with Terraform
+Manage deployed agents
+Use agents
+Agent Identity with Agent Runtime
+Route traffic through Agent Gateway
+Bidirectional streaming
+Optimize and scale Agent Runtime performance
+Use Private Service Connect (PSC) interfaces
+Agent Runtime SDK migration
+Sessions
+Feedback service
+Memory Bank
+Sandbox
+Autonomous agent scheduling
+Govern
+Overview
+Safety (Responsible AI)
+Share an agent
+Agent Identity
+Agent Registry
+Topology graphs
+Policies
+Agent Gateway
+Guides
+Security
+Agent Audit
+Optimize
+Overview
+Observability
+Evaluation
+Example Store
+Troubleshooting
+Overview
+Agent Platform Runtime environment setup
+Create an agent
+Agent deployment
+Agent Gateway connectivity
+IAM access policies
+Manage deployed agents
+Code Execution
+Memory Bank
+On this page
+Create and deploy on Agent Runtime
+Supported languages and frameworks
+Deploy in production with Agents CLI
+Use cases
+Supported regions
+Quota
+Pricing
+Migration to the client-based SDK
+What's next
+Home
+Documentation
+AI and ML
+Gemini Enterprise Agent Platform
+Agents
+Was this helpful?
+Send feedback
+Agent Runtime
+
+To see an example of getting started with Gemini Enterprise Agent Runtime, run the "Building and Deploying an Agent with Gemini Enterprise Agent Platform" notebook in one of the following environments:
+
+Open in Colab | Open in Colab Enterprise | Open in Agent Platform Workbench | View on GitHub
+
+Agent Runtime is a fully-managed, opinionated runtime that you can use to deploy, operate, and scale agentic applications. Agent Runtime abstracts away the underlying infrastructure, which lets you focus on agent logic instead of operations.
+
+Agent Runtime lets you do the following:
+
+Deploy and scale agents with a managed runtime and end-to-end management capabilities.
+Customize the agent's container image with build-time installation scripts for system dependencies.
+Use security features including VPC-SC compliance and configuration of authentication and IAM.
+Access models and tools such as function calling.
+Deploy agents built using different languages and frameworks and the Agent2Agent open protocol.
+Note: Because the name of Agent Runtime changed over time, the name of the resource in the API reference is ReasoningEngine to maintain backwards compatibility.
+Create and deploy on Agent Runtime
+
+The workflow for building an agent on Agent Runtime is:
+
+Set up the environment: Set up your Google project and install the latest version of the Agent Platform SDK for Python.
+Develop an agent: Develop an agent that can be deployed on Agent Runtime.
+Deploy the agent: Deploy the agent on the Agent Runtime managed runtime.
+Use the agent: Query the agent by sending an API request.
+Manage the deployed agent: Manage and delete agents that you have deployed to Agent Runtime.
+Supported languages and frameworks
+
+Agent Runtime supports deploying agents written in any programming language and agent framework, as long as the agent application can be containerized and conforms to the runtime contract:
+
+From a container image: If you built a container image for your agent, you can deploy it directly from Artifact Registry to Agent Runtime. For more information, see Deploy from a container image.
+
+From a Dockerfile: If you have containerized source code, you can provide a Dockerfile with your source files. Agent Runtime builds and deploys the container image automatically. For more information, see Deploy from a Dockerfile.
+
+For supported languages and frameworks, higher-level tools and SDKs are available to simplify deployment. The following table describes the level of support Agent Runtime provides for various agent frameworks:
+
+Support level	Agent frameworks
+Custom template: You can adapt a custom template to support deployment to Agent Runtime from your framework. For deploying custom containers, see the Runtime contract.	CrewAI, custom frameworks
+Agent Platform SDK integration: Agent Runtime provides managed templates per framework in the Agent Platform SDK and documentation.	LangChain, LangGraph, AG2, LlamaIndex
+Full integration: Features are integrated to work across the framework, Agent Runtime, and broader Google Cloud ecosystem.	Agent Development Kit (ADK)
+Python: Deploy using the adk CLI.
+Go: Deploy using the adkgo CLI.
+Deploy in production with Agents CLI
+This resource may not be available in your region.
+
+The Agents CLI is the unified command-line interface and skill set for the Gemini Enterprise Agent Platform. It provides coding agents and developers with a predictable path through the Agent Development Lifecycle: scaffold, evaluate, deploy, publish, and observe. The Agents CLI provides the following:
+
+Pre-built agent templates: ReAct, RAG, multi-agent, and other templates.
+Interactive playground: Test and interact with your agent.
+Automated infrastructure: Uses Terraform for streamlined resource management.
+CI/CD pipelines: Automated deployment workflows leveraging Cloud Build.
+Observability: Built-in support for Cloud Trace and Cloud Logging.
+
+To get started, see the Quickstart.
+
+Use cases
+
+To learn about Agent Runtime with end-to-end examples, see the following resources:
+
+Click to expand use cases
+Supported regions
+
+See Locations for a list of supported regions for Agent Runtime.
+
+Quota
+
+See Quota and system limits for Agent Runtime quota information.
+
+Pricing
+
+A free tier is available for Agent Runtime. For information about pricing for Agent Runtime, see Gemini Enterprise Agent Platform pricing.
+
+Migration to the client-based SDK
+
+In version 2.0.1 of the Agent Platform SDK, the agent_engines module was refactored and renamed to individual modules (such as runtimes, sessions, sandboxes, and memory_banks) under the standalone google-cloud-agentplatform package (agentplatform). The SDK adopts a client-based design for the following key reasons:
+
+To align with the Agent Development Kit (ADK) and Google Gen AI SDK (google-genai) in canonical type representations. This ensures a consistent and standardized way of representing data types across different SDKs, which simplifies interoperability and reduces conversion overhead.
+For client-level scoping of Google Cloud parameters in multi-project multi-location applications. This allows an application to manage interactions with resources across different Google Cloud projects and geographical locations by configuring each client instance (client = agentplatform.Client(project=..., location=...)) with its specific project and location settings.
+To improve discoverability and cohesiveness of Gemini Enterprise Agent Platform services (client.runtimes, client.sessions, client.sandboxes, and client.memory_banks).
+To provide a lightweight, decoupled package (google-cloud-agentplatform) tailored for agent workloads while generative AI modules migrate to the Google Gen AI SDK (google-genai).
+
+For detailed instructions on migrating to the new SDK structure, see the following guides:
+
+Agent Runtime SDK migration: Migrate from vertexai.agent_engines to agentplatform.Client().runtimes.
+Agent Platform SDK for Python: version 2.0.1 migration guide: Overall guide covering package decoupling, module deprecations, and migrating generative AI modules to the Google Gen AI SDK.
+What's next
+Guide
+Agent Platform Runtime setup
+
+Set up your environment to use Agent Platform Runtime.
+
+Resource
+Get support
+
+Get support for Agent Platform development.
+
+Was this helpful?
+Send feedback
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+
+Products and pricing
+See all products
+Google Cloud pricing
+Google Cloud Marketplace
+Contact sales
+Support
+Community forums
+Support
+Release Notes
+System status
+Resources
+GitHub
+Getting Started with Google Cloud
+Code samples
+Cloud Architecture Center
+Training and Certification
+Engage
+Blog
+Events
+X (Twitter)
+Google Cloud on YouTube
+Google Cloud Tech on YouTube
+Android
+Chrome
+Firebase
+Google AI
+About Google
+Privacy
+Site terms
+Google Cloud terms
+Our third decade of climate action: join us
+Sign up for the Google Cloud newsletter
+Subscribe

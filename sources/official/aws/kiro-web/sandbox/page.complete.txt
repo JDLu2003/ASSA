@@ -1,0 +1,250 @@
+AGENTS
+APPS
+ENTERPRISE
+PRICING
+DOCS
+COMMUNITY
+RESOURCES
+SIGN IN
+DOWNLOADS
+
+GET STARTED
+
+Installation
+Authentication
+Your first project
+
+MODELS
+
+Overview
+Available models
+Reasoning effort
+AWS GovCloud (US) models
+
+FEATURES
+
+How Kiro works
+ACP integrations
+Specs
+Steering
+Hooks
+MCP
+Permissions
+Custom agents
+Workflows
+Agent Skills
+Powers
+Cloud sessions
+Compaction
+Kiroignore
+Checkpoints and rewind
+Built-in tools
+Configuration scopes
+
+IDE 1.X
+
+What's new in 1.0
+Setup & First Run
+Editor
+Chat
+Experimental
+Troubleshooting
+0.x reference
+
+CLI
+
+What's new in V3
+Setup & First Run
+Terminal UI
+Chat
+Fullscreen mode
+Voice mode
+Headless mode
+ACP
+Auto complete
+Experimental
+2.x reference
+
+CREW
+
+Quick start
+Installation
+Running 24/7
+Chat
+Agent Capabilities
+Features
+Interfaces
+Apps
+System & storage
+Configuration
+Security
+Troubleshooting
+
+WEB
+
+Setup & First Run
+Identity Center
+Connect your repositories
+GitHub
+GitLab
+Working with the agent
+Autonomous mode
+Automations
+Memory
+Configuration Sync
+Sandbox
+Internet access
+Environment variables
+Powers and MCP
+Environment configuration
+
+MOBILE - PREVIEW
+
+Overview
+
+COMMANDS AND REFERENCE
+
+CLI commands
+Slash commands
+Built-in tools
+Exit codes
+Settings
+
+BILLING
+
+Overview
+Managing your subscription
+Upgrading your plan
+Downgrading your plan
+Cancelling your plan
+Purchasing add-on credits
+Managing your payments
+Managing usage notifications
+Managing your taxes
+Contacting billing support
+Deleting your account
+Related questions
+
+ENTERPRISE
+
+Concepts
+Onboarding quickstart
+Connecting your identity provider
+Deployment options
+Subscribe your team
+Manage subscriptions
+Governance
+Monitor and track
+Settings
+Managed updates
+Billing
+IAM
+Supported regions
+
+PRIVACY AND SECURITY
+
+Overview
+Data protection
+Code references
+Compliance validation
+Infrastructure security
+IAM permissions
+Firewalls, proxies, and data perimeters
+VPC endpoints (AWS PrivateLink)
+
+GUIDES
+
+Overview
+Language support
+Learn by playing
+
+MIGRATION
+
+Migrating from Q Developer
+Migrating from VSCode
+Upgrading from Q CLI
+Docs
+Web
+Sandbox
+Sandbox
+
+The sandbox provides a secure, isolated environment where the Kiro Web agent executes tasks. Each task runs in its own sandbox with configurable access controls, ensuring your code and resources remain protected.
+
+You can configure sandbox settings from the Agent settings page under Sandbox.
+
+How it works
+
+When you assign a task, the agent:
+
+Spins up an isolated sandbox environment
+Clones authorized repositories into the sandbox
+Configures the environment based on detected project settings
+Executes the task with access only to explicitly permitted resources
+Keeps the sandbox's file state with the session, so you can reattach from any surface and browse its workspace. Deleting the session removes its sandbox
+Browser automation
+
+Every sandbox includes a headless Chrome browser, running inside the same isolated environment, with browser automation tooling preinstalled: the Playwright MCP server, the agent-browser CLI, and the Chrome DevTools MCP server. The agent can use them to open and interact with web applications running in the sandbox — validating UI changes it just made, reproducing browser-based bugs, and driving multi-step web workflows.
+
+No setup is required; ask the agent to verify a page or interact with a running web app and it picks the right tool. For reaching pages outside the sandbox, see internet access.
+
+Configuration
+
+Configure sandbox access and behavior for your tasks.
+
+Internet Access
+Control which domains the agent can reach
+Powers and MCP
+Install Powers or configure custom MCP servers
+Environment Variables
+Configure environment variables and secrets for task execution
+Environment Configuration
+Configure the sandbox environment for your project
+Page updated: October 1, 2026
+Configuration Sync
+Internet access
+Copy page
+View as Markdown
+On this page
+How it works
+Browser automation
+Configuration
+PRODUCT
+About Kiro
+Agents
+IDE
+CLI
+Web
+Mobile
+Crew
+Pricing
+Downloads
+FOR
+Enterprise
+Startups
+Students
+COMMUNITY
+Overview
+Ambassadors
+Case studies
+Discord
+Events
+Powers
+Shop
+Showcase
+RESOURCES
+Docs
+Blog
+Changelog
+FAQs
+Report a bug
+Suggest an idea
+Billing support
+SOCIAL
+Site Terms
+License
+Responsible AI Policy
+Legal
+Privacy Policy
+Cookie Preferences
+Your Privacy Choices
+ENGLISH

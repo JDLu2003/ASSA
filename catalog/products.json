@@ -1,148 +1,374 @@
 {
+  "updated_at": "2026-10-09T12:32:57.280369+00:00",
   "priority": "Products first; new paper discovery paused per user instruction",
+  "scope_note": "Retrieval index only. Platforms, components and documented agent types are separate entries, not assumed to be separate standalone products. No architecture, cost or performance analysis.",
   "captured_entries": [
     {
       "vendor": "openai",
       "name": "Agents API",
-      "entry_type": "API service",
+      "entry_type": "offering",
+      "parent_name": null,
       "status": "official_source_captured",
       "official_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
       "source_title": "Agents API | OpenAI API",
       "local_path": "sources/official/openai/agents-api/overview",
       "pdf": "page.complete.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "openai",
+      "name": "Codex Cloud",
+      "entry_type": "offering",
+      "parent_name": null,
+      "status": "official_source_captured",
+      "official_url": "https://learn.chatgpt.com/docs/cloud",
+      "source_title": "Codex Cloud | ChatGPT Learn",
+      "local_path": "sources/official/openai/codex-cloud/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
     },
     {
       "vendor": "anthropic",
       "name": "Claude Managed Agents",
-      "entry_type": "managed agent service",
+      "entry_type": "offering",
+      "parent_name": null,
       "status": "official_source_captured",
       "official_url": "https://platform.claude.com/docs/en/managed-agents/overview",
       "source_title": "Claude Managed Agents overview - Claude Platform Docs",
       "local_path": "sources/official/anthropic/claude-managed-agents/overview",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "anthropic",
+      "name": "Claude Code in the cloud",
+      "entry_type": "offering",
+      "parent_name": "Claude Code",
+      "status": "official_source_captured",
+      "official_url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+      "source_title": "Use Claude Code in the cloud - Claude Code Docs",
+      "local_path": "sources/official/anthropic/claude-code-web/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "aws",
+      "name": "Amazon Bedrock Managed Agents, powered by OpenAI",
+      "entry_type": "offering",
+      "parent_name": "Amazon Bedrock",
+      "status": "official_source_captured",
+      "official_url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+      "source_title": "Amazon Bedrock Managed Agents",
+      "local_path": "sources/official/aws/bedrock-managed-agents/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json",
+      "verbatim_launch_label": "Amazon Bedrock Managed Agents, powered by OpenAI (Preview)"
+    },
+    {
+      "vendor": "aws",
+      "name": "Amazon Bedrock Agents Classic",
+      "entry_type": "offering",
+      "parent_name": "Amazon Bedrock",
+      "status": "official_source_captured",
+      "official_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "source_title": "Automate tasks in your application using AI agents - Amazon Bedrock",
+      "local_path": "sources/official/aws/bedrock-agents/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json",
+      "verbatim_lifecycle_notice": "Amazon Bedrock Agents (now Amazon Bedrock Agents Classic) is no longer open to new customers. For capabilities similar to Bedrock Agents Classic, explore Amazon Bedrock AgentCore. Existing customers can continue to use the service as normal. For more information, see Amazon Bedrock Agents Classic maintenance mode."
     },
     {
       "vendor": "aws",
       "name": "Amazon Bedrock AgentCore",
-      "entry_type": "platform",
+      "entry_type": "offering",
+      "parent_name": null,
       "status": "official_source_captured",
       "official_url": "https://aws.amazon.com/bedrock/agentcore/",
       "source_title": "Amazon Bedrock AgentCore - AWS",
       "local_path": "sources/official/aws/agentcore/overview",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
     },
     {
       "vendor": "aws",
       "name": "Amazon Bedrock AgentCore Runtime",
-      "entry_type": "platform runtime component",
+      "entry_type": "component",
+      "parent_name": "Amazon Bedrock AgentCore",
       "status": "official_source_captured",
       "official_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
       "source_title": "Host agent or tools with Amazon Bedrock AgentCore Runtime - Amazon Bedrock AgentCore",
       "local_path": "sources/official/aws/agentcore-runtime/runtime",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "aws",
+      "name": "Amazon Bedrock AgentCore Browser",
+      "entry_type": "component",
+      "parent_name": "Amazon Bedrock AgentCore",
+      "status": "official_source_captured",
+      "official_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+      "source_title": "Interact with web applications using Amazon Bedrock AgentCore Browser - Amazon Bedrock AgentCore",
+      "local_path": "sources/official/aws/agentcore-browser/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "aws",
+      "name": "Amazon Bedrock AgentCore Code Interpreter",
+      "entry_type": "component",
+      "parent_name": "Amazon Bedrock AgentCore",
+      "status": "official_source_captured",
+      "official_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+      "source_title": "Execute code and analyze data using Amazon Bedrock AgentCore Code Interpreter - Amazon Bedrock AgentCore",
+      "local_path": "sources/official/aws/agentcore-code-interpreter/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "aws",
+      "name": "Amazon Bedrock AgentCore Gateway",
+      "entry_type": "component",
+      "parent_name": "Amazon Bedrock AgentCore",
+      "status": "official_source_captured",
+      "official_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+      "source_title": "Amazon Bedrock AgentCore Gateway: A secure AI gateway for agents, tools, and models - Amazon Bedrock AgentCore",
+      "local_path": "sources/official/aws/agentcore-gateway/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
     },
     {
       "vendor": "microsoft",
-      "name": "Foundry Agent Service — Hosted agents",
-      "entry_type": "hosted agent capability",
+      "name": "Microsoft Foundry Agent Service",
+      "entry_type": "offering",
+      "parent_name": null,
+      "status": "official_source_captured",
+      "official_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "source_title": "What is Microsoft Foundry Agent Service? - Microsoft Foundry | Microsoft Learn",
+      "local_path": "sources/official/microsoft/foundry-agent-service/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "microsoft",
+      "name": "Prompt agents",
+      "entry_type": "agent-type",
+      "parent_name": "Microsoft Foundry Agent Service",
+      "status": "official_source_captured",
+      "official_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "source_title": "What is Microsoft Foundry Agent Service? - Microsoft Foundry | Microsoft Learn",
+      "local_path": "sources/official/microsoft/foundry-agent-service/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "microsoft",
+      "name": "Voice-based prompt agents",
+      "entry_type": "agent-type",
+      "parent_name": "Microsoft Foundry Agent Service",
+      "status": "official_source_captured",
+      "official_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "source_title": "What is Microsoft Foundry Agent Service? - Microsoft Foundry | Microsoft Learn",
+      "local_path": "sources/official/microsoft/foundry-agent-service/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "microsoft",
+      "name": "Hosted agents",
+      "entry_type": "agent-type",
+      "parent_name": "Microsoft Foundry Agent Service",
       "status": "official_source_captured",
       "official_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
       "source_title": "Hosted agents in Foundry Agent Service - Microsoft Foundry | Microsoft Learn",
       "local_path": "sources/official/microsoft/foundry-hosted-agents/hosted-agents",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
     },
     {
       "vendor": "google",
-      "name": "Agent Runtime on Gemini Enterprise Agent Platform",
-      "entry_type": "platform runtime component",
+      "name": "Gemini Enterprise Agent Platform",
+      "entry_type": "offering",
+      "parent_name": null,
       "status": "official_source_captured",
-      "official_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart",
-      "source_title": "Quickstart: Develop and deploy agents on Agent Runtime  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "local_path": "sources/official/google/agent-platform/runtime-quickstart",
+      "official_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+      "source_title": "Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "local_path": "sources/official/google/gemini-enterprise-agent-platform/overview",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
     },
     {
       "vendor": "google",
-      "name": "Shell sandbox on Gemini Enterprise Agent Platform",
-      "entry_type": "platform environment component",
+      "name": "Managed Agents API on Agent Platform",
+      "entry_type": "offering",
+      "parent_name": "Gemini Enterprise Agent Platform",
       "status": "official_source_captured",
-      "official_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
-      "source_title": "Shell sandbox quickstart  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
-      "local_path": "sources/official/google/agent-platform-sandbox/shell-quickstart",
+      "official_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+      "source_title": "Managed Agents API on Agent Platform overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "local_path": "sources/official/google/managed-agents/overview",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json",
+      "verbatim_launch_notice": "This product is a Pre-GA offering, subject to the \"Pre-GA Offerings Terms\" in the General Service Terms section of the Service Specific Terms, the \"Agentic AI Services\" terms in the Service Specific Terms, and the Additional Terms for Generative AI Preview Products. Pre-GA products and features may have limited support, and changes to pre-GA products and features may not be compatible with other pre-GA versions. For more information, see the launch stage descriptions."
+    },
+    {
+      "vendor": "google",
+      "name": "Agent Runtime",
+      "entry_type": "component",
+      "parent_name": "Gemini Enterprise Agent Platform",
+      "status": "official_source_captured",
+      "official_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+      "source_title": "Agent Runtime  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "local_path": "sources/official/google/agent-runtime/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "google",
+      "name": "Sandboxes",
+      "entry_type": "component",
+      "parent_name": "Gemini Enterprise Agent Platform",
+      "status": "official_source_captured",
+      "official_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+      "source_title": "Sandboxes overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "local_path": "sources/official/google/agent-platform-sandbox/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "google",
+      "name": "Agent Gateway",
+      "entry_type": "component",
+      "parent_name": "Gemini Enterprise Agent Platform",
+      "status": "official_source_captured",
+      "official_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+      "source_title": "Agent Gateway overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "local_path": "sources/official/google/agent-gateway/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
     },
     {
       "vendor": "google",
       "name": "Cloud Run sandboxes",
-      "entry_type": "environment offering",
+      "entry_type": "offering",
+      "parent_name": "Cloud Run",
       "status": "official_source_captured",
       "official_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
       "source_title": "Google Cloud Run sandboxes are in public preview | Google Cloud Blog",
       "local_path": "sources/official/google/cloud-run-sandboxes/announcement",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
     },
     {
       "vendor": "google",
       "name": "GKE Agent Sandbox",
-      "entry_type": "environment component described by vendor blog",
+      "entry_type": "component",
+      "parent_name": "GKE",
       "status": "official_source_captured",
       "official_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
       "source_title": "Agent Factory Recap: Supercharging Agents on GKE with Agent Sandbox and Pod Snapshots | Google Cloud Blog",
       "local_path": "sources/official/google/gke-agent-sandbox/pod-snapshot-blog",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "google",
+      "name": "Jules",
+      "entry_type": "offering",
+      "parent_name": null,
+      "status": "official_source_captured",
+      "official_url": "https://jules.google/",
+      "source_title": "Jules - An Autonomous Coding Agent",
+      "local_path": "sources/official/google/jules/overview",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
     },
     {
       "vendor": "e2b",
       "name": "E2B Sandboxes",
-      "entry_type": "environment offering",
+      "entry_type": "offering",
+      "parent_name": null,
       "status": "official_source_captured",
       "official_url": "https://docs.e2b.dev/",
       "source_title": "E2B Documentation - E2B Docs",
       "local_path": "sources/official/e2b/sandbox/overview",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
     },
     {
       "vendor": "daytona",
       "name": "Daytona Sandboxes",
-      "entry_type": "environment offering",
+      "entry_type": "offering",
+      "parent_name": null,
       "status": "official_source_captured",
       "official_url": "https://www.daytona.io/docs/",
       "source_title": "Documentation · Daytona",
       "local_path": "sources/official/daytona/sandbox/overview",
       "pdf": "page.pdf",
       "text": "page.txt",
-      "note": "Source directory only; no architectural comparison or pricing inference. Parent platforms and components are separate entries, not assumed to be separate standalone products."
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "kiro",
+      "name": "Kiro Web",
+      "entry_type": "offering",
+      "parent_name": "Kiro",
+      "status": "official_source_captured",
+      "official_url": "https://kiro.dev/web/",
+      "source_title": "Web - Kiro",
+      "local_path": "sources/official/aws/kiro-web/overview",
+      "pdf": "page.complete.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
+    },
+    {
+      "vendor": "github",
+      "name": "GitHub Copilot cloud agent",
+      "entry_type": "offering",
+      "parent_name": "GitHub Copilot",
+      "status": "official_source_captured",
+      "official_url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+      "source_title": "Using Copilot cloud agent via the API - GitHub Docs",
+      "local_path": "sources/official/github/copilot-cloud-agent/api",
+      "pdf": "page.pdf",
+      "text": "page.txt",
+      "metadata": "metadata.json"
     }
   ],
-  "pending_candidates": [
+  "pending_candidates": [],
+  "previous_15_candidates": [
     {
       "vendor": "google",
       "product": "gemini-enterprise-agent-platform",
       "id": "overview",
       "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+      "title": "Gemini Enterprise Agent Platform  |  Google Cloud Documentation"
     },
     {
       "vendor": "google",
@@ -150,8 +376,9 @@
       "id": "overview",
       "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+      "title": "Managed Agents API on Agent Platform overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation"
     },
     {
       "vendor": "google",
@@ -159,8 +386,9 @@
       "id": "overview",
       "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+      "title": "Agent Runtime  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation"
     },
     {
       "vendor": "google",
@@ -168,8 +396,9 @@
       "id": "overview",
       "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+      "title": "Sandboxes overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation"
     },
     {
       "vendor": "google",
@@ -177,8 +406,9 @@
       "id": "code-execution-overview",
       "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+      "title": "Code Execution  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation"
     },
     {
       "vendor": "google",
@@ -186,8 +416,9 @@
       "id": "computer-use",
       "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+      "title": "Computer Use  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation"
     },
     {
       "vendor": "google",
@@ -195,8 +426,9 @@
       "id": "overview",
       "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+      "title": "Agent Gateway overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation"
     },
     {
       "vendor": "openai",
@@ -204,8 +436,9 @@
       "id": "overview",
       "url": "https://developers.openai.com/codex/cloud",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://learn.chatgpt.com/docs/cloud",
+      "title": "Codex Cloud | ChatGPT Learn"
     },
     {
       "vendor": "openai",
@@ -213,8 +446,9 @@
       "id": "environments",
       "url": "https://developers.openai.com/codex/environments/cloud-environments",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://learn.chatgpt.com/docs/environments/cloud-environments",
+      "title": "Cloud environments | ChatGPT Learn"
     },
     {
       "vendor": "openai",
@@ -222,8 +456,9 @@
       "id": "bedrock-managed-agents",
       "url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+      "title": "Bedrock Managed Agents | OpenAI API"
     },
     {
       "vendor": "aws",
@@ -231,8 +466,9 @@
       "id": "overview",
       "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "title": "Automate tasks in your application using AI agents - Amazon Bedrock"
     },
     {
       "vendor": "aws",
@@ -240,8 +476,9 @@
       "id": "overview",
       "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+      "title": "Interact with web applications using Amazon Bedrock AgentCore Browser - Amazon Bedrock AgentCore"
     },
     {
       "vendor": "aws",
@@ -249,8 +486,9 @@
       "id": "overview",
       "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+      "title": "Execute code and analyze data using Amazon Bedrock AgentCore Code Interpreter - Amazon Bedrock AgentCore"
     },
     {
       "vendor": "aws",
@@ -258,8 +496,9 @@
       "id": "overview",
       "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+      "title": "Amazon Bedrock AgentCore Gateway: A secure AI gateway for agents, tools, and models - Amazon Bedrock AgentCore"
     },
     {
       "vendor": "microsoft",
@@ -267,8 +506,9 @@
       "id": "overview",
       "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
       "kind": "official-web",
-      "status": "capture_failed_http_503",
-      "verification": "Official-navigation candidate for Google/OpenAI; AWS/Microsoft endpoints remain unverified candidates"
+      "status": "official_source_captured",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "title": "What is Microsoft Foundry Agent Service? - Microsoft Foundry | Microsoft Learn"
     }
   ]
 }

@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform-sandbox",
+    "id": "overview",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:19:56.298508+00:00",
+  "path": "sources/official/google/agent-platform-sandbox/overview",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+  "http_status": 200,
+  "title": "Sandboxes overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "5054f9237a70c8e77af11ce358b6f69bc167867e4b7db91780f319d455137424",
+      "bytes": 4899
+    },
+    "page.txt": {
+      "sha256": "56a7d0f4ae961eeb7261c1c7c61fa2ff3ccc5d795b4d68a73a6107378e16b862",
+      "bytes": 5673
+    },
+    "page.pdf": {
+      "sha256": "b37f36dc3d193a1ed78939fe44ff3da9498c849692c6ede5678f4fa59eaf771f",
+      "bytes": 105953
+    },
+    "page.html": {
+      "sha256": "3facef9d31ccf9e245d8c97c45b3f83a32c1bb2a8769231ed9ef9d0c9c4f0c79",
+      "bytes": 214720
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-managed-agents",
+    "id": "cloud-sandbox-reference",
+    "url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:20:43.994798+00:00",
+  "path": "sources/official/anthropic/claude-managed-agents/cloud-sandbox-reference",
+  "requested_url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+  "final_url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+  "http_status": 200,
+  "title": "Cloud sandbox reference - Claude Platform Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "095f9dc807693f971342ffed18fe4c89dfed9f9dcac55d860a9e7290584c02d6",
+      "bytes": 3828
+    },
+    "page.txt": {
+      "sha256": "e71abdac8ce9d875f820d07b06bf8f810592dac25e6b59037b507fd73d241d43",
+      "bytes": 4938
+    },
+    "page.pdf": {
+      "sha256": "0584662c0e440c661b06e48042cfa2e136143adfaa897e8221fab28e36385f7a",
+      "bytes": 253018
+    },
+    "page.html": {
+      "sha256": "1cd089df71a6e0125987bbae098aee43f24e281a440c7b6b7ec1626f030f137f",
+      "bytes": 462019
+    }
+  }
+}

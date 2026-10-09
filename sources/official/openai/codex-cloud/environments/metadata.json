@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "codex-cloud",
+    "id": "environments",
+    "url": "https://developers.openai.com/codex/environments/cloud-environments",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:10.089631+00:00",
+  "path": "sources/official/openai/codex-cloud/environments",
+  "requested_url": "https://developers.openai.com/codex/environments/cloud-environments",
+  "final_url": "https://learn.chatgpt.com/docs/environments/cloud-environments",
+  "http_status": 200,
+  "title": "Cloud environments | ChatGPT Learn",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "6665e5b643e7c69e38fb66f99e4957f570c582ee2113af4ddeab1f4360db4233",
+      "bytes": 23728
+    },
+    "page.txt": {
+      "sha256": "44f68360d243b059c5037a774d3d3450b91eeeba8d38975a0ae9c41af95d4fb9",
+      "bytes": 19406
+    },
+    "page.pdf": {
+      "sha256": "a3671b0cfb74e2213540cb2fee0a7a0be389ef788ce4b8a3b4a249bf96b42096",
+      "bytes": 1186854
+    },
+    "page.html": {
+      "sha256": "3200bb1e393c62acadc847f20130881d8b39baae022dea333bb116fd671b88b8",
+      "bytes": 465449
+    }
+  }
+}

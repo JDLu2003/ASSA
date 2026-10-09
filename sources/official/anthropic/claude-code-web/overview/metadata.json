@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-code-web",
+    "id": "overview",
+    "url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:23:23.413730+00:00",
+  "path": "sources/official/anthropic/claude-code-web/overview",
+  "requested_url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+  "final_url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+  "http_status": 200,
+  "title": "Use Claude Code in the cloud - Claude Code Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "ecb49321043850a999ca2acbf0aea77662b75f01e92f79a0b3cd3aa496a3a6b8",
+      "bytes": 38037
+    },
+    "page.txt": {
+      "sha256": "20602adb0ed7db6faa2fcf6a72a60d6935db48b24694f5032e921bf937b3331d",
+      "bytes": 37198
+    },
+    "page.pdf": {
+      "sha256": "46d4d1875608d0c391d8e3f64e6064d6940d02e163666e5e7afc902e9d4f80c3",
+      "bytes": 657953
+    },
+    "page.html": {
+      "sha256": "a56edab6ae09ab46a735f93252697ae1cedeaf041ca6b8339a2458cf60f6f23c",
+      "bytes": 712201
+    }
+  }
+}

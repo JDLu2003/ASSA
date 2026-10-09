@@ -1,0 +1,181 @@
+ferences    (#) Contact Us (https://aws.amazon.com/contact-us/?cmpid=docs_headercta_contactus)
+
+ocs.aws.amazon.com/feedback/doc-feedback.html?hidden_service_name=Bedrock&topic_url=https%3A%2F%2Fdocs.aws.amazon.com%2Fbedrock%2Flatest%2Fuserguide%2Fagents.html)
+                                                                     Get started       Service guides        Developer tools        AI resources
+                                                                     (#)               (#)                   (#)                    (#)
+   (https://docs.aws.amazon.com)
+
+
+
+    Amazon Bedrock                                       Documentation                                  Amazon Bedrock
+                                                                                                                                                            User Guide
+    User Guide                                           (https://docs.aws.amazon.com/index.html)       (https://docs.aws.amazon.com/bedrock/index.html)
+
+
+
+
+    Overview(what-is-bedrock.html)
+                                                         Automate tasks in your application
+    Quickstart(getting-started.html)                     using AI agents
+    Models at a glance(model-cards.html)
+
+    Model availability &                  (models.ht           PDF (/pdfs/bedrock/latest/userguide/bedrock-ug.pdf#agents)                 RSS (bedrock-ug.rss)
+    compatibility                         ml)
+                                                               Markdown (agents.md)                 Agent Setup             Focus mode
+    Build(build.html)
+
+    Model                   (custom-
+    customization           models.html)
+
+    Security, Guardrails, and             (security.ht
+    Observability                         ml)            Related resources
+                                                         Amazon Bedrock API Reference (https://docs.aws.amazon.com/bedrock/latest/APIReference/index.html)
+    Capacity and        (capacity-limits-cost-
+    Performance         optimization.html)               AWS CLI commands for Amazon Bedrock (https://docs.aws.amazon.com/cli/latest/reference/bedrock/)
+
+    Track usage and        (cost-                        SDKs & Tools      (https://aws.amazon.com/tools/)
+
+    costs                  management.html)
+
+    Additional           (additional-
+    capabilities         capabilities.html)              Did this page help you?
+        Optimize and       (prompt-
+        migrate            optimization-                       Yes             No
+        prompts            migration.html)
+                                                         Provide feedback (https://docs.aws.amazon.com/feedback/doc-feedback.html?
+        Data Automation(bda.html)
+                                                         hidden_service_name=Bedrock&topic_url=https%3A%2F%2Fdocs.aws.amazon.com%2Fbedrock%2Flatest%2Fuserguide%2Fagents.html)
+        Knowledge          (knowledge-
+        Bases              base.html)
+
+        Evaluate models(evaluation.html)
+
+        Prompt             (prompt-
+        management         management.html)                     Note
+        Agents: Automate            (agents.htm
+                                                                Amazon Bedrock Agents (now Amazon Bedrock Agents Classic) is no longer open to new
+        tasks                       l)
+                                                                customers. For capabilities similar to Bedrock Agents Classic, explore Amazon Bedrock AgentCore
+            How Amazon               (agents-
+                                                                (https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-get-started-cli.html) . Existing
+            Bedrock Agents           how.html)
+            work
+                                                                customers can continue to use the service as normal. For more information, see Amazon Bedrock
+                                                                Agents Classic maintenance mode (./agents-classic-maintenance-mode.html) .
+            Amazon Bedrock (agents-
+            Agents Classic classic-
+            maintenance    maintenance
+                                                         Amazon Bedrock Agents offers you the ability to build and configure autonomous agents in your application.
+            mode           -mode.html)
+                                                         An agent helps your end-users complete actions based on organization data and user input. Agents
+            Supported        (agents-
+                                                         orchestrate interactions between foundation models (FMs), data sources, software applications, and user
+            Regions          supported.html)
+                                                         conversations. In addition, agents automatically call APIs to take actions and invoke knowledge bases to
+            Tutorial: Building (agent-                   supplement information for these actions. By integrating agents, you can accelerate your development
+            a simple agent     tutorial.ht
+                                                         effort to deliver generative artificial intelligence (generative AI) applications.
+                                    ml)
+
+            Build and modify (agents-                    With agents, you can automate tasks for your customers and answer questions for them. For example, you
+            agents for your  build-
+                                                         can create an agent that helps customers process insurance claims or an agent that helps customers make
+            application      modify.ht
+                                                         travel reservations. You don't have to provision capacity, manage infrastructure, or write custom code.
+                                    ml)
+                                                         Amazon Bedrock manages prompt engineering, memory, monitoring, encryption, user permissions, and API
+            Use action groups (agents-
+                                                         invocation.
+            to define actions action-
+            for your agent    create.htm
+                                                         Agents perform the following tasks:
+                                     l)
+
+            Use multi-agent (agents-                         Extend foundation models to understand user requests and break down the tasks that the agent must
+            collaboration for multi-agent-                   perform into smaller steps.
+            complex tasks collaboration.
+                                html)                        Collect additional information from a user through natural conversation.
+                                                             Take actions to fulfill a customer's request by making API calls to your company systems.
+                                                             Augment performance and accuracy by querying data sources.
+        Configure agent to (agents-               To use an agent, you perform the following steps:
+        request information user-
+        from user           input.htm              1. (Optional) Create a knowledge base to store your private data in that database. For more information,
+                                l)                       see Retrieve data and generate AI responses with Amazon Bedrock Knowledge Bases (./knowledge-
+        Augment response     (agent                      base.html) .
+        generation for your  s-kb-
+                                                   2. Configure an agent for your use case and add at least one of the following components:
+        agent with knowledge add.ht
+        base                 ml)                             At least one action group that the agent can perform. To learn how to define the action group and
+        Retain                  (agents-                     how it's handled by the agent, see Use action groups to define actions for your agent to perform
+        conversational          memory.h                     (./agents-action-create.html) .
+        context using           tml)
+                                                             Associate a knowledge base with the agent to augment the agent's performance. For more
+        memory
+                                                             information, see Augment response generation for your agent with knowledge base (./agents-kb-
+        Generate, run, and (agents-
+                                                             add.html) .
+        test code with     code-
+        code               interpretati            3. (Optional) To customize the agent's behavior to your specific use-case, modify prompt templates for the
+        interpretation     on.html)                   pre-processing, orchestration, knowledge base response generation, and post-processing steps that the
+        Implement          (agents-                      agent performs. For more information, see Enhance agent's accuracy using advanced prompt templates
+        safeguards for yourguardrail.                    in Amazon Bedrock (./advanced-prompts.html) .
+        application        html)
+                                                   4. Test your agent in the Amazon Bedrock console or through API calls to the TSTALIASID . Modify the
+        Provision               (agents-
+                                                         configurations as necessary. Use traces to examine your agent's reasoning process at each step of its
+        additional              pt.html)
+        throughput                                       orchestration. For more information, see Test and troubleshoot agent behavior (./agents-test.html) and
+
+        Configure an          (agents-                   Track agent's step-by-step reasoning process using trace (./trace-events.html) .
+        agent to use          computer-            5. When you have sufficiently modified your agent and it's ready to be deployed to your application, create
+        computer use          use.html)
+                                                      an alias to point to a version of your agent. For more information, see Deploy and use an Amazon
+        tools
+                                                         Bedrock agent in your application (./agents-deploy.html) .
+        Test and           (agents-
+        troubleshoot agent test.html)
+                                                   6. Set up your application to make API calls to your agent alias.
+        behavior                                   7. Iterate on your agent and create more versions and aliases as necessary.
+        Customize agent (agents-
+        for your use case customize.ht
+                           ml)
+ Get Started                               Service Guides                             Developer Tools                                Helpful Links
+        Deploy and use an (agents-                                                                                                                                              Top
+        agent in your
+ AWS Hands-On     Tutorials deploy.ht      Choosing a generative AI service           AWS Code Example Library                       Download the AWS Docs MCP
+        application         ml)
+ (https://aws.amazon.com/getting-          (https://docs.aws.amazon.com/decision-     (https://docs.aws.amazon.com/code-             Server
+ started/hands-on/)
+    Prompt          (prompt-               guides/latest/decision-guides/genai-       library/latest/ug/what-is-code-                (https://github.com/awslabs/mcp/tree/main/src/aws-
+
+ AWS   Solutions Library
+    engineering     engineering-           guide.html)                                library.html)                                  documentation-mcp-server)
+    concepts        guidelines.html)
+ (https://aws.amazon.com/solutions/)       AWS service guides                         AWS CLI                                        Sign into the AWS Console
+ AWS   Decision Guides                     (https://docs.aws.amazon.com/#products) (https://docs.aws.amazon.com/cli/)                (https://console.aws.amazon.com/)
+    Amazon           (amazon-bedrock-
+    Bedrock
+ (https://docs.aws.amazon.com/decision-
+                     marketplace.html)     AWS CLI Tutorials on GitHub                AWS Builder Center                             AWS re:Post       (https://repost.aws/)
+    Marketplace
+ guides/)                                  (https://github.com/aws-                   (https://builder.aws.com/)
+                                           samples/sample-developer-tutorials)        AWS Developer Tools Blog
+    Flows(flows.html)
+                                                                                      (https://aws.amazon.com/blogs/developer/)
+    Session               (sessions.html
+    management            )
+ Privacy (https://aws.amazon.com/privacy)
+Managed    agents (bedrock-managed- | Site terms (https://aws.amazon.com/terms)   |   Cookie preferences (#)   |   © 2026, Amazon Web Services, Inc. or its affiliates. All
+
+by OpenAI             agents-openai.html)
+ rights reserved.      English
+Code              (service_code_examples.ht
+examples          ml)
+
+References/Advanced(references.html)
+
+AWS Glossary(glossary.html)
+
+Document        (bedrock-ug-doc-
+history         history.html)
+

@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "bedrock-agents",
+    "id": "overview",
+    "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:21.735265+00:00",
+  "path": "sources/official/aws/bedrock-agents/overview",
+  "requested_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+  "final_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+  "http_status": 200,
+  "title": "Automate tasks in your application using AI agents - Amazon Bedrock",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "90b375e6cf5368e338a00faddc6e6d87a9be91ae79065fbc79dca1581be78494",
+      "bytes": 13656
+    },
+    "page.txt": {
+      "sha256": "463cb4ec138833627b6b5541ee29a24f1c09da10688ec4b6bafe830609ad8f36",
+      "bytes": 5749
+    },
+    "page.pdf": {
+      "sha256": "d616545d13cc7792e868a08023be6874aa7e6d2b736386f30ab2ea49d94af1af",
+      "bytes": 131494
+    },
+    "page.html": {
+      "sha256": "2026edc4066b489048915230b2575dcd2e2a23dd6b80f0ffc655293de37d39e4",
+      "bytes": 892410
+    }
+  }
+}

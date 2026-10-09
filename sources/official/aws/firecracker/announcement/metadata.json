@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "firecracker",
+    "id": "announcement",
+    "url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:23.135490+00:00",
+  "path": "sources/official/aws/firecracker/announcement",
+  "requested_url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+  "final_url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+  "http_status": 200,
+  "title": "Firecracker – Lightweight Virtualization for Serverless Computing | AWS News Blog",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "20be8000c5debd5b27a8f8efcf6734cfe3de9aa2e14830da658eddac9920e56f",
+      "bytes": 6813
+    },
+    "page.txt": {
+      "sha256": "dc522959f65dfac00049f08b0cc18feb7425e63d4a78722363771d87b9dfd9be",
+      "bytes": 7832
+    },
+    "page.pdf": {
+      "sha256": "84d972e0333a5f8ab4c66d02e0523238c9ebe2d97f9599476adc35eb6fecfad5",
+      "bytes": 572414
+    },
+    "page.html": {
+      "sha256": "6217e2fab493b38a934fb697a397599624cc04915bcda43a3c5e853cbd10c801",
+      "bytes": 1313965
+    }
+  }
+}

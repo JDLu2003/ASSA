@@ -1,0 +1,62 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "kiro",
+    "id": "overview",
+    "url": "https://kiro.dev/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:23:41.833343+00:00",
+  "path": "sources/official/aws/kiro/overview",
+  "requested_url": "https://kiro.dev/",
+  "final_url": "https://kiro.dev/",
+  "http_status": 200,
+  "title": "Kiro: Move beyond AI coding to agentic engineering",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "6a36dcd8c0461fdfe676aebd7a3f491a787857679c471f26cd72f6956f5d456b",
+      "bytes": 22134
+    },
+    "page.txt": {
+      "sha256": "38e05f4b1fd573ce91fd93f45788046756f65d613ccafcae5a53922c95be5aa5",
+      "bytes": 37892
+    },
+    "page.pdf": {
+      "sha256": "9a3adfd4f0141f4eeda598890b86005d21b27d543c4b34f8a573421d9801a1fb",
+      "bytes": 1626085
+    },
+    "page.html": {
+      "sha256": "297c913a6bc440c00130f399f6d6e19a4e53534a7f07daaa70cae7f02a12f229",
+      "bytes": 539517
+    },
+    "page.complete.pdf": {
+      "sha256": "a1548e2879f4bd270a29f407721a200f1183d9b808571a62a1feb696869dabaf",
+      "bytes": 2038430
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "479d78d16705a635479b1234bc2caa1febdd88a17219e3298d10d141232a6cf6",
+      "bytes": 46770
+    },
+    "page.complete.html": {
+      "sha256": "1cff72be52841a7786ab06e9a7ad308193afdb7f9429e27322ede291ab123b17",
+      "bytes": 408205
+    },
+    "page.complete.txt": {
+      "sha256": "d94f18913a42a3557de12ab074c056e9160f2c4d65886fa2c1beb450af908340",
+      "bytes": 37803
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained; fixed-height and no-wrap site elements clip content; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "Print-only reading layout expands fixed-size blocks, wraps text and limits decorative SVG icon size. Original hidden elements remain hidden. Scrolling activates lazy sections. Source text not edited.",
+    "reprinted_at": "2026-10-09T12:34:20.969584+00:00",
+    "reprint_dom_text": "page.complete.txt",
+    "reprint_html": "page.complete.html",
+    "note": "Different browser load; animated terminal content may differ from first capture. Default PDF remains the evidence of the original print layout."
+  }
+}

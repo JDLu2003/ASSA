@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-api",
+    "id": "sandbox-security",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:20.258323+00:00",
+  "path": "sources/official/openai/agents-api/sandbox-security",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+  "http_status": 200,
+  "title": "Sandbox security | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "c822c0714574abf796f0a64335ab8b0e17e0b6c151c3d4ca6ea0932ba89f8a40",
+      "bytes": 2306
+    },
+    "page.txt": {
+      "sha256": "6b781cec18878795ce43e77eb156bad362a8002ca0a90e6cd3f6d4365c1f6788",
+      "bytes": 3127
+    },
+    "page.pdf": {
+      "sha256": "9ede9d69ded6597cb3e18956e711f7c7a45d6c2615ca51d08fecb73e8d91f159",
+      "bytes": 134382
+    },
+    "page.html": {
+      "sha256": "b43667af3dbfc59df4c96f75d5be212a97c963d59ee3ac9fa3bad63a27b77be8",
+      "bytes": 360650
+    }
+  }
+}

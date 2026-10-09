@@ -1,0 +1,167 @@
+Plans
+Try Jules
+An Autonomous Coding Agent
+1
+// Objective: Change UserOnboarding to use a state machine for steps
+2
+ 
+3
+class UserOnboarding {
+4
+  constructor(user) {
+5
+    this.user = user;
+6
+ 
+7
+ 
+8
+    this.currentStep = 0;
+9
+  }
+10
+ 
+11
+  async nextStep() {
+12
+    if (this.currentStep < this.steps.length -1) {
+13
+      this.currentStep++;
+14
+      // TODO: Trigger analytics
+15
+      return this.steps[this.currentStep];
+16
+    }
+17
+    return "done";
+18
+  }
+19
+ 
+20
+  // Old method - to be removed
+21
+  legacyNotification() {
+22
+    alert("Welcome aboard, " + this.user.name);
+23
+  }
+24
+}
+25
+ 
+26
+const newUser = { name: "David", id: "usr_123" };
+27
+const onboardingProcess = new UserOnboarding(newUser);
+28
+ 
+29
+onboardingProcess.nextStep();
+30
+// onboardingProcess.legacyNotification(); // Commented out
+
+Jules does coding tasks you don't want to do.
+
+Bug FixingVersion BumpTestsFixing Jed's Code
+
+More time for the code you want to write, and everything else.
+
+Brought to life with Gemini 3 Pro and the AIDA team.
+
+GitHub Integration
+
+Jules imports your repos, branches changes, and helps you create a PR.
+
+Test Suite
+
+Jules will run existing tests, or create new ones.
+
+Virtual Machine
+
+Jules clones your code in a Cloud VM and verifies the changes work.
+
+Available Anywhere
+
+Use Jules from the CLI or build your own workflows using the API
+
+1
+
+Select your GitHub repository and branch. Write a detailed prompt for Jules.
+
+Use the "jules" label in an issue to assign a task directly in GitHub.
+
+@kathy/flipdisc
+main
+Can you bump the version of next.js to v15 and convert the project to use app directory?
+2
+
+Jules fetches your repository, clones it to a Cloud VM, and develops a plan utilizing the latest Gemini 3 Pro model.
+
+Here is my plan:
+
+I plan to update the following files to the new app directory structure.
+
+Update 22 Files
+That looks good. Continue!
+3
+
+Jules provides a diff of the changes. Quickly browse and approve code edits.
+
+ 
+9
+ 
+10
+ 
+  "dependencies": {
+11
+-
+    "next": "10.2.3",
+11
++
+    "next": "15.4.5",
+12
+ 
+    "react": "19.1.1",
+13
+ 
+    "react-dom": "19.1.1"
+14
+ 
+  }
+4
+
+Jules creates a PR of the changes. Approve the PR, merge it to your branch, and publish it on GitHub.
+
+Publish Branch
+
+Find the Jules plan that fits your workflow
+
+Jules scales with how you build, from quick fixes to fully async, multi-agent development. Choose the plan that gives you the speed, throughput, and model access you need.
+
+Jules
+
+Get started with real coding tasks.
+
+15 tasks per day
+3 concurrent tasks
+Powered by Gemini 2.5 Pro
+Jules in Pro
+
+For devs who ship daily and want to stay in the flow.
+
+100 tasks per day, enough to run Jules throughout your coding day
+15 concurrent tasks, so you can run multiple threads in parallel
+Higher access to the latest models, starting with Gemini 3 Pro
+Jules in Ultra
+
+For builders who run agents at scale.
+
+300 tasks per day to handle the most demanding development cycles
+60 concurrent tasks, built for massively parallel workflows
+Priority access to the latest models, starting with Gemini 3 Pro
+Try Jules
+Documentation
+Terms of Service
+Privacy Policy

@@ -1,0 +1,348 @@
+Move beyond AI coding
+to agentic engineering
+Kiro helps developers and teams do their best work: turn prompts into executable specs, validate code correctness to find bugs
+unit tests miss, and build across large codebases with parallel agents that learn from every session.
+
+
+   Install Crew     curl -fsSL https://download.crew.kiro.dev/cli.sh | sh
+
+
+
+                                                                      Download IDE
+
+
+   Install CLI     curl -fsSL https://cli.kiro.dev/install | bash
+
+
+
+
+ WHAT’S NEW
+
+🔥 $20 credit when you first sign up for a paid plan using social login or Builder ID ↗
+Software factory with Kiro Crew
+
+
+Workflows
+
+
+
+
+                                                                                                                               Terminal — 80×24
+
+
+                                                                                                      ⢀⣴⣶⣶⣦⡀⠀⠀⠀⠀⢀⣴⣶⣦⣄⡀  ⢀⣴⣶⣶⣦⡀   ⢀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣶⣦⣄
+                                                                                                     ⢰⣿⠋⠁⠈⠙⣿⡆⠀⢀⣾⡿⠁ ⠈⢻⡆ ⢰⣿⠋⠁⠈⠙⣿⡆ ⢰⣿⠋⠁        ⠈⠙
+                                                                                                     ⢸⣿⠀⠀⠀⠀⣿⣇⣴⡿⠋⠀⠀ ⢀⣼⠇ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⢠⣤⣤⣤⣤⣄
+                                                                                                     ⢸⣿⠀⠀⠀⠀⣿⡿⠋⠀⠀ ⢀⣾⡿⠁ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⢸⣿⠉⠉⠉⣿⡇
+                                                                                                     ⢸⣿⠀⠀⠀⠀⠙⠁⠀⠀ ⢀⣼⡟⠁   ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⢸⣿⣶⣶⡶⠋⠀
+                                                                                                     ⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀ ⠹⣷⡀    ⢸⣿⠀⠀⠀⠀⣿⡇⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀   ⣠
+                                                                                                     ⢸⣿⠀⠀⠀⠀⠀⣠⡀⠀⠀ ⠹⣷⡄   ⢸⣿⠀⠀⠀⠀⣿⡇⠀⢸⣿⠀⠀⠀⠀⣤⣄ ⠀⠀⠹⣿
+                                                                                                     ⢸⣿⠀⠀⠀⠀⣾⡟⣷⡀⠀⠀ ⠘⣿⣆  ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⠀⣿⡟⣷⡀⠀⠀
+                                                                                                     ⢸⣿⠀⠀⠀⠀⣿⡇⠹⣷⡀ ⠀⠈⢻⡇ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⠀⣿⡇⠹⣷⡀ ⠀
+                                                                                                     ⠸⣿⣄⡀⢀⣠⣿⠇⠀⠙⣷⡀ ⢀⣼⠇ ⠸⣿⣄⡀⢀⣠⣿⠇ ⠸⣿⣄⡀⢀⣠⣿⠇⠀⠙⣷⡀
+                                                                                                                                ⠈⠻⠿⠿⠟⠁⠀⠀⠀⠈⠻⠿⠿⠟⠁    ⠈⠻⠿⠿⠟⠁   ⠈⠻⠿⠿⠟⠁⠀⠀⠀⠈⠻⠿⠿
+                                                                                                                                                    Welcome to Kiro CLI V
+
+                                                                                                                                What's new: Specs, expanded hooks, and an
+                                                                                                                                Upgrade your V2 agent configurations to V
+                                                                                                                                                 https://kiro.dev/docs/cl
+
+                                                                                                                        ✓ Connected to kiro.dev
+                                                                                                                        ✓ Connected to Amazon Tools
+                                                                                                                        ⠋ Creating cloud session…
+                                                                                                                        Your cloud workspace doesn't have your local set
+                                                                                                                      app.kiro.dev/settings/cloud-config to bring your a
+                                                                                                                      steering from ~/.kiro/ (home directory) to the clo
+
+
+
+
+                                                       View transcript: Kiro CLI demo: starting a cloud session
+
+
+
+
+Bring structure to AI coding with spec-driven development
+
+Kiro turns your prompts into requirements, architectural designs, and sequenced tasks, then implements them with parallel
+agents. Property-based tests catch the edge cases that pass unit tests but break in production. With spec-driven development,
+you ship maintainable code that matches what you specified.
+Check correctness to catch issues missed by unit tests
+
+“All tests passed” doesn’t mean the code matches your intent. Before writing code, Kiro checks your requirements for
+contradictions and gaps using automated reasoning techniques. Then it checks behavior with property-based tests (like fuzz
+testing) which assert rules that must hold across all inputs instead of checking a few examples.
+
+
+
+
+                                                                                                              Type to filter…
+
+                                                                                                            auto                                               1.0x
+
+                                                                                                            Kiro picks the best model for each task
+
+                                                                                                            gpt-5.6-sol                                        4.4x
+
+                                                                                                            Hardest multi-step work with a 1M context window
+
+                                                                                                            gpt-5.6-terra                                      2.2x
+                                                                                                            Balanced tier for everyday agentic work
+
+                                                                                                            gpt-5.6-luna                                       0.6x
+                                                                                                            Fastest, lowest-cost GPT-5.6 tier for high-frequency
+                                                                                                            tasks
+
+                                                                                                            claude-fable-5.1                                   6.0x
+
+                                                                                                            Enterprise preview with a 1M context window, US
+                                                                                                            East only
+
+                                                                                                            claude-opus-5.5                                    2.0x
+                                                                                                            Demanding agentic coding and knowledge work with a
+Alongside you from plan to PR                                                                               1M context window
+
+                                                                                                            claude-sonnet-5.5                                  1.3x
+                                                                                                            Fast scoped coding and agentic work with a 1M
+Plan with specs. Implement with parallel agents, on your local machine or in the cloud. Catch bugs with property-based tests,
+                                                                                                            context window
+
+or pull context from tools like Figma or Terraform. Run the headless CLI in CI/CD to review PRs and fix bugs without opening
+                                                                                                              claude-opus-5                                    2.2x
+
+an editor.                                                                                                  Highest reliability for sustained multi-file and
+                                                                                                            multi-agent work
+
+                                                                                                            claude-opus-4.8                                    2.2x
+                                                                                                            Previous Opus generation
+
+                                                                                                            claude-opus-4.7                                    2.2x
+
+                                                                                                            Previous Opus generation
+
+                                                                                                            claude-opus-4.6                                    2.2x
+
+                                                                                                            Previous Opus generation
+                                                                                                               claude-opus-4.5                                2.2x
+                                                                                                               Previous Opus generation
+
+                                                                                                               claude-sonnet-5                                1.3x
+                                                                                                               Near-Opus agentic coding at a lower cost
+
+                                                                                                               claude-sonnet-4.6                              1.3x
+
+                                                                                                               Previous Sonnet generation
+
+                                                                                                               claude-sonnet-4.5                              1.3x
+
+                                                                                                               Previous Sonnet generation
+
+                                                                                                               claude-sonnet-4                                1.3x
+                                                                                                               Hybrid reasoning and coding for regular use
+
+                                                                                                               claude-haiku-4.5                               0.4x
+                                                                                                               Fast and frugal for quick iterations and sub-agents
+
+                                                                                                               deepseek-3.2                                  0.25x
+                                                                                                               Open-weight model from DeepSeek
+
+                                                                                                               minimax-m2.5                                  0.25x
+                                                                                                               Frontier coding at low cost across the development
+                                                                                                               lifecycle
+
+                                                                                                               glm-5                                          0.5x
+                                                                                                               Repo-scale agentic work across large codebases
+
+                                                                                                               minimax-m2.1                                  0.15x
+                                                                                                               Previous MiniMax generation
+
+                                                                                                               qwen3-coder-next                              0.05x
+                                                                                                               Long coding sessions on a budget with strong error
+                 Add rate limiting to the /export endpoint and write property tests for it.                    recovery
+
+
+                            Trust                                                                              Set auto as default model for default
+
+                                                                                                               Global default for new sessions…
+                 default   150                                                                                                                         auto · Default
+
+
+
+
+Powered by your favorite models
+
+Choose the best model for every task: Anthropic Claude, OpenAI GPT, open-weight models like DeepSeek and Qwen, or Auto,
+which picks the best model for the task based on complexity, factoring in model quality, latency, and cost. Try it: open the model
+menu, type to filter, pick a model, then set its reasoning effort.
+
+Learn about models
+
+
+
+
+                                                               Built for the way you work
+
+
+Built on open standards
+The Kiro agent is compatible with Agent Client Protocol (ACP) so you can bring it to your favorite tools. It supports AGENTS.md, Skills.md, and MCP. The Kiro
+IDE supports Open VSX extensions, themes, and VS Code settings. Kiro CLI works with bash, zsh, fish, and over 500 popular CLIs.
+
+
+
+
+Enterprise-ready
+Built and operated by AWS, Kiro benefits from the same security, reliability, and privacy standards and controls trusted by millions of customers. Kiro offers
+IAM and SSO authentication, usage dashboards, cost management controls, IP indemnity, governance, and administration controls you’d expect from an
+enterprise-grade product.
+
+Kiro for enterprise
+
+
+
+
+Predictable pricing
+Kiro offers a credit-based pricing model with no daily or weekly rate limits and pre-paid overages, so you can code without breaking your flow or getting a
+surprise bill.
+
+View pricing
+                                                    Trusted by engineers worldwide
+
+
+
+co-founder and CTO,                 In my role designing AWS Cloud                     Kiro is a strong ally for startups.   I use Kiro for everything -
+ost important                       and AI solutions with Terraform                    It naturally turns overlooked docs    drafting new Terraform modu
+o justifies the use of              and Python, spec-driven                            and specs into robust assets,         tweaking container setups, e
+eveloping our                       development with Kiro has brought                  making growth smoother and            writing down random AI idea
+ical assets in-house.               code relevancy and quality to a                    future scaling more effective.        am. But more than anything,
+                                    whole new level. We’ve                                                                   supports how I learn. I’m
+                                    accelerated feature development                                                          endlessly curious, and Kiro
+ki                                                                                           Kento Ikeda
+                                    dramatically, reducing time to                                                           me stay in that learning loop
+o-Founder                                                                                    Founder & Engineer
+                                    customer value from weeks to                                                             tinkering, breaking things, fi
+                                    days. We are excited to welcome                                                          them, and then allowing me t
+                                    Kiro as our newest team member.                                                          share what I learn back with
+                                                                                                                             community.
+
+                                           Håkon Eriksen Drange
+                                           Principal Cloud Architect                                                              Adit Modi
+                                                                                                                                  Solution Architect
+
+
+
+
+                                                Get started fast with quick guides
+
+                                                                                           { BLOG }
+
+                                                                                           Does your code match
+                                                                                           your spec?
+
+
+
+
+                                                                                           { GUIDE }
+            Learn by playing: create a video game
+                                                                                           Your first project
+            In this guide, you will learn how to use Kiro by completing tasks in the
+            codebase for a sample video game called Spirit of Kiro.
+
+
+
+
+                                                                   Common questions
+What is Kiro?
+
+
+What is spec-driven development? How is it different from vibe
+coding?
+
+
+How can I get started with Kiro?
+
+
+
+What programming languages does Kiro support?
+
+
+
+Can I import settings from my existing IDE?
+
+
+
+How is Kiro Web different from Kiro IDE, CLI, and Kiro Crew?
+
+
+
+What is an AI agent?
+
+
+
+                                     Browse all FAQs
+
+
+
+
+                Build something
+                real in minutes
+                                Get started for free
+
+       Install Crew    curl -fsSL https://download.crew.kiro.dev/cli.sh | sh
+
+
+
+                                       Download IDE
+
+
+
+       Install CLI    curl -fsSL https://cli.kiro.dev/install | bash
+                                                                                                PRODUCT             FOR               SOCIAL
+
+                                                                                                About Kiro          Enterprise
+
+                                                                                                Agents              Startups
+
+                                                                                                IDE                 Students
+
+                                                                                                CLI
+
+                                                                                                Web
+
+                                                                                                Mobile
+
+                                                                                                Crew
+
+                                                                                                Pricing
+
+                                                                                                Downloads
+
+
+
+                                                                                                COMMUNITY           RESOURCES
+
+                                                                                                Overview            Docs
+
+                                                                                                Ambassadors         Blog
+
+                                                                                                Case studies        Changelog
+
+                                                                                                Discord             FAQs
+
+                                                                                                Events              Report a bug
+
+                                                                                                Powers              Suggest an idea
+
+                                                                                                Shop                Billing support
+
+                                                                                                Showcase
+
+
+
+
+Site Terms   License   Responsible AI Policy   Legal   Privacy Policy   Cookie Preferences   Your Privacy Choices
+
+
+
+
+      ENGLISH
+

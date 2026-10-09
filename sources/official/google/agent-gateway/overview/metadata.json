@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-gateway",
+    "id": "overview",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:20:53.725258+00:00",
+  "path": "sources/official/google/agent-gateway/overview",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+  "http_status": 200,
+  "title": "Agent Gateway overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "78e1db30fe641d88a7a792f8f491d1bca9942ce11a58144871d77c1905a245c5",
+      "bytes": 18189
+    },
+    "page.txt": {
+      "sha256": "2cf7943d649fa356c335e523341d2125d64746cce36972e36f180fbb4875656c",
+      "bytes": 15070
+    },
+    "page.pdf": {
+      "sha256": "10b199abc2edc0e78da98781424034d22fe3a9421f93962490971280516f735b",
+      "bytes": 558234
+    },
+    "page.html": {
+      "sha256": "f8e8b1b4ae136f227df1a58eefa9f9c870499cc327c2b301d304d13eda82fd68",
+      "bytes": 218151
+    }
+  }
+}

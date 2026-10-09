@@ -1,0 +1,343 @@
+Agent Runtime content_copy arrow_drop_down
+To see an example of getting started with Gemini Enterprise Agent Runtime, run the "Building and Deploying an Agent with Gemini Enterprise Agent Platform"
+notebook in one of the following environments:
+
+
+
+
+Open in Colab (https://colab.research.google.com/github/GoogleCloudPlatform/generative-ai/blob/main/gemini/agent-engine/intro_agent_engine.ipynb) |
+
+
+Open in Colab Enterprise
+    (https://console.cloud.google.com/agent-platform/colab/import/https%3A%2F%2Fraw.githubusercontent.com%2FGoogleCloudPlatform%2Fgenerative-
+ai%2Fmain%2Fgemini%2Fagent-engine%2Fintro_agent_engine.ipynb)
+|
+
+
+Open in Agent Platform Workbench
+    (https://console.cloud.google.com/agent-platform/workbench/deploy-notebook?
+download_url=https%3A%2F%2Fraw.githubusercontent.com%2FGoogleCloudPlatform%2Fgenerative-ai%2Fmain%2Fgemini%2Fagent-
+engine%2Fintro_agent_engine.ipynb)
+|
+
+
+View on GitHub (https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/agent-engine/intro_agent_engine.ipynb)
+
+
+
+Agent Runtime is a fully-managed, opinionated runtime that you can use to deploy, operate, and scale agentic applications. Agent
+Runtime abstracts away the underlying infrastructure, which lets you focus on agent logic instead of operations.
+
+Agent Runtime lets you do the following:
+
+         Deploy (/gemini-enterprise-agent-platform/scale/runtime/deploy-an-agent) and scale agents with a managed runtime and end-to-end
+         management capabilities.
+
+         Customize the agent's container image with build-time installation scripts for system dependencies.
+
+         Use security features including VPC-SC compliance and configuration of authentication and IAM.
+
+         Access models and tools such as function calling (/gemini-enterprise-agent-platform/models/tools/function-calling).
+
+         Deploy agents built using different languages and frameworks (#supported-frameworks) and the Agent2Agent open protocol
+          (/gemini-enterprise-agent-platform/build/runtime/create-an-a2a-agent).
+
+
+
+Note: Because the name of Agent Runtime changed over time, the name of the resource in the API reference is ReasoningEngine
+    (/gemini-enterprise-agent-platform/reference/rest/v1/projects.locations.reasoningEngines) to maintain backwards compatibility.
+
+
+
+
+Create and deploy on Agent Runtime
+The workflow for building an agent on Agent Runtime is:
+
+       1. Set up the environment (/gemini-enterprise-agent-platform/build/runtime/setup): Set up your Google project and install the latest version
+         of the Agent Platform SDK for Python.
+
+       2. Develop an agent (/gemini-enterprise-agent-platform/build/runtime/create-an-agent): Develop an agent that can be deployed on Agent
+         Runtime.
+
+       3. Deploy the agent (/gemini-enterprise-agent-platform/scale/runtime/deploy-an-agent): Deploy the agent on the Agent Runtime managed
+         runtime.
+
+       4. Use the agent (/gemini-enterprise-agent-platform/scale/runtime/use-an-agent): Query the agent by sending an API request.
+
+       5. Manage the deployed agent (/gemini-enterprise-agent-platform/scale/runtime/manage-deployed-agents): Manage and delete agents that you
+         have deployed to Agent Runtime.
+
+
+
+
+Supported languages and frameworks
+Agent Runtime supports deploying agents written in any programming language and agent framework, as long as the agent application
+can be containerized and conforms to the runtime contract (/gemini-enterprise-agent-platform/scale/runtime/runtime-contract):
+
+      From a container image: If you built a container image for your agent, you can deploy it directly from Artifact Registry to Agent
+      Runtime. For more information, see Deploy from a container image
+       (/gemini-enterprise-agent-platform/scale/runtime/deploy-an-agent#from-container-image).
+
+      From a Dockerfile: If you have containerized source code, you can provide a Dockerfile with your source files. Agent Runtime
+      builds and deploys the container image automatically. For more information, see Deploy from a Dockerfile
+       (/gemini-enterprise-agent-platform/scale/runtime/deploy-an-agent#from-dockerfile).
+
+
+For supported languages and frameworks, higher-level tools and SDKs are available to simplify deployment. The following table describes
+the level of support Agent Runtime provides for various agent frameworks:
+
+
+Support level                                              Agent frameworks
+
+
+Custom template: You can adapt a custom template to        CrewAI
+support deployment to Agent Runtime from your              (https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/agent-
+framework. For deploying custom containers, see the        engine/evaluating_crewai_agent_engine_customized_template.ipynb)
+Runtime contract                                           , custom frameworks (/gemini-enterprise-agent-platform/build/runtime/create-a-custom-agent)
+(/gemini-enterprise-agent-
+platform/scale/runtime/runtime-contract)
+.
+
+Agent Platform SDK integration: Agent Runtime provides LangChain (/gemini-enterprise-agent-platform/build/runtime/create-a-langchain-agent), LangGraph
+managed templates per framework in the Agent               (/gemini-enterprise-agent-platform/build/runtime/create-a-langgraph-agent), AG2
+Platform SDK and documentation.                            (/gemini-enterprise-agent-platform/build/runtime/create-an-ag2-agent), LlamaIndex
+                                                           (/gemini-enterprise-agent-platform/build/runtime/create-a-llamaindex-agent)
+
+Full integration: Features are integrated to work across   Agent Development Kit (ADK)
+the framework, Agent Runtime, and broader Google           (/gemini-enterprise-agent-platform/build/runtime/create-an-adk-agent)
+Cloud ecosystem.
+                                                              Python: Deploy using the adk CLI (https://adk.dev/api-reference/cli/#adk-deploy-agent-engine).
+
+                                                              Go: Deploy using the adkgo CLI (https://github.com/google/adk-go).
+
+
+
+
+Deploy in production with Agents CLI
+The Agents CLI (https://google.github.io/agents-cli/) is the unified
+                                                                                    (//www.youtube.com/watch?v=ECYKo70pPNc)
+command-line interface and skill set for the Gemini Enterprise Agent                This resource may not be available in your region.
+Platform. It provides coding agents and developers with a predictable
+path through the Agent Development Lifecycle: scaffold, evaluate,
+deploy, publish, and observe. The Agents CLI provides the following:
+
+      Pre-built agent templates: ReAct, RAG, multi-agent, and other
+      templates.
+
+      Interactive playground: Test and interact with your agent.
+
+      Automated infrastructure: Uses Terraform
+       (https://cloud.google.com/docs/terraform) for streamlined resource
+      management.
+
+      CI/CD pipelines: Automated deployment workflows leveraging Cloud Build.
+
+      Observability: Built-in support for Cloud Trace and Cloud Logging.
+
+To get started, see the Quickstart (https://google.github.io/agents-cli/).
+
+
+
+
+Use cases
+To learn about Agent Runtime with end-to-end examples, see the following resources:
+
+
+
+add_circle Click to expand use cases
+Use Case     Description        Links
+
+
+Build agents Convert            Agent Platform SDK (Python) notebook - Intro to Building and Deploying
+by           between            an Agent with Agent Runtime
+connecting   currencies.        (https://github.com/GoogleCloudPlatform/generative-
+to public                       ai/blob/main/gemini/agent-engine/intro_agent_engine.ipynb)
+APIs         Create a
+             function that
+             connects to a
+             currency
+             exchange app,
+             allowing the
+             model to
+             provide
+             accurate
+             answers to
+             queries such
+             as "What's the
+             exchange rate
+             for euros to
+             dollars today?"
+
+             Designing a        Agent Platform SDK (Python) notebook - Building and Deploying a
+             community          Google Maps API Agent with Agent Runtime
+             solar project.     (https://github.com/GoogleCloudPlatform/generative-
+                                ai/blob/main/gemini/agent-engine/tutorial_google_maps_agent.ipynb)
+             Identify
+             potential
+             locations, look
+             up relevant
+             government
+             offices and
+             suppliers, and
+             review satellite
+             images and
+             solar potential
+             of regions and
+             buildings to
+             find the
+             optimal
+             location to
+             install your
+             solar panels.
+
+Build agents Integration        Blog post - Announcing LangChain on Gemini Enterprise Agent Platform
+by           with AlloyDB       for AlloyDB and Cloud SQL for PostgreSQL
+connecting   and Cloud SQL (https://cloud.google.com/blog/products/databases/alloydb-and-
+to databases for                cloudsql-for-postgresql-on-langchain-on-vertex-ai)
+             PostgreSQL.
+                                Agent Platform SDK (Python) notebook - Deploying a RAG Application
+                                with Cloud SQL for PostgreSQL to Agent Runtime
+                                (https://github.com/GoogleCloudPlatform/generative-
+                                ai/blob/main/gemini/agent-
+                                engine/tutorial_cloud_sql_pg_rag_agent.ipynb)
+
+
+                                Agent Platform SDK (Python) notebook - Deploying a RAG Application
+                                with AlloyDB for PostgreSQL to Agent Runtime
+                                (https://github.com/GoogleCloudPlatform/generative-
+                                ai/blob/main/gemini/agent-engine/tutorial_alloydb_rag_agent.ipynb)
+
+             Build agents       Agent Platform SDK (Python) notebook - Deploying an Agent with Agent
+             with tools that Runtime and MCP Toolbox for Databases
+             access data in (https://github.com/GoogleCloudPlatform/generative-
+             your database. ai/blob/main/gemini/agent-
+                                engine/tutorial_mcp_toolbox_for_databases.ipynb)
+
+             Query and          Agent Platform SDK (Python) notebook - Building a Conversational
+             understand         Search Agent with Agent Runtime and RAG on Agent Search
+             structured         (https://github.com/GoogleCloudPlatform/generative-
+             datastores         ai/blob/main/gemini/agent-
+             using natural      engine/tutorial_vertex_ai_search_rag_agent.ipynb)
+             language.
+             Query and       Blog post - GenAI GraphRAG and AI agents using Agent Runtime with
+             understand      LangChain and Neo4j
+             graph           (https://www.googlecloudcommunity.com/gc/Cloud-Product-
+             databases       Articles/GenAI-GraphRAG-and-AI-agents-using-Vertex-AI-Reasoning-
+             using natural   Engine/ta-p/789066)
+             language
+
+             Query and       Blog post - Simplify GenAI RAG with MongoDB Atlas and Agent Runtime
+             understand      (https://www.mongodb.com/developer/products/atlas/ragdeployment-
+             vector stores   vertex-ai-reasoning-engine/)
+             using natural
+             language
+
+Build agents Build and       Agent Development Kit -- Deploy to Agent Runtime
+with Agent   deploy agents (http://google.github.io/adk-docs/deploy/agent-engine)
+Developmentusing Agent
+Kit          Development
+             Kit.
+
+             Build agents    Build and deploy agents using the OneTwo open-source framework.       Blog post - OneTwo and Agent Runtime: exploring
+             with OSS                                                                              advanced AI agent development on Google Cloud
+             frameworks                                                                            (https://www.googlecloudcommunity.com/gc/Communit
+                                                                                                   Blogs/OneTwo-and-Vertex-AI-Reasoning-Engine-exploring
+                                                                                                   advanced-AI/ba-p/788254)
+
+                             Build and deploy agents using the LangGraph open-source framework. Agent Platform SDK (Python) notebook - Building and
+                                                                                                   Deploying a LangGraph Application with Agent Runtime
+                                                                                                   (https://github.com/GoogleCloudPlatform/generative-
+                                                                                                   ai/blob/main/gemini/agent-
+                                                                                                   engine/tutorial_langgraph.ipynb)
+
+Debugging    Build and trace Agent Platform SDK (Python) notebook - Debugging and Optimizing
+and          agents using    Agents: A Guide to Tracing in Agent Runtime
+optimizing   OpenTelemetry (https://github.com/GoogleCloudPlatform/generative-
+agents       and Cloud       ai/blob/main/gemini/agent-
+             Trace.          engine/tracing_agents_in_agent_engine.ipynb)
+
+Build multi- Build           For more information, see the A2A protocol documentation
+agent        interoperable   (https://a2a-protocol.org/).
+systems      agents that
+with A2A     communicate
+protocol     and
+(preview)    collaborate
+             with other
+             agents
+             regardless of
+             their
+             framework.
+
+
+
+
+Supported regions
+See Locations (/gemini-enterprise-agent-platform/resources/agent-locations#supported-regions-agent-engine) for a list of supported regions for
+Agent Runtime.
+
+
+
+
+Quota
+See Quota and system limits (/gemini-enterprise-agent-platform/resources/agent-quotas) for Agent Runtime quota information.
+
+
+
+
+Pricing
+A free tier is available for Agent Runtime. For information about pricing for Agent Runtime, see Gemini Enterprise Agent Platform pricing
+(https://cloud.google.com/products/gemini-enterprise-agent-platform/pricing).
+
+
+
+
+Migration to the client-based SDK
+In version 2.0.1 of the Agent Platform SDK, the agent_engines module was refactored and renamed to individual modules (such as
+runtimes, sessions, sandboxes, and memory_banks) under the standalone google-cloud-agentplatform package (agentplatform).
+The SDK adopts a client-based design for the following key reasons:
+
+      To align with the Agent Development Kit (/gemini-enterprise-agent-platform/build/adk) (ADK) and Google Gen AI SDK (google-genai) in
+      canonical type representations. This ensures a consistent and standardized way of representing data types across different SDKs,
+      which simplifies interoperability and reduces conversion overhead.
+
+      For client-level scoping of Google Cloud parameters in multi-project multi-location applications. This allows an application to
+      manage interactions with resources across different Google Cloud projects and geographical locations by configuring each client
+      instance (client = agentplatform.Client(project=..., location=...)) with its specific project and location settings.
+
+      To improve discoverability and cohesiveness of Gemini Enterprise Agent Platform services (client.runtimes, client.sessions,
+      client.sandboxes, and client.memory_banks).
+
+      To provide a lightweight, decoupled package (google-cloud-agentplatform) tailored for agent workloads while generative AI
+      modules migrate to the Google Gen AI SDK (google-genai).
+
+For detailed instructions on migrating to the new SDK structure, see the following guides:
+
+      Agent Runtime SDK migration (/gemini-enterprise-agent-platform/build/runtime/sdk-migration): Migrate from vertexai.agent_engines to
+      agentplatform.Client().runtimes.
+
+      Agent Platform SDK for Python: version 2.0.1 migration guide (/gemini-enterprise-agent-platform/machine-learning/python-sdk/sdk-migration)
+      : Overall guide covering package decoupling, module deprecations, and migrating generative AI modules to the Google Gen AI SDK.
+
+
+
+
+What's next
+
+    Guide                                                    Resource
+
+  Agent Platform Runtime setup                              Get support
+   (/gemini-enterprise-agent-                               (/gemini-enterprise-agent-
+  platform/build/runtime/setup)                             platform/resources/agent-support)
+
+
+  Set up your environment to use Agent                      Get support for Agent Platform
+  Platform Runtime.                                         development.
+
+
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License (https://creativecommons.org/licenses/by/4.0/),
+and code samples are licensed under the Apache 2.0 License (https://www.apache.org/licenses/LICENSE-2.0). For details, see the Google Developers Site Policies
+(https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+

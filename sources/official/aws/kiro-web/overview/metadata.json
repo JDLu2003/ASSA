@@ -1,0 +1,63 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "kiro-web",
+    "id": "overview",
+    "url": "https://kiro.dev/web/",
+    "kind": "official-web",
+    "discovery": "Kiro homepage FAQ identifies Kiro Web and links /web/"
+  },
+  "capture_started_at": "2026-10-09T12:25:57.665378+00:00",
+  "path": "sources/official/aws/kiro-web/overview",
+  "requested_url": "https://kiro.dev/web/",
+  "final_url": "https://kiro.dev/web/",
+  "http_status": 200,
+  "title": "Web - Kiro",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "7ff3e27f68df56af3ecf67074eefe4e26b4aefb6ce87d046517ad9f1f950cdff",
+      "bytes": 6385
+    },
+    "page.txt": {
+      "sha256": "4049e6725da150e074ad670c648671f95688f18f92ba9fa9753686abdb271ecc",
+      "bytes": 17308
+    },
+    "page.pdf": {
+      "sha256": "2474733827f6f44914e4d53d8de84d497dfd3477ec012de4c430a211070d4654",
+      "bytes": 85649
+    },
+    "page.html": {
+      "sha256": "cf283b9c82ba7f6e5df0464624219cc2c6a8b0cd4e188a4effad15e57e37cbe0",
+      "bytes": 270809
+    },
+    "page.complete.html": {
+      "sha256": "f566f258c9ec36070ed3005cf43d9ec6c0a81b5f5ee097053c0b56bb02623f74",
+      "bytes": 307450
+    },
+    "page.complete.txt": {
+      "sha256": "c06ebf45a8d7fc3e788389ec90f3fb6bab497c26a59e90b717eaeb4cb0cb2ecf",
+      "bytes": 17176
+    },
+    "page.complete.pdf": {
+      "sha256": "3e8402c5407ed6f6f8a54755caadba932fda30f4f1e827d75c14b9895f0961ab",
+      "bytes": 613885
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "b6488c623045b5c7dcdcf45f970603c4abbf8d87ce54252e07efa2753277a89f",
+      "bytes": 17951
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained; fixed-height and no-wrap site elements clip content; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "Print-only reading layout expands fixed-size blocks, wraps text and limits decorative SVG icon size. Original hidden elements remain hidden. Scrolling activates lazy sections. Source text not edited.",
+    "reprinted_at": "2026-10-09T12:34:26.020237+00:00",
+    "reprint_dom_text": "page.complete.txt",
+    "reprint_html": "page.complete.html",
+    "note": "Different browser load; animated terminal content may differ from first capture. Default PDF remains the evidence of the original print layout."
+  }
+}
