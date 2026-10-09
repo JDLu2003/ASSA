@@ -68,7 +68,7 @@
     return l.join("");
   }
   function srcMeta(s) {
-    if (s.kind === "paper") return [s.venue, s.date, (s.authors || []).slice(0, 3).join(", ") + ((s.authors || []).length > 3 ? " 等" : "")].filter(Boolean).join(" · ");
+    if (s.kind === "paper") return [s.venue, (s.authors || []).slice(0, 3).join(", ") + ((s.authors || []).length > 3 ? " 等" : "")].filter(Boolean).join(" · ");
     return [s.vendor, s.product].filter(Boolean).join(" · ");
   }
   document.addEventListener("click", (e) => {
