@@ -1,0 +1,200 @@
+{
+  "capture_date": "2026-10-09",
+  "seed_note": "https://app.notion.com/p/Agent-Cloud-Runtime-3f41c8f67e5f803a9069cc42febc24cd",
+  "official": [
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "overview",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "architecture",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "configuration",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "hosted-sandbox",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "self-hosted-sandbox",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-sdk",
+      "id": "overview",
+      "url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-managed-agents",
+      "id": "product-blog",
+      "url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-managed-agents",
+      "id": "self-hosted-sandboxes",
+      "url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-managed-agents",
+      "id": "updates",
+      "url": "https://claude.com/blog/claude-managed-agents-updates",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore-runtime",
+      "id": "runtime",
+      "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore-runtime",
+      "id": "shell-commands",
+      "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore-runtime",
+      "id": "instances",
+      "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore-runtime",
+      "id": "deep-research-blog",
+      "url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore-runtime",
+      "id": "persistent-filesystem",
+      "url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "microsoft",
+      "product": "foundry-hosted-agents",
+      "id": "hosted-agents",
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "microsoft",
+      "product": "foundry-hosted-agents",
+      "id": "runtime-contract",
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "microsoft",
+      "product": "foundry-hosted-agents",
+      "id": "networking",
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "microsoft",
+      "product": "foundry-hosted-agents",
+      "id": "management",
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "vertex-agent-engine",
+      "id": "overview",
+      "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "vertex-agent-engine",
+      "id": "pricing-update",
+      "url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "vertex-agent-engine",
+      "id": "evaluation",
+      "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "cloud-run-sandboxes",
+      "id": "announcement",
+      "url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "gke-agent-sandbox",
+      "id": "pod-snapshot-blog",
+      "url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "vertex-agent-engine",
+      "id": "session-management",
+      "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
+      "kind": "official-web"
+    }
+  ],
+  "papers": [
+    {
+      "topic": "agent-evaluation",
+      "id": "agentbench",
+      "arxiv": "2308.03688",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-evaluation",
+      "id": "swe-bench",
+      "arxiv": "2310.06770",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "model-serving",
+      "id": "sglang",
+      "arxiv": "2312.07104",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "model-serving",
+      "id": "serverlessllm",
+      "arxiv": "2401.14351",
+      "kind": "arxiv-paper"
+    }
+  ]
+}
