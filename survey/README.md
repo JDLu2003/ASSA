@@ -1,4 +1,4 @@
-# Agent as a Service 综述
+# Agent as a Service 调研
 
 - `site/`：网页本体。`index.html` 是页面，`app.js` 绘制图表与导航，`sources.js`、`logos.js` 由脚本生成；
   `assets/` 中是厂商原图（`vendor/`）、论文原图（`papers/`）与 logo（`logos/`），各目录的 README 记录来源。
