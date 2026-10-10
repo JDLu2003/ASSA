@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "vertex-agent-engine",
+    "id": "pricing-update",
+    "url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:50.519278+00:00",
+  "path": "sources/official/google/vertex-agent-engine/pricing-update",
+  "requested_url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+  "final_url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+  "http_status": 200,
+  "title": "New Enhanced Tool Governance in Vertex AI Agent Builder | Google Cloud Blog",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "b3f90400ca82f8b5e8fbc437f46d5c59bf45465dbbab0558996638d7c2c572fc",
+      "bytes": 15758
+    },
+    "page.txt": {
+      "sha256": "ddded1744fc9c4af557f2dd517dff95f763e5ed10389586c143eef69a576f573",
+      "bytes": 13028
+    },
+    "page.pdf": {
+      "sha256": "9b3a40f186a093846912f2dc579f7dfaadac0c4b7974843e264911845c772727",
+      "bytes": 580207
+    }
+  }
+}

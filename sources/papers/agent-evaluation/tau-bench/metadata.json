@@ -1,0 +1,65 @@
+{
+  "item": {
+    "topic": "agent-evaluation",
+    "id": "tau-bench",
+    "arxiv": "2406.12045",
+    "kind": "arxiv-paper"
+  },
+  "capture_started_at": "2026-10-09T12:06:03.419148+00:00",
+  "path": "sources/papers/agent-evaluation/tau-bench",
+  "requested_url": "https://arxiv.org/abs/2406.12045",
+  "pdf_url": "https://arxiv.org/pdf/2406.12045",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "f79e151800babed0f5440a7fced20999fd68b72f27360bc06b6f22756ae3c740",
+      "bytes": 662132
+    },
+    "paper.txt": {
+      "sha256": "e2780926d61f0b80a9a0ba14d61e6282673d3bf4809b704f0ca13105798c5232",
+      "bytes": 147962
+    },
+    "paper.pdf": {
+      "sha256": "0ce66a1763d698c61bb311c3c874bf593d1e9a5bfff11bb35f6f72b981f6da56",
+      "bytes": 663224
+    },
+    "landing.html": {
+      "sha256": "d82d45164e1bc9743a8d56201542a17d023b151d510f04aa024b6af25bd07ad3",
+      "bytes": 40700
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2406.12045",
+    "retrieved_at": "2026-10-09T12:06:39.444666+00:00",
+    "fields": {
+      "citation_title": [
+        "$\\tau$-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains"
+      ],
+      "citation_author": [
+        "Yao, Shunyu",
+        "Shinn, Noah",
+        "Razavi, Pedram",
+        "Narasimhan, Karthik"
+      ],
+      "citation_date": [
+        "2024/06/17"
+      ],
+      "citation_online_date": [
+        "2024/06/17"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2406.12045"
+      ],
+      "citation_arxiv_id": [
+        "2406.12045"
+      ],
+      "citation_abstract": [
+        "Existing benchmarks do not test language agents on their interaction with human users or ability to follow domain-specific rules, both of which are vital for deploying them in real world applications. We propose $\\tau$-bench, a benchmark emulating dynamic conversations between a user (simulated by language models) and a language agent provided with domain-specific API tools and policy guidelines. We employ an efficient and faithful evaluation process that compares the database state at the end of a conversation with the annotated goal state. We also propose a new metric (pass^k) to evaluate the reliability of agent behavior over multiple trials. Our experiments show that even state-of-the-art function calling agents (like gpt-4o) succeed on <50% of the tasks, and are quite inconsistent (pass^8 <25% in retail). Our findings point to the need for methods that can improve the ability of agents to act consistently and follow rules reliably."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

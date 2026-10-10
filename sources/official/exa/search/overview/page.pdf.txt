@@ -1,0 +1,397 @@
+       Search        Search
+
+
+
+Search                                                                                                   Copy page
+
+The search endpoint lets you search the web and extract contents from the results.
+
+ cURL                                                                                                        cURL
+
+  curl -X POST https://api.exa.ai/search \
+       -H "x-api-key: $EXA_API_KEY" \
+       -H "Content-Type: application/json" \
+       -d '{
+       "query": "<query>",
+       "type": "auto",
+       "contents": {
+         "highlights": true
+       }
+  }'
+
+
+
+      200    400    401    402   403     429   500    503
+
+  {
+       "results": [
+         {
+            "title": "<string>",
+            "url": "<string>",
+            "publishedDate": "2023-11-07T05:31:56Z",
+            "author": "<string>",
+            "id": "<string>",
+            "image":
+             Get your"<string>",
+                     Exa API key
+            "favicon": "<string>",
+            Create a key in the dashboard. New accounts start with free credits.
+            "text": "<string>",
+            "highlights": [
+              "<string>"
+Authorizations
+       ],                                                                                                      apiKey
+            "highlightScores": [
+              123
+x-api-key
+       ], string          header   required
+            "summary": "<string>",
+Pass your "subpages":
+          Exa API key in [the x-api-key header. You can also authenticate with Authorization: Bearer .
+              {
+                  "title": "<string>",
+                  "url": "<string>",
+Body                                                                                                     application/json
+                  "publishedDate": "2023-11-07T05:31:56Z",
+                "author": "<string>",
+          "id":required
+query string    "<string>",
+                "image": "<string>",
+The query string for the search.
+               "favicon":    "<string>"
+            }
+Minimum],
+        string length: 1
+          "entities": [
+            {
+                "id": "<string>",
+includeDomains   string[] | null
+           "type": "company",
+
+List of domains"version":      2,
+                 or domain paths  to include in the search. Each entry can be a hostname (for example, example.com ), a
+               "properties":      {
+hostname with a path prefix (for example, example.com/docs ), or a wildcard subdomain (for example, *.example.com ). If
+specified, results "name":    "<string>",
+                   will only come from the matching domains or paths. Use this parameter for domain or path filtering instead
+                   "foundedYear": 123,
+of adding a site: operator to the query.
+                 "description": "<string>",
+                 "workforce": {
+Maximum array length: 1200
+                "total": 123
+                 },
+            "headquarters": {
+excludeDomains"address":
+                string[] "<string>",
+                         | null
+                      "city": "<string>",
+List of domains or domain  paths to exclude
+                     "postalCode":           from search results. Each entry can be a hostname (for example, example.com ),
+                                       "<string>",
+a hostname with a path   prefix (for"<string>"
+                     "country":      example, example.com/docs ), or a wildcard subdomain (for example, *.example.com ). If
+specified, no results
+                  }, will be returned from the matching domains or paths. Use this parameter for domain or path filtering
+instead of adding"financials":
+                  a site: operator   { to the query.
+                "revenueAnnual": 123,
+Maximum array length: 1200
+                "fundingTotal": 123,
+                      "fundingLatestRound": {
+                "name": "<string>",
+                "date":
+startPublishedDate      "<string>",
+                     string<date-time> | null
+                          "amount": 123
+                    }
+Only links with a published date after this will be returned. Must be specified in ISO 8601 format.
+                 },
+                  "webTraffic": {
+                    "visitsMonthly": 123,
+endPublishedDate string<date-time> | null
+                    "countryRank": 123,
+                    "avgDurationSeconds":
+Only links with a published date before this will123,
+                                                  be returned. Must be specified in ISO 8601 format.
+                      "history": [
+                          {
+                              "value": 123,
+numResults integer | null                default:10
+                              "dateFrom": "<string>",
+                              "dateTo": "<string>"
+Number of results to return. Limits vary by search type. The maximum public limit is 100 results. Contact sales (hello@exa.ai)
+to discuss higher limits.}
+                      ]
+                 },
+Required range: 1 <= x <= 100
+                 "research": {
+                   "worksCount": 123,
+                   "citationCount": 123,
+moderation       boolean | null
+                   "areas": [     default:false
+                          "<string>"
+Enable content moderation
+                  ],      to filter unsafe content from search results.
+                      "notableWorks": [
+                              {
+contents object | "title":
+                  null     "<string>",
+                                  "year": 123,
+Content options for text, "venue":
+                          highlights, "<string>",
+                                      summary, extras, and freshness controls.
+                                  "citationCount": 123,
+                         "doi": "<string>",
+      Show child attributes
+                                  "id": "<string>",
+                                  "type": "article"
+                 }
+additionalQueries
+              ],                  string[] | null
+                            "topResearchers": [
+Additional query variations
+                       {    for deep-search variants. Only works with a deep-search type. When provided, these queries are
+used alongside the main "person":
+                         query for broader
+                                     {     results.
+                                    "name": "<string>",
+Required array length:             1"id":  elements
+                                     - 10 "<string>"
+                                  },
+                       "worksCount": 123,
+                       "citationCount": 123
+type enum<string> | null default:auto
+                    }
+The search mode to]use. auto (default) is a balanced mode that optimizes for both quality and speed and is recommended
+                  }
+for most applications.   fast returns high-quality results with reduced latency, making it a good fit for user-facing search and
+                }
+interactive workflows. instant is optimized for minimum response time, trading some search depth for speed in real-time
+experiences }such as chat, voice agents, and autocomplete. deep-lite performs lightweight research with synthesized
+results and],a consistent 4-second latency, lower than full deep search. deep conducts comprehensive multi-step research
+           "extras":
+with synthesis,  while {deep-reasoning adds stronger reasoning for complex analysis and decision-making tasks.
+           "links": [
+              "<string>"
+Available options: instant , fast , auto , deep-lite , deep , deep-reasoning
+           ],
+         "imageLinks": [
+            "<string>"
+category ],
+          enum<string> | null
+                  "richImageLinks": [
+A data category to focus on. Known categories include company , publication , news , personal site , financial
+                {
+ report , and people . Other strings are accepted and used as category hints for search. The people and company
+                  "url": "<string>",
+categories have improved quality for finding people profiles and company pages. The publication category surfaces
+                  "alt": "<string>"
+scholarly publications such as research papers, preprints, and journal articles, with structured metadata like authors, venue,
+                }
+and citations. Note: The company and people categories only support a limited set of filters. The following parameters are
+             ],
+NOT supported for these categories: startPublishedDate , endPublishedDate , excludeDomains . Using unsupported
+             "richLinks": [
+parameters will result in a 400 error.
+                       {
+                           "url": "<string>",
+Available options:         , publication , news , personal site , financial report , people
+                   company"<string>"
+                "anchor":
+                       }
+                  ],
+         "codeBlocks":
+userLocation   Option 1 [· string
+                       {
+                 "text":
+The end user's location,   "<string>",
+                         used to localize results. Either a two-letter ISO 3166-1 country code string (e.g. US ) or an object
+                 "source":    "<string>"
+with country and/or latitude + longitude in decimal degrees. Coordinates are optional and must be sent together;
+ country alone} is equivalent to the string form. Send only the precision your use case needs.
+                  ]
+              }
+          }
+compliance enum<string> | null
+     ],
+Enterprise-only
+     "output":compliance
+                {          mode. Set to hipaa for HIPAA mode. Requires cache-only retrieval with supported parameters.
+See the "content":
+        HIPAA docs for details.
+                    "<string>",
+          "grounding": [
+Available {options: hipaa
+                   "field": "<string>",
+                   "citations": [
+                    {
+outputSchema "url":
+               object
+                    "<string>",
+
+JSON schema for"title":      "<string>"
+                   synthesized output. Supported root types are "text" and "object". When provided, the response includes an
+                }
+output object whose content matches this schema. Works with every search type and adds about 2 seconds of synthesis
+             ],
+latency on top of the selected search type. Object schemas are limited to 10 properties in total (nested and array items
+             "confidence": "low"
+properties count toward the limit) and 2 levels of nesting, and every array must define items.
+               }
+          ]
+     },
+     Option 1           Option 2
+     "requestId": "<string>",
+     "costDollars": {
+       "total": 123,
+           Show child{attributes
+          "search":
+            "neural": 123,
+               "keyword": 123
+          },
+     "summary": 123,
+objective  string | null
+       "contents": {
+         "text":
+The broader        123,
+            goal this search serves: the task the caller is working on, beyond the query itself. When exposing this field to an
+agent as a"highlights":    123,
+           tool parameter, describe it as: "Goal for this search turn; say which documents should rank first, which should be
+          "summary":   123
+excluded, and what specific facts or figures to pull from them."
+          }
+    },
+Maximum string length: 4096
+     "searchTime": 123,
+    "resolvedSearchType": "<string>",
+    "context": "<string>"
+userIdentifier
+  }               string | null
+
+An opaque identifier your platform generates for the end user this request is made on behalf of, such as a UUID. Exa records it
+with the request so that usage and abuse can be attributed to one end user instead of your whole team. It must not be or
+contain personal information such as an email address, phone number, username, or name; send a hash if that is all you have.
+1 to 64 characters: letters, digits, underscores, and hyphens. It is retained under Zero Data Retention and does not change
+results.
+
+Required string length: 1 - 64
+
+Pattern: ^[A-Za-z0-9_-]+$
+
+Example: "7f3a9c52-1d4e-4b8a-9e60-2c5d8a1f0b37"
+
+
+systemPrompt string | null
+Additional instructions that guide generated output or agent behavior. Use this for source preferences, novelty constraints,
+duplication constraints, or other behavior guidance.
+
+
+
+stream boolean | null             default:false
+
+Requests server-sent events for synthesized output streaming. Streaming is currently used only when outputSchema is
+provided; otherwise the endpoint returns the normal JSON search response.
+
+
+
+startCrawlDate string<date-time> | null                 deprecated
+
+Deprecated. Ignored by the API.
+
+
+
+endCrawlDate string<date-time> | null                 deprecated
+
+Deprecated. Ignored by the API.
+
+
+
+includeText string[] | null              deprecated
+
+Deprecated. List of strings that must be present in the webpage text of results. Matching is approximate (word-level rather
+than exact phrase), so a multi-word entry can match pages where its words appear separately. Up to 50 strings, each up to
+4096 characters.
+
+Maximum array length: 50
+Maximum string length: 4096
+
+
+excludeText string[] | null              deprecated
+
+Deprecated. List of strings that must not be present in the webpage text of results. Matching is approximate (word-level rather
+than exact phrase). Up to 50 strings, each up to 4096 characters.
+
+Maximum array length: 50
+Maximum string length: 4096
+
+
+
+context boolean               deprecated
+
+Deprecated. Use highlights or text instead. Returns page contents as a combined context string.
+
+
+
+Response                                                                                200           application/json
+
+
+OK
+
+
+  Option 1     Option 2
+results object[]           required
+
+A list of search results containing title, URL, published date, and author.
+
+      Show child attributes
+
+
+
+output object          required
+
+Synthesized output. Returned when outputSchema is provided.
+
+      Show child attributes
+
+
+
+requestId string
+
+Unique identifier for the request.
+
+
+
+costDollars object
+
+Endpoint-dependent estimated dollar cost breakdown for the completed request. Billing is computed from usage counters
+rather than this response object.
+
+      Show child attributes
+
+
+
+searchTime number
+
+Server-side processing time in milliseconds, measured at the gateway. Covers retrieval but may exclude later phases such as
+structured output synthesis, so it can be lower than end-to-end request latency.
+
+
+
+resolvedSearchType string                deprecated
+
+Deprecated. May be an empty string. Do not branch on this value.
+
+
+
+context string           deprecated
+
+Deprecated. Use results[].highlights or results[].text instead. Combined context string from search results.
+        Contents
+           Next
+
+
+
+
+llms.txt for AI agents
+

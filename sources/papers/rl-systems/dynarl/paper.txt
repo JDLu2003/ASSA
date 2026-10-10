@@ -1,0 +1,1167 @@
+DynaRL: Flexible and Dynamic Scheduling of Large-
+     Scale Reinforcement Learning Training
+     Yuanqing Wang, Peking University and Infinigence AI; Hao Lin, Junhao Hu,
+   Chunyang Zhu, Quanlu Zhang, and Zhen Guo, Infinigence AI; Yuchen Zhang,
+Institute of Computing Technology, Chinese Academy of Sciences and Infinigence AI;
+   Xu Fu and Si Xu, Infinigence AI; Bo Dai, Beihang University and Infinigence AI;
+Zixiao Huang, Tsinghua University and Infinigence AI; Chao Yu, Tsinghua University;
+      Boxun Li, Infinigence AI; Guohao Dai, Shanghai Jiao Tong University and
+      Infinigence AI; Zhi Yang, Peking University; Yu Wang, Tsinghua University
+          https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing
+
+
+
+
+  This paper is included in the Proceedings of the 20th USENIX
+ Symposium on Operating Systems Design and Implementation.
+                        July 13–15, 2026 • Seattle, WA, USA
+                                ISBN 978-1-939133-55-7
+
+
+           Open access to the Proceedings of the 20th USENIX Symposium on
+            Operating Systems Design and Implementation is sponsored by
+                   DynaRL: Flexible and Dynamic Scheduling of Large-Scale
+                             Reinforcement Learning Training
+
+    Yuanqing Wang1,2 , Hao Lin2 , Junhao Hu2 , Chunyang Zhu2 , Quanlu Zhang2 , Zhen Guo2 , Yuchen Zhang5,2 ,
+    Xu Fu2 , Si Xu2 , Bo Dai6,2 , Zixiao Huang3,2 , Chao Yu3 , Boxun Li2 , Guohao Dai7,2 , Zhi Yang1 , Yu Wang3
+         1 Peking University   2 Infinigence AI    3 Tsinghua University    4 Zhongguancun Academy
+     5 Institute of Computing Technology, CAS        6 Beihang University    7 Shanghai Jiao Tong University
+
+
+
+
+                          Abstract                                  heavy-tailed distributions, causing long-tail stragglers and
+                                                                    significant GPU underutilization. Agentic RL amplifies this
+Modern reinforcement learning (RL) workloads, powering
+                                                                    effect. Models repeatedly invoke external tools such as search
+large language models, long-horizon reasoning, and agentic
+                                                                    engines, Python interpreters, or theorem provers [10], pro-
+systems, exhibit extreme dynamicity due to heavy-tailed roll-
+                                                                    ducing unpredictable multi-turn interaction traces that vary
+outs, irregular multi-turn tool interactions, and time-varying
+                                                                    in both length and latency. These irregular interactions dis-
+bottlenecks. Static resource allocations in today’s distributed
+                                                                    rupt scheduling and create bottlenecks that cascade across the
+RL systems leave large fractions of compute idle and prolong
+                                                                    training pipeline. As our characterization shows, such dynam-
+training. This paper presents DynaRL, the first RL system
+                                                                    icity can waste up to 60% of available compute and create
+that dynamically reallocates computation, memory, and com-
+                                                                    large oscillations in effective throughput.
+munication resources across heterogeneous RL components.
+                                                                       Unfortunately, existing RL systems are largely static. They
+DynaRL models the entire RL pipeline with a dynamic hy-
+                                                                    allocate GPUs to each component ahead of time and maintain
+pergraph that serves as a centralized, continuously-evolving
+                                                                    this allocation throughout RL training. This static partition-
+control surface. Supported by a unified resource migration
+                                                                    ing fundamentally mismatches the time-varying demands of
+interface and context-aware data routing, the scheduler reallo-
+                                                                    modern RL workloads. When long-tail rollouts dominate, the
+cates GPUs from overprovisioned components to the current
+                                                                    GPUs assigned to rollouts become increasingly underutilized;
+bottleneck via a combination of a multi-level scheduling al-
+                                                                    when multi-turn interactions inflate generation load, rollout
+gorithm and fine-grained resource migration. Comprehensive
+                                                                    workers become severely underprovisioned; and when tool
+evaluation demonstrates that DynaRL improves end-to-end
+                                                                    calls bottleneck progress, KV caches in inference engines are
+throughput on math-reasoning and agentic RL workloads by
+                                                                    repeatedly evicted and rebuilt. The result is unstable through-
+up to 1.98×, with negligible online scheduling overhead.
+                                                                    put, inefficient resource usage, and prolonged training time.
+                                                                       This paper argues that dynamic scheduling must become
+1     Introduction                                                  a first-class design principle for next-generation distributed
+                                                                    RL systems. RL training is inherently multi-component and
+Reinforcement Learning (RL) has rapidly expanded from               feedback-driven, i.e., progress in one stage depends on the
+traditional control and game-playing tasks [6, 7] to the foun-      outputs and timing of others. If a system can observe runtime
+dation of modern reasoning and agentic systems [2, 15]. To-         signals, detect shifts in bottlenecks, and reallocate resources
+day’s RL workloads power large language/vision models,              in real time, while respecting dependencies and preserving
+long-horizon planning agents [1], and tool-augmented agentic        training state, it can significantly improve end-to-end train-
+systems. As these workloads grow in scale and complexity,           ing efficiency and stability. However, enabling such dynamic
+training increasingly relies on distributed clusters of hun-        management is challenging. RL components differ widely in
+dreds of GPUs. However, unlike conventional deep learning           structure, statefulness, and communication patterns; migra-
+workloads, RL pipelines integrate heterogeneous components,         tions must occur safely without violating components’ execu-
+e.g., rollout generation, inference, multi-step tool calls, envi-   tion semantics; and the training pipeline must remain efficient
+ronment interactions, and policy optimization training, that        despite constantly shifting parallelism.
+interact in highly irregular and time-varying patterns.                We present DynaRL, a unified runtime and scheduling sys-
+   This heterogeneity introduces substantial dynamicity             tem that dynamically reallocates computation, memory, and
+throughout the pipeline. Rollout generation involves autore-        communication resources across heterogeneous RL compo-
+gressive model inference [17] whose response lengths exhibit        nents. At a high level, DynaRL captures the entire RL pipeline
+
+
+
+USENIX Association                            20th USENIX Symposium on Operating Systems Design and Implementation            847
+                                                                               Rollout
+in a single, continuously evolving runtime object and exposes                                                         Rollout
+                                                                              Generation                  Search server
+it to the scheduler as a dynamic hypergraph that encapsu-                                                                                             Inference
+lates both static structure and time-varying execution signals.                Inference                Python sandbox           Generation
+                                                                                                                                                      Training
+Alongside this global control surface, DynaRL provides a                       Training
+                                                                                                          Lean prover
+
+unified resource-migration interface that lets the scheduler                                                                         Agentic RL
+                                                                            GRPO workflow
+safely resize the parallelism of diverse components at inter-                                                     Rollout
+ruptible points, using statefulness-aware migration strategies.                                              Actor-Generation
+
+Finally, it embeds context-aware data routing to attach se-
+                                                                                     Actor-Infer.    Ref-Infer.      Reward-Infer.    Critic-Infer.
+mantic affinity and multi-step metadata to dataflow edges,
+preserving KV-cache locality and enabling multi-turn-aware                                          Actor-Training          Critic-Training
+
+request scheduling.                                                                                        PPO workflow
+
+   Built on these mechanisms, DynaRL employs a multi-level                                 Data transmission                     Model weight update
+dynamic scheduling algorithm that detects overprovisioned
+components from hypergraph signals and reallocates their               Figure 1: Diverse RL workflows in various scenarios.
+GPUs to the current bottleneck stage, by jointly adjusting
+resource allocation across components, within each Worker-
+Group, and at the request data level, where it prioritizes short,   ing rollouts given prompts), inference (computing log proba-
+late-stage tool calls to exploit KV-cache reuse and accelerate      bilities), and training (updating model parameters). However,
+episode completion.                                                 the composition and dependencies of these components vary
+   We implement DynaRL in around 7K lines of Python atop            widely across algorithms. For example, GRPO contains only
+RLinf [22], an open-source general RL framework, integrat-          three major components, whereas PPO-based RLHF requires
+ing with existing inference engines (e.g., SGLang [32]) and         a substantially more complex seven-component pipeline with
+training backends (e.g., Megatron-LM [20]). Our experiments         more data and control dependencies. This variability compli-
+on math-reasoning and multi-turn agentic RL workloads show          cates system design and resource scheduling.
+that DynaRL consistently improves throughput over state-of-
+                                                                    Agentic reinforcement learning. Recent agentic RL ap-
+the-art RL systems such as verl and RLinf by up to 1.98×
+                                                                    proaches further expand workflow complexity by integrat-
+while adding less than 1% overhead for online scheduling and
+                                                                    ing external tools into the rollout process. Systems such as
+migration. We plan to release the full codebase of DynaRL.
+                                                                    DeepResearch combine LLM generation with search engines,
+   This paper makes the following contributions:
+                                                                    databases, and iterative refinement loops; math-reasoning
+• We characterize the dynamicity of modern RL workloads,            pipelines may involve Python interpreters or theorem provers
+  demonstrating substantial long-tail rollouts, irregular multi-    such as Lean [10]. These tool-augmented rollouts introduce
+  turn tool-use patterns, and resulting system inefficiencies       fine-grained and highly irregular dependencies between com-
+  across production-scale deployments.                              ponents. As a result, the training pipeline frequently stalls
+• We design and implement DynaRL, the first system to re-           while waiting for upstream results, creating severe workload
+  alize dynamic scheduling for distributed RL pipelines via         imbalance and resource underutilization.
+  a unified control surface, safe migration mechanisms, and
+  overprovision-driven scheduling.
+                                                                    2.2   The Dynamicity Challenge of RL
+• We comprehensively evaluate DynaRL on math-reasoning
+  and multi-turn agentic RL workloads, showing significant          Dynamic behavior is inherent and pervasive in RL training.
+  throughput improvements over state-of-the-art RL systems.         An RL pipeline repeatedly generates solutions for given tasks,
+                                                                    e.g., responses to prompts or actions to perform, which can
+                                                                    vary significantly due to differing response lengths, unpre-
+2     Background and Motivation
+                                                                    dictable numbers of reasoning steps, and on-demand tool
+                                                                    usages. In this section, we quantitatively analyze such dy-
+2.1    Diverse RL Workloads
+                                                                    namicity in production RL workloads and pinpoint two major
+                                                                    sources of dynamicity in RL training, namely long-tail model
+Distributed reinforcement learning. Reinforcement Learn-
+                                                                    generation and irregular external interactions.
+ing (RL) has evolved from its early use in small-scale game-
+playing and robotic control to a key technique for training         Dynamicity in long-tail generation. Rollout generation
+large foundation models for reasoning and decision-making.          with model inference is highly unpredictable—generation re-
+These workloads increasingly run in distributed settings to         sponse length can vary significantly across queries, which is
+meet the compute and data demands of large models. Modern           positively related to the computation time due to the auto-
+RL pipelines exhibit substantial structural diversity, as shown     regressive nature of most modern foundation models. To
+in Figure 1. A typical workflow comprises generation (produc-       deeply understand this, we studied the variation in gener-
+
+
+
+848    20th USENIX Symposium on Operating Systems Design and Implementation                                                             USENIX Association
+                                                                                                                                         Prefill Tokens Per Query
+                                                                      98%   100%                                                                                    50K
+                                                      8K
+        1.0
+
+
+
+
+                                                                                  Running engines
+                                    Running queries
+                                                                                                          1.0                                                       40K
+                                                      6K                    75%
+                   mean: 62.85s                                                                                         mean: 1.91s                                 30K
+                                                      4K                    50%
+  CDF
+
+
+
+
+                   min: 0.68s
+
+
+
+
+                                                                                                    CDF
+        0.5                                                                                                             min: 0.41s
+                   max: 259.51s                                2.4K                                       0.5                                                       20K
+                                                      2K                    25%                                         max: 30.05s
+                   median: 59.81s                                                                                       median: 0.77s                               10K
+                                                                            0
+        0.0                                                0    100 200                                    0                                                          0
+              0   100      200                                  Time (s)                                        0     10     20     30                                    Agent   Reason
+                  Time (s)                                                                                             Time (s)
+                           Figure 3: Running query and
+Figure 2: Decode time in a                                 Figure 4: Tool call time in an Figure 5: Average prefill to-
+                           inference engine variation in a                                kens in a typical agentic RL
+math-reasoning RL task.                                    agentic RL task.
+                           math-reasoning RL task.                                        and single-turn math RL.
+
+ation response length in a typical math-reasoning RL task on                                        ence engines (e.g., SGLang and vLLM), i.e., First-In-First-
+a 1.5B-parameter language model using the GRPO algorithm,                                           Out, or FIFO, may further aggravate the resource waste prob-
+which involves a minimal number of components and no other                                          lem. Engines such as SGLang mark a completed query’s KV
+interfering dynamicity like tool calls.                                                             cache as evictable and can only reuse it if the next-turn in-
+   As shown in Figure 2, the decode time of math queries                                            put is scheduled promptly before it is evicted. Under FIFO
+shows a skewed distribution. Only a small fraction of the                                           scheduling, however, the second turn of the first query is of-
+queries reach near the maximum decode time (259.51s), while                                         ten delayed for an unpredictable amount of time as it waits
+roughly 95% of the queries finish in under 150s (about 60%                                          for all the first-turn interactions of the remaining queries to
+of that limit). Figure 3 further demonstrates the variation of                                      finish, causing severe KV cache thrashing and re-prefilling
+running queries and running inference engine ratio (among                                           of tokens. Figure 5 compares the number of prefilled tokens
+64 engines) during the rollout generation process.                                                  per query during the training of agentic RL with multi-turn
+   Specifically, the blue curve tracks the number of active                                         interactions and math-reasoning RL without interactions us-
+queries, while the red curve indicates the active engine ratio                                      ing SGLang. Under the same KV cache memory threshold
+at the same time, which represents the percentage of engines                                        (100 GB), we can clearly observe that tool-call interactions
+still processing incomplete requests. As shown, at the middle                                       induce considerable re-prefilling due to KV cache thrashing.
+of the generation, only less than 30% of queries remain unpro-
+cessed. The long-tail responses stall the entire rollout stage                                      2.3             Dynamic Scheduling as the Core
+and introduce substantial computation waste. Moreover, be-
+cause long-tail responses are evenly scattered across inference                                     The increasing dynamicity in modern RL workflows has pre-
+engine instances, many instances are highly underutilized, be-                                      sented serious challenges for existing RL systems, which
+ing stuck on the remaining one or two responses, and thus                                           mostly rely on static resource partitioning for resource
+cannot be terminated to release resources. As in Figure 3, even                                     allocation—computation resources like GPUs are either phys-
+when <30% of queries remain, almost all engines are still                                           ically divided or temporally multiplexed among different com-
+running. This idle time and underutilization can waste up to                                        ponents ahead of training. With foundation models beginning
+60% of available computation, without considering KV-cache                                          to interact more and more with the real world to solve com-
+memory usage.                                                                                       plex tasks, the dynamicity challenge motivates us to rethink
+                                                                                                    the design paradigm of distributed RL systems.
+Dynamicity in irregular external interactions. Apart from                                              We recognize that the RL training process involves multi-
+generation dynamicity, emerging RL scenarios like agen-                                             ple heterogeneous components, including rollout generation,
+tic RL and embodied RL introduce another major source                                               tool interactions, inference, and policy optimization, which
+of dynamicity—irregular external interactions. Based on the                                         interact in complex and time-varying ways.
+generation results (in the form of commands or actions), the                                           While this multi-component structure complicates schedul-
+training pipeline needs to interact with external tools or envi-                                    ing, it also presents a key opportunity: resources can be dy-
+ronments like search engines, Python interpreters, program                                          namically reallocated to match the workload demands, im-
+compilers, etc., to handle more complex tasks.                                                      proving overall efficiency. For example, when rollout genera-
+   Such interactive workflows mostly follow the ReAct                                               tion is bottlenecked by long-tail responses, resources can be
+paradigm [28], where the model generates an intermediate                                            shifted to accelerate training.
+output, optionally invokes tools, concatenates the tool results                                        Consequently, we argue that to achieve high efficiency and
+with prior context, and uses that as the next-turn input. Fig-                                      stable convergence, a distributed RL system must be able to
+ure 4 shows the tool call time in a multi-turn agentic RL                                           dynamically coordinate computation, memory, and commu-
+setting, which also yields a highly skewed distribution.                                            nication resources across nodes and GPUs. This requires a
+   Worse still, the default scheduling policy in popular infer-                                     runtime that can observe, predict, adapt to workload variations
+
+
+
+USENIX Association                                               20th USENIX Symposium on Operating Systems Design and Implementation                                                      849
+                                               Global Scheduler                               1   class HyperNode:
+                                                                                              2       # static node attributes
+                                                            Overprovision detection
+                                                                                              3       component_type   # dynamic or static
+                                                                                              4       interruptible    # always, regular, or never
+                                                             Reallocation planning
+     Programmed RL              Dynamic graph                                                 5       predecessors: HyperNode[]
+    training workflow            abstraction
+                                                              Migration controller
+                                                                                              6       successors: HyperNode[]
+                                      Online                                                  7       # dynamic node status
+                                      status
+                                                                                              8       nodes: Node[]    # list of homogeneous nodes
+                                 Status                                 WorkerGroup           9   class Node:
+                                                Migration Manager
+                                Reporter                                 Manager             10       allocated_resources: Resource[]
+                                                                                             11       utilization: number
+                                                     Migration Functionality                 12   class HyperEdge:     # dataflow between nodes
+    Predecessor
+                                                                                             13       affinity: Node[] # the preferred nodes
+                           Affinity          Priority               Executor
+    WorkerGroup          scheduling        scheduling        (SGLang/vLLM/Megatron)          14       progress         # data processing progress
+     Successor
+                                            Affinity/status attaching
+                                                                                             15   #dynamic schedule rollout/train_workers
+    WorkerGroup                                                                Worker
+                                                                                             16   dynamic_schedule(graph: HyperNode[], resource:
+                        WorkerGroup                                                                ,→ Resource[])
+             Distributed                            Scheduling                   Execution
+         communication channel                       module                       module
+
+                                                                                                    Figure 7: The definition of the dynamic graph.
+         Figure 6: The system architecture of DynaRL.
+
+                                                                                             uler then computes new allocations based on these signals;
+in real time, and balance resource usage without disrupting
+                                                                                             and the WorkerGroup Managers enact the decisions with min-
+the delicate feedback loops in RL training, posing a unique
+                                                                                             imal disruption to the ongoing training. This design decouples
+and complex systems challenge that demands a joint under-
+                                                                                             scheduling from the specific implementation of diverse com-
+standing of both system-level performance and algorithmic
+                                                                                             ponents, allowing DynaRL to continuously adapt to shifting
+stability. Therefore, beyond an optimization, we envision dy-
+                                                                                             rollout length distributions, changing inference workloads,
+namic scheduling to be a core design principle and challenge
+                                                                                             and evolving training bottlenecks.
+for next-generation distributed RL systems.
+                                                                                                In the following sections, we first present the system-level
+                                                                                             designs and mechanisms that enable dynamic scheduling in
+3     DynaRL Overview                                                                        DynaRL (§4), and then describe the core scheduling algorithm
+                                                                                             that drives resource reallocation (§5).
+DynaRL is a unified runtime and scheduling system designed
+to dynamically reallocate resources across heterogeneous
+RL components, with the goal of maximizing the end-to-end                                    4    DynaRL System Design
+throughput of RL training pipelines whose components’ load
+shifts rapidly over time.                                                                    Fundamentally, dynamic scheduling can be viewed as on-
+   As shown in Figure 6, DynaRL runs as the scheduling plane                                 line resource migration across components. A component
+of a general RL framework, e.g., verl [19] or RLinf [22], which                              experiencing resource underutilization can release part of its
+provides the basic infrastructures for composing RL training                                 allocated resources (usually by scaling down) to other com-
+pipelines and defining diverse components. In such a frame-                                  ponents that are bottlenecked (by scaling up).
+work, an RL component (e.g., rollout, tool caller, trainer) is                                  However, the intricate dependencies and stateful nature of
+implemented as a group of distributed Workers (termed Work-                                  RL training pipelines pose systematic challenges to resource
+erGroup), each of which is a process running on the allocated                                migration at abstraction, resource, and data levels: (1) Ab-
+compute resources (e.g., GPUs). The framework handles the                                    straction level, how to effectively capture both static structure
+low-level details of assigning Workers to resources, establish-                              and runtime variability of RL pipelines, enabling the scheduler
+ing communication channels among Workers, and executing                                      to reason about component dependencies and performance
+the distributed program, but assumes a static resource alloca-                               dynamics? (2) Resource level, how to safely enact resource
+tion throughout training.                                                                    migration at runtime without disrupting training correctness,
+   DynaRL runs atop the framework also as a WorkerGroup                                      when delicate stateful components such as a distributed trainer
+like other components, which contains a Global Scheduler                                     with cumulated gradients and optimizer states are involved?
+and multiple WorkerGroup Managers (one per WorkerGroup).                                     (3) Data level, how to enable efficient data flows for dynamic
+Together, they form a feedback-driven control loop. Runtime                                  and interactive components (e.g., multi-turn rollout) under
+signals collected from Workers are reported to the Global                                    complex dependencies and caching effects?
+Scheduler by the WorkerGroup Managers; the Global Sched-                                        To address these, the key design of DynaRL is to transform
+
+
+
+850     20th USENIX Symposium on Operating Systems Design and Implementation                                                           USENIX Association
+complex, heterogeneous RL pipelines into a single, control-        1     # The unified migration interface
+lable runtime object that enables fine-grained, low-overhead       2     class MigrationManager:
+rescaling and rebalancing:                                         3         def migrate(dest_resources)
+                                                                   4         def interrupt()
+• A dynamic hypergraph abstraction that captures both struc-       5
+
+  ture and runtime signals.                                        6     # Migration strategy interfaces
+• Unified interfaces for safe online resource migration and        7     class RebootMigration:
+                                                                   8         def shutdown()
+  context-aware data routing.
+                                                                   9         def restart(dest_resources)
+Together, they allow DynaRL to perform predictive, low-           10     class WorkloadMigration:
+overhead, and component-agnostic scheduling with minimal          11         def data_collect()
+disruption to ongoing training.                                   12         def data_distribute()
+                                                                  13         def suspend()
+                                                                  14     class p2pMigration:
+                                                                  15         def create()
+4.1    The Dynamic HyperGraph Abstraction                         16         def state_switch()
+                                                                  17         def suspend()
+To capture both static structure and runtime variability, Dy-
+naRL models the RL pipeline as a continuously-updated dy-
+namic hypergraph, i.e., a special graph where a node (termed           Figure 8: The unified interface of resource migration.
+HyperNode) contains a set of homogeneous nodes, and an
+edge (termed HyperEdge) can connect multiple HyperNodes                 Unified migration interface:     migrate(curr_resources, target_resources)
+
+beyond the traditional one-to-one connection in common
+graphs. As shown in Figure 7, a HyperNode represents the
+WorkerGroup of a logical component (e.g., rollout, trainer)             shutdown(1,2,3,4)                  data_collect()
+                                                                                                           suspend(3,4)
+along with a set of homogeneous nodes that represent its                                                                                       create(1,2)
+                                                                                                                                               state_switch()
+active Worker instances. Each HyperNode maintains both                     restart(1,2)                   data_distribute()                    suspend(3,4)
+static metadata (e.g., component type, interruptibility, depen-
+dency constraints) and runtime metrics collected from its                RebootMigration               WorkloadMigration                p2pMigration
+corresponding WorkerGroup, including resource utilization,
+queue pressure, and per-worker throughput.                              WorkerGroup              Worker process               Worker process      Stopped
+                                                                       manager process             with load                   without load       Worker
+   HyperEdges encode dataflow between Workers/nodes and
+their relevant context information, including a data processing    Figure 9: Three types of migration with unified interface.
+task’s progress and affinity with Workers, i.e., which Work-
+ers it might prefer or require to run on. This allows tracking
+the readiness of dependent components and pipeline back-          4.2       Resource Migration
+pressure, enabling the scheduler to detect emerging bottle-
+necks and rebalance resources proactively. Also, the recorded        Resource migration is the core mechanism that enables re-
+context information can facilitate data redistribution after      source rebalancing among components. However, the diverse
+migration, allowing the scheduler to reason not only about        characteristics of RL components lead to widely varying mi-
+component-level bottlenecks, but also about the structural and    gration procedures, particularly for stateful components that
+temporal dynamics of data processing task propagation.            maintain inter-Worker states or have complex communica-
+   The unified dynamic graph serves as a single, continuously-    tion patterns. For example, inference engines such as SGLang
+updated control surface between the scheduler and the runtime     and vLLM are mostly isolated instances that do not have
+system. Downstream, it gathers fine-grained signals such as       shared states across Workers, allowing safe migration via
+GPU load, rollout generation speed, and training throughput       process suspension. In contrast, training frameworks such as
+from each worker. Upstream, it exposes a consistent abstrac-      Megatron-LM maintain tightly coupled states across Workers,
+tion that allows the scheduling policy to reason over hetero-     e.g., distributed model parameters and optimizer buffers that
+geneous components without entanglement with component-           require synchronization points to be reached before migration.
+specific details. By decoupling policy from implementation,          To accommodate this diversity while maintaining a clean
+the dynamic graph provides the foundation for predictive, low-    separation between scheduling policy and component-specific
+overhead adaptations such as resizing component parallelism,      details, DynaRL defines a unified migration interface as in
+reallocating GPUs, or throttling request generation, and a        Figure 8 that abstracts the resource migration process. The
+principled representation that captures both the structural and   key for safe migration is to identify interruptible points in
+temporal dynamics needed for robust online scheduling.            the component’s execution flow where migration can occur
+
+
+
+USENIX Association                          20th USENIX Symposium on Operating Systems Design and Implementation                                                851
+without violating correctness. Thus, the interface follows an       1    class DataRouter:
+interrupt-schedule-migrate pattern akin to cooperative mul-         2        # HyperEdge
+titasking in operating systems: (1) The manager process of          3        # affinity: required, preferred, noneed
+a WorkerGroup signals the scheduler when it reaches an in-          4        def attach_affinity(output, affinity)
+                                                                    5        # status: steps, etc
+terruptible point via interrupt(). (2) The scheduler deter-
+                                                                    6        def attach_status(output, status)
+mines if a rebalancing is required, (if required) checks for        7        # requests scheduling
+other interruptible components, computes a new resource al-         8        def distribute_data(data)
+location for all the interruptible components, and instructs the    9        def priority_schedule(data)
+manager to execute migrate(dest_resources) with the tar-
+get resources. (3) The manager performs the migration based
+on its component-specific migration strategy.                             Figure 10: The interface of the local data router.
+   Specifically, certain components (such as the inference
+engine) are designed to be always interruptible. The
+interruptible attribute in the HyperNode is then set to            carded, and the old Workers remain active with their original
+always, allowing the scheduler to trigger migration at any         state intact, effectively rolling back to the previous allocation.
+time rather than waiting for specific interruptible points.        This ensures there is no window in which both old and new
+                                                                   Workers are partially active for training, and the global train-
+Migration Strategy. We identify three fundamental mi-              ing state remains consistent throughout the migration. Only
+gration strategies that cover a wide range of RL compo-            after all new ranks have confirmed readiness does the system
+nents based on the WorkerGroup statefulness and migra-             atomically switch the active set, tear down the old Workers,
+tion performance, as illustrated in Figure 9. The first is         and resume training on the new allocation.
+RebootMigration, which simply shuts down previous Work-               Additionally, to handle potential anomalies such as Worker
+ers on the source resources, preserves the necessary states,       hangs or infinite loops during execution, each Worker in Dy-
+and restarts them on the target resources with the preserved       naRL runs a background daemon that serves as a heartbeat
+states. This is a generic approach that can work for almost all    monitor to receive scheduling commands. Once an anomaly
+components, albeit with potentially high overhead. Thus, it        is detected, the scheduler can invoke RebootMigration to
+is more suitable for lightweight components with negligible        forcefully shut down the unresponsive previous Workers and
+restart overhead.                                                  restart them on healthy resources.
+   The second is WorkloadMigration, which suspends the                DynaRL supports all three migration strategies through the
+Workers running on resources to be released, collects their        unified interface, allowing each WorkerGroup to implement
+pending and ongoing data processing tasks, and redistributes       its own migration logic based on its component properties.
+them to the remaining Workers on the retained resources. This      The interface is shown in Figure 8. We implement the three
+approach is used by stateless components such as inference         migration strategies for common RL components including
+engines (e.g., SGLang, vLLM) with suspension capability            rollout, train, and tool caller as detailed in §6, demonstrating
+that offload their occupied hardware resources on suspension,      its versatility and generalizability.
+allowing safe migration without process restarts.
+   The third is p2pMigration, which launches new Workers
+on the target resources while keeping the old Workers active.
+                                                                   4.3    Context-Aware Data Routing
+State transfer (e.g., model parameters and optimizer buffers)         RL training features tightly coupled interactions among
+is performed via planned peer-to-peer communication paths          components, modeled as HyperEdges in DynaRL. Each Hy-
+between old and new Workers, after which the old Workers           perEdge aggregates data flowing from one WorkerGroup to
+are shut down or suspended. Stateful components such as            another. Efficiently routing these data across and within Work-
+Megatron-LM leverage this decentralized approach, enabling         ers is essential for end-to-end throughput. For example, in
+rapid migration within roughly one second for most cases.          multi-turn rollout, requests belonging to the same episode of
+   The p2pMigration strategy follows a create-before-              interactions may benefit from being processed on the same
+destroy pattern to guarantee atomicity: new Workers are            Worker to leverage the inference engine’s KV cache and re-
+fully initialized and receive complete state transfers before      duce re-prefilling.
+old Workers are suspended or torn down. Specifically, a dis-          To this end, DynaRL introduces context-aware data rout-
+tributed barrier is enforced before state_switch() is in-          ing to realize efficient data flows. The core enabler of this
+voked. All new-rank Workers must acknowledge full receipt          mechanism is a local data router that runs within each Work-
+of model parameters, optimizer states, and gradient buffers        erGroup (as a thread or a coroutine), which extracts Worker-
+before the system proceeds. If any transfer fails (e.g., due       specific context and attaches it to outgoing data. Before a
+to a network partition or hardware fault on the destination),      Worker forwards data to its successor WorkerGroup, the lo-
+the migration is aborted: the newly created Workers are dis-       cal router annotates each data item with: (1) affinity infor-
+
+
+
+852   20th USENIX Symposium on Operating Systems Design and Implementation                                    USENIX Association
+mation indicating where the data was last processed and              This design naturally leads to a three-level scheduling
+whether it prefers, requires, or need not use the same Worker     framework: WorkerGroup-level scheduling on how much re-
+(attach_affinity); and (2) status metadata, such as se-           source to allocate across components/WorkerGroups, Worker-
+quence IDs that track how many steps the data has progressed      level scheduling that decides how to balance workload and
+across Workers (attach_status). The interface is extensible       scale up / down across Workers in one WorkerGroup, and
+and allows additional metadata to be attached as needed.          data-level scheduling on the distribution and priority of re-
+   With these annotations, the local router governs both inter-   quest data for a specific component.
+Worker data distribution and intra-Worker data ordering. As
+WorkerGroups communicate through distributed communi-             5.1     Online Migration Scheduling
+cation channels provided by RL frameworks, the router’s
+distribute_data function intercepts outgoing queues to            Consider a system with a set of components C = CS ∪ CD ,
+route data to appropriate destination Workers based on affin-     where CS is the set of static components and CD is the set of
+ity constraints. On the receiving side, each Worker invokes       dynamic components. The system has a fixed pool of Rtotal
+priority_schedule to decide the execution order of incom-         homogeneous resources (e.g., GPUs).
+ing data, enabling fine-grained control under dynamic work-       • Let Ri (t) be the number of resources allocated to compo-
+loads, particularly in rollout-heavy stages. For example, the       nent Ci at time t, with ∑Ci ∈C Ri (t) ≤ Rtotal .
+SGLang Worker in DynaRL implements a custom priority              • Each component Ci has a throughput function Ti (Ri ), which
+scheduling policy through this interface to optimize multi-turn     measures its ideal processing rate (e.g., samples per second)
+interactions (§5).                                                  when allocated Ri resources.
+   This context-aware data routing layer allows the system to
+                                                                  • For a static component CS ∈ CS , TS (RS ) is approximately
+adapt to the dynamic nature of RL training while preserving
+                                                                    linear: TS (RS ) ≈ αS RS .
+efficient data flow across distributed components.
+                                                                  • For a dynamic component CD ∈ CD , TD (RD ) is a con-
+                                                                    cave function. It has an overprovision point Roa
+                                                                                                                  D where
+5   DynaRL Scheduling                                               the marginal throughput gain diminishes significantly:
+                                                                     ∂TD                 oa
+                                                                    ∂RD ≪ αS for RD > RD .
+The goal of DynaRL’s scheduling algorithm is to maximize             The goal of the scheduler is to find a resource alloca-
+end-to-end RL throughput by dynamically reallocating re-          tion R = (R1 , R2 , ...) at any given time that maximizes the
+sources among heterogeneous components, including rollout,        end-to-end throughput of the pipeline. Since the pipeline is
+inference, and model training, whose resource-performance         synchronous, the overall throughput is the minimum of the
+characteristics diverge substantially over time.                  throughputs of its constituent stages (if we ignore the small
+    The key idea behind our scheduling policy is to use           asynchrony in a pipeline). So the objective of the scheduling
+resource overprovisioning as the primary scheduling signal.       algorithm is:
+A component is considered overprovisioned when (1) allocat-
+ing additional resources yields only marginal improvements in                max min Ti (Ri ) s.t.
+                                                                              R Ci ∈C
+                                                                                                      ∑ Ri ≤ Rtotal .        (1)
+step-level or end-to-end throughput, and (2) removing a mod-                                         Ci ∈C
+est amount of resources does not noticeably degrade its per-         Algorithm 1 describes the procedure of inter- and intra-
+formance. Once overprovisioning is detected, DynaRL safely        worker-group resource scheduling. Our algorithm operates
+reclaims these underutilized resources and migrates them to       in a control loop, continuously monitoring the system and
+the component that currently limits the pipeline, thereby im-     triggering a reallocation when inefficiencies are detected. It
+proving overall throughput.                                       consists of two main phases: (1) Overprovision Detection,
+    To reason about where overprovision is likely to occur and    and (2) Reallocation Planning.
+where reclaimed resources can be most effectively used, Dy-
+naRL distinguishes between two types of components—static
+                                                                  5.1.1   Phase 1: Overprovision Detection
+and dynamic components. Static components have through-
+put that scales positively with additional devices (e.g., actor   The trigger for rescheduling is the detection of an
+or critic training with abundant input examples), so extra re-    overprovisioned dynamic component. We implement over-
+sources directly translate into higher throughput. In contrast,   provision detection directly on top of the dynamic hyper-
+dynamic components exhibit a concave resource-performance         graph: for each dynamic component/HyperNode CD , DynaRL
+curve whose marginal benefit naturally changes as the work-       aggregates the per-node utilization reported in its nodes field
+load evolves (e.g., rollout whose active sequence count shrinks   and computes a utilization signal. For rollout components, a
+as trajectories complete), making them prone to entering an       practical metric is the average ratio of active Key-Value (KV)
+overprovisioned regime where additional resources provide         cache size to its maximum capacity across all its engines.
+little incremental gain.                                          Formally, for a component with RD engines,
+
+
+
+USENIX Association                          20th USENIX Symposium on Operating Systems Design and Implementation            853
+ Algorithm 1: Dynamic Resource Scheduler                                    are hyperparameters that balance responsiveness and stability.
+  Input: Component set C , total resources Rtotal , thresholds              Once CD satisfies this overprovision predicate, the scheduler
+          Ulow , T, θ                                                       marks it as a candidate donor in the dynamic graph and pro-
+    Output: Updated resource allocation R                                   ceeds to Phase 2 to plan how many resources to reclaim and
+ 1 Function MonitorLoop():                                                  where to reallocate them.
+  2   while true do
+  3       foreach Ci ∈ C do                                                 5.1.2   Phase 2: Reallocation Planning
+  4            (Ui , metricsi ) ← monitor(Ci );
+  5       Copv ← DetectOverprovision(CD ,Ulow , T, θ);                      Once a dynamic component CD is identified as overprovi-
+  6       if Copv ̸= None then                                              sioned, the planner considers multiple resource-reduction can-
+  7            Rnew ← PlanReallocation(Copv , R , metrics);                 didates. For each candidate, the planner forecasts both the
+  8            migrate(R , Rnew );                                          local impact on CD and the global throughput improvement
+ 9 Function DetectOverprovision(CD ,Ulow , T, θ):
+                                                                            achievable by reallocating the released resources. The sched-
+10    foreach CD ∈ CD do                                                    uler then selects the candidate with the highest predicted
+11        low_count ← 0;
+                                                                            performance improvement.
+12        foreach worker ∈ CD .workers do
+13            Uavg ← avg_utilization(worker, T );                             1. Generate candidate reductions. We construct a discrete
+14             if Uavg < Ulow then                                                                                           (1)        (K)
+                                                                                 set of reduced allocation candidates ∆RD , · · · , ∆RD
+ 15                 low_count ← low_count + 1;
+                                                                                 (line 20). They represent feasible and stable scaling lev-
+16        if low_count/|CD .workers| > θ then
+                                                                                 els suggested by recent utilization and throughput trends.
+17             return CD ;
+18    return None;                                                            2. Predict component performance. For every allocation
+19 Function PlanReallocation(Copv , R , metrics):                                  (k)                                                  (k)
+                                                                                 RD , the planner predicts the resulting throughput TD
+20    {∆R(1) , . . . , ∆R(K) } ←                                                 using a lightweight, continuously updated performance
+        GenerateCandidates(Copv , R , metrics);
+                                                                                 model (line 25). This estimation provides a conservative
+21    best ← ∅;
+22    τbest ← −∞;
+                                                                                 bound on the potential performance degradation intro-
+23    for k ← 1 to K do                                                          duced by releasing ∆R(k) . Concretely, the throughput pre-
+            (k)                                                                  dictor is a statistical regression model. Before training
+24        Ropv ← R [Copv ] − ∆R(k) ;
+            (k)                                   (k)                            begins, a short profiling stage measures per-component
+25        Topv ← PredictThroughput(Copv , Ropv , metrics);                       latency and throughput across representative batch sizes
+26        (alloc(k) , τ(k) ) ←                                                   and sequence lengths, establishing an initial baseline
+                                                (k)     (k)
+           SearchAllocation(∆R(k) ,Copv , Ropv , Topv , C , R , metrics);        model that avoids cold-start inaccuracy. During execu-
+                                                                                 tion, the system continuously collects real-time runtime
+27        if τ(k) > τbest then                                                   metrics (observed throughput, queue depth, batch com-
+28            τbest ← τ(k) ;                                                     position) and uses them to dynamically recalibrate the
+                         (k)
+29           best ← (Ropv , alloc(k) );                                          model via online regression updates, ensuring predic-
+30    Rnew ← R ;                                                                 tions remain accurate as workload characteristics evolve
+31    Rnew [Copv ] ← best.Ropv ;                                                 over training.
+32    foreach C j ∈ best.alloc do
+33       Rnew [C j ] ← R [C j ] + best.alloc[C j ];                           3. Evaluate global reallocation benefit. For each candi-
+34    return Rnew ;                                                              date adjustment ∆R(k) , the planner estimates how the sys-
+                                                                                 tem would benefit from redistributing the freed resources.
+                                                                                 It allocates these resources based on each component’s
+                                                                                 observed throughput characteristics and request-queue
+                                                                                 dynamics, producing a predicted end-to-end throughput
+                         1 RD KV_cache_used j (t)
+            UD (t) =       ∑ KV_cache_capacity .                                 τ(k) for the candidate configuration (line 26).
+                        RD j=1                   j
+                                                                              4. Select optimal plan. Finally, the scheduler selects
+   CD is considered overprovisioned if UD (t) < Ulow for a                       the candidate that offers the highest predicted system
+sustained period T . This indicates that most engines are un-                    throughput (line 27 - 29):
+derutilized. To avoid reacting to transient fluctuations, we
+employ a persistent condition: rescheduling is triggered only                                       k∗ = arg max τ(k) .
+                                                                                                               k
+if the utilization of more than θ (e.g., 80%) of CD ’s engines is
+below Ulow for a continuous duration of T seconds.                               Using the migration interface, the dynamic component is
+                                                                                                                                     (k∗ )
+    In practice, Ulow can be derived as the p-th (e.g., 20th) per-               migrated to the resulting new allocation set R′D = RD ,
+centile of historical utilization data for CD , while T and θ                    while the released resources are assigned to CS∗ .
+
+
+
+854   20th USENIX Symposium on Operating Systems Design and Implementation                                           USENIX Association
+   This multi-candidate approach enables the scheduler to            can easily waste GPU cycles by repeatedly recomputing KV
+make informed trade-offs: aggressively reducing resources al-        cache and inflate end-to-end episode latency by letting short,
+located to CD may free more resources for other components           late-stage turns wait behind many first turns.
+but risks making CD the new bottleneck. By evaluating multi-            To understand how multi-turn structure affects workload
+ple options, we ensure the reallocation maximizes throughput.        characteristics, we examine the response-length distribution
+   This design also keeps the reallocation behavior stable over      across tool-call rounds in a ReAct-style agent, and observe
+time. Migrations are bound to interruptible points (§4.2) and        two clear patterns: (1) the first response (round 0) is sub-
+thus occur at the natural batch-level divider of the RL pipeline     stantially longer than subsequent ones, and (2) average token
+rather than on every transient signal. Within each decision,         generation decreases monotonically as the request approaches
+the sustained-window predicate in Phase 1 smooths out short-         completion. In other words, early turns are long and compute-
+lived queue spikes, and Phase 2 only commits to a new alloca-        heavy, whereas later turns are short and relatively cheap.
+tion when the continuously-recalibrated throughput predictor            These observations motivate a priority-based scheduling
+reports a strict improvement over the current one, so noise-         policy in which a request’s priority is its tool-call count, i.e.,
+level imbalances do not flip the decision. The migration itself      the number of completed tool invocations so far. Intuitively,
+rebalances in-flight requests across the new worker set as part      always giving higher priority to requests with more completed
+of the procedure (e.g., data_collect/data_distribute in              tool calls has two key benefits. First, it increases the likelihood
+WorkloadMigration), so the new allocation lands at its pre-          of KV-cache reuse: when a new turn arrives shortly after the
+dicted operating point without a queue-pressure rebound. Our         previous one, prioritizing that request over fresh, long first-
+sensitivity study (§7.5) further confirms that this stability        turn prompts prevents the cached state from being evicted
+holds across a wide range of scheduling parameters, so the           and avoids expensive re-prefilling. Second, it accelerates the
+scheduler does not rely on subtle parameter tuning.                  completion of late-stage episodes, significantly reducing mean
+   This PlanReallocation step maintains low overhead as              job completion time by flushing short, near-finished turns out
+the cluster scales. It evaluates O(K) candidate reductions           of the system instead of waiting behind long initial turns.
+(K is typically 3–10) across O(|C|) components (|C| is typi-            Furthermore, while longer early turns are not a universal
+cally 3–7 in RL pipelines). The scheduling complexity is thus        rule for all LLM interactions, they are a strong character-
+O(K × |C|), independent of the total GPU count. Furthermore,         istic driven by task designs and agentic frameworks (e.g.,
+since per-Worker metrics are aggregated at the WorkerGroup           ReAct [28], Plan-and-Solve [24]) where the first turn han-
+Manager level, the global scheduler only processes O(|C|)            dles a complex prompt and generates a full plan, making it
+summaries rather than O(NGPU ) individual signals, allowing          the most compute-intensive. Later turns are typically short
+scheduling to complete within 200 ms even at 128 GPUs.               observation-evaluation steps. Even for workloads where later
+                                                                     turns are not shorter, the priority scheduler degrades grace-
+                                                                     fully to near-FIFO behavior while still preserving KV-cache
+5.2    Request Data Scheduling
+                                                                     reuse benefits.
+                                                                        Algorithm 2 implements this idea. For each request r in the
+ Algorithm 2: Priority-Aware Request Scheduler                       queue, the scheduler extracts a priority key (kr , mr ), where kr
+                                                                     is the number of completed tool calls (i.e., the current round
+  Input: Request queue Q , batch size limit B
+1 Function SelectBatch(Q ):
+                                                                     index), and mr is the length of the prefix of this request in
+2    S ← ∅;                                                          the prefix-tree-based KV cache commonly used in LLM in-
+3    foreach r ∈ Q do                                                ference engines. The latter serves as a tie-breaker: among
+4        (kr , mr ) ← extract_priority(r);                           requests in the same round, those with longer prefixes are
+5     Qsorted ← sort(Q , key= (kr , mr ));                           more likely to reuse more cache and thus have higher priority.
+6     foreach r ∈ Qsorted do                                         The scheduler then sorts the queue by this key and selects the
+7        if |S | < B then                                            top-B requests to form the next batch. Compared to FIFO, this
+8             S ← S ∪ {r};                                           multi-turn–aware, tool-call-count-based policy explicitly ex-
+9     return S ;                                                     ploits the response-length skew across rounds to improve both
+                                                                     KV-cache efficiency and end-to-end agentic RL performance.
+   While request scheduling has been extensively studied in
+online serving systems, it remains largely overlooked in train-      6    Implementation
+ing pipelines. In agentic RL, a single high-level task unfolds
+into a multi-turn interaction between the model and external         DynaRL is implemented in 7K lines of Python code atop
+tools. Each request re-enters the rollout component multiple         RLinf [22], an open-source RL framework that is flexible
+times, and the system must maintain and reuse state across           enough to support various resource partitioning modes (it
+these turns (e.g., KV cache). If the scheduler ignores this struc-   supports both physical partitioning and time-sharing). Among
+ture and simply treats each turn as an independent request, it       them, 2K lines are for the Global Scheduler, 4K lines for
+
+
+
+USENIX Association                             20th USENIX Symposium on Operating Systems Design and Implementation                855
+the migration manager and migration strategy implemented             multi-component RL pipelines.
+for different RL components (currently rollout, tool agent,             All remaining components fall back to RebootMigration,
+trainer, inference, reward are supported), and an additional 1K      which simply shuts down workers on the old resources and
+lines for the HyperGraph extraction, data routing, and other         relaunches them on the new ones with reloaded states.
+auxiliary components.
+HyperGraph Extraction. DynaRL automatically builds                   7     Evaluation
+the HyperGraph from RLinf programs using lightweight static
+analysis plus minimal runtime hooks, without requiring man-          We evaluate DynaRL on comprehensive workloads including
+ual annotations. On the static side, we parse the Python source      math-reasoning RL and multi-turn agentic RL with LLMs
+of the training pipeline and components using the standard           of different sizes ranging from 1.5B to 32B on real-world
+ast module that exposes the abstract syntax tree of the pro-         datasets. The experiment results are summarized below:
+gram. We identify component classes by their inheritance
+                                                                     • For math-reasoning RL, DynaRL consistently outperforms
+from RLinf’s WorkerGroup base and registration APIs (e.g.,
+                                                                       state-of-the-art RL systems (e.g., verl, RLinf) by 1.27×–
+rollout, trainer, tool agent), and instantiate a corresponding
+                                                                       1.98× on a variety of math-reasoning RL training configu-
+HyperNode for each logical component. We then traverse
+                                                                       rations under different cluster scales.
+all call sites to the framework’s inter-worker communica-
+tion primitives (e.g., channel put/get). Each such call yields a     • For agentic RL, DynaRL achieves 1.06×–1.53× higher
+HyperEdge between two HyperNodes, and we populate their                throughput than RLinf. With priority-aware request
+predecessors and successors fields accordingly, forming                scheduling for multi-turn interactions, DynaRL further im-
+the static skeleton of the hypergraph.                                 proves performance to 1.27×–1.64×.
+   At runtime, WorkerGroup Managers register their con-              • The scheduling plan can be generated within 200 ms, and
+crete workers as Node entries under the correspond-                    DynaRL applies each reallocation plan within 0.5–5 sec-
+ing HyperNode, and periodically update fields such as                  onds, incurring less than 1% overhead.
+allocated_resources and utilization from monitoring
+signals. Similarly, the framework’s communication hooks up-
+date the associated HyperEdge.progress and affinity meta-            7.1    Experiment Setup
+data as dataflow events occur. This combination of Python
+AST analysis for structure and low-overhead runtime updates          Testbed. We deploy DynaRL on an H100 cluster with 16
+for state yields a continuously maintained HyperGraph that           nodes and 128 GPUs. Each node has 8 NVIDIA H100-80GB
+accurately reflects component interactions and is directly con-      GPUs, and 2 Intel Xeon Platinum 8558@2.1 GHz CPUs with
+sumable by the global scheduler and data router.                     48 cores and 2TB memory. Intra-node communication utilizes
+                                                                     NVLink, while inter-node communication uses 8 Mellanox
+Migration Strategy. DynaRL instantiates the three mi-                ConnectX-7 RDMA NICs per node, each providing 400 Gbps
+gration mechanisms in Figure 9 according to each compo-              bandwidth with RoCEv2.
+nent’s statefulness and performance sensitivity. For stateless
+or weakly stateful components such as rollout, tool agents, in-      Baselines. For math-reasoning RL, we compare DynaRL
+ference, and reward models, we adopt WorkloadMigration               against verl [19] v0.5 and RLinf [22], the state-of-the-art
+to redistribute the request data upon resource migration.            open-source RLHF systems. We choose SGLang [32] as their
+                                                                     rollout engine and Megatron-LM [20] as their training back-
+   For distributed trainers like Megatron-LM, DynaRL imple-
+                                                                     end. To further demonstrate the broader scheduling space of
+ments p2pMigration to transfer two kinds of state: model
+                                                                     DynaRL, we also compare it against RLHFuse [33], which
+parameters and optimizer states. Given the old and new paral-
+                                                                     performs fusion in rollout and inference phases. Since RL-
+lelism configurations (e.g., data-, tensor-, and pipeline-parallel
+                                                                     HFuse lacks a publicly available artifact, we implemented
+degrees), the migration manager computes a rank-mapping
+                                                                     its core fusion logic within RLinf using the same rollout en-
+and resharding plan that determines which source ranks send
+                                                                     gine and training backend to ensure a fair comparison. For
+which parameter and optimizer shards to which destination
+                                                                     multi-turn agentic LLM, we compare with RLinf, as verl only
+ranks. The new trainer processes are launched on the target
+                                                                     supports FSDP [31] for this experiment, which is much slower
+GPUs and participate in a series of peer-to-peer transfers fol-
+                                                                     than the Megatron-LM backend.
+lowing this plan until all state is materialized under the new
+sharding. Afterward, DynaRL reconstructs all communication           Metrics. For the end-to-end experiments, we use RLHF
+groups (e.g., NCCL process groups for data/tensor/pipeline           throughput (tokens/sec) as the performance metric following
+parallelism) to match the new topology and only then tears           verl [19], which is defined as dividing the total number of to-
+down the old ranks. This design allows large, stateful training      kens in prompts and responses in a global batch by one RLHF
+jobs to change their parallelism layout with sub-second to few-      iteration time. For multi-turn agentic RL, we use number of
+second pauses, making frequent elastic rescaling practical in        processed requests per second (abbreviated as requests per
+
+
+
+856   20th USENIX Symposium on Operating Systems Design and Implementation                                    USENIX Association
+                                 verl          RLinf         RLHFuse                  DynaRL                                     RLinf        DynaRL         DynaRL+Priority
+                            1.5B Model                 7B Model                  32B Model                                  1.5B Model         7B Model            32B Model
+                                                                                                                       40                25                    5
+                                                                   40K
+ Tokens Per Second
+
+
+
+
+                     300K
+
+
+
+
+                                                                                                  Request Per Second
+                                              150K                                                                                       20                    4
+                                                                   30K                                                 30
+                     200K                                                                                                                15                    3
+                                              100K
+                                                                   20K                                                 20
+                                                                                                                                         10                    2
+                     100K                     50K                  10K
+                                                                                                                       10
+                                                                           OOM
+                                                                                                                                          5                    1
+                        0                        0                     0
+                            64          128            64    128                 64     128
+                                                                                                                        0                 0                    0
+                                                 Number of GPUs                                                             64    128          64      128          64     128
+                                                                                                                                          Number of GPUs
+Figure 11: End-to-end throughput of math reasoning RL under
+different cluster scale and model size settings.                                                 Figure 12: End-to-end throughput of multi-turn agentic RL
+                                                                                                 under different cluster scale and model size settings.
+second). All reported performance numbers are averaged over
+10 training iterations after warm-up.
+                                                                                                 constrained scheduling space: with TP size 8, train parallelism
+Datasets. For math-reasoning RL, we use the AReaL-                                               can scale when at least 8 idle GPUs are available.
+boba-Data dataset [26]. This dataset integrates multiple stan-                                      With 128 GPUs, improvements for 1.5B and 7B models
+dard datasets including DeepScaleR [12], Open-Reasoner-                                          stabilize around 1.40×–1.52×. The 32B model, however, ben-
+Zero [9], Light-R1 [25], DAPO [30], NuminaMath [14] (AoP-                                        efits significantly more, reaching 1.98× over verl and 1.40×
+S/Olympiad subsets), and ZebraLogic [11]. Overly simple                                          over RLinf, as the larger cluster provides greater flexibility
+problems are filtered out to ensure dataset quality and effec-                                   and a wider scheduling space.
+tiveness. For multi-turn agentic RL, we use the rstar2-agent
+                                                                                                    Compared to RLHFuse, DynaRL achieves 1.21×–1.42×
+dataset [18], which includes tasks from the DAPO training
+                                                                                                 higher throughput. RLHFuse fuses only the rollout and in-
+set, problems from the AoPS forums via OpenMathReason-
+                                                                                                 ference stages, but in practice inference is typically much
+ing [13] and Project Euler [3].
+                                                                                                 less time-consuming than rollout, especially at long response
+Configuration. For both math-reasoning and multi-turn                                            lengths, leaving training resources idle as it cannot be fused
+agentic RL experiments, we use a rollout batch size of 512,                                      with other stages. In contrast, DynaRL dynamically schedules
+group size of 16, and sequence length of 28,672. The trainer                                     resources across all three stages, rollout, inference, and train-
+tensor-parallel (TP) sizes are 2, 4, and 8 for the 1.5B, 7B, and                                 ing, jointly, enabling it to better handle diverse components
+32B models, respectively; the corresponding rollout TP sizes                                     with heterogeneous execution characteristics.
+are 1, 2 and 4. These configurations remain unchanged as we
+                                                                                                 Multi-turn agentic RL. Figure 12 presents the results for
+scale to larger GPU counts.
+                                                                                                 multi-turn agentic RL. We compare RLinf with two variants
+                                                                                                 of DynaRL: dynamic allocation alone and dynamic allocation
+7.2                     End-to-End Experiments                                                   combined with the priority-aware request scheduling policy.
+                                                                                                    On 64 GPUs, dynamic allocation alone yields 1.06×–
+Math-reasoning RL. Math-reasoning RL comprises three                                             1.38× improvement, smaller than in single-turn math rea-
+stages, i.e., rollout, inference, and training. Existing systems                                 soning. This highlights the additional scheduling complexity
+such as verl and RLinf follow a static, sequential execution                                     introduced by multi-turn interactions, where rollout becomes
+pattern, dedicating all resources to one stage at a time. Fig-                                   more unpredictable. With priority-aware request scheduling,
+ure 11 compares throughput under baseline’s static scheduling                                    DynaRL achieves 1.51×–1.53× speedups on the 1.5B and
+and DynaRL ’s dynamic scheduling across three model sizes                                        7B models over RLinf. The gains on the 32B model are also
+(1.5B, 7B, and 32B) and two GPU scales (64 and 128). As                                          smaller (1.27×) due to constrained scheduling space.
+shown, DynaRL consistently improves throughput, with larger                                         When scaling from 64 to 128 GPUs, DynaRL with priority-
+gains on larger models.                                                                          aware scheduling is 1.40×, 1.64×, 1.58× faster than RLinf on
+   For the 64 GPU experiments, verl and RLinf exhibit similar                                    1.5B, 7B, 32B models, respectively. The benefit of priority-
+performance for 1.5B and 7B models, while DynaRL yields                                          aware scheduling diminishes slightly for the 1.5B and 7B
+1.43×–1.55× speedups. Because with static scheduling, roll-                                      models (from 15% to 11% for 1.5B, and from 14% to 11%
+out eventually runs at low utilization, whereas DynaRL de-                                       for 7B). In contrast, the 32B model experiences increased
+tects overprovisioned components and reallocates their un-                                       gains (from 21% to 24%). This divergence stems from KV-
+used capacity to other components. For the 32B model, verl                                       cache sufficiency. That is, on 128 GPUs, smaller models can
+fails due to OOM, and DynaRL achieves a moderate 1.27×                                           maintain more request prefixes in cache without eviction,
+speedup over RLinf. The speedup is smaller due to a more                                         reducing the marginal benefit of request-level prioritization.
+
+
+
+USENIX Association                                                           20th USENIX Symposium on Operating Systems Design and Implementation                                857
+          64                                                                        3.0                                         8
+   GPUs
+                                                                                                 NCCL build
+                                                                                                 Transfer
+           0                                                                        2.5          Update
+               0   200     400      600      800       1000
+          64                                                                        2.0                                         6
+
+
+
+
+                                                                                                                     Time (s)
+                                                                         Time (s)
+          48                                                                        1.5
+   GPUs
+
+
+
+
+          32                                                                        1.0                                         4
+          16
+                                                                                    0.5
+           0                                                                                                                    2
+               0   200     400      600      800       1000                         0.0 64 128 64 128 64 128                         64 128 64 128 64 128
+          64                                                                               1.5B      7B     32B                       1.5B    7B    32B
+                                                                                          Model Size and GPU Count                  Model Size and GPU Count
+          48
+   GPUs
+
+
+
+
+                                                   Trainer                                (a) Trainer.                                (b) Rollout.
+          32
+                                                   Rollout
+          16                                       Infer                            Figure 14: Trainer and rollout migration cost.
+           0
+               0   200     400    600        800      1000
+                             Time (s)                              exploit. Inference is consistently assigned fewer GPUs than
+                                                                   trainer because it performs only forward passes and maintains
+Figure 13: GPU allocation timelines for the three execution        no external state (e.g., gradients or optimizer slots), thus re-
+modes. From top to bottom: (1) static mode, where all GPUs         quiring substantially less compute for the same number of
+are assigned to one component at a time; (2) dynamic mode          tokens. Since inference scales adequately with a small GPU
+without priority-aware request scheduling, which reallocates       budget, DynaRL assigns it a stable initial allocation to avoid
+resources reactively based on component utilization; and (3)       unnecessary reallocation overhead.
+dynamic mode with priority-aware request scheduling, which            The bottom panel shows that incorporating priority-aware
+further prioritizes requests with more completed tool calls.       request scheduling further accelerates resource transitions.
+Each plot shows how Trainer, Rollout, and Inference compo-         By prioritizing rollout requests with more completed tool
+nents acquire and release GPUs over time.                          calls, the system reduces straggler effects and frees GPUs
+                                                                   earlier. Consequently, both inference and trainer reach their
+                                                                   target allocations sooner and at larger scale. For example,
+For the 32B model, however, KV-cache pressure remains high,        trainer scales to 32 GPUs around 420s under vanilla dynamic
+and priority-aware scheduling continues to play a significant      allocation, but reaches 52 GPUs by roughly 380s with priority-
+role, yielding larger improvements.                                aware scheduling. Toward the end of the iteration, rollout and
+                                                                   inference operate with minimal resources to process long-tail
+                                                                   requests, while trainer receives most of the cluster to acceler-
+7.3       Breakdown of Online Scheduling                           ate training. This demonstrates that fine-grained, request-level
+                                                                   scheduling is essential for fully exploiting temporal variability
+Figure 13 illustrates how DynaRL allocates 64 GPUs across          in RL workloads.
+rollout, inference, and trainer in the 7B math-reasoning RL
+experiment. In the top panel, the static configuration fully
+serializes the three phases, assigning the entire cluster to one   7.4         Overhead Analysis
+component at a time.
+   The middle panel shows how dynamic allocation reshapes          Trainer migration overhead. Figure 14a reports the trainer
+the execution timeline by reallocating GPUs at runtime. At         migration cost across different model sizes. The total migra-
+the beginning of the iteration, neither inference nor trainer      tion time grows primarily with model scale, increasing from
+receives resources because no corresponding requests are           sub-millisecond ranges for 1.5B to several seconds for 32B,
+yet available. As rollout proceeds, its effective parallelism      yet still contributes less than 0.5% to end-to-end latency even
+naturally declines as fewer requests remain. The scheduler         for the 32B model on 128 GPUs. In contrast, the GPU count
+detects this underutilization and gradually reallocates GPUs       has negligible impact. This behavior reflects the design of
+to inference and trainer. This overlap shortens the critical       our trainer migration mechanism, i.e., model states are trans-
+path, i.e., downstream stages start earlier and run concurrently   ferred through fully distributed peer-to-peer communication,
+with the tail of rollout, eliminating large idle windows and ex-   allowing the migration cost to mainly scale with the size of
+posing intra-iteration parallelism that static allocation cannot   the model. As a result, trainer replicas can be rebalanced even
+
+
+
+858       20th USENIX Symposium on Operating Systems Design and Implementation                                                         USENIX Association
+                    250K                                                                               −0.5
+                            stable region (~233K)         stable region (~235K)                                   static
+Tokens Per Second
+
+
+
+
+                                                                                                                  dynamic
+                                                                                                       −1.0
+
+
+
+
+                                                                                              Reward
+                    200K
+
+                                                                                                       −1.5
+
+
+                    150K                                                                               −2.0
+                           0.01 0.1    0.2   0.3    0.5   24 8          32        64
+                                         Ulow                            T
+                                                                                                              0   100       200     300     400
+                                                                                                                             Step
+Figure 15: Throughput stationarity of DynaRL under varying
+scheduling parameters Ulow (left) and T (right). Shaded bands
+mark the stable operating regions.                                                      Figure 16: Reward curve of static placement and dynamic
+                                                                                        scheduling.
+on large clusters without incurring significant coordination or
+communication group rebuild overheads.                                                  degrades at the extremes: an overly small Ulow = 0.01 triggers
+                                                                                        excessive rebalancing and drops throughput to 188.65K token-
+Rollout migration overhead. Figure 14b shows rollout
+                                                                                        s/s (↓ 19.7%), while an overly large Ulow = 0.5 suppresses
+migration costs across different model and cluster sizes, aver-
+                                                                                        useful rebalancing and yields 201.82K tokens/s (↓ 14.1%).
+aged over 10 training iterations. Unlike train migration, rollout
+                                                                                        For T , throughput stays within 0.5% of peak over T ∈ [2, 8]
+migration exhibits sensitivity to both model scale and GPU
+                                                                                        (mean 235.5K tokens/s) and degrades only mildly at T = 32
+count, as larger rollout groups require more workers to syn-
+                                                                                        (↓ 3.1%) and T = 64 (↓ 6.4%), where the scheduler reacts too
+chronize and transfer running states. Nonetheless, the overall
+                                                                                        slowly to transient imbalance. These results indicate that the
+variance remains modest. Migration consistently completes
+                                                                                        stable operating region for DynaRL spans a wide plateau in
+within a few seconds even for the 32B model on 128 GPUs.
+                                                                                        both dimensions, so practitioners can pick parameters from a
+This small and predictable overhead ensures that migration
+                                                                                        broad range without precise per-workload tuning.
+decisions triggered by dynamic scheduling do not dominate
+the end-to-end training time. The results confirm that Dy-
+naRL ’s reallocation mechanism maintains low control-plane                              7.6       Correctness Verification
+overheads and can support frequent, fine-grained resource
+adjustments during RL training.                                                         Guaranteeing algorithm convergence is a fundamental require-
+                                                                                        ment of DynaRL. To achieve this, all supported migrations
+Scheduling overhead. We measure the scheduling time                                     strictly preserve the underlying RL semantics by leveraging
+during both the reasoning and agentic RL tasks. We find that                            the interruptible points defined in Section 4.2. During the roll-
+all scheduling decisions can be made within 200 millisec-                               out and inference phases, migrations are executed at the query
+onds, which is negligible compared to the end-to-end training                           level; this alters the physical GPU assignment but leaves the
+time. During a training iteration, the total overhead of the                            execution logic unaffected. During training phases, migra-
+scheduling is below 0.5%.                                                               tions meticulously preserve model parameters and optimizer
+                                                                                        states while holding RL hyperparameters (e.g., micro-batch
+7.5                    Parameter Sensitivity                                            and global batch sizes) constant. For instance, when adjust-
+                                                                                        ing the number of GPUs under data parallelism, DynaRL
+We study the performance sensitivity of DynaRL with re-                                 reconfigures how micro-batches are distributed across devices
+spect to its scheduling parameters: the rebalancing thresh-                             without altering the global batch size. This ensures that the
+old Ulow , which controls how aggressively work is redis-                               training logic remains intact, providing strict mathematical
+tributed across stages, and the scheduling window T , which                             consistency throughout the migration process.
+controls how frequently the scheduler reacts to load imbal-                                To empirically validate this consistency, Figure 16 plots the
+ance. We sweep Ulow ∈ {0.01, 0.1, 0.2, 0.3, 0.5} with T fixed,                          step-wise reward curves for a 1.5B-parameter model on 64
+and T ∈ {2, 4, 8, 32, 64} with Ulow fixed, and measure end-to-                          GPUs on a mathematical reasoning task, corresponding to the
+end token throughput on the 1.5B math-reasoning workload.                               experiment in Figure 11. As illustrated, DynaRL’s dynamic
+   Figure 15 shows that DynaRL is largely insensitive to both                           scheduling closely tracks the convergence trajectory of the
+parameters across more than an order of magnitude. For Ulow ,                           static placement baseline. This confirms that our dynamic
+throughput remains within ∼1.5% of its peak (233K tokens/s)                             migrations introduce no adverse effects on the RL learning
+over the whole interval Ulow ∈ [0.1, 0.3]. Performance only                             process.
+
+
+
+USENIX Association                                                  20th USENIX Symposium on Operating Systems Design and Implementation            859
+8     Related Works                                                end-to-end throughput while maintaining low online schedul-
+                                                                   ing overhead across diverse RL workloads. In the future, we
+Reinforcement Learning Frameworks. Existing RL train-              envision that dynamic resource management will become an
+ing frameworks for large-scale alignment generally follow          essential component of RL systems, enabling more efficient
+static system designs, which can be categorized into task-         and scalable training through complex interactions.
+colocated (e.g., verl [19] and DeepSpeed-Chat [29]) and task-
+separated (e.g., Slime [34] and OpenRLHF [8]) execution            Acknowledgments
+modes. More recently, frameworks with automated scheduling
+have been introduced. RLHFuse [33], for instance, performs         We thank our anonymous reviewers and shepherd for their con-
+fusion in rollout and inference phases, effectively mitigating     structive feedback. Zhi Yang and Yu Wang are the correspond-
+long-tail generation bottlenecks and improving end-to-end          ing authors. Quanlu Zhang is the project lead. We also express
+throughput. Some recent works use async RL algorithms and          our sincere gratitude to the RLinf open-source community for
+co-design the infrastructure to alleviate the long-tail issue.     their continuous support, feedback, and ecosystem contribu-
+AReal [4] introduces an asynchronous model update algo-            tions. This work was partially supported by National Natu-
+rithm for task-separated systems to increase training through-     ral Science Foundation of China under Grant No.92464301,
+put. Kimi-k1.5 [21] introduces partial rollouts to optimize        62406159, 62325405, Zhongguancun Academy Grant No.
+the handling of complex reasoning trajectories. In contrast to     C20250301, Shenzhen Science and Technology Program No.
+these static or partially optimized designs, DynaRL enables        AI2026016.
+joint dynamic scheduling across rollout, inference, and train-
+ing phases, allowing the runtime to switch between colocated
+and separated execution modes based on live workload pat-          References
+terns. Furthermore, while prior systems focus primarily on
+single-turn reasoning RL pipelines, DynaRL extends dynamic          [1] Lukas Beckenbauer, Johannes-Lucas Loewe, Ge Zheng,
+scheduling to agentic RL, where multi-turn environment in-              and Alexandra Brintrup. Orchestrator: Active inference
+teraction worsens the impact of long-tail in rollout.                   for multi-agent systems in long-horizon tasks. arXiv
+                                                                        preprint arXiv:2509.05651, 2025.
+Cluster-Level Deep Learning Schedulers. Beyond RL-
+specific frameworks, a rich line of systems work has explored       [2] DeepSeek-AI. Deepseek-r1: Incentivizing reasoning
+dynamic resource management for deep learning clusters.                 capability in llms via reinforcement learning, 2025.
+Optimus [16], Gandiva [27], and Tiresias [5] perform intro-
+spective GPU scheduling across many concurrent training             [3] Project Euler. Project euler is a series of challeng-
+jobs, adjusting placement and GPU allocations based on job-             ing mathematical/computer programming problems that
+level progress signals. Traditional cluster managers such as            will require more than just mathematical insights to
+Borg [23], Kubernetes, and their autoscaling extensions sim-            solve. https://projecteuler.net/, 2025.
+ilarly treat each training workload as a black box when re-         [4] Wei Fu, Jiaxuan Gao, Xujie Shen, Chen Zhu, Zhiyu
+allocating resources. These systems operate primarily at the            Mei, Chuyi He, Shusheng Xu, Guo Wei, Jun Mei, Ji-
+job or container granularity and lack visibility into the inter-        ashu Wang, et al. Areal: A large-scale asynchronous
+nal structure of RL pipelines. In contrast, DynaRL performs             reinforcement learning system for language reasoning.
+fine-grained, intra-job scheduling across rollout, inference,           arXiv preprint arXiv:2505.24298, 2025.
+and training components using a dynamic hypergraph abstrac-
+tion, enabling resource rebalancing that is aware of cross-         [5] Juncheng Gu, Mosharaf Chowdhury, Kang G. Shin,
+component dependencies and multi-turn interaction structure             Yibo Zhu, Myeongjae Jeon, Junjie Qian, Hongqiang
+inside a single RL workload.                                            Liu, and Chuanxiong Guo. Tiresias: A GPU clus-
+                                                                        ter manager for distributed deep learning. In 16th
+                                                                        USENIX Symposium on Networked Systems Design
+9     Conclusion                                                        and Implementation (NSDI 19), pages 485–500, Boston,
+                                                                        MA, February 2019. USENIX Association.
+Modern RL workloads for reasoning and agentic systems
+exhibit substantial dynamicity, making static resource allo-        [6] Openai Gym. Gym is an open source python library for
+cations highly inefficient. This paper presented DynaRL, the            developing and comparing reinforcement learning algo-
+first RL system that makes dynamic scheduling a first-class ca-         rithms. https://github.com/openai/gym, 2025.
+pability. DynaRL introduces a unified runtime and abstraction
+that can observe how different RL components behave over            [7] Gymnasium. An api standard for reinforcement learn-
+time and automatically shift resources to where they are most           ing with a diverse collection of reference environments.
+needed. We demonstrate that DynaRL consistently improves                https://gymnasium.farama.org/, 2025.
+
+
+
+860    20th USENIX Symposium on Operating Systems Design and Implementation                                USENIX Association
+ [8] Jian Hu, Xibin Wu, Zilin Zhu, Weixun Wang, Dehao            [17] Alec Radford, Karthik Narasimhan, Tim Salimans, Ilya
+     Zhang, Yu Cao, et al. Openrlhf: An easy-to-use, scalable         Sutskever, et al. Improving language understanding by
+     and high-performance rlhf framework. arXiv preprint              generative pre-training. 2018.
+     arXiv:2405.11143, 2024.
+                                                                 [18] Ning Shang, Yifei Liu, Yi Zhu, Li Lyna Zhang, Wei-
+ [9] Jingcheng Hu, Yinmin Zhang, Qi Han, Daxin Jiang, Xi-             jiang Xu, Xinyu Guan, Buze Zhang, Bingcheng Dong,
+     angyu Zhang, and Heung-Yeung Shum. Open-reasoner-                Xudong Zhou, Bowen Zhang, Ying Xin, Ziming Miao,
+     zero: An open source approach to scaling up reinforce-           Scarlett Li, Fan Yang, and Mao Yang. rstar2-agent:
+     ment learning on the base model, 2025.                           Agentic reasoning technical report, 2025.
+                                                                 [19] Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu,
+[10] Lean. Lean is an open-source programming lan-
+                                                                      Wang Zhang, Ru Zhang, Yanghua Peng, Haibin Lin, and
+     guage and proof assistant that enables correct, maintain-
+                                                                      Chuan Wu. Hybridflow: A flexible and efficient rlhf
+     able, and formally verified code. https://lean-lang.
+                                                                      framework. In Proceedings of the Twentieth European
+     org/, 2025.
+                                                                      Conference on Computer Systems, pages 1279–1297,
+[11] Bill Yuchen Lin, Ronan Le Bras, Kyle Richardson,                 2025.
+     Ashish Sabharwal, Radha Poovendran, Peter Clark, and        [20] Mohammad Shoeybi, Mostofa Patwary, Raul Puri,
+     Yejin Choi. Zebralogic: On the scaling limits of llms for        Patrick LeGresley, Jared Casper, and Bryan Catanzaro.
+     logical reasoning, 2025.                                         Megatron-lm: Training multi-billion parameter lan-
+                                                                      guage models using model parallelism. arXiv preprint
+[12] Michael Luo, Sijun Tan, Justin Wong, Xiaoxiang Shi,
+                                                                      arXiv:1909.08053, 2019.
+     William Y. Tang, Manan Roongta, Colin Cai, Jeffrey
+     Luo, Li Erran Li, Raluca Ada Popa, and Ion Stoica.          [21] Kimi Team, Angang Du, Bofei Gao, Bowei Xing,
+     Deepscaler: Surpassing o1-preview with a 1.5b model              Changjiu Jiang, Cheng Chen, Cheng Li, Chenjun Xiao,
+     by scaling rl, 2025. Notion Blog.                                Chenzhuang Du, Chonghua Liao, Chuning Tang, Con-
+                                                                      gcong Wang, Dehao Zhang, Enming Yuan, Enzhe Lu,
+[13] Ivan Moshkov, Darragh Hanley, Ivan Sorokin, Shubham              Fengxiang Tang, Flood Sung, Guangda Wei, Guokun
+     Toshniwal, Christof Henkel, Benedikt Schifferer, Wei             Lai, Haiqing Guo, Han Zhu, Hao Ding, Hao Hu, Hao
+     Du, and Igor Gitman. Aimo-2 winning solution: Build-             Yang, Hao Zhang, Haotian Yao, Haotian Zhao, Haoyu
+     ing state-of-the-art mathematical reasoning models with          Lu, Haoze Li, Haozhen Yu, Hongcheng Gao, Huabin
+     openmathreasoning dataset, 2025.                                 Zheng, Huan Yuan, Jia Chen, Jianhang Guo, Jianlin Su,
+                                                                      Jianzhou Wang, Jie Zhao, Jin Zhang, Jingyuan Liu, Jun-
+[14] Project Numina. Project euler is a series of chal-
+                                                                      jie Yan, Junyan Wu, Lidong Shi, Ling Ye, Longhui Yu,
+     lenging mathematical/computer programming problems
+                                                                      Mengnan Dong, Neo Zhang, Ningchen Ma, Qiwei Pan,
+     that will require more than just mathematical insights
+                                                                      Qucheng Gong, Shaowei Liu, Shengling Ma, Shupeng
+     to solve. https://huggingface.co/collections/
+                                                                      Wei, Sihan Cao, Siying Huang, Tao Jiang, Weihao Gao,
+     AI-MO/numinamath, 2025.
+                                                                      Weimin Xiong, Weiran He, Weixiao Huang, Weixin Xu,
+[15] Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida,                Wenhao Wu, Wenyang He, Xianghui Wei, Xianqing Jia,
+     Carroll Wainwright, Pamela Mishkin, Chong Zhang,                 Xingzhe Wu, Xinran Xu, Xinxing Zu, Xinyu Zhou, Xue-
+     Sandhini Agarwal, Katarina Slama, Alex Ray, John                 hai Pan, Y. Charles, Yang Li, Yangyang Hu, Yangyang
+     Schulman, Jacob Hilton, Fraser Kelton, Luke Miller,              Liu, Yanru Chen, Yejie Wang, Yibo Liu, Yidao Qin,
+     Maddie Simens, Amanda Askell, Peter Welinder, Paul F             Yifeng Liu, Ying Yang, Yiping Bao, Yulun Du, Yuxin
+     Christiano, Jan Leike, and Ryan Lowe. Training                   Wu, Yuzhi Wang, Zaida Zhou, Zhaoji Wang, Zhaowei
+     language models to follow instructions with human                Li, Zhen Zhu, Zheng Zhang, Zhexu Wang, Zhilin Yang,
+     feedback. In S. Koyejo, S. Mohamed, A. Agarwal,                  Zhiqi Huang, Zihao Huang, Ziyao Xu, Zonghan Yang,
+     D. Belgrave, K. Cho, and A. Oh, editors, Advances                and Zongyu Lin. Kimi k1.5: Scaling reinforcement
+     in Neural Information Processing Systems, volume 35,             learning with llms, 2025.
+     pages 27730–27744. Curran Associates, Inc., 2022.           [22] RLinf Team. Rlinf is a flexible and scalable open-
+                                                                      source infrastructure designed for post-training founda-
+[16] Yanghua Peng, Yixin Bao, Yangrui Chen, Chuan Wu,
+                                                                      tion models (llms, vlms, vlas) via reinforcement learning.
+     and Chuanxiong Guo. Optimus: an efficient dynamic
+                                                                      https://github.com/RLinf/RLinf, 2025.
+     resource scheduler for deep learning clusters. In
+     Proceedings of the Thirteenth EuroSys Conference, Eu-       [23] Abhishek Verma, Luis Pedrosa, Madhukar Korupolu,
+     roSys ’18, New York, NY, USA, 2018. Association for              David Oppenheimer, Eric Tune, and John Wilkes. Large-
+     Computing Machinery.                                             scale cluster management at google with borg. In
+
+
+
+USENIX Association                          20th USENIX Symposium on Operating Systems Design and Implementation           861
+      Proceedings of the Tenth European Conference on            [32] Lianmin Zheng, Liangsheng Yin, Zhiqiang Xie, Chuyue
+      Computer Systems, EuroSys ’15, New York, NY, USA,               Sun, Jeff Huang, Cody Hao Yu, Shiyi Cao, Christos
+      2015. Association for Computing Machinery.                      Kozyrakis, Ion Stoica, Joseph E. Gonzalez, Clark Bar-
+                                                                      rett, and Ying Sheng. Sglang: Efficient execution of
+[24] Lei Wang, Wanyu Xu, Yihuai Lan, Zhiqiang Hu, Yun-                structured language model programs, 2024.
+     shi Lan, Roy Ka-Wei Lee, and Ee-Peng Lim. Plan-
+     and-solve prompting: Improving zero-shot chain-of-          [33] Yinmin Zhong, Zili Zhang, Bingyang Wu, Shengyu
+     thought reasoning by large language models. In Anna              Liu, Yukun Chen, Changyi Wan, Hanpeng Hu, Lei Xia,
+     Rogers, Jordan Boyd-Graber, and Naoaki Okazaki, ed-              Ranchen Ming, Yibo Zhu, and Xin Jin. Optimizing rlhf
+     itors, Proceedings of the 61st Annual Meeting of the             training for large language models with stage fusion.
+     Association for Computational Linguistics (Volume 1:             In Proceedings of the 22nd USENIX Symposium on
+     Long Papers), pages 2609–2634, Toronto, Canada, July             Networked Systems Design and Implementation, NSDI
+     2023. Association for Computational Linguistics.                 ’25, USA, 2025. USENIX Association.
+
+[25] Liang Wen, Yunke Cai, Fenrui Xiao, Xin He, Qi An,           [34] Zilin Zhu, Chengxing Xie, Xin Lv, and slime Contrib-
+     Zhenyu Duan, Yimin Du, Junchen Liu, Lifu Tang, Xi-               utors. slime: An llm post-training framework for rl
+     aowei Lv, Haosheng Zou, Yongchao Deng, Shousheng                 scaling. https://github.com/THUDM/slime, 2025.
+     Jia, and Xiangzheng Zhang. Light-r1: Curriculum sft,             GitHub repository. Corresponding author: Xin Lv.
+     dpo and rl for long cot from scratch and beyond, 2025.
+
+[26] Huggingface xDAN-datasets (xDAN Back). xdan-
+     datasets/areal-boba-data. https://huggingface.
+     co/datasets/xDAN-datasets/AReaL-boba-Data,
+     2025.
+
+[27] Wencong Xiao, Romil Bhardwaj, Ramachandran Ram-
+     jee, Muthian Sivathanu, Nipun Kwatra, Zhenhua Han,
+     Pratyush Patel, Xuan Peng, Hanyu Zhao, Quanlu Zhang,
+     Fan Yang, and Lidong Zhou. Gandiva: Introspec-
+     tive cluster scheduling for deep learning. In 13th
+     USENIX Symposium on Operating Systems Design
+     and Implementation (OSDI 18), pages 595–610, Carls-
+     bad, CA, October 2018. USENIX Association.
+
+[28] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak
+     Shafran, Karthik Narasimhan, and Yuan Cao. React:
+     Synergizing reasoning and acting in language models,
+     2023.
+
+[29] Zhewei Yao, Reza Yazdani Aminabadi, Olatunji Ruwase,
+     Samyam Rajbhandari, Xiaoxia Wu, Ammar Ahmad
+     Awan, Jeff Rasley, Minjia Zhang, Conglong Li, Connor
+     Holmes, et al. Deepspeed-chat: Easy, fast and affordable
+     rlhf training of chatgpt-like models at all scales. arXiv
+     preprint arXiv:2308.01320, 2023.
+
+[30] Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan,
+     Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian Fan, Gao-
+     hong Liu, Lingjun Liu, et al. Dapo: An open-source llm
+     reinforcement learning system at scale. arXiv preprint
+     arXiv:2503.14476, 2025.
+
+[31] Yanli Zhao, Andrew Gu, Rohan Varma, Liang Luo,
+     Chien-Chin Huang, Min Xu, Less Wright, Hamid Sho-
+     janazeri, Myle Ott, Sam Shleifer, et al. Pytorch fsdp:
+     experiences on scaling fully sharded data parallel. arXiv
+     preprint arXiv:2304.11277, 2023.
+
+
+
+862   20th USENIX Symposium on Operating Systems Design and Implementation                            USENIX Association
+

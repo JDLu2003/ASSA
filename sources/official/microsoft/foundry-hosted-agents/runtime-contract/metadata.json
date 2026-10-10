@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "microsoft",
+    "product": "foundry-hosted-agents",
+    "id": "runtime-contract",
+    "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:38.627925+00:00",
+  "path": "sources/official/microsoft/foundry-hosted-agents/runtime-contract",
+  "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
+  "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract?tabs=python",
+  "http_status": 200,
+  "title": "Hosted agent runtime contract - Microsoft Foundry | Microsoft Learn",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "452d80fbb18d15d175f2e48a4260d6ff2040018bb19b231cb7b0503209e47f8f",
+      "bytes": 19171
+    },
+    "page.txt": {
+      "sha256": "24b3d479aa32dded6dffe3b1021597abb4c1d5c4fafab5c4ab5fbb96921adbf8",
+      "bytes": 15012
+    },
+    "page.pdf": {
+      "sha256": "b3acfc8c5d1db93b925475dce2397b28dc38138611704821a60ca42c524db3b0",
+      "bytes": 404336
+    }
+  }
+}

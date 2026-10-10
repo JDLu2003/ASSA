@@ -1,0 +1,152 @@
+[
+  {
+    "requested_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+    "final_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+    "http_status": 200,
+    "title": "Firecracker: Lightweight Virtualization for Serverless Applications | USENIX",
+    "text_excerpt": "Back to USENIX\nSign In\nConferences\nATTEND\nREGISTRATION INFORMATION\nREGISTRATION DISCOUNTS\nVENUE, HOTEL, AND TRAVEL\nPROGRAM\nPROGRAM AT A GLANCE\nTECHNICAL SESSIONS\nACTIVITIES\nPOSTER SESSION AND RECEPTION\nBIRDS-OF-A-FEATHER SESSIONS (BOFS)\nPARTICIPATE\nCALL FOR PAPERS\nCALL FOR POSTERS\nINSTRUCTIONS FOR PRESENTERS\nSPONSORSHIP\nEXHIBITOR SERVICES\nABOUT\nSYMPOSIUM ORGANIZERS\nPAST SYMPOSIA\nCODE OF CONDUCT\nQUESTIONS\nFirecracker: Lightweight Virtualization for Serverless Applications\n\nAlexandru Agache, Marc Brooker, Andreea Florescu, Alexandra Iordache, Anthony Liguori, Rolf Neugebauer, Phil Piwonka, and D",
+    "links": [
+      {
+        "text": "Participate",
+        "url": "https://www.usenix.org/conference/nsdi20/call-for-papers"
+      },
+      {
+        "text": "Call for Papers",
+        "url": "https://www.usenix.org/conference/nsdi20/call-for-papers"
+      },
+      {
+        "text": "PARTICIPATE",
+        "url": "https://www.usenix.org/conference/nsdi20/call-for-papers"
+      },
+      {
+        "text": "CALL FOR PAPERS",
+        "url": "https://www.usenix.org/conference/nsdi20/call-for-papers"
+      },
+      {
+        "text": "Agache PDF",
+        "url": "https://www.usenix.org/system/files/nsdi20-paper-agache.pdf"
+      },
+      {
+        "text": "View the slides",
+        "url": "https://www.usenix.org/sites/default/files/conference/protected-files/nsdi20_slides_agache.pdf"
+      },
+      {
+        "text": "PARTICIPATE",
+        "url": "https://www.usenix.org/conference/nsdi20/call-for-papers"
+      },
+      {
+        "text": "Call for Papers",
+        "url": "https://www.usenix.org/conference/nsdi20/call-for-papers"
+      }
+    ]
+  },
+  {
+    "requested_url": "https://www.usenix.org/conference/osdi26/technical-sessions",
+    "final_url": "https://www.usenix.org/conference/osdi26/technical-sessions",
+    "http_status": 200,
+    "title": "OSDI '26 Technical Sessions | USENIX",
+    "text_excerpt": "Back to USENIX\nSign In\nConferences\nATTEND\nREGISTRATION INFORMATION\nREGISTRATION DISCOUNTS\nGRANT OPPORTUNITIES\nVENUE, HOTEL, AND TRAVEL\nSCHEDULE\nTECHNICAL SESSIONS\nACTIVITIES\nPOSTER SESSION\nPARTICIPATE\nCALL FOR PAPERS\nREQUIREMENTS FOR AUTHORS\nCALL FOR ARTIFACTS\nCALL FOR POSTERS\nINSTRUCTIONS FOR PRESENTERS\nMENTORSHIP\nSPONSORS\nEXHIBITOR RESOURCES\nABOUT\nSYMPOSIUM ORGANIZERS\nPAST SYMPOSIA\nCONFERENCE POLICIES\nCODE OF CONDUCT\nQUESTIONS\nOSDI '26 Technical Sessions\n\nAll the times listed below are in Pacific Daylight Time.\n\nThe full Proceedings published by USENIX for the conference are available to reg",
+    "links": [
+      {
+        "text": "Participate",
+        "url": "https://www.usenix.org/conference/osdi26/call-for-papers"
+      },
+      {
+        "text": "Call for Papers",
+        "url": "https://www.usenix.org/conference/osdi26/call-for-papers"
+      },
+      {
+        "text": "PARTICIPATE",
+        "url": "https://www.usenix.org/conference/osdi26/call-for-papers"
+      },
+      {
+        "text": "CALL FOR PAPERS",
+        "url": "https://www.usenix.org/conference/osdi26/call-for-papers"
+      },
+      {
+        "text": "Proceedings Cover",
+        "url": "https://www.usenix.org/sites/default/files/osdi26-cover.pdf"
+      },
+      {
+        "text": "Title Page and List of Organizers",
+        "url": "https://www.usenix.org/sites/default/files/osdi26-title-copyright-organizers.pdf"
+      },
+      {
+        "text": "Message from the Program Co-Chairs",
+        "url": "https://www.usenix.org/sites/default/files/osdi26-message.pdf"
+      },
+      {
+        "text": "Table of Contents",
+        "url": "https://www.usenix.org/sites/default/files/osdi26-contents.pdf"
+      },
+      {
+        "text": "OSDI '26 Full Proceedings (PDF, 178.1 MB)",
+        "url": "https://www.usenix.org/system/files/osdi26-full-proceedings.pdf"
+      },
+      {
+        "text": "OSDI '26 Full Proceedings Interior (PDF, 186.05 MB, Best for Mobile)",
+        "url": "https://www.usenix.org/system/files/osdi26-full-proceedings-interior.pdf"
+      },
+      {
+        "text": "OSDI '26 Errata Slip #1 (PDF)",
+        "url": "https://www.usenix.org/system/files/osdi26-errata_hu-jiyu.pdf"
+      },
+      {
+        "text": "OSDI '26 Errata Slip #2 (PDF)",
+        "url": "https://www.usenix.org/system/files/osdi26-errata_giridharan.pdf"
+      },
+      {
+        "text": "OSDI '26 Errata Slip #3 (PDF)",
+        "url": "https://www.usenix.org/system/files/osdi26-errata_lee.pdf"
+      },
+      {
+        "text": "Murakkab: Resource-Efficient Agentic Workflow Orchestration in Cloud Platforms",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry"
+      },
+      {
+        "text": "DeLFS: A Decentralized Log-Structured File System for Manycores",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/ahn"
+      },
+      {
+        "text": "RLinf: Flexible and Efficient Large-Scale Reinforcement Learning via Macro-to-Micro Flow Transformation",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/yu-chao"
+      },
+      {
+        "text": "DynaRL: Flexible and Dynamic Scheduling of Large-Scale Reinforcement Learning Training",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/wang-yuanqing"
+      },
+      {
+        "text": "RollArt: Disaggregated Multi-Task Agentic RL Training at Scale",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/gao"
+      },
+      {
+        "text": "Seer: Online Context Learning for Fast Synchronous LLM Reinforcement Learning",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/qin"
+      },
+      {
+        "text": "Oxbow: A Coordinated Architecture for Multi-Component File Systems",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/kim-jongyul"
+      },
+      {
+        "text": "Umap: Revisiting Memory-Mapped I/O on Distributed File Systems for Efficient Matrix Access (Operational Systems)",
+        "url": "https://www.usenix.org/conference/osdi26/presentation/he-yongchao"
+      },
+      {
+        "text": "PARTICIPATE",
+        "url": "https://www.usenix.org/conference/osdi26/call-for-papers"
+      },
+      {
+        "text": "Call for Papers",
+        "url": "https://www.usenix.org/conference/osdi26/call-for-papers"
+      }
+    ]
+  },
+  {
+    "requested_url": "https://dl.acm.org/doi/10.1145/3779212.3790172",
+    "final_url": "https://dl.acm.org/doi/10.1145/3779212.3790172",
+    "http_status": 403,
+    "title": "Just a moment...",
+    "text_excerpt": "dl.acm.org\nPerforming security verification\n\nThis website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot.\n\nRay ID: a47d96d86c56b586\nPerformance and Security by Cloudflare\nPrivacy",
+    "links": []
+  }
+]

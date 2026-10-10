@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "gemini-enterprise-agent-platform",
+    "id": "overview",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:18:55.244450+00:00",
+  "path": "sources/official/google/gemini-enterprise-agent-platform/overview",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+  "http_status": 200,
+  "title": "Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "d19cfc29fcfdeab7c1b38d1d37a18184bbb55b6d3ae5e4db2bb233e5bb0cf22e",
+      "bytes": 3824
+    },
+    "page.txt": {
+      "sha256": "42e0cc0fabfb2ea3674010f8bd32b5c69d4b12c84237e23b6d28a6cc70222dd5",
+      "bytes": 4098
+    },
+    "page.pdf": {
+      "sha256": "c562a4b3e3845474776896112064e3d89db746269c7e591a2bad0f302b65461a",
+      "bytes": 1846914
+    },
+    "page.html": {
+      "sha256": "2b5127a22c63e3da58fa7025f1b142134e1059cbf759311b9fd4a156ee3814a2",
+      "bytes": 176238
+    }
+  }
+}

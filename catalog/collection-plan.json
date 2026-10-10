@@ -1,0 +1,104 @@
+{
+  "phase": "primary-source collection only",
+  "status": "Product and paper primary sources collected; paper index and validation completed",
+  "layout": {
+    "official": "sources/official/<vendor>/<product>/<page-id>/{page.pdf,page.txt,page.pdf.txt,metadata.json}",
+    "papers": "sources/papers/<topic>/<paper-id>/{paper.pdf,paper.txt,source.tar when available,metadata.json}"
+  },
+  "collection_scope": [
+    {
+      "area": "Cloud agent services",
+      "targets": [
+        "OpenAI",
+        "Anthropic",
+        "Google",
+        "AWS",
+        "Microsoft"
+      ],
+      "documents": [
+        "product overview",
+        "API and runtime contracts",
+        "environment options",
+        "limits",
+        "pricing"
+      ],
+      "rule": "Check multiple products per vendor; do not assume existing catalog URLs are valid."
+    },
+    {
+      "area": "Agent environments and sandboxes",
+      "targets": [
+        "vendor sandbox services",
+        "E2B",
+        "Daytona",
+        "IPADS publications"
+      ],
+      "documents": [
+        "isolation",
+        "CPU/GPU allocation",
+        "storage and network",
+        "snapshot/restore",
+        "session persistence",
+        "pricing"
+      ],
+      "rule": "Identify the mentioned IPADS paper from original publication pages before recording a title or claim."
+    },
+    {
+      "area": "Model serving",
+      "targets": [
+        "vLLM",
+        "SGLang",
+        "serverless model serving"
+      ],
+      "documents": [
+        "original papers",
+        "official docs",
+        "resource and billing descriptions"
+      ]
+    },
+    {
+      "area": "External tools",
+      "targets": [
+        "Google search grounding",
+        "Tavily",
+        "Exa"
+      ],
+      "documents": [
+        "API docs",
+        "quotas",
+        "pricing"
+      ]
+    },
+    {
+      "area": "Papers",
+      "targets": [
+        "agent service systems",
+        "agent benchmarks",
+        "sandbox systems",
+        "RL environment infrastructure",
+        "snapshot and filesystem systems",
+        "performance and cost measurement",
+        "surveys"
+      ],
+      "documents": [
+        "publisher or arXiv landing page",
+        "original PDF",
+        "available source archive",
+        "automatically extracted full text"
+      ]
+    }
+  ],
+  "procedure": [
+    "Discover candidates using search and original vendor or publication indexes. Existing seed entries are candidates, not verified evidence.",
+    "Inspect each original page in browser; check relevance, final URL, status, title and access challenges.",
+    "Capture browser PDF and full rendered text; preserve raw source and do not write analysis.",
+    "For papers download original PDF and available source; record versions and publisher links when verified.",
+    "Record timestamp, requested/final URLs, SHA-256, extraction method and failures. Review completeness; OCR image-only pages when needed.",
+    "Verify Git LFS pointers for PDFs and archives before committing. Upload only successfully collected evidence; no fabricated replacements."
+  ],
+  "pending": [
+    "Initial source inventory, not an exhaustive literature or market census.",
+    "ACM publisher page for RhymeRL returned a browser access challenge; arXiv original retained.",
+    "The user-mentioned IPADS OSDI filesystem/RL paper is not conclusively identified."
+  ],
+  "priority": "Paper collection resumed following user instruction"
+}

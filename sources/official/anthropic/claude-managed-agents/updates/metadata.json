@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-managed-agents",
+    "id": "updates",
+    "url": "https://claude.com/blog/claude-managed-agents-updates",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:08.252643+00:00",
+  "path": "sources/official/anthropic/claude-managed-agents/updates",
+  "requested_url": "https://claude.com/blog/claude-managed-agents-updates",
+  "final_url": "https://claude.com/resources/articles/claude-managed-agents-updates",
+  "http_status": 200,
+  "title": "New in Claude Managed Agents: self-hosted sandboxes and MCP tunnels | Claude by Anthropic",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "fbac18e20e109378d11b4a4656a863ade5f856863f3213d02c01f1039196da55",
+      "bytes": 10628
+    },
+    "page.txt": {
+      "sha256": "4783b87bceddaa642280c985d1cae2e113ccbfcc99f25a1e65f6b0b57115f5a5",
+      "bytes": 11406
+    },
+    "page.pdf": {
+      "sha256": "14d990dd62b7d05d5ff4647b4b00bc1d5e95873eafd6a5cf527f97587f83749c",
+      "bytes": 436881
+    }
+  }
+}

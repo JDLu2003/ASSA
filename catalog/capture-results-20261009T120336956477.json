@@ -1,0 +1,849 @@
+{
+  "run_at": "2026-10-09T12:03:36.956516+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:01:53.804905+00:00",
+      "path": "sources/official/openai/agents-api/overview",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+      "http_status": 200,
+      "title": "Agents API | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "2259918f29dc99552875d6edd7ec1c83211119190ca64d8bd5aaacbedd2aa97e",
+          "bytes": 1846
+        },
+        "page.txt": {
+          "sha256": "803d7d4c533f0fc789907dc92febf162dd7939ee843bf098ae366cf6f6405bfe",
+          "bytes": 5850
+        },
+        "page.pdf": {
+          "sha256": "e8ef497a337b23e077eab93645b65253d4205abaf17b0f06a0cfdf097b7382b1",
+          "bytes": 50047
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:01:55.525104+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "architecture",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:01:55.525332+00:00",
+      "path": "sources/official/openai/agents-api/architecture",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+      "http_status": 200,
+      "title": "Architecture | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "3ca7d161ae1f86254287a0d3971a8054cf506959e5daece5d5e6f25f7b91cbd9",
+          "bytes": 1840
+        },
+        "page.txt": {
+          "sha256": "d35782b8baa9b177cd116c647f3917fe89934d09bdfc8b794797426e2e3e1075",
+          "bytes": 4663
+        },
+        "page.pdf": {
+          "sha256": "9194f27b98bab6094c7c41d81c6f2c1bafa034452cc3607896e26f3b76a94b0c",
+          "bytes": 87247
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:01:56.501817+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "configuration",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:01:56.502023+00:00",
+      "path": "sources/official/openai/agents-api/configuration",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+      "http_status": 200,
+      "title": "Configuring Agents | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "9efdb087b21c6e8e19d2a18b6eb0a32c5d208527772751c636d042ce611c1d85",
+          "bytes": 1704
+        },
+        "page.txt": {
+          "sha256": "20e6ea73685bc4e1019bae57a32113388b2b6a633b557ad8a52f6816abf3dc90",
+          "bytes": 8076
+        },
+        "page.pdf": {
+          "sha256": "b4bc1df6ec5a0b7769fd77349bb143ec07a002f61e08f0cdb4ec193f5f08fe6a",
+          "bytes": 111394
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:01:57.610474+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "hosted-sandbox",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:01:57.610519+00:00",
+      "path": "sources/official/openai/agents-api/hosted-sandbox",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+      "http_status": 200,
+      "title": "OpenAI-hosted sandboxes",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "1005eeedb7682955d167be7cd2327e3bf35add6ab5e814b34a1b4c66f07874c1",
+          "bytes": 1799
+        },
+        "page.txt": {
+          "sha256": "51fdee6e923e4da0a4ec6df66362c0f6be6b6daf6872c35063e6b191774da392",
+          "bytes": 7899
+        },
+        "page.pdf": {
+          "sha256": "3778ebac353722507beecf573f554b7d61f14d97f251d14e2c402c2829454ea6",
+          "bytes": 78872
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:01:58.660174+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "self-hosted-sandbox",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:01:58.660389+00:00",
+      "path": "sources/official/openai/agents-api/self-hosted-sandbox",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+      "http_status": 200,
+      "title": "Self-hosted sandboxes | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "0fc50649e97ad11618270c6e7750e8293718f61085af932c7c8e443abd25e19d",
+          "bytes": 1330
+        },
+        "page.txt": {
+          "sha256": "24df885dc0f0633edad6e44171c8059c749a9be31976a57a1f276fb221d7a4c6",
+          "bytes": 6163
+        },
+        "page.pdf": {
+          "sha256": "145f1e9ec94dda9f60e61ae5119161cff50df8b5c01d4f86cfadcc3e1d091626",
+          "bytes": 111336
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:01:59.630923+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-sdk",
+        "id": "overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:01:59.631094+00:00",
+      "path": "sources/official/openai/agents-sdk/overview",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents",
+      "http_status": 200,
+      "title": "Agents | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "3c750ddab0ed551b6828629a0f0cbaf3d0c0ec7a8c3c5bf032ebcfffde214fdd",
+          "bytes": 2391
+        },
+        "page.txt": {
+          "sha256": "a4fbf80da953a95c1b3eada5b5ad6e8aebb69e614bffd113a22eb8aa7f750bbd",
+          "bytes": 3730
+        },
+        "page.pdf": {
+          "sha256": "df3525af3489c64b4ea59b6301834f50948f5557d0928e5754c8bc438ed7d222",
+          "bytes": 44407
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:00.602535+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "product-blog",
+        "url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:00.602761+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/product-blog",
+      "requested_url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+      "final_url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+      "http_status": 200,
+      "title": "The evolution of agentic surfaces: building with Claude Managed Agents | Claude by Anthropic",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "c8626db9694534b3e68edc3e75d98fa29212675bcedd806ca344990d79ca0eb8",
+          "bytes": 22067
+        },
+        "page.txt": {
+          "sha256": "44305986956f0680afdaec898c2b25d742f366e7420f0e57b0d7ba409bb88fb3",
+          "bytes": 19215
+        },
+        "page.pdf": {
+          "sha256": "c63abab89f9280eae6e0dc647615bd22433a955a0e812ebb6914fb2f4b472760",
+          "bytes": 700236
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:04.374854+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "self-hosted-sandboxes",
+        "url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:04.374897+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/self-hosted-sandboxes",
+      "requested_url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+      "final_url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+      "http_status": 200,
+      "title": "Self-hosted sandboxes - Claude Platform Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "3d3d98537119e1c1916a4a385fd9047589e62c3a8b8a4f0ef1b4d58cc3af738e",
+          "bytes": 12892
+        },
+        "page.txt": {
+          "sha256": "f7b968a5ab999d6b763d9423d7c6dce5997bc054757f3f6c262eb1c7e773dd44",
+          "bytes": 10241
+        },
+        "page.pdf": {
+          "sha256": "0619764d334ca75e6fefb368f8a212e605354dc888e829709ea85a77d9e5dc71",
+          "bytes": 492971
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:08.252603+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "updates",
+        "url": "https://claude.com/blog/claude-managed-agents-updates",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:08.252643+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/updates",
+      "requested_url": "https://claude.com/blog/claude-managed-agents-updates",
+      "final_url": "https://claude.com/resources/articles/claude-managed-agents-updates",
+      "http_status": 200,
+      "title": "New in Claude Managed Agents: self-hosted sandboxes and MCP tunnels | Claude by Anthropic",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "fbac18e20e109378d11b4a4656a863ade5f856863f3213d02c01f1039196da55",
+          "bytes": 10628
+        },
+        "page.txt": {
+          "sha256": "4783b87bceddaa642280c985d1cae2e113ccbfcc99f25a1e65f6b0b57115f5a5",
+          "bytes": 11406
+        },
+        "page.pdf": {
+          "sha256": "14d990dd62b7d05d5ff4647b4b00bc1d5e95873eafd6a5cf527f97587f83749c",
+          "bytes": 436881
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:10.431593+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "runtime",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:10.431640+00:00",
+      "path": "sources/official/aws/agentcore-runtime/runtime",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+      "http_status": 200,
+      "title": "Host agent or tools with Amazon Bedrock AgentCore Runtime - Amazon Bedrock AgentCore",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "4c46ae8db859e274bca914e98c33c95bbdb6e7e138a7afc3189303b7c561723d",
+          "bytes": 13245
+        },
+        "page.txt": {
+          "sha256": "b51835b924803fd8afcd3408720559da142b4c14fa398732417ddc86fd58db6f",
+          "bytes": 8437
+        },
+        "page.pdf": {
+          "sha256": "825f8a97d593da3875832b07657eef18cc6b71c05f990eac8fbdc2bfab0b4ba9",
+          "bytes": 149149
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:17.119839+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "shell-commands",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:17.119887+00:00",
+      "path": "sources/official/aws/agentcore-runtime/shell-commands",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+      "http_status": 200,
+      "title": "Execute shell commands in AgentCore Runtime sessions - Amazon Bedrock AgentCore",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "2c6d19bfdc65544b60d17e831adab90728de5211727a21a553194acb5d9eb35d",
+          "bytes": 26678
+        },
+        "page.txt": {
+          "sha256": "b3607da1bc21e2e09bb2cde16407114414a8825ba4013b59a0669d1396120ca0",
+          "bytes": 15454
+        },
+        "page.pdf": {
+          "sha256": "f00c4dd22499de6ab35c9a1883dd23ebddd72ade64430e02965caca71eeb789b",
+          "bytes": 346050
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:19.151902+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "instances",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:19.151951+00:00",
+      "path": "sources/official/aws/agentcore-runtime/instances",
+      "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+      "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+      "http_status": 200,
+      "title": "Instances - Amazon Bedrock AgentCore",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "158b326254f47d5c41f675ffe7f180c2ec72f4227b43fded31e79ecd7929253b",
+          "bytes": 24378
+        },
+        "page.txt": {
+          "sha256": "558166f669ebcb51272284e20508a3fd38b44c0752f26506f697b666bb5ede8c",
+          "bytes": 14992
+        },
+        "page.pdf": {
+          "sha256": "eaa55d40efa128382485fae87fd1e28783152f9c3d575573ec326bb4a39de667",
+          "bytes": 265058
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:20.857777+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "deep-research-blog",
+        "url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:20.857844+00:00",
+      "path": "sources/official/aws/agentcore-runtime/deep-research-blog",
+      "requested_url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+      "final_url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+      "http_status": 200,
+      "title": "Running deep research AI agents on Amazon Bedrock AgentCore | Artificial Intelligence",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "03fc4dc7a7102feee63a60ace2a023ee82649fd9356e0a68736f5bb3586fa64a",
+          "bytes": 19329
+        },
+        "page.txt": {
+          "sha256": "76e0fe5dc92e9cb4b41984116e4ac196308cab6f4b0130b8b070db1553e0909a",
+          "bytes": 15547
+        },
+        "page.pdf": {
+          "sha256": "90e81f98528104c560ea170bce7fbcb8c0eb7285e0a55319a4083c4662621d0b",
+          "bytes": 442207
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:26.875209+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "persistent-filesystem",
+        "url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:26.875278+00:00",
+      "path": "sources/official/aws/agentcore-runtime/persistent-filesystem",
+      "requested_url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+      "final_url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+      "http_status": 200,
+      "title": "Persist session state with filesystem configuration and execute shell commands | Artificial Intelligence",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "fb9887ec2bb5ee81516a9640078fad51364f2c3ebe90c7603ec1365fee9fa1d4",
+          "bytes": 28278
+        },
+        "page.txt": {
+          "sha256": "34b05157b7f78aeb915332afa85a9d0aa8d5123c709c7bc62ee089f42a1c9494",
+          "bytes": 23027
+        },
+        "page.pdf": {
+          "sha256": "63b0f7c414fb891f6a791a6a9a7106eb80a46586b6675a05ee8ba5d3884f1044",
+          "bytes": 301114
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:31.482454+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "hosted-agents",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:31.482509+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/hosted-agents",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+      "http_status": 200,
+      "title": "Hosted agents in Foundry Agent Service - Microsoft Foundry | Microsoft Learn",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "2cddeb45c3ca92ad30105bb38218bb1680c252e618342d9f92d681c0cfc13753",
+          "bytes": 35513
+        },
+        "page.txt": {
+          "sha256": "4f86eddb289943cc37b4f82d531e570c3b4fac42992ca0571d47fc73102d7f9c",
+          "bytes": 24844
+        },
+        "page.pdf": {
+          "sha256": "a7181c752e9d1cbcdf73edb7cb647d5edd9f0da8af5a7ce30f3975ac532cc066",
+          "bytes": 518189
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:38.627870+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "runtime-contract",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:38.627925+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/runtime-contract",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract?tabs=python",
+      "http_status": 200,
+      "title": "Hosted agent runtime contract - Microsoft Foundry | Microsoft Learn",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "452d80fbb18d15d175f2e48a4260d6ff2040018bb19b231cb7b0503209e47f8f",
+          "bytes": 19171
+        },
+        "page.txt": {
+          "sha256": "24b3d479aa32dded6dffe3b1021597abb4c1d5c4fafab5c4ab5fbb96921adbf8",
+          "bytes": 15012
+        },
+        "page.pdf": {
+          "sha256": "b3acfc8c5d1db93b925475dce2397b28dc38138611704821a60ca42c524db3b0",
+          "bytes": 404336
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:39.964466+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "networking",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:39.964513+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/networking",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+      "http_status": 200,
+      "title": "Deep dive into Foundry Agent Service networking - Microsoft Foundry | Microsoft Learn",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "9e1852c1ca1601a4c4cf8cfa1d0b5da1bf9b37e5b942657b5b5dd13c4e295f02",
+          "bytes": 19552
+        },
+        "page.txt": {
+          "sha256": "adae84d2e74f077bd8d53042264e9c122aef4d26c7069489c77bee0ba6ea4be9",
+          "bytes": 17027
+        },
+        "page.pdf": {
+          "sha256": "53770243b001cb19c8e3b89e40823530dd9ad7f639b2ff57dc710a2ec6270948",
+          "bytes": 695879
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:41.302488+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "management",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:41.302539+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/management",
+      "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
+      "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent?pivots=rest",
+      "http_status": 200,
+      "title": "Manage hosted agents - Microsoft Foundry | Microsoft Learn",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "4750f7ecc3d6e9106d2667eba719fbbb5f999ea019900ada9746035a69f11e26",
+          "bytes": 21101
+        },
+        "page.txt": {
+          "sha256": "e452da159caf24dbd6aafd71326d1162d8a866a731cb233ab18d71a305ca72b6",
+          "bytes": 17914
+        },
+        "page.pdf": {
+          "sha256": "dfb8b4261d04da5d902f57ea0446dce4a3cb00ebd8aeec5e88a259a73b5a62dd",
+          "bytes": 419409
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:42.662539+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "overview",
+        "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:42.662593+00:00",
+      "path": "sources/official/google/vertex-agent-engine/overview",
+      "requested_url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+      "http_status": 200,
+      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "830b32557f1b8e2ca7f4e5b9c08e130d7ae181d9f145a8c989f666ef685ba8a1",
+          "bytes": 13845
+        },
+        "page.txt": {
+          "sha256": "d772af2c65992275952487d15b0038088674c86768b94815661759b36b57b3f2",
+          "bytes": 9025
+        },
+        "page.pdf": {
+          "sha256": "8b195280bb57dd6c762369eb5f44272b8b28a372379462cd87ba3798acf37550",
+          "bytes": 2164706
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:02:50.519195+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "pricing-update",
+        "url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:02:50.519278+00:00",
+      "path": "sources/official/google/vertex-agent-engine/pricing-update",
+      "requested_url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+      "final_url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+      "http_status": 200,
+      "title": "New Enhanced Tool Governance in Vertex AI Agent Builder | Google Cloud Blog",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "b3f90400ca82f8b5e8fbc437f46d5c59bf45465dbbab0558996638d7c2c572fc",
+          "bytes": 15758
+        },
+        "page.txt": {
+          "sha256": "ddded1744fc9c4af557f2dd517dff95f763e5ed10389586c143eef69a576f573",
+          "bytes": 13028
+        },
+        "page.pdf": {
+          "sha256": "9b3a40f186a093846912f2dc579f7dfaadac0c4b7974843e264911845c772727",
+          "bytes": 580207
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:10.546355+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "evaluation",
+        "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:10.546389+00:00",
+      "path": "sources/official/google/vertex-agent-engine/evaluation",
+      "requested_url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+      "http_status": 200,
+      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "04cd71e4256e5af6b36c49e8debab7b53345cd642e29b09d3298f55e2784a451",
+          "bytes": 13845
+        },
+        "page.txt": {
+          "sha256": "d772af2c65992275952487d15b0038088674c86768b94815661759b36b57b3f2",
+          "bytes": 9025
+        },
+        "page.pdf": {
+          "sha256": "e9bae79d634a3bd943aebab2791ec502a7cf868108cb8094bda265300a64549c",
+          "bytes": 2165397
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:16.600366+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "cloud-run-sandboxes",
+        "id": "announcement",
+        "url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:16.600409+00:00",
+      "path": "sources/official/google/cloud-run-sandboxes/announcement",
+      "requested_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+      "final_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+      "http_status": 200,
+      "title": "Google Cloud Run sandboxes are in public preview | Google Cloud Blog",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "e1083842a5ef94fca1407ac449e69f5fdcd6e835ea58661ab04c4f1df4a2b55c",
+          "bytes": 9438
+        },
+        "page.txt": {
+          "sha256": "62f6e99b5ee01cdaefc3b1e1728bac6ce74cc0a93caa4d43e6c661b6a0bf99c5",
+          "bytes": 7492
+        },
+        "page.pdf": {
+          "sha256": "c7bfb24e21a7080624976992563ee7f9a27649fa046d647baf181fd14be120ac",
+          "bytes": 619092
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:21.216970+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gke-agent-sandbox",
+        "id": "pod-snapshot-blog",
+        "url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:21.217017+00:00",
+      "path": "sources/official/google/gke-agent-sandbox/pod-snapshot-blog",
+      "requested_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+      "final_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+      "http_status": 200,
+      "title": "Agent Factory Recap: Supercharging Agents on GKE with Agent Sandbox and Pod Snapshots | Google Cloud Blog",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "61b9900b0202e3fc343161609661b2344a41d131646bf6d6ceee10c9c2bb003b",
+          "bytes": 6614
+        },
+        "page.txt": {
+          "sha256": "628fed61fd7507f12d418aed61ad874613a9b7cdadc86f4710a21f4b1c47602e",
+          "bytes": 5618
+        },
+        "page.pdf": {
+          "sha256": "8b29c077443afecf051783f1b1dd1061c4a557bccb17f45a206d387d12c8c559",
+          "bytes": 3767118
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:31.066729+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "session-management",
+        "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:03:31.066843+00:00",
+      "path": "sources/official/google/vertex-agent-engine/session-management",
+      "requested_url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+      "http_status": 200,
+      "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "04cd71e4256e5af6b36c49e8debab7b53345cd642e29b09d3298f55e2784a451",
+          "bytes": 13845
+        },
+        "page.txt": {
+          "sha256": "d772af2c65992275952487d15b0038088674c86768b94815661759b36b57b3f2",
+          "bytes": 9025
+        },
+        "page.pdf": {
+          "sha256": "a2e73c4f8d0526ecea46062eb8a5e4a8263937e4e30e706b560bf8e04db176e4",
+          "bytes": 2165397
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:03:36.859520+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "agentbench",
+        "arxiv": "2308.03688",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:03:36.859568+00:00",
+      "path": "sources/papers/agent-evaluation/agentbench",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:03:36.859644+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "swe-bench",
+        "arxiv": "2310.06770",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:03:36.859657+00:00",
+      "path": "sources/papers/agent-evaluation/swe-bench",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:03:36.859696+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "sglang",
+        "arxiv": "2312.07104",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:03:36.859705+00:00",
+      "path": "sources/papers/model-serving/sglang",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:03:36.859741+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "serverlessllm",
+        "arxiv": "2401.14351",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:03:36.859748+00:00",
+      "path": "sources/papers/model-serving/serverlessllm",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:03:36.859781+00:00"
+    }
+  ]
+}

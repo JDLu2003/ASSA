@@ -1,0 +1,719 @@
+{
+  "indexed": {
+    "date-parts": [
+      [
+        2026,
+        9,
+        29
+      ]
+    ],
+    "date-time": "2026-09-29T16:57:03Z",
+    "timestamp": 1790701023135,
+    "version": "4.1.0"
+  },
+  "publisher-location": "New York, NY, USA",
+  "reference-count": 73,
+  "publisher": "ACM",
+  "funder": [
+    {
+      "name": "National Key Research and Development Program of China",
+      "award": [
+        "2023YFB3308501"
+      ],
+      "award-info": [
+        {
+          "award-number": [
+            "2023YFB3308501"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "National Natural Science Foundation of China",
+      "award": [
+        "62432010"
+      ],
+      "award-info": [
+        {
+          "award-number": [
+            "62432010"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "National Natural Science Foundation of China",
+      "award": [
+        "62302300"
+      ],
+      "award-info": [
+        {
+          "award-number": [
+            "62302300"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "National Natural Science Foundation of China",
+      "award": [
+        "623B2074"
+      ],
+      "award-info": [
+        {
+          "award-number": [
+            "623B2074"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "National Natural Science Foundation of China",
+      "award": [
+        "62472279"
+      ],
+      "award-info": [
+        {
+          "award-number": [
+            "62472279"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fundamental and Interdisciplinary Disciplines Breakthrough Plan of the Ministry of Education of China",
+      "award": [
+        "JYB2025XDXM113"
+      ],
+      "award-info": [
+        {
+          "award-number": [
+            "JYB2025XDXM113"
+          ]
+        }
+      ]
+    }
+  ],
+  "content-domain": {
+    "domain": [
+      "dl.acm.org"
+    ],
+    "crossmark-restriction": true
+  },
+  "short-container-title": [],
+  "published-print": {
+    "date-parts": [
+      [
+        2026,
+        3,
+        22
+      ]
+    ]
+  },
+  "DOI": "10.1145/3779212.3790172",
+  "type": "proceedings-article",
+  "created": {
+    "date-parts": [
+      [
+        2026,
+        3,
+        10
+      ]
+    ],
+    "date-time": "2026-03-10T13:55:26Z",
+    "timestamp": 1773150926000
+  },
+  "page": "929-945",
+  "update-policy": "https://doi.org/10.1145/crossmark-policy",
+  "source": "Crossref",
+  "is-referenced-by-count": 2,
+  "title": [
+    "History Doesn't Repeat Itself but Rollouts Rhyme: Accelerating Reinforcement Learning with RhymeRL"
+  ],
+  "prefix": "10.1145",
+  "author": [
+    {
+      "ORCID": "https://orcid.org/0009-0005-9024-7588",
+      "authenticated-orcid": false,
+      "given": "Jingkai",
+      "family": "He",
+      "sequence": "first",
+      "affiliation": [
+        {
+          "name": "Shanghai Jiao Tong University, Shanghai, China"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0009-0004-0985-8684",
+      "authenticated-orcid": false,
+      "given": "Tianjian",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "ByteDance, Shanghai, China"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0009-0006-5957-3024",
+      "authenticated-orcid": false,
+      "given": "Erhu",
+      "family": "Feng",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Shanghai Jiao Tong University, Shanghai, China"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0000-0002-7945-8430",
+      "authenticated-orcid": false,
+      "given": "Dong",
+      "family": "Du",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Shanghai Jiao Tong University, Shanghai, China"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0009-0004-1230-130X",
+      "authenticated-orcid": false,
+      "given": "Qian",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "ByteDance, Singapore, Singapore"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0009-0000-8150-5729",
+      "authenticated-orcid": false,
+      "given": "Tao",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "ByteDance, Singapore, Singapore"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0000-0001-6558-5298",
+      "authenticated-orcid": false,
+      "given": "Yubin",
+      "family": "Xia",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Shanghai Jiao Tong University, Shanghai, China"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0000-0002-9720-0361",
+      "authenticated-orcid": false,
+      "given": "Haibo",
+      "family": "Chen",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Shanghai Jiao Tong University, Shanghai, China"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    }
+  ],
+  "member": "320",
+  "published-online": {
+    "date-parts": [
+      [
+        2026,
+        3,
+        22
+      ]
+    ]
+  },
+  "reference": [
+    {
+      "key": "e_1_3_2_1_1_1",
+      "unstructured": "DeepSeek-AI Daya Guo Dejian Yang Haowei Zhang Junxiao Song Ruoyu Zhang Runxin Xu Qihao Zhu Shirong Ma PeiyiWang Xiao Bi Xiaokang Zhang Xingkai Yu Yu Wu Z. F. Wu Zhibin Gou Zhihong Shao Zhuoshu Li Ziyi Gao Aixin Liu Bing Xue Bingxuan Wang Bochao Wu Bei Feng Chengda Lu Chenggang Zhao Chengqi Deng Chenyu Zhang Chong Ruan Damai Dai Deli Chen Dongjie Ji Erhang Li Fangyun Lin Fucong Dai Fuli Luo Guangbo Hao Guanting Chen Guowei Li H. Zhang Han Bao Hanwei Xu HaochengWang Honghui Ding Huajian Xin Huazuo Gao Hui Qu Hui Li Jianzhong Guo Jiashi Li Jiawei Wang Jingchang Chen Jingyang Yuan Junjie Qiu Junlong Li J. L. Cai Jiaqi Ni Jian Liang Jin Chen Kai Dong Kai Hu Kaige Gao Kang Guan Kexin Huang Kuai Yu Lean Wang Lecong Zhang Liang Zhao Litong Wang Liyue Zhang Lei Xu Leyi Xia Mingchuan Zhang Minghua Zhang Minghui Tang Meng Li Miaojun Wang Mingming Li Ning Tian Panpan Huang Peng Zhang Qiancheng Wang Qinyu Chen Qiushi Du Ruiqi Ge Ruisong Zhang Ruizhe Pan Runji Wang R. J. Chen R. L. Jin Ruyi Chen Shanghao Lu Shangyan Zhou Shanhuang Chen Shengfeng Ye ShiyuWang Shuiping Yu Shunfeng Zhou Shuting Pan S. S. Li Shuang Zhou Shaoqing Wu Shengfeng Ye Tao Yun Tian Pei Tianyu Sun T. Wang Wangding Zeng Wanjia Zhao Wen Liu Wenfeng Liang Wenjun Gao Wenqin Yu Wentao Zhang W. L. Xiao Wei An Xiaodong Liu Xiaohan Wang Xiaokang Chen Xiaotao Nie Xin Cheng Xin Liu Xin Xie Xingchao Liu Xinyu Yang Xinyuan Li Xuecheng Su Xuheng Lin X. Q. Li Xiangyue Jin Xiaojin Shen Xiaosha Chen Xiaowen Sun Xiaoxiang Wang Xinnan Song Xinyi Zhou Xianzu Wang Xinxia Shan Y. K. Li Y. Q. Wang Y. X. Wei Yang Zhang Yanhong Xu Yao Li Yao Zhao Yaofeng Sun Yaohui Wang Yi Yu Yichao Zhang Yifan Shi Yiliang Xiong Ying He Yishi Piao Yisong Wang Yixuan Tan Yiyang Ma Yiyuan Liu Yongqiang Guo Yuan Ou Yuduan Wang Yue Gong Yuheng Zou Yujia He Yunfan Xiong Yuxiang Luo Yuxiang You Yuxuan Liu Yuyang Zhou Y. X. Zhu Yanhong Xu Yanping Huang Yaohui Li Yi Zheng Yuchen Zhu Yunxian Ma Ying Tang Yukun Zha Yuting Yan Z. Z. Ren Zehui Ren Zhangli Sha Zhe Fu Zhean Xu Zhenda Xie Zhengyan Zhang Zhewen Hao Zhicheng Ma Zhigang Yan Zhiyu Wu Zihui Gu Zijia Zhu Zijun Liu Zilin Li Ziwei Xie Ziyang Song Zizheng Pan Zhen Huang Zhipeng Xu Zhongyu Zhang and Zhen Zhang. 2025. DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning. arXiv:2501.12948 [cs.CL] https://arxiv.org/abs/2501.12948"
+    },
+    {
+      "key": "e_1_3_2_1_2_1",
+      "unstructured": "Google. 2025. Gemini 2.5: Pushing the Frontier with Advanced Reasoning Multimodality Long Context and Next Generation Agentic Capabilities. arXiv:2507.06261 [cs.CL] https://arxiv.org/abs/2507.06261"
+    },
+    {
+      "key": "e_1_3_2_1_3_1",
+      "unstructured": "2025. The Llama 4 herd: The beginning of a new era of natively multimodal AI innovation. https://ai.meta.com/blog/llama-4-multimodalintelligence/."
+    },
+    {
+      "key": "e_1_3_2_1_4_1",
+      "unstructured": "An Yang Anfeng Li Baosong Yang Beichen Zhang Binyuan Hui Bo Zheng Bowen Yu Chang Gao Chengen Huang Chenxu Lv Chujie Zheng Dayiheng Liu Fan Zhou Fei Huang Feng Hu Hao Ge Haoran Wei Huan Lin Jialong Tang Jian Yang Jianhong Tu Jianwei Zhang Jianxin Yang Jiaxi Yang Jing Zhou Jingren Zhou Junyang Lin Kai Dang Keqin Bao Kexin Yang Le Yu Lianghao Deng Mei Li Mingfeng Xue Mingze Li Pei Zhang Peng Wang Qin Zhu Rui Men Ruize Gao Shixuan Liu Shuang Luo Tianhao Li Tianyi Tang Wenbiao Yin Xingzhang Ren Xinyu Wang Xinyu Zhang Xuancheng Ren Yang Fan Yang Su Yichang Zhang Yinger Zhang Yu Wan Yuqiong Liu Zekun Wang Zeyu Cui Zhenru Zhang Zhipeng Zhou and Zihan Qiu. 2025. Qwen3 Technical Report. arXiv:2505.09388 [cs.CL] https: //arxiv.org/abs/2505.09388"
+    },
+    {
+      "key": "e_1_3_2_1_5_1",
+      "unstructured": "2025. Introducing Claude 4. https://www.anthropic.com/news/claude- 4."
+    },
+    {
+      "key": "e_1_3_2_1_6_1",
+      "unstructured": "Rongxin Cheng Kai Zhou Xingda Wei Siyuan Liu Mingcong Han Mingjing Ai Yeju Zhou Baoquan Zhong Wencong Xiao Rong Chen and Haibo Chen. 2025. Fast LLM Post-training via Decoupled and Fastest-of-N Speculation. arXiv:2511.16193 [cs.DC] https://arxiv.org/ abs/2511.16193"
+    },
+    {
+      "key": "e_1_3_2_1_7_1",
+      "unstructured": "Zhihong Shao PeiyiWang Qihao Zhu Runxin Xu Junxiao Song Xiao Bi Haowei Zhang Mingchuan Zhang Y. K. Li Y. Wu and Daya Guo. 2024. DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models. arXiv:2402.03300 [cs.CL] https://arxiv.org/ abs/2402.03300"
+    },
+    {
+      "key": "e_1_3_2_1_8_1",
+      "doi-asserted-by": "crossref",
+      "unstructured": "Yuxiang Zheng Dayuan Fu Xiangkun Hu Xiaojie Cai Lyumanshan Ye Pengrui Lu and Pengfei Liu. 2025. DeepResearcher: Scaling Deep Research via Reinforcement Learning in Real-world Environments. arXiv:2504.03160 [cs.AI] https://arxiv.org/abs/2504.03160",
+      "DOI": "10.18653/v1/2025.emnlp-main.22"
+    },
+    {
+      "key": "e_1_3_2_1_9_1",
+      "volume-title": "Agentic Reasoning: A Streamlined Framework for Enhancing LLM Reasoning with Agentic Tools. arXiv:2502.04644 [cs.AI] https://arxiv.org/abs/2502.04644",
+      "author": "Wu Junde",
+      "year": "2025",
+      "unstructured": "Junde Wu, Jiayuan Zhu, Yuyuan Liu, Min Xu, and Yueming Jin. 2025. Agentic Reasoning: A Streamlined Framework for Enhancing LLM Reasoning with Agentic Tools. arXiv:2502.04644 [cs.AI] https://arxiv.org/abs/2502.04644"
+    },
+    {
+      "key": "e_1_3_2_1_10_1",
+      "volume-title": "Adam Atanas, Yao-Ting Wang, Joah Han, Aastha Jhunjhunwala, Rucha Apte, Robert Clark, Kang Xu, Zihan Wang, and Kai Liu.",
+      "author": "Prabhakar Vignesh",
+      "year": "2025",
+      "unstructured": "Vignesh Prabhakar, Md Amirul Islam, Adam Atanas, Yao-Ting Wang, Joah Han, Aastha Jhunjhunwala, Rucha Apte, Robert Clark, Kang Xu, Zihan Wang, and Kai Liu. 2025. OmniScience: A Domain-Specialized LLM for Scientific Reasoning and Discovery. arXiv:2503.17604 [cs.AI] https://arxiv.org/abs/2503.17604"
+    },
+    {
+      "key": "e_1_3_2_1_11_1",
+      "unstructured": "Yifei Zhou Song Jiang Yuandong Tian Jason Weston Sergey Levine Sainbayar Sukhbaatar and Xian Li. 2025. SWEET-RL: Training Multi-Turn LLM Agents on Collaborative Reasoning Tasks. arXiv:2503.15478 [cs.LG] https://arxiv.org/abs/2503.15478"
+    },
+    {
+      "key": "e_1_3_2_1_12_1",
+      "volume-title": "Li Fei- Fei, Hannaneh Hajishirzi, Luke Zettlemoyer, Percy Liang, Emmanuel Candès, and Tatsunori Hashimoto.",
+      "author": "Muennighoff Niklas",
+      "year": "2025",
+      "unstructured": "Niklas Muennighoff, Zitong Yang, Weijia Shi, Xiang Lisa Li, Li Fei- Fei, Hannaneh Hajishirzi, Luke Zettlemoyer, Percy Liang, Emmanuel Candès, and Tatsunori Hashimoto. 2025. s1: Simple test-time scaling. arXiv:2501.19393 [cs.CL] https://arxiv.org/abs/2501.19393"
+    },
+    {
+      "key": "e_1_3_2_1_13_1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1145/3689031.3696075"
+    },
+    {
+      "key": "e_1_3_2_1_14_1",
+      "unstructured": "Kimi Team Yifan Bai Yiping Bao Guanduo Chen Jiahao Chen Ningxin Chen Ruijue Chen Yanru Chen Yuankun Chen Yutian Chen Zhuofu Chen Jialei Cui Hao Ding Mengnan Dong Angang Du Chenzhuang Du Dikang Du Yulun Du Yu Fan Yichen Feng Kelin Fu Bofei Gao Hongcheng Gao Peizhong Gao Tong Gao Xinran Gu Longyu Guan Haiqing Guo Jianhang Guo Hao Hu Xiaoru Hao Tianhong He Weiran He Wenyang He Chao Hong Yangyang Hu Zhenxing Hu Weixiao Huang Zhiqi Huang Zihao Huang Tao Jiang Zhejun Jiang Xinyi Jin Yongsheng Kang Guokun Lai Cheng Li Fang Li Haoyang Li Ming Li Wentao Li Yanhao Li Yiwei Li Zhaowei Li Zheming Li Hongzhan Lin Xiaohan Lin Zongyu Lin Chengyin Liu Chenyu Liu Hongzhang Liu Jingyuan Liu Junqi Liu Liang Liu Shaowei Liu T. Y. Liu Tianwei Liu Weizhou Liu Yangyang Liu Yibo Liu Yiping Liu Yue Liu Zhengying Liu Enzhe Lu Lijun Lu Shengling Ma Xinyu Ma Yingwei Ma Shaoguang Mao Jie Mei Xin Men Yibo Miao Siyuan Pan Yebo Peng Ruoyu Qin Bowen Qu Zeyu Shang Lidong Shi Shengyuan Shi Feifan Song Jianlin Su Zhengyuan Su Xinjie Sun Flood Sung Heyi Tang Jiawen Tao Qifeng Teng Chensi Wang Dinglu Wang Feng Wang Haiming Wang Jianzhou Wang Jiaxing Wang Jinhong Wang Shengjie Wang Shuyi Wang Yao Wang Yejie Wang Yiqin Wang Yuxin Wang Yuzhi Wang Zhaoji Wang Zhengtao Wang Zhexu Wang Chu Wei Qianqian Wei Wenhao Wu Xingzhe Wu Yuxin Wu Chenjun Xiao Xiaotong Xie Weimin Xiong Boyu Xu Jing Xu Jinjing Xu L. H. Xu Lin Xu Suting Xu Weixin Xu Xinran Xu Yangchuan Xu Ziyao Xu Junjie Yan Yuzi Yan Xiaofei Yang Ying Yang Zhen Yang Zhilin Yang Zonghan Yang Haotian Yao Xingcheng Yao Wenjie Ye Zhuorui Ye Bohong Yin Longhui Yu Enming Yuan Hongbang Yuan Mengjie Yuan Haobing Zhan Dehao Zhang Hao Zhang Wanlu Zhang Xiaobin Zhang Yangkun Zhang Yizhi Zhang Yongting Zhang Yu Zhang Yutao Zhang Yutong Zhang Zheng Zhang Haotian Zhao Yikai Zhao Huabin Zheng Shaojie Zheng Jianren Zhou Xinyu Zhou Zaida Zhou Zhen Zhu Weiyu Zhuang and Xinxing Zu. 2025. Kimi K2: Open Agentic Intelligence. arXiv:2507.20534 [cs.LG] https://arxiv.org/abs/2507.20534"
+    },
+    {
+      "key": "e_1_3_2_1_15_1",
+      "unstructured": "Yinmin Zhong Zili Zhang Xiaoniu Song Hanpeng Hu Chao Jin Bingyang Wu Nuo Chen Yukun Chen Yu Zhou Changyi Wan Hongyu Zhou Yimin Jiang Yibo Zhu and Daxin Jiang. 2025. StreamRL: Scalable Heterogeneous and Elastic RL for LLMs with Disaggregated Stream Generation. arXiv:2504.15930 [cs.LG] https://arxiv.org/abs/2504.15930"
+    },
+    {
+      "key": "e_1_3_2_1_16_1",
+      "unstructured": "Wei Fu Jiaxuan Gao Xujie Shen Chen Zhu Zhiyu Mei Chuyi He Shusheng Xu Guo Wei Jun Mei Jiashu Wang Tongkai Yang Binhang Yuan and Yi Wu. 2025. AReaL: A Large-Scale Asynchronous Reinforcement Learning System for Language Reasoning. arXiv:2505.24298 [cs.LG] https://arxiv.org/abs/2505.24298"
+    },
+    {
+      "key": "e_1_3_2_1_17_1",
+      "volume-title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale. arXiv:2503.14476 [cs.LG] https://arxiv.org/abs/2503.14476",
+      "author": "Yu Qiying",
+      "year": "2025",
+      "unstructured": "Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian Fan, Gaohong Liu, Lingjun Liu, Xin Liu, Haibin Lin, Zhiqi Lin, Bole Ma, Guangming Sheng, Yuxuan Tong, Chi Zhang, Mofan Zhang, Wang Zhang, Hang Zhu, Jinhua Zhu, Jiaze Chen, Jiangjie Chen, Chengyi Wang, Hongli Yu, Yuxuan Song, Xiangpeng Wei, Hao Zhou, Jingjing Liu, Wei-Ying Ma, Ya-Qin Zhang, Lin Yan, Mu Qiao, Yonghui Wu, and Mingxuan Wang. 2025. DAPO: An Open-Source LLM Reinforcement Learning System at Scale. arXiv:2503.14476 [cs.LG] https://arxiv.org/abs/2503.14476"
+    },
+    {
+      "key": "e_1_3_2_1_18_1",
+      "volume-title": "Raluca Ada Popa, and Ion Stoica.",
+      "author": "Luo Michael",
+      "year": "2025",
+      "unstructured": "Michael Luo, Sijun Tan, Justin Wong, Xiaoxiang Shi, William Y. Tang, Manan Roongta, Colin Cai, Jeffrey Luo, Li Erran Li, Raluca Ada Popa, and Ion Stoica. 2025. DeepScaleR: Surpassing O1-Preview with a 1.5B Model by Scaling RL. https://pretty-radio-b75.notion.site/DeepScaleRSurpassing- O1-Preview-with-a-1-5B-Model-by-Scaling-RL-19681902c1468005bed8ca303013a4e2. Notion Blog."
+    },
+    {
+      "key": "e_1_3_2_1_19_1",
+      "unstructured": "Chujie Zheng Shixuan Liu Mingze Li Xiong-Hui Chen Bowen Yu Chang Gao Kai Dang Yuqiong Liu Rui Men An Yang Jingren Zhou and Junyang Lin. 2025. Group Sequence Policy Optimization. arXiv:2507.18071 [cs.LG] https://arxiv.org/abs/2507.18071"
+    },
+    {
+      "key": "e_1_3_2_1_20_1",
+      "doi-asserted-by": "crossref",
+      "unstructured": "Nai-Chieh Huang Ping-Chun Hsieh Kuo-Hao Ho and I-Chen Wu. 2024. PPO-Clip Attains Global Optimality: Towards Deeper Understandings of Clipping. arXiv:2312.12065 [cs.LG] https://arxiv.org/abs/2312.12065",
+      "DOI": "10.1609/aaai.v38i11.29154"
+    },
+    {
+      "key": "e_1_3_2_1_21_1",
+      "unstructured": "Jingzhao Zhang Tianxing He Suvrit Sra and Ali Jadbabaie. 2020. Why gradient clipping accelerates training: A theoretical justification for adaptivity. arXiv:1905.11881 [math.OC] https://arxiv.org/abs/1905.11881"
+    },
+    {
+      "key": "e_1_3_2_1_22_1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.5555/3618408.3619203"
+    },
+    {
+      "key": "e_1_3_2_1_23_1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1109/ICNP.2000.896303"
+    },
+    {
+      "key": "e_1_3_2_1_24_1",
+      "unstructured": "2025. (veRL Pull Request) feat: accelerate rollout via model-free speculative decoding. https://github.com/volcengine/verl/pull/4535."
+    },
+    {
+      "key": "e_1_3_2_1_25_1",
+      "unstructured": "OpenAI. 2024. OpenAI o1 System Card. arXiv:2412.16720 [cs.AI] https://arxiv.org/abs/2412.16720"
+    },
+    {
+      "key": "e_1_3_2_1_26_1",
+      "unstructured": "2025. Introducing OpenAI o3 and o4-mini. https://openai.com/index/introducing-o3-and-o4-mini/."
+    },
+    {
+      "key": "e_1_3_2_1_27_1",
+      "unstructured": "John Schulman Filip Wolski Prafulla Dhariwal Alec Radford and Oleg Klimov. 2017. Proximal Policy Optimization Algorithms. arXiv:1707.06347 [cs.LG] https://arxiv.org/abs/1707.06347"
+    },
+    {
+      "key": "e_1_3_2_1_28_1",
+      "volume-title": "Proceedings of the 32nd International Conference on Machine Learning (Proceedings of Machine Learning Research",
+      "volume": "1897",
+      "author": "Schulman John",
+      "year": "2015",
+      "unstructured": "John Schulman, Sergey Levine, Pieter Abbeel, Michael Jordan, and Philipp Moritz. 2015. Trust Region Policy Optimization. In Proceedings of the 32nd International Conference on Machine Learning (Proceedings of Machine Learning Research, Vol. 37), Francis Bach and David Blei (Eds.). PMLR, Lille, France, 1889-1897. https://proceedings.mlr.press/v37/schulman15.html"
+    },
+    {
+      "key": "e_1_3_2_1_29_1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1145/3620666.3651335"
+    },
+    {
+      "key": "e_1_3_2_1_30_1",
+      "volume-title": "Accelerating Iterative Retrieval-augmented Language Model Serving with Speculation. In Forty-first International Conference on Machine Learning. https://openreview.net/forum?id=CDnv4vg02f",
+      "author": "Zhang Zhihao",
+      "year": "2024",
+      "unstructured": "Zhihao Zhang, Alan Zhu, Lijie Yang, Yihua Xu, Lanting Li, Phitchaya Mangpo Phothilimthana, and Zhihao Jia. 2024. Accelerating Iterative Retrieval-augmented Language Model Serving with Speculation. In Forty-first International Conference on Machine Learning. https://openreview.net/forum?id=CDnv4vg02f"
+    },
+    {
+      "key": "e_1_3_2_1_31_1",
+      "unstructured": "Charlie Chen Sebastian Borgeaud Geoffrey Irving Jean-Baptiste Lespiau Laurent Sifre and John Jumper. 2023. Accelerating Large Language Model Decoding with Speculative Sampling. arXiv:2302.01318 [cs.CL] https://arxiv.org/abs/2302.01318"
+    },
+    {
+      "key": "e_1_3_2_1_32_1",
+      "unstructured": "Baohao Liao Yuhui Xu Hanze Dong Junnan Li Christof Monz Silvio Savarese Doyen Sahoo and Caiming Xiong. 2025. Reward-Guided Speculative Decoding for Efficient LLM Reasoning. arXiv:2501.19324 [cs.CL] https://arxiv.org/abs/2501.19324"
+    },
+    {
+      "key": "e_1_3_2_1_33_1",
+      "unstructured": "Yingpeng Du Tianjun Wei Zhu Sun and Jie Zhang. 2025. Reinforcement Speculative Decoding for Fast Ranking. arXiv:2505.20316 [cs.AI] https://arxiv.org/abs/2505.20316"
+    },
+    {
+      "key": "e_1_3_2_1_34_1",
+      "volume-title": "Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads. arXiv:2401.10774 [cs.LG] https://arxiv.org/abs/2401.10774",
+      "author": "Cai Tianle",
+      "year": "2024",
+      "unstructured": "Tianle Cai, Yuhong Li, Zhengyang Geng, Hongwu Peng, Jason D. Lee, Deming Chen, and Tri Dao. 2024. Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads. arXiv:2401.10774 [cs.LG] https://arxiv.org/abs/2401.10774"
+    },
+    {
+      "key": "e_1_3_2_1_35_1",
+      "volume-title": "EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty. arXiv:2401.15077 [cs.LG] https://arxiv.org/abs/2401.15077",
+      "author": "Li Yuhui",
+      "year": "2025",
+      "unstructured": "Yuhui Li, Fangyun Wei, Chao Zhang, and Hongyang Zhang. 2025. EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty. arXiv:2401.15077 [cs.LG] https://arxiv.org/abs/2401.15077"
+    },
+    {
+      "key": "e_1_3_2_1_36_1",
+      "unstructured": "Yuhui Li Fangyun Wei Chao Zhang and Hongyang Zhang. 2024. EAGLE-2: Faster Inference of Language Models with Dynamic Draft Trees. arXiv:2406.16858 [cs.CL] https://arxiv.org/abs/2406.16858"
+    },
+    {
+      "key": "e_1_3_2_1_37_1",
+      "unstructured": "Yuhui Li Fangyun Wei Chao Zhang and Hongyang Zhang. 2025. EAGLE-3: Scaling up Inference Acceleration of Large Language Models via Training-Time Test. arXiv:2503.01840 [cs.CL] https://arxiv.org/abs/2503.01840"
+    },
+    {
+      "key": "e_1_3_2_1_38_1",
+      "unstructured": "Gabriele Oliaro Zhihao Jia Daniel Campos and Aurick Qiao. 2025. SuffixDecoding: Extreme Speculative Decoding for Emerging AI Applications. arXiv:2411.04975 [cs.CL] https://arxiv.org/abs/2411.04975"
+    },
+    {
+      "key": "e_1_3_2_1_39_1",
+      "unstructured": "Apoorv Saxena. 2023. Prompt Lookup Decoding. https://github.com/apoorvumang/prompt-lookup-decoding/"
+    },
+    {
+      "key": "e_1_3_2_1_40_1",
+      "unstructured": "Nan Yang Tao Ge LiangWang Binxing Jiao Daxin Jiang Linjun Yang Rangan Majumder and FuruWei. 2023. Inference with Reference: Lossless Acceleration of Large Language Models. arXiv:2304.04487 [cs.CL] https://arxiv.org/abs/2304.04487"
+    },
+    {
+      "key": "e_1_3_2_1_41_1",
+      "unstructured": "2025. (vLLM official blog) How Speculative Decoding Boosts vLLM Performance by up to 2.8x. https://blog.vllm.ai/2024/10/17/specdecode.html."
+    },
+    {
+      "key": "e_1_3_2_1_42_1",
+      "volume-title": "ReaL: Efficient RLHF Training of Large Language Models with Parameter Reallocation. In Eighth Conference on Machine Learning and Systems. https://openreview.net/forum?id=yLU1zRf95d",
+      "author": "Mei Zhiyu",
+      "year": "2025",
+      "unstructured": "Zhiyu Mei, Wei Fu, Kaiwei Li, Guangju Wang, Huanchen Zhang, and YiWu. 2025. ReaL: Efficient RLHF Training of Large Language Models with Parameter Reallocation. In Eighth Conference on Machine Learning and Systems. https://openreview.net/forum?id=yLU1zRf95d"
+    },
+    {
+      "key": "e_1_3_2_1_43_1",
+      "unstructured": "Zhenyu Han Ansheng You HaiboWang Kui Luo Guang Yang Wenqi Shi Menglong Chen Sicheng Zhang Zeshun Lan Chunshi Deng Huazhong Ji Wenjie Liu Yu Huang Yixiang Zhang Chenyi Pan Jing Wang Xin Huang Chunsheng Li and Jianping Wu. 2025. AsyncFlow: An Asynchronous Streaming RL Framework for Efficient LLM Post- Training. arXiv:2507.01663 [cs.LG] https://arxiv.org/abs/2507.01663"
+    },
+    {
+      "key": "e_1_3_2_1_44_1",
+      "unstructured": "Zhixin Wang Tianyi Zhou Liming Liu Ao Li Jiarui Hu Dian Yang Jinlong Hou Siyuan Feng Yuan Cheng and Yuan Qi. 2025. DistFlow: A Fully Distributed RL Framework for Scalable and Efficient LLM Post-Training. arXiv:2507.13833 [cs.DC] https://arxiv.org/abs/2507.13833"
+    },
+    {
+      "key": "e_1_3_2_1_45_1",
+      "first-page": "489",
+      "volume-title": "Optimizing RLHF Training for Large Language Models with Stage Fusion. In 22nd USENIX Symposium on Networked Systems Design and Implementation (NSDI 25)",
+      "author": "Zhong Yinmin",
+      "year": "2025",
+      "unstructured": "Yinmin Zhong, Zili Zhang, Bingyang Wu, Shengyu Liu, Yukun Chen, ChangyiWan, Hanpeng Hu, Lei Xia, Ranchen Ming, Yibo Zhu, and Xin Jin. 2025. Optimizing RLHF Training for Large Language Models with Stage Fusion. In 22nd USENIX Symposium on Networked Systems Design and Implementation (NSDI 25). USENIX Association, Philadelphia, PA, 489-503. https://www.usenix.org/conference/nsdi25/presentation/zhong"
+    },
+    {
+      "key": "e_1_3_2_1_46_1",
+      "unstructured": "2025. NeMo: A scalable generative AI framework built for researchers and developers working on Large Language Models Multimodal and Speech AI. https://github.com/NVIDIA/NeMo."
+    },
+    {
+      "key": "e_1_3_2_1_47_1",
+      "volume-title": "Haotian Xu, and Wei Shen.",
+      "author": "Hu Jian",
+      "year": "2025",
+      "unstructured": "Jian Hu, Jason Klein Liu, Haotian Xu, and Wei Shen. 2025. REINFORCE: An Efficient RLHF Algorithm with Robustness to Both Prompt and Reward Models. arXiv:2501.03262 [cs.CL] https://arxiv.org/abs/2501.03262"
+    },
+    {
+      "key": "e_1_3_2_1_48_1",
+      "unstructured": "Weixun Wang Shaopan Xiong Gengru Chen Wei Gao Sheng Guo Yancheng He Ju Huang Jiaheng Liu Zhendong Li Xiaoyang Li Zichen Liu Haizhou Zhao Dakai An Lunxi Cao Qiyang Cao Wanxi Deng Feilei Du Yiliang Gu Jiahe Li Xiang Li Mingjie Liu Yijia Luo Zihe Liu Yadao Wang Pei Wang Tianyuan Wu Yanan Wu Yuheng Zhao Shuaibing Zhao Jin Yang Siran Yang Yingshui Tan Huimin Yi Yuchi Xu Yujin Yuan Xingyao Zhang Lin Qu Wenbo Su WeiWang Jiamang Wang and Bo Zheng. 2025. Reinforcement Learning Optimization for Large-Scale Learning: An Efficient and User-Friendly Scaling Library. arXiv:2506.06122 [cs.LG] https://arxiv.org/abs/2506.06122"
+    },
+    {
+      "key": "e_1_3_2_1_49_1",
+      "unstructured": "2025. (veRL) One Step Off Policy Async Trainer. https://verl.readthedocs.io/en/latest/advance/one_step_off.html."
+    },
+    {
+      "key": "e_1_3_2_1_50_1",
+      "doi-asserted-by": "crossref",
+      "unstructured": "Bingxiang He Zekai Qu Zeyuan Liu Yinghao Chen Yuxin Zuo Cheng Qian Kaiyan Zhang Weize Chen Chaojun Xiao Ganqu Cui Ning Ding and Zhiyuan Liu. 2025. JustRL: Scaling a 1.5B LLM with a Simple RL Recipe. arXiv:2512.16649 [cs.CL] https://arxiv.org/abs/2512.16649",
+      "DOI": "10.1145/3701716.3717579"
+    },
+    {
+      "key": "e_1_3_2_1_51_1",
+      "unstructured": "Haizhong Zheng Jiawei Zhao and Beidi Chen. 2025. Prosperity before Collapse: How Far Can Off-Policy RL Reach with Stale Data on LLMs? arXiv:2510.01161 [cs.LG] https://arxiv.org/abs/2510.01161"
+    },
+    {
+      "key": "e_1_3_2_1_52_1",
+      "unstructured": "Zhenghai Xue Longtao Zheng Qian Liu Yingru Li Xiaosen Zheng Zejun Ma and Bo An. 2025. SimpleTIR: End-to-End Reinforcement Learning for Multi-Turn Tool-Integrated Reasoning. arXiv:2509.02479 [cs.LG] https://arxiv.org/abs/2509.02479"
+    },
+    {
+      "key": "e_1_3_2_1_53_1",
+      "unstructured": "2025. Trace of DAPO Training. https://wandb.ai/verl-org/DAPO%20Reproduction%20on%20verl. (2025)."
+    },
+    {
+      "key": "e_1_3_2_1_54_1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1145/3600006.3613165"
+    },
+    {
+      "key": "e_1_3_2_1_55_1",
+      "first-page": "62557",
+      "volume-title": "Zhang (Eds.)",
+      "volume": "37",
+      "author": "Zheng Lianmin",
+      "year": "2024",
+      "unstructured": "Lianmin Zheng, Liangsheng Yin, Zhiqiang Xie, Chuyue Sun, Jeff Huang, Cody Hao Yu, Shiyi Cao, Christos Kozyrakis, Ion Stoica, Joseph E. Gonzalez, Clark Barrett, and Ying Sheng. 2024. SGLang: Efficient Execution of Structured Language Model Programs. In Advances in Neural Information Processing Systems, A. Globerson, L. Mackey, D. Belgrave, A. Fan, U. Paquet, J. Tomczak, and C. Zhang (Eds.), Vol. 37. Curran Associates, Inc., 62557-62583. https://proceedings.neurips.cc/paper_files/paper/2024/file/724be4472168f31ba1c9ac630f15dec8-Paper-Conference.pdf"
+    },
+    {
+      "key": "e_1_3_2_1_56_1",
+      "unstructured": "2025. (vLLM documentation) vLLm Speculative Decoding. https://docs.vllm.ai/en/latest/features/spec_decode.html."
+    },
+    {
+      "key": "e_1_3_2_1_57_1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1109/SWAT.1973.13"
+    },
+    {
+      "key": "e_1_3_2_1_58_1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1007/BF01206331"
+    },
+    {
+      "key": "e_1_3_2_1_59_1",
+      "unstructured": "2024. cgroups - Linux control groups. http://man7.org/linux/manpages/man7/cgroups.7.html."
+    },
+    {
+      "key": "e_1_3_2_1_60_1",
+      "unstructured": "DeepSeek-AI. 2025. DeepSeek-V3 Technical Report. arXiv:2412.19437 [cs.CL] https://arxiv.org/abs/2412.19437"
+    },
+    {
+      "key": "e_1_3_2_1_61_1",
+      "unstructured": "2025. veRL: Volcano Engine Reinforcement Learning for LLMs. https://github.com/volcengine/verl."
+    },
+    {
+      "key": "e_1_3_2_1_62_1",
+      "unstructured": "Qwen An Yang Baosong Yang Beichen Zhang Binyuan Hui Bo Zheng Bowen Yu Chengyuan Li Dayiheng Liu Fei Huang Haoran Wei Huan Lin Jian Yang Jianhong Tu Jianwei Zhang Jianxin Yang Jiaxi Yang Jingren Zhou Junyang Lin Kai Dang Keming Lu Keqin Bao Kexin Yang Le Yu Mei Li Mingfeng Xue Pei Zhang Qin Zhu Rui Men Runji Lin Tianhao Li Tianyi Tang Tingyu Xia Xingzhang Ren Xuancheng Ren Yang Fan Yang Su Yichang Zhang Yu Wan Yuqiong Liu Zeyu Cui Zhenru Zhang and Zihan Qiu. 2025. Qwen2.5 Technical Report. arXiv:2412.15115 [cs.CL] https://arxiv.org/abs/2412.15115"
+    },
+    {
+      "key": "e_1_3_2_1_63_1",
+      "unstructured": "AI @ Meta Llama Team. 2024. The Llama 3 Herd of Models. arXiv:2407.21783 [cs.AI] https://arxiv.org/abs/2407.21783"
+    },
+    {
+      "key": "e_1_3_2_1_64_1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1145/3079856.3080217"
+    },
+    {
+      "key": "e_1_3_2_1_65_1",
+      "unstructured": "2025. DAPO Math 17k dataset. https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k."
+    },
+    {
+      "key": "e_1_3_2_1_66_1",
+      "volume-title": "Dataset card for American Invitational Mathematics Examination (AIME)",
+      "year": "2024",
+      "unstructured": "2024. Dataset card for American Invitational Mathematics Examination (AIME) 2024. https://huggingface.co/datasets/math-ai/aime24."
+    },
+    {
+      "key": "e_1_3_2_1_67_1",
+      "volume-title": "Dataset card for American Invitational Mathematics Examination (AIME)",
+      "year": "2025",
+      "unstructured": "2025. Dataset card for American Invitational Mathematics Examination (AIME) 2025. https://huggingface.co/datasets/math-ai/aime25."
+    },
+    {
+      "key": "e_1_3_2_1_68_1",
+      "unstructured": "Weihao Zeng Yuzhen Huang Qian Liu Wei Liu Keqing He Zejun Ma and Junxian He. 2025. SimpleRL-Zoo: Investigating and Taming Zero Reinforcement Learning for Open Base Models in the Wild. arXiv:2503.18892 [cs.LG] https://arxiv.org/abs/2503.18892"
+    },
+    {
+      "key": "e_1_3_2_1_69_1",
+      "unstructured": "2025. SimpleRL-Zoo Math dataset. https://huggingface.co/datasets/hkust-nlp/SimpleRL-Zoo-Data."
+    },
+    {
+      "key": "e_1_3_2_1_70_1",
+      "unstructured": "Jiawei Liu and Lingming Zhang. 2025. Code-R1: Reproducing R1 for Code with Reliable Rewards. https://github.com/ganler/code-r1. (2025)."
+    },
+    {
+      "key": "e_1_3_2_1_71_1",
+      "unstructured": "Jared Kaplan Sam McCandlish Tom Henighan Tom B. Brown Benjamin Chess Rewon Child Scott Gray Alec Radford Jeffrey Wu and Dario Amodei. 2020. Scaling Laws for Neural Language Models. arXiv:2001.08361 [cs.LG] https://arxiv.org/abs/2001.08361"
+    },
+    {
+      "key": "e_1_3_2_1_72_1",
+      "unstructured": "2025. (vLLM issue) vLLM Eagle performance is worse than expected. https://github.com/vllm-project/vllm/issues/9565."
+    },
+    {
+      "key": "e_1_3_2_1_73_1",
+      "volume-title": "Seer: Online Context Learning for Fast Synchronous LLM Reinforcement Learning. arXiv:2511.14617 [cs.DC] https://arxiv.org/abs/2511.14617",
+      "author": "Qin Ruoyu",
+      "year": "2025",
+      "unstructured": "Ruoyu Qin, Weiran He, Weixiao Huang, Yangkun Zhang, Yikai Zhao, Bo Pang, Xinran Xu, Yingdi Shan, Yongwei Wu, and Mingxing Zhang. 2025. Seer: Online Context Learning for Fast Synchronous LLM Reinforcement Learning. arXiv:2511.14617 [cs.DC] https://arxiv.org/abs/2511.14617"
+    }
+  ],
+  "event": {
+    "name": "ASPLOS '26: 31st ACM International Conference on Architectural Support for Programming Languages and Operating Systems",
+    "location": "Pittsburgh PA USA",
+    "sponsor": [
+      "SIGOPS ACM Special Interest Group on Operating Systems",
+      "SIGPLAN ACM Special Interest Group on Programming Languages",
+      "SIGARCH ACM Special Interest Group on Computer Architecture",
+      "SIGBED ACM Special Interest Group on Embedded Systems"
+    ]
+  },
+  "container-title": [
+    "Proceedings of the 31st ACM International Conference on Architectural Support for Programming Languages and Operating Systems, Volume 2"
+  ],
+  "original-title": [],
+  "deposited": {
+    "date-parts": [
+      [
+        2026,
+        3,
+        15
+      ]
+    ],
+    "date-time": "2026-03-15T14:03:15Z",
+    "timestamp": 1773583395000
+  },
+  "score": 1,
+  "resource": {
+    "primary": {
+      "URL": "https://dl.acm.org/doi/10.1145/3779212.3790172"
+    }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+    "date-parts": [
+      [
+        2026,
+        3,
+        22
+      ]
+    ]
+  },
+  "references-count": 73,
+  "alternative-id": [
+    "10.1145/3779212.3790172",
+    "10.1145/3779212"
+  ],
+  "URL": "https://doi.org/10.1145/3779212.3790172",
+  "relation": {},
+  "subject": [],
+  "published": {
+    "date-parts": [
+      [
+        2026,
+        3,
+        22
+      ]
+    ]
+  },
+  "assertion": [
+    {
+      "value": "2026-03-22",
+      "order": 3,
+      "name": "published",
+      "label": "Published",
+      "group": {
+        "name": "publication_history",
+        "label": "Publication History"
+      }
+    }
+  ]
+}

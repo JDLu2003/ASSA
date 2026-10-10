@@ -1,0 +1,1428 @@
+                                         Energy-Aware Scheduling for Serverless LLM Serving
+                                                         on Shared GPUs
+                                                       Tianyu Wang                            Gourav Rattihalli                            Aditya Dhakal
+                                                  University of Pittsburgh                          HPE Labs                                   HPE Labs
+                                                   Pittsburgh, PA, USA                          Milpitas, CA, USA                          Milpitas, CA, USA
+
+                                                                        Longfei Shangguan                             Dejan Milojicic
+                                                                        University of Pittsburgh                          HPE Labs
+                                                                         Pittsburgh, PA, USA                          Milpitas, CA, USA
+
+                                         Abstract                                                             under fluctuating demand, there is a growing trend toward
+arXiv:2606.30391v1 [cs.DC] 29 Jun 2026
+
+
+
+
+                                         As LLM inference becomes a major cloud workload, its grow-           co-hosting multiple LLMs on the same GPU to multiplex
+                                         ing energy footprint makes cluster-wide energy optimization          requests with diverse workload characteristics [6, 7, 43, 52].
+                                         increasingly important. Serverless LLM serving helps plat-              At serverless scale, the energy footprint of LLM infer-
+                                         forms absorb traffic volatility by elastically sharing GPU           ence is projected to rise sharply as GPU fleets expand [30].
+                                         resources across models, but this sharing also makes energy          Prior study shows that for ChatGPT-like services, inference
+                                         optimization difficult. Multiple co-resident models run un-          can dominate lifecycle emissions, producing around 25× the
+                                         der one device-wide operating point, while their resource            carbon emissions of training a GPT-3 class model over a
+                                         demands and latency slack change across execution phases             year [2]. A key driver is that modern accelerators draw high
+                                         and load conditions. As a result, minimizing energy requires         power when operated near their peak performance point. For
+                                         coordinated scheduling across request placement, runtime             instance, an NVIDIA H100 is configurable up to 700 W Ther-
+                                         resource adaptation, and workload consolidation.                     mal Design Power (TDP) [33]. This makes power-efficient
+                                            We present Festina, a profiling-guided, power-aware con-          serving increasingly important: small per-GPU inefficiencies
+                                         trol plane to minimize cluster-wide energy for serverless            quickly compound into a large cluster-wide energy bill.
+                                         LLM serving. Unlike common global–local schedulers that                 In this paper, we ask: how should a serverless LLM sched-
+                                         focus on throughput or tail latency, Festina makes energy-           uler minimize cluster energy while preserving strict TTFT/TBT
+                                         first decisions by jointly coordinating request placement, SM        SLOs in a GPU-sharing pool? Our starting point is an em-
+                                         partitioning, and GPU operating points under TTFT/TBT                pirical opportunity: existing serving stacks often leave GPU
+                                         SLOs. In our system, a lightweight global scheduler performs         operating-point control to default hardware policies, which
+                                         fast, SLO-safe, energy-aware placement using constant-time           keep GPUs near their high-power operating region even
+                                         lookups from offline profiles and GPU state summaries. On            when workload intensity is low or medium (§2). As a re-
+                                         each GPU, a phase-aware local scheduler continuously adapts          sult, many requests complete well before their Time To First
+                                         task batching and compute resources to minimize power con-           Token (TTFT) and Time Between Tokens (TBT) deadlines,
+                                         sumption. Festina further performs energy-aware workload             leaving substantial SLO slack (§2.1). This slack creates room
+                                         consolidation to reduce GPUs’ static power consumption               for energy-aware scheduling.
+                                         via SLO-aware migration. Comparison with four SOTA LLM                  At first glance, Dynamic Frequency and Voltage Scaling
+                                         serving systems and one DVFS-augmented system demon-                 (DVFS) is the most immediate mechanism for exploiting this
+                                         strates that Festina reduces energy consumption by up to             opportunity: when a GPU has latency headroom, the serving
+                                         56% while maintaining parity in SLO attainment (within a             system can lower its frequency operating point and trade
+                                         2% margin).                                                          a portion of that headroom for lower power. Nevertheless,
+                                                                                                              the serverless, shared-GPU setting creates three forms of
+                                         1   Introduction                                                     coupling that make simple per-instance DVFS insufficient.
+                                         Large language model (LLM) inference is gradually becom-             • Spatial coupling from co-location. In serverless, GPU-
+                                         ing a dominant workload in today’s cloud [16]. Recent stud-          sharing setups, multiple LLMs are co-hosted on the same
+                                         ies show that these inference workloads exhibit prominent            GPU and share one device-wide frequency operating point.
+                                         spatial and temporal variation across regions, tenants, and          However, different models and request intensities differ dras-
+                                         time of day [7, 16, 48, 51, 54]. To cope with this volatility,       tically in their individual energy-minimizing configurations
+                                         major platforms such as Microsoft Azure [29] and Hugging-            (§2.2). As a result, a high-frequency-preferring workload will
+                                         Face [15] now offer serverless LLM serving, where the plat-          force a low-frequency-preferring workload to run at an un-
+                                         form scales GPU resources up and down automatically to               necessarily high frequency, wasting significant energy (10%-
+                                         save inference cost without violating latency service level          16% energy waste in §C). Conversely, lowering the frequency
+                                         objectives (SLOs) [8]. To further improve GPU utilization            to save energy for one model can endanger the deadlines of
+                                                                                                          1
+another co-resident model. Therefore, the scheduler should                      Table 1. Comparison to related works.
+not focus on per-GPU or per-model frequency scheduling,
+                                                                                          Spatial      Dynamic        Energy   Phase
+but account for model placement, frequency affinity, SM                                   sharing   reconfiguration   aware    aware
+availability, and queue state together.
+                                                                      ServerlessLLM [8]     No          Partial        No        No
+• Temporal coupling from prefill/decode dynamics. An
+                                                                      MuxServe [7]          Yes           No           No        No
+LLM request shifts from compute-heavy prefill to memory-
+                                                                      Prism [58]            Yes         Partial        No        No
+bound decode, and these two phases have different latency
+                                                                      GreenLLM [25]         No            No           Yes      Yes
+sensitivity, resource demand, and energy-optimal Stream-
+                                                                      DynamoLLM [41]        No          Partial        Yes       No
+ing Multiprocessor (SM) and frequency configurations (§2.2).
+                                                                      Dilu [27]             Yes          Yes           No        No
+Moreover, the live batch on a GPU changes continuously                Aegaeon [52]          Yes          Yes           No      Partial
+as requests arrive, finish prefill, enter decode, and complete        VoltanaLLM [57]       No            No           Yes      Yes
+generation. A placement decision that is energy-efficient at
+dispatch time can quickly become suboptimal or even un-               Festina (ours)        Yes          Yes           Yes      Yes
+safe as the phase mix changes (§2.3). Energy-aware serving
+therefore requires runtime adaptation of task batching, SM
+partitioning, and the shared operating point, rather than a
+one-shot frequency decision.                                         to use (§3.4). This runtime adaptation lets Festina track pre-
+• Cluster-level coupling from serverless scale-in. Dur-              fill/decode shifts and workload drift without relying on static
+ing load valleys, consolidating work onto fewer GPUs can             per-model configurations. To keep control-plane overhead
+save substantial static and memory-system power. But con-            low at serverless scale, both global and local schedulers use
+solidation is not ordinary bin packing. Moving a model would         an offline-profiled look-up table (LUT) that maps request
+change the co-location set on both source and destination            features and resource configurations to latency and power
+GPUs, which can recreate frequency mismatch and alter the            (§3.2). At runtime, energy and latency reasoning reduces to
+energy-SLO tradeoff. If active requests are moved, transfer-         constant-time table queries plus lightweight state checks.
+ring model state or KV cache also consumes time, network                 To further minimize the substantial power consumption
+bandwidth, and energy. Thus, scale-in should be triggered            during periods of low GPU utilization, we propose an ac-
+only when the saved idle power outweighs migration over-             tive scale-in mechanism where the global scheduler period-
+head and when the resulting placement remains compatible             ically evaluates cluster-wide load to identify opportunities
+in both resource demand and preferred operating point.               for workload consolidation and adaptively triggers an LLM
+   Therefore, the core challenge is not to choose a frequency        replacement to deactivate underutilized GPUs by co-locating
+for an isolated model instance, but to coordinate placement,         models with similar optimal frequencies (§3.5). To avoid dis-
+SM partitioning, phase-aware runtime adaptation, and scale-          rupting ongoing inference, we further design a latency-aware
+in under a shared GPU operating point.                               migration algorithm that moves active requests only when
+                                                                     their remaining execution time exceeds migration overhead.
+We present Festina, a two-tier control plane for energy-
+                                                                         We implement Festina based on vLLM [46]. Experiments
+efficient serverless LLM serving on shared GPUs. At the
+                                                                     based on industrial traces show that Festina can save up
+cluster level (§3.3), a lightweight global scheduler performs
+                                                                     to 56% energy while maintaining parity in SLO attainment
+queue-aware, SLO-safe request placement. Rather than sim-
+                                                                     (within a 2% margin) in comparison to the state-of-the-art
+ply selecting the least-loaded GPU, it chooses a feasible GPU
+                                                                     (SOTA) LLM serving systems. To put this in perspective, in
+whose current operating point, available SMs, memory ca-
+                                                                     an industry AI cloud of 10,000 NVIDIA H100 GPUs, Festina
+pacity, and queued work best match the incoming request.
+                                                                     could potentially save over 2.8 million kWh of electricity per
+This avoids placing requests on GPUs where they would
+                                                                     month: an amount equivalent to the monthly energy con-
+either violate SLOs or create unnecessary operating-point
+                                                                     sumption of approximately 2,600 average U.S. households.
+mismatch. However, as an LLM request quickly transitions
+                                                                     Sensitivity analysis confirms the robustness of Festina across
+from compute-heavy prefill to memory-bound decode, and
+                                                                     diverse workload compositions (e.g., prefill-heavy, decode-
+the batch on a GPU changes as other requests arrive and
+                                                                     heavy) and validates its feasibility of energy-efficient execu-
+finish, a request placement that is energy optimal at dispatch
+                                                                     tion under a prefill-decode disaggregated architecture.
+time can soon become suboptimal mid-execution, wasting
+                                                                         To the best of our knowledge, Festina is the first server-
+energy and increasing SLO violation risk when local con-
+                                                                     less LLM serving system that explicitly targets cluster-wide
+tention deviates from what the global scheduler assumed.
+                                                                     energy minimization under a GPU-sharing regime by coor-
+   Festina bridges this gap with per-GPU local scheduler that
+                                                                     dinating request placement, phase-aware task scheduling,
+continuously observes the live batch composition and jointly
+                                                                     SM partitioning, shared operating-point control, and scale-in
+decides which prefill and decode tasks to run, how to par-
+                                                                     migration under strict TTFT/TBT SLOs. This paper makes
+tition SMs among them, and which shared operating point
+                                                                     the following contributions:
+                                                                 2
+                                       (a) MuxServe                                      (SLO) 1
+                                                                                                                   Qwen2.5-7b    Llama2-13b     Mistral3.1-24b   Freq.
+                                                                                                                                                                           1785                                                 1
+SM Clock (MHz) SM Clock (MHz)
+
+                                                                                                                                                                                                    MuxServe
+
+
+
+
+                                                                                                                                                                                  Frequency (MHz)
+                                1600                                                                                                    > 24% slack
+
+
+
+
+                                                                                         Norm. latency
+                                                                                                         0.8                                                               1635                                                 0.8
+                                1500                                                                     0.6                                                               1485                                                 0.6
+
+
+
+
+                                                                                                                                                                                                                                      CDF
+                                1400                                                                     0.4                                                               1335                                                 0.4
+
+                                1300                                                                     0.2                                                               1185                                                 0.2
+                                                                                                                                     MuxServe
+                                       (b) Aegaeon                                                        0
+                                                                                                               0           15            30            45             60
+                                                                                                                                                                     sec
+                                                                                                                                                                           1035
+                                                                                                                                                                                                    0     0.2    0.4 0.6 0.8
+                                                                                                                                                                                                                SLO slack
+                                                                                                                                                                                                                                1
+                                                                                                                                                                                                                                 0
+
+                                1600                                                     (SLO) 1                                                                           1785
+                                                                                                                                                                                                        Aegaeon
+                                                                                                                                                                                                                                1
+
+
+
+
+                                                                                                                                                                                  Frequency (MHz)
+                                1500
+
+
+
+
+                                                                                         Norm. latency
+                                                                                                         0.8                                                               1635                                                 0.8
+                                                                                                                                  > 52% slack
+                                1400                                                                     0.6                                                               1485                                                 0.6
+
+
+
+
+                                                                                                                                                                                                                                      CDF
+                                1300                                                                     0.4                                                               1335                                                 0.4
+
+                                          0     1     2   3      4    5   6      7                       0.2                                                               1185                                                 0.2
+                                                          GPU Index                                       0
+                                                                                                               0           15
+                                                                                                                                      Aegaeon
+                                                                                                                                         30            45             60
+                                                                                                                                                                           1035                     0     0.2    0.4 0.6 0.8    1
+                                                                                                                                                                                                                                 0
+                                                                                                                                                                     sec                                        SLO slack
+                                                                                                                   (a) Normalized latency of three co-located LLMs
+                                                                                                                                                                                                        (b) CDF of SLO slack.
+           Figure 1. The frequency distribution of eight GPUs in                                                            and real-time GPU frequency.
+
+           MuxServe [7] and Aegaeon [52] setups. They all stay at a                      Figure 2. (a) Normalized latency of three co-located LLMs
+           high 1635 MHz throughout the model serving session.                           and real-time GPU frequency. (b) CDF of SLO slack for three
+                                                                                         LLMs during serving requests.
+           • We formulate energy-efficient serverless LLM serving on
+             shared GPUs as a coupled scheduling problem, where re-
+             quest placement, SM partitioning, phase-aware batching,                     used by these systems, GPUs frequently remain close to
+             shared operating-point control, and consolidation should                    the TDP-limited frequency of 1635 MHz, despite substantial
+             be jointly decided under TTFT/TBT SLOs.                                     variation in the workload intensity.
+           • We design Festina, a multi-timescale control plane that                        To understand whether this high operating point is nec-
+             combines queue-aware global placement, phase-aware lo-                      essary for meeting latency constraints, we measure request
+             cal batching, joint SM/operating-point adaptation, and                      latency under the same setup. Figure 2(a) shows the nor-
+             frequency-affinity-aware consolidation with migration-                      malized serving latency of three co-located LLMs, where a
+             cost checks and efficient transitions.                                      value below one means that the request completes within
+           • We implement Festina on vLLM and evaluate it on an H100                     its SLO. Across the trace, all three models remain well be-
+             testbed with industrial LLM serving traces. Festina cuts                    low the SLO boundary. Under MuxServe, even the heaviest
+             cluster energy consumption by up to 56% over SOTA serv-                     model, Mistral-24B, remains at least 24% below the SLO limit
+             ing systems while preserving SLO attainment within 2%.                      at its worst point; Qwen-7B and Llama2-13B exhibit even
+                                                                                         larger margins for most of the trace. Aegaeon shows greater
+           2                       Motivation: Energy Coupling in                        slack, with more than 52% headroom, due to its prefill-decode
+                                   Shared-GPU LLM Serving                                disaggregated architecture.
+          In this section, we conduct measurement studies to explain                        Figure 2(b) further shows that this slack persists through-
+          why energy-efficient serverless LLM serving cannot be re-                      out the trace rather than appearing only during short idle
+          duced to standalone DVFS. We first show that existing server-                  intervals. This behavior suggests an important opportunity.
+          less GPU-sharing systems leave substantial SLO slack while                     Existing serving stacks are optimized primarily for through-
+          GPUs remain near their high-power operating region, which                      put, utilization, or SLO attainment, and typically leave GPU
+          creates an opportunity for energy-aware control. We then                       operating-point control to default hardware policies. As a
+          demonstrate that GPU frequency affects energy in the ex-                       result, the GPU can continue operating near a high-power
+          pected U-shaped manner, consistent with prior DVFS stud-                       point even when requests already finish well before their
+          ies [25, 41, 57]. However, our key finding is that the energy-                 TTFT/TBT deadlines. Such unused latency headroom creates
+          optimal configuration shifts with the model, workload den-                     room for energy-aware scheduling: the serving system can
+          sity, execution phase (i.e., prefill/decode), and SM allocation.               trade part of the slack for lower power, as long as doing so
+          These shifts make energy optimization a coupled schedul-                       does not increase queuing delay enough to violate SLOs.
+          ing problem over model placement, SM partitioning, phase-                               Observation One: Serverless GPU-sharing workloads of-
+          aware runtime adaptation, and just-in-time scale-in.                                    ten have substantial SLO slack while GPUs remain near
+                                                                                                  high-power operating points, creating room for energy-
+           2.1                         SLO Slack Creates Room for Energy-Aware
+                                                                                                  aware scheduling.
+                                       Scheduling
+          We begin by examining how existing serverless GPU-sharing
+          systems use GPU operating points under realistic serving                       2.2                       Energy-Optimal Operating Points Shift Across
+          workloads. We run MuxServe [7] and Aegaeon [52] using                                                    Workloads and Phases
+          MuxServe’s traces and record GPU frequencies across eight                      The previous result shows that serverless LLM requests of-
+          NVIDIA H100 GPUs in a serverless serving setup. Figure 1                       ten have latency slack. A natural next question is whether
+          shows a clear pattern: under the default hardware policy                       changing the GPU operating point can safely convert this
+                                                                                     3
+                      sweet spot                                     sweet spot
+                                                                                                                                                                              S1     S2       S3
+
+
+
+
+                                                                                                                   Norm. energy
+                       bs=128, seq=128      bs=128, seq=512           in=1024, out=128    in=4096, out=128
+               1.4
+                             Qwen2.5:7b -- Prefill
+                                                               1.8
+                                                                            Qwen2.5:7b -- Decode
+                                                                                                                                   1
+Norm. energy
+
+
+
+
+               1.3                                             1.6
+                                                                                                                                  0.9                             17%
+               1.2                                             1.4
+
+               1.1                                             1.2                                                                0.8                                 8%
+                 1                                           1
+                  345 525 705 885 1065 1245 1425 1605 1785     345 525 705 885 1065 1245 1425 1605 1785                           0.7
+               1.4
+                            Llama2:13b -- Prefill
+                                                       MHz
+                                                           1.8
+                                                                         Llama2:13b -- Decode
+                                                                                                    MHz
+                                                                                                                                            (512, 128)        (1024, 128)       (4096, 512)
+Norm. energy
+
+
+
+
+               1.3                                             1.6                                                                                   (input length, output length)
+               1.2                                             1.4
+
+               1.1                                             1.2
+                                                                                                                    Figure 4. The normalized energy for three distinct settings
+                 1                                           1                                                      under various workloads (i.e., input length).
+                  345 525 705 885 1065 1245 1425 1605 1785     345 525 705 885 1065 1245 1425 1605 1785
+                                                       MHz                                          MHz
+               1.4
+                           Mistral3.1:24b -- Prefill
+                                                           1.6
+                                                                        Mistral3.1:24b -- Decode                      Accordingly, when multiple LLMs are co-hosted on the
+Norm. energy
+
+
+
+
+               1.3                                             1.4
+                                                                 5                                                  same GPU, each individual model’s energy sweet spot can
+               1.2                                             1.3
+                                                                                                                    conflict because the GPU exposes one device-wide operating
+               1.1                                        1.1
+
+                1
+                                                            5
+                                                            1
+                                                                                                                    point. As a result, an operating point that saves energy for
+                 345 525 705 885 1065 1245 1425 1605 1785     345 525 705 885 1065 1245 1425 1605 1785
+                                 Frequency               MHz
+                                                                                 Frequency               MHz        one model or phase may waste energy for another, while
+                                                                                                                    an overly aggressive downshift may slow co-resident work
+ Figure 3. Impact of GPU frequency on energy consumption.
+                                                                                                                    enough to threaten SLOs.
+ Across all three LLMs, energy consumption follows a U-
+ shaped curve during both prefill and decode. Red circles mark                                                             Observation Two: Consistent with prior DVFS studies,
+ the energy-optimal frequency, while annotations indicate                                                                  LLM serving exhibits a U-shaped energy-frequency tradeoff.
+ the remaining SLO slack at those operating points.                                                                        The key challenge in serverless GPU sharing is that the
+                                                                                                                           energy sweet spot shifts across models, phases, and workload
+ slack into energy savings. Following common DVFS charac-
+                                                                                                                           intensity, creating conflicts among co-resident workloads
+ terization methodology [41, 54, 57], we profile phase-wise
+                                                                                                                           that share one device-wide operating point.
+ energy consumption of representative LLMs under different
+ GPU frequencies and workload intensities. We use the same
+ models as before and measure both prefill and decode energy                                                        2.3                 Frequency Scaling Alone Is Insufficient Under
+ under different input/output lengths.                                                                                                  GPU Sharing
+    Figure 3 shows that energy follows the expected U-shaped                                                        The previous subsection shows that frequency is an impor-
+ trend with respect to GPU frequency. At low frequencies,                                                           tant actuator. We now ask whether frequency control alone
+ execution time increases and dominates total energy. While                                                         is sufficient once multiple LLMs share a GPU. In a GPU-
+ at high frequencies, power increases and dominates total en-                                                       sharing setting, SM partitioning is another primary deter-
+ ergy. The minimum (i.e., sweet spot) appears at an interme-                                                        minant of execution time because it controls how much
+ diate frequency, reflecting the classic power–time tradeoff:                                                       compute budget each co-resident workload receives. Fre-
+                                                                                                                    quency and SM allocation are therefore coupled: lowering
+                                        𝐸𝑛𝑒𝑟𝑔𝑦 = 𝑃𝑜𝑤𝑒𝑟 × 𝑇 𝑖𝑚𝑒                                           (1)
+                                                                                                                    frequency reduces dynamic power but can increase execu-
+    This U-shaped behavior is consistent with prior DVFS                                                            tion time, while changing SM allocation changes the latency
+ studies [41, 54, 57] and selecting the energy-minimizing op-                                                       impact of any frequency choice. To quantify this coupling,
+ erating point yields significant savings in Figure 3: at least                                                     we compare three configurations that progressively expand
+ 16% for prefill and 27% for decode compared to the TDP limit,                                                      the optimization scope:
+ while still satisfying latency SLOs.                                                                               • S1: Performance-first baseline. We select the SM par-
+    However, the real challenge is that for shared-GPU serving,                                                       titioning that minimizes execution time and leave GPU
+ the sweet spot is not fixed. We conclude three sources of                                                            frequency under default hardware control.
+ variation from Figure 3:                                                                                           • S2: Frequency-optimized. We keep the latency-optimal
+ • Workload sensitivity. For the same LLM, as workload                                                                SM partitioning from S1, but tune GPU frequency to mini-
+   intensity increases, e.g., with longer input sequences, the                                                        mize energy while preserving SLOs.
+   energy-minimizing operating point shifts toward higher                                                           • S3: Jointly optimized. We jointly select SM partitioning
+   frequencies because the workload becomes more compute-                                                             and GPU frequency to minimize energy under the same
+   intensive and benefits more from higher throughput.                                                                SLO constraints.
+ • Phase sensitivity. The prefill phase generally prefers a                                                            Figure 4 plots normalized energy under these configura-
+   higher frequency than the decode phase for the same LLM,                                                         tions. Comparing S1 and S2 confirms that frequency scaling
+   which aligns with the compute-heavy nature of prefill and                                                        remains useful in GPU-sharing scenarios, reducing energy by
+   the memory-bound nature of decode [25].                                                                          17% in our measured setting. However, comparing S2 and S3
+ • Model sensitivity. Larger models tend to favor higher                                                            shows that frequency scaling alone leaves additional savings
+   frequencies than smaller models under comparable serving                                                         on the table: jointly reconfiguring SM partitioning and fre-
+   conditions because they impose heavier compute demand.                                                           quency reduces energy by another 8%. This additional gain
+                                                                                                               4
+                                                                     • Local Tier: Joint SM-Frequency, Phase-Level Adapta-
+                                                                     tion (§3.4). Because an LLM request shifts from compute-
+                                                                     heavy prefill to memory-bound decode, the energy-optimal
+                                                                     SM/frequency setting can change during execution. Each
+                                                                     GPU runs a local scheduler that monitors the live batch mix
+                                                                     and dynamically adjusts SM partitioning and GPU frequency
+                                                                     to track these phase changes without violating SLOs.
+                                                                     • Cluster-Level Consolidation: Active Scale-In (§3.5).
+                                                                     To reduce cluster-wide static power (e.g., HBM) under low
+                                                                     load, Festina periodically re-evaluates placement and consoli-
+                                                                     dates workloads onto fewer GPUs, deactivating underutilized
+                                                                     devices when possible while preserving frequency affinity.
+                                                                     When consolidation requires moving in-flight work, we use
+                                                                     an SLO-aware, pipelined migration mechanism to minimize
+                                                                     service disruption (details in §F).
+Figure 5. System overview of Festina. Festina adopts a two-          3.2   One-Time Offline Profiling
+tier hierarchy for energy-aware serverless LLM serving.              Our offline profiling consists of Look-Up Table construction
+                                                                     and output token length predictions.
+                                                                     3.2.1 Look-Up Table Construction. Prior to runtime de-
+appears because changing SM allocation shifts the latency-           ployment, Festina constructs a high-fidelity look-up table
+energy tradeoff and can move the energy-minimizing fre-              that records the inference latency and power metrics of each
+quency itself.                                                       LLM under different request intensity and GPU hardware
+   More importantly, our experiments also show that the              resource configurations, as shown in Figure 6. We perform
+energy-optimal configuration is not static. For instance, un-        a comprehensive grid search across three primary dimen-
+der the workload (1024 input tokens, 128 output tokens), the         sions: GPU clock frequency, Streaming Multiprocessor (SM)
+ideal (SM partitioning, frequency) setting shifts from (30-30-       allocation, and input sequence length.
+40 SMs, 1155 MHz) in S2 to (20-40-40 SMs, 1065 MHz) in S3. In        Profiling Grid and Bounds. We sweep GPU clock frequen-
+real-world LLM serving, workloads are inherently dynamic:            cies from 795 MHz to 1635 MHz with a stride of 90 MHz.
+request rates fluctuate and token lengths vary continuously.         The lower bound of 795 MHz is chosen based on findings
+ Observation Three: Significant energy-saving potential              from EVeREST [59], which demonstrate that reducing fre-
+ exists in GPU-shared environments, but maximizing effi-             quency below this threshold yields negligible voltage re-
+ ciency requires the co-reconfiguration of SM partitioning           duction, thereby halting energy savings. The upper bound
+ and frequency and the adaptation to workloads.                      corresponds to the hardware’s TDP for the specific GPU type
+                                                                     (e.g., 1635 MHz for NVIDIA H100 GPU), consistent with prior
+3     Festina Design                                                 energy-aware frameworks [41, 59]. We also vary SM alloca-
+As shown in Figure 5, Festina uses a two-tier hierarchy for          tion from 10% to 100% with a stride of 10%. To ensure our
+energy-aware serverless LLM serving: a lightweight global            profiling captures representative production demands, we
+scheduler makes fast, SLO-safe energy-aware placement deci-          define the input sequence range based on real-world LLM
+sions across the GPU pool, while a per-GPU local scheduler           workload traces from Azure [41], sweeping from 256 to 8192
+performs phase-aware runtime adaptation by jointly tuning            tokens (same as DynamoLLM [41]) to encompass the vast
+SM partitioning and GPU operating point to save energy. Both         majority of standard inference requests.
+tiers are unified by the same offline-profiled look-up table         Metric Collection and Interpolation. For each configura-
+(§3.2), turning energy and latency reasoning into constant-          tion tuple (Frequency, SM%, Input Length), we record three
+time queries that scale with cluster size.                           critical metrics: Time To First Token (TTFT), Time Between
+                                                                     Tokens (TBT), and average power consumption. We also
+3.1   System Overview                                                quantify the one-time latency of loading model weights into
+• Global Tier: Light-Weight, Frequency-Aware Dispatch-               GPU memory. To estimate performance for input lengths
+ing (§3.3). On each request arrival, the global scheduler            not explicitly covered by our grid, we employ polynomial
+uses the LUT and compact per-GPU state summaries to se-              regression, a standard technique for continuous resource
+lect an SLO-feasible GPU whose current operating point               modeling in LLM serving [13, 41, 49].
+best matches the request’s predicted intensity. This keeps           Profiling Overhead and Reusability. Note that offline pro-
+dispatch overhead low while avoiding energy waste from               filing is a one-time, low-overhead setup step. In our imple-
+frequency-mismatched execution.                                      mentation, the full profiling procedure completes in under 40
+                                                                 5
+                             Look-up table (LUT)                                                       this, we propose a frequency-aware dispatcher that routes
+            KV per       Frequency                    Prefill                           Decode
+  LLM                SM%           Length TTFT (ms)                         TBT (ms)
+          token (KB)       (MHz)                    power (W)                          power (W)       each request to a GPU whose current clock frequency best
+                            1015    256      …          …                      …          …
+                      20
+ Mistral-
+             80KB
+                            1635    256      …          …                      …          …            matches the request’s workload, while still meeting the SLO.
+nemo:12b                    1015    1024     …          …                      …          …
+                      30                                                                               As illustrated in Figure 6, the dispatcher works in three
+                            1635    1024     …          …                      …          …
+        Reqmem                                                 energy comparison                       phases: (i) feasibility checking, (ii) GPU selection, and (iii)
+  GS               LS     LS   LS
+                                                              Skip     42       30     select          resource scaling. We elaborate on each phase below.
+        Tavail , SMfree
+                                            Phase2: Minimum-Energy Selection                           • Phase One: Pooling-based Feasibility Checking. When
+                 220 < 200     pass                     Sort by Tavail & SLO checking (TDP)            a request arrives, the global dispatcher first predicts its out-
+     SLO                       all fail
+   checking 152 < 200                                                                  select          put token length and adds a 5% safety margin to account for
+                                             fail
+   SLO = 200 185 < 200
+                                                           If SLO checking fails for all               estimation error (§3.2.2). With request input length 𝑅𝑒𝑞𝑖𝑛 and
+                                                          activate a new GPU new select                this padded length 𝑅𝑒𝑞𝑜𝑢𝑡 , it derives the request’s memory
+ Phase1: Feasibility Checking                           Phase3: Fallback and Scaling                   demand, denoted as 𝑅𝑒𝑞𝑚𝑒𝑚 .
+            GS Global Scheduler                   LS Local Scheduler                                      Next, the dispatcher polls all local schedulers to determine
+                                                                                                       which GPUs can accommodate the request. Each local sched-
+    Figure 6. Dispatching flow of the global scheduler.
+                                                                                                       uler maintains the state of its running and queued requests
+minutes on an NVIDIA H100. Although profiling is hardware-                                             and uses the offline-profiling look-up table (§3.2) to translate
+and model-specific, it is required only once per GPU type                                              these queued workloads into a time-varying estimate of SM
+and model. Moreover, serverless providers typically offer a                                            and memory utilization. From this local view, the scheduler
+small, fixed set of GPU SKUs and model types; therefore, the                                           computes (1) the Earliest Available Timestamp 𝑇𝑎𝑣𝑎𝑖𝑙 at which
+total number of distinct profiles needed in practice is limited.                                       at least 𝑅𝑒𝑞𝑚𝑒𝑚 memory can be allocated, and (2) the number
+                                                                                                       of free SMs available at that time, 𝑆𝑀 𝑓 𝑟𝑒𝑒 . It then returns
+3.2.2 Output Token Length Prediction. To accurately                                                    (𝑇𝑎𝑣𝑎𝑖𝑙 , 𝑆𝑀 𝑓 𝑟𝑒𝑒 ) to the global dispatcher.
+estimate total inference latency and determine if a specific                                              Finally, the global dispatcher performs an SLO feasibility
+GPU frequency can satisfy a request’s SLO, Festina should                                              check for each GPU. A GPU is considered feasible only if a re-
+account for the duration of each task’s prefill and decode                                             quest starting at𝑇𝑎𝑣𝑎𝑖𝑙 , with 𝑆𝑀 𝑓 𝑟𝑒𝑒 SMs, can complete before
+phase. Prior works [18, 40, 41, 65] have shown that the output                                         its SLO deadline under the GPU’s current clock frequency
+token length is highly predictable. We thus borrow the same                                            𝐹𝑐𝑢𝑟𝑟 . This phase ensures that subsequent energy-oriented
+approach to predict the output token length using a high-                                              decisions are made only among candidates that do not com-
+accuracy output length predictor [41, 65].                                                             promise SLO compliance. As shown in Phase 1 of Figure 6,
+   Figure 7 illustrates the distribution of prediction errors of                                       only GPUs with estimated timestamp < 200 (i.e., SLO target)
+two LLMs under real-world LLM workload traces [41, 64].                                                are feasible for the next phase.
+As observed, the pre-                                                                                  • Phase Two: Energy-Minimal GPU Selection. Given the
+dictor exhibits a tight          50
+                                                                                                       feasible set of candidates C, the global dispatcher chooses
+                                 40
+                                          Portion (%)
+
+
+
+
+error bound, with the            30                                                                    the target GPU that minimizes the request’s expected energy
+vast majority of pre-            20                                                                    consumption at the GPU’s current operating frequency. For
+dictions deviating by            10
+                                                                                                       each candidate 𝐺𝑃𝑈𝑘 ∈ C with current frequency 𝑓𝑘 and SM
+                                  0-10
+less than 5% from the                   -5     -2.5   +2.5
+                                           Error deviation (%)
+                                                               +5  +10
+                                                                                                       availability 𝑆𝑘 , the dispatcher estimates the energy to serve
+ground truth (only 2%                   Qwen3-8B        Chatglm-6b
+                                                                                                       the request as:
+of predictions have an
+                               Figure 7. Distribution of rela-
+error > +5%). Suggested                                                                                      𝐸𝑘 = Power(𝑓𝑘 ) × Latency(𝑓𝑘 , 𝑆𝑘 , 𝑅𝑒𝑞𝑖𝑛 , 𝑅𝑒𝑞𝑜𝑢𝑡 )   (2)
+                               tive error percentages, catego-
+by these results, we
+                               rized by deviation ranges.                                              where Power(·) and Latency(·) are obtained from the look-
+provide a modest extra
+                                                                                                       up table. The scheduler dispatches the request to the GPU
+5% memory buffer, which sufficiently accommodates this
+                                                                                                       𝑘 ∗ that minimizes the energy cost:
+variance without incurring significant over-provisioning                                                                                  
+waste. With this, the global scheduler can pre-calculate the                                                                𝑘 ∗ = argmin 𝐸𝑘                   (3)
+expected latency for any given frequency-SM configuration,                                                                          𝑘∈C
+ensuring that dispatching decisions are both energy-efficient                                             In Phase 2 of Figure 6, the GPU with lower energy con-
+and SLO-compliant.                                                                                     sumption (i.e., 30 Joules) is selected to process the request.
+3.3 The Global Scheduler: Light-Weight,                                                                This objective implicitly favors frequency alignment. Be-
+      Frequency-Aware Request Dispatching                                                              cause energy exhibits a convex dependence on frequency
+The energy-optimal GPU frequency depends strongly on                                                   (§2.2), the estimated energy 𝐸𝑘 increases when a candidate’s
+the request’s workload intensity: running at a mismatched                                              current frequency 𝑓𝑘 is far above or below the request’s
+frequency can substantially increase energy consumption,                                               energy-optimal operating point (i.e., frequency sweet spot),
+while running too slowly risks SLO violations. To address                                              making such mismatches less likely to be selected.
+                                                                                                   6
+                        Sort by (priority) Score                                In above equation, Latency(𝑡𝑎𝑠𝑘) is the profiled execution
+  Index Score Mem. (MB) SM (%)        Index Score Mem. (MB) SM (%)
+    D1   3.8    400       20            P1   2.4    800       50                time of the scheduling unit (one decode step for decode
+    D3    3     500       20            P3   2.1    500       40                tasks, and a prefill unit for prefill tasks), and Slack𝑡𝑎𝑠𝑘 is
+    D2   2.8    650       20            P2    2     1400      70
+ Step 1 & 2: Priority computation & Priority-based task batching
+                                                                                the remaining time budget to the relevant SLO deadline
+                                                                                (i.e., TBT for decode; TTFT for prefill). Age𝑡𝑎𝑠𝑘 is the time a
+      Freq. (MHz) SM(P1) SM(D1) SM(D2) SM(D3) < 100% SMs Energy (J)
+          900       50     20     30     20       No        36                  task has waited since becoming runnable. We set 𝛽 = 0 for
+         1100       40     20     20     20       Yes       40                  decode tasks (they are continuously active and repeatedly
+         1300       30     20     20     20       Yes       48
+Step 3: Runtime energy-minimizing frequency and SM adjustment
+                                                                                re-evaluated), and use 𝛽 = 1 for prefills so that waiting
+                                                                                gradually reduces effective slack, preventing starvation.
+        Figure 8. Working flow of the local scheduler.                          Task Batching. Using this unified score, the scheduler main-
+                                                                                tains a single priority queue containing both runnable de-
+   It should be noticed that when multiple candidates have                      codes and pending prefills. At each epoch, it constructs the
+near-identical energy (e.g., within 2%), Festina uses a stability-              next batch by selecting tasks in descending Score𝑡𝑎𝑠𝑘 order
+oriented tie-breaker: it first selects the GPU with the most                    subject to the GPU’s instantaneous memory capacity and
+free memory to reduce out-of-memory risk, and then the                          the chosen SM partition. This resource-aware selection is il-
+GPU with the largest 𝑆𝑀 𝑓 𝑟𝑒𝑒 to improve throughput.                            lustrated in Figure 8. The scheduler iteratively fills the batch.
+• Phase Three: Fallback and Scaling. If the set of candi-                       However, if the remaining resources (e.g., 40% SM capacity)
+dates C is empty, which means no GPU can meet the SLO                           are insufficient for the highest-priority task (P1), the sched-
+at its current frequency, the global dispatcher relaxes the                     uler bypasses it to dispatch a fitting lower-priority task (P3).
+frequency constraint. It orders GPUs by the earliest avail-                     This strategy mitigates head-of-line blocking and maximizes
+able timestamp and evaluates feasibility assuming each GPU                      resource occupancy. Consequently, the policy dynamically
+boosts to its TDP-limited maximum frequency (𝐹𝑚𝑎𝑥 = 1635                        balances trade-offs: it prioritizes decodes when TBT slack is
+MHz). The request is dispatched to the first GPU capable                        tight, yet elevates prefills as their TTFT deadlines approach,
+of meeting the SLO under 𝐹𝑚𝑎𝑥 . If the deadline remains in-                     ensuring SLO compliance across both phases.
+feasible even at 𝐹𝑚𝑎𝑥 , Festina triggers a scale-out action to                  Runtime Resource Allocation. Given a candidate batch,
+activate a new GPU, as exhibited in Phase 3 of Figure 6. For                    the scheduler jointly chooses GPU clock frequency and SM
+this newly activated GPU, the global scheduler queries the                      partitioning to minimize energy while meeting the batch’s
+LUT to identify the optimal frequency, minimizing energy                        SLO constraints. Similar in spirit to DVFS-based energy op-
+usage without violating SLOs. This scheduling process has                       timization [56], we exploit the fact that valid GPU clock
+negligible overheads (< 1 ms for 10,000 GPUs) in §D.                            settings are discrete and few (typically < 10 levels [41, 59]).
+                                                                                Rather than solving a complex continuous optimization, we
+3.4    The Local Scheduler: Joint Frequency- SM                                 perform a lightweight frequency sweep, exhibited in Step 3 of
+       Adaptation for Energy Efficiency                                         Figure 8: for each candidate frequency 𝑓 , we use the offline
+The local scheduler deployed on each GPU decides which                          look-up table to (1) compute, for each task in the batch, the
+prefill and/or decode tasks to run next and adjusts SM parti-                   minimum SM allocation required to satisfy its deadline at fre-
+tions and GPU clock for those tasks, performing fine-grained                    quency 𝑓 , and (2) check whether the aggregate SM demand
+resource management to optimize energy efficiency. Figure 8                     fits within the device budget (i.e., < 100% SMs). For feasible
+illustrates the working flow of the local scheduler.                            configurations, we estimate total energy using the profiled
+   Motivated by prior LLM serving work on stall-free sched-                     power and latency models, and select the frequency/partition
+uling [3, 7, 9, 17, 36], the local scheduler allows out-of-order                pair with the lowest predicted energy. Because the sweep
+interleaving between prefill and decode so that a request’s                     iterates over a small constant-sized frequency set and uses
+short decode steps can still make progress even when an-                        only a look-up table, its overhead is negligible (i.e., 0.1 ms),
+other request’s long prompts are present. The key challenge                     scaling as 𝑂 (|F | · 𝑁 ) for 𝑁 tasks and |F | frequency levels.
+is that these two task types operate on very different time                     Handle mis-predictions. In rare instances where the global
+scales: decode deadlines are at the millisecond level, whereas                  scheduler underestimates output length, a request may ex-
+prefill deadlines are typically at the second level.                            ceed its allocated memory budget, triggering an Out-of-
+Unified Priority Score. To compare these heterogeneous                          Memory (OOM) error. To resolve this, the local scheduler
+tasks directly, we normalize them using a single urgency met-                   immediately assigns the highest priority to the mispredicted
+ric: the Slack Consumption Ratio (Score𝑡𝑎𝑠𝑘 ). It measures the                  request. If memory remains insufficient to complete this re-
+fraction of the remaining time budget a task would consume                      quest, the local scheduler evicts the running request that in-
+if scheduled next; higher values indicate higher urgency :                      curs the minimum recomputation overhead to free up space.
+
+                                  Latency(𝑡𝑎𝑠𝑘)
+               Score𝑡𝑎𝑠𝑘 =                                            (4)
+                              Slack𝑡𝑎𝑠𝑘 − 𝛽 · Age𝑡𝑎𝑠𝑘
+                                                                            7
+                 Phase 1: Resource Profiling                                  Table 2. TTFT/TBT SLOs from DynamoLLM [41].
+Estimate SMl        25%       25%         20%                 20%                           Input    Output     TTFT SLO      TBT SLO
+ Estimate Ml         55%             50%         35%          35%
+                                                                            Short      S   < 256      < 100       250 ms       100 ms
+                 Phase 2: Capacity Planning                                Medium      M   < 1024     < 350       400 ms       100 ms
+                                  safety
+      BestFit
+                                  margin                                    Long       L   ≤ 8192     ≥ 350      2000 ms       100 ms
+                   SMeff                       Meff          Meff
+ Min #GPUs                 Nmin = Max(NSM = 1, Nmem = 2)                    We then derive the Energy Waste Ratio as a normalized
+           Phase 3: EWR-Minimization Placement                            inefficiency metric:
+ Sort by freq.     1325 (MHz)  1250  1200  1125                                                    𝐸 waste
+    Direct                                   EWR                                               EWR =                           (7)
+  placement                                   Place                                                  𝐸 optimal
+                   freq. = 1325                        freq. = 1250
+                                             mem.                           EWR = 0 indicates perfect frequency alignment (no waste),
+                   freq. = 1325                        freq. = 1250
+                                                                          while larger values imply increasing energy loss due to
+ EWR-driven                          mem.   EWR                           consolidation-induced frequency skew.
+  swapping                              swap
+                   freq. = 1325                        freq. = 1250       3.5.2 EWR-Aware Workload Replacement. Our algo-
+                                             Place
+                                                                          rithm (Algo.1 in §E) proceeds in three phases to minimize
+                   freq. = 1325                        freq. = 1250       active GPUs while maintaining a low EWR, as shown in
+   Fallback                         Place       swap                      Figure 9 (explanation for the running example in §E).
+                   freq. = 1325                        freq. = 1250       Phase One: Profiling & Resource Estimation. For each
+                                                                          active LLM 𝑙, the local scheduler calculates the preferred
+                                                                          configuration (𝑆𝑀𝑙 , 𝐹𝑙 ) that minimizes energy while meeting
+  Figure 9. EWR-aware LLM placement reconfiguration.                      SLOs, based on the average input/output lengths in the past
+                                                                          time window (i.e., Δ = 5 minutes). The detailed computa-
+                                                                          tion process is listed in §E. Simultaneously, it estimates the
+3.5     Energy-Aware Workload Replacement
+                                                                          memory requirement, 𝑀𝑙 , using Little’s Law [32] to avoid
+To further reduce the cluster-wide energy overhead, Festina               static over-provisioning. Specifically, the local scheduler cal-
+periodically consolidates workload by migrating LLM work-                 culates the expected request concurrency using the formula
+loads off lightly loaded GPUs onto more utilized ones and                 𝑁𝑐𝑜𝑛𝑐 = 𝜆 · W, where 𝜆 is the measured request arrival
+deactivates the freed GPUs. To make consolidation energy-                 rate and W is the average processing latency given the
+aware, we introduce a metric called Energy Waste Ratio (EWR)              GPU configuration (𝑆𝑀𝑙 , 𝐹𝑙 ). The total memory pressure is
+(§3.5.1) and then design an EWR-aware reconfiguration al-                 then derived by summing the static model weights and the
+gorithm that consolidates aggressively while minimizing the               KV cache required for 𝑁𝑐𝑜𝑛𝑐 active sequences, expressed as:
+energy penalty from frequency misalignment (§3.5.2).                      𝑀𝑙 = Weights + 𝑁𝑐𝑜𝑛𝑐 · Size𝐾𝑉 .
+                                                                          Phase Two: Global Capacity Planning. Before choos-
+3.5.1 Energy Waste Ratio (EWR). We quantify consolid-
+                                                                          ing specific GPUs, the global scheduler computes the mini-
+ation-induced energy waste as the gap between the power
+                                                                          mum number of GPUs (𝑁𝑔𝑝𝑢 ) required to serve the aggregate
+implied by a GPU’s actual operating frequency after co-
+                                                                          workload. However, naïve packing strategies are suscepti-
+location and the power each LLM would ideally consume
+                                                                          ble to resource thrashing, where minor fluctuations in LLM
+at its own energy-optimal frequency. Since GPU dynamic
+                                                                          workloads (e.g., request rate) trigger a scale-out shortly after
+power scales approximately cubically with frequency (𝑃 ∝
+                                                                          consolidation, negating energy savings and incurring cold-
+𝑓 3 ) [10, 11, 25, 50], the cluster-wide energy waste can be
+                                                                          start penalties. To mitigate resource thrashing, we reserve a
+expressed (up to a constant factor) as:
+                                                                          safety margin (e.g., 𝛿 = 5% in this work) for both SMs and
+                                                                          memory on active GPUs. We define the effective capacity as
+                           ∑︁ ∑︁
+                 𝐸 waste =          𝑡𝑙 · (𝐹𝑔3 − 𝐹𝑙3 )     (5)
+                           𝑔∈GPUs 𝑙 ∈𝑔
+                                                                          𝑆𝑀𝑒 𝑓 𝑓 = (1 − 𝛿) · 𝑆𝑀𝑐𝑎𝑝 and 𝑀𝑒 𝑓 𝑓 = (1 − 𝛿) · 𝑀𝑐𝑎𝑝 . Then, a
+                                                                          bin-packing lower bound is solved for 𝑆𝑀𝑙 and 𝑀𝑙 with re-
+where 𝐹𝑔 represents the operating frequency of GPU 𝑔 (de-                 spect to 𝑆𝑀𝑒 𝑓 𝑓 and 𝑀𝑒 𝑓 𝑓 , and the maximum is used as 𝑁𝑔𝑝𝑢 .
+termined by the highest frequency of co-located LLMs); 𝐹𝑙                 This step identifies the smallest feasible active GPU pool for
+is the desired energy-optimal frequency of LLM 𝑙; 𝑡𝑙 is the               the current workload while retaining headroom to absorb
+model execution time. As a reference, we define the idealized             minor workload fluctuations without triggering scale-out.
+energy if every LLM ran at its preferred frequency:                       Phase Three: Workload Replacement. Given 𝑁 gpu active
+                             ∑︁ ∑︁                                        GPUs, the scheduler places LLMs to reduce frequency skew-
+                 𝐸 optimal =          𝑡𝑙 · 𝐹𝑙3             (6)            ness by grouping models with similar preferred frequencies.
+                               𝑔∈GPUs 𝑙 ∈𝑔                                It sorts all LLMs by 𝐹𝑙 and assigns them in order. For each
+                                                                      8
+LLM, it identifies a Target GPU (the active GPU with the clos-          LLMs from various families, including Qwen, Llama, Yi, and
+est operating frequency) and a Candidate GPU (the second                Mistral. Models range from 3B to 14B parameters, consistent
+closest) based on the following rules:                                  with prior studies [7, 52]. We evaluate our system using the
+    • Direct Placement: If the Target GPU satisfies resource            ShareGPT dataset. Following prior works [7, 8, 27, 52, 53],
+constraints (≥ 𝑆𝑀𝑙 , 𝑀𝑙 ), the LLM is assigned here. This mini-         we generate workloads with a scaled Poisson process and
+mizes 𝐹𝑔3 − 𝐹𝑙3 , keeping EWR low.                                      random sampling from the dataset. To stress-test Festina
+    • EWR-Driven Swapping: If the Target GPU is saturated,              under prefill-heavy and decode-heavy scenarios, we also use
+the scheduler attempts to migrate an "outlier" incumbent                two variants from Aegaeon [52]: ShareGPT-ix2 (2× input
+(the resident LLM with the lowest 𝐹𝑙 ) to the Candidate GPU.            length) and ShareGPT-ox2 (2× output length).
+If the swap is resource-valid and reduces the total 𝐸 waste , the       Metrics. We measure energy consumption and SLO attain-
+outlier is moved to accommodate the new LLM.                            ment, adopting SLO constraints from DynamoLLM [41] (Ta-
+    • Fallback: If prior actions fail, the scheduler iteratively        ble 2). Requests exceeding 8192 tokens are excluded. Energy
+checks the next closest GPUs in the sorted list and assigns             is profiled from the first request arrival to the final comple-
+the LLM to the first GPU found with sufficient resources.               tion. We report Normalized Energy Consumption, calculated
+    We give a running example of phase three in §E. The                 as the total energy consumed by a baseline system divided
+implementation of minimizing communication cost during                  by that of Festina for the same workload. A value greater
+workload placement is detailed in §F.                                   than 1.0 indicates higher energy usage than Festina.
+When to trigger workload replacement? We trigger a re-                  Baselines. We compare Festina against four open-sourced
+placement check when an instance’s keep-alive timer expires,            SOTA serving systems representing the latest works in server-
+indicating an LLM has become idle and can be evicted with-              less auto-scaling, GPU multiplexing, and PD-disaggregation.
+out disruption. A replacement is performed only if capacity
+planning (with a safety margin for small fluctuations) shows            • ServerlessLLM [8]: A specialized serverless framework
+the workload can be served with fewer GPUs (𝑁 gpu < 𝑁 active ),           designed for fast auto-scaling. It minimizes cold-start la-
+enabling scale-in with low control-plane overhead.                        tency through rapid checkpoint loading and implements
+                                                                          efficient live migration mechanisms.
+4     Evaluation                                                        • MuxServe [7]: A static multiplexing system that optimizes
+                                                                          SM partitioning and model placement offline. To ensure a
+Festina is implemented in approximately 2,800 lines of Python
+                                                                          fair comparison with our dynamic approach, we extended
+and CUDA/C++ code. The scheduler is built using Python’s
+                                                                          MuxServe to support co-locating more than two models
+asyncio [39] library to enable high-concurrency instance
+                                                                          per GPU and added a keep-alive mechanism to offload idle
+orchestration. The backend is built upon vLLM [46] to ben-
+                                                                          models to host memory.
+efit from state-of-the-art optimizations such as FlashAtten-
+                                                                        • Dilu [27]: A dynamic serving system that optimizes cluster
+tion [5] and PagedAttention [20]. We utilize pyNVML [38]
+                                                                          utilization by scheduling models according to real-time de-
+to adjust GPU frequency with minimal runtime overhead.
+                                                                          mand. It employs on-the-fly SM re-partitioning to minimize
+   We run experiments to answer the following questions:
+                                                                          latency for co-located workloads.
+   (1): How does Festina balance SLO attainment with energy
+                                                                        • Aegaeon [52]: The state-of-the-art system for prefill-decode
+efficiency compared to SOTA serverless LLM systems?
+                                                                          disaggregated serverless serving. Aegaeon decouples prefill
+   (2): Can Festina maintain performance across different work-
+                                                                          and decode phases onto separate nodes, using fine-grained
+load intensities and types?
+                                                                          KV cache management to reduce data transmission over-
+   (3): What is the contribution of each design module?
+                                                                          head and MPS-based sharing to maximize GPU occupancy.
+   (4): How sensitive is the system to configuration parameters
+                                                                        • AegVoltana: We augment Aegaeon with VoltanaLLM [57]
+like safety margins and disaggregated setups?
+                                                                          to construct a DVFS-aware baseline. Because VoltanaLLM
+                                                                          lacks GPU multiplexing support, Aegaeon handles request
+4.1   Experimental Setup                                                  dispatching and model placement, while VoltanaLLM gov-
+Testbed. We conduct experiments on a serverless testbed                   erns per-GPU runtime frequency scaling.
+consisting of eight NVIDIA H100 GPUs, interconnected via                • Festina+: Festina+ simulates the effects of dynamic HBM
+NVLink. All GPUs support Multi-Process Service (MPS) for                  frequency scaling (a feature not yet supported on NVIDIA
+SM partitioning.                                                          H100) during idle periods. We include this to establish an
+Models, Datasets, and Workloads. Our evaluation focuses                   upper bound on the potential energy savings our system
+on LLMs that fit on a single GPU, since Festina targets                   can achieve through memory frequency adjustments after
+serverless GPU sharing where each GPU can co-host mul-                    scale-in LLM placement reconfiguration in Section 3.5.
+tiple models. We also confirm that substantial SLO slack                   Although DynamoLLM [41], GreenLLM [25], and Voltana-
+also appears for larger, multi-GPU deployments (e.g., a 70B             LLM [57] are closely related in spirit, they are not designed
+Llama2 model) in §B. With that, we select representative
+                                                                    9
+               1.75                                                                               1.75
+Norm. energy
+
+
+
+
+                                                                                   Norm. energy
+                        16 LLMs                                                                                 24 LLMs
+                1.5                                                                                1.5
+               1.25                                                                               1.25
+                  1                                                                                  1
+               0.75                                                                               0.75
+                0.5                                                                                0.5
+                      RPS=2       2.5        3          3.5               4                                   RPS=1         1.5     2         2.5             3
+                                                                                                                                                                     (MHz)
+               1.75                                                                               6000                                                                1800
+Norm. energy
+
+
+
+
+                        32 LLMs                                                                              32 LLMs at RPS=2.5
+
+
+
+
+                                                                                                                                                                             Frequency
+                                                                                  #Requests
+                1.5                                                                               5500                                                               1600
+               1.25
+                                                                                                  5000                                                               1400
+                  1
+               0.75                                                                               4500                                                               1200
+                0.5                                                                               4000                                                                1000
+                      RPS=0.5      1         1.5            2         2.5                                0         10         20    30       40          50        60
+                                                                                                                                                                  (mins)
+                          ServerlessLLM   MuxServe   Dilu       Aegaeon       AegVoltana                     Festina    Festina+   Request-per-minutes
+ Figure 10. Normalized energy consumption relative to Festina under varying RPS loads and numbers of LLMs, alongside a
+ runtime trace of GPU frequency and request arrival rate for the 32-LLM scenario at 2.5 RPS.
+
+ for the serverless GPU-sharing setting we study, where mul-                                         can save at least 22% energy under a heavy-loaded scenario.
+ tiple LLMs are co-hosted on a single GPU, and the scheduler                                         If the vendors provide the function to adjust HBM frequency,
+ must jointly consider co-location, SM partitioning, and SLOs                                        our system (Festina+) can further save up to 48% energy.
+ under bursty arrivals. A detailed discussion is in §I.
+                                                                                                     4.2.2 SLO Attainment. Next, we measure the latency SLO
+ 4.2 Head-to-head Comparison with SOTAs
+                                                                                                     attainment of all systems under the same setup as the previ-
+ 4.2.1 Energy Consumption. Figure 10 shows the normal-                                               ous experiment. As shown in Figure 11, Festina outperforms
+ ized energy consumption under various average request-per-                                          ServerlessLLM, MuxServe, and Dilu by up to 27%, 16%, and
+ second (RPS) and numbers of LLMs settings, where a value                                            4%, respectively. Also, Festina exhibits comparable perfor-
+ greater than 1.0 indicates higher energy usage than Festina.                                        mance to Aegaeon and AegVoltana, with gaps of less than
+ Festina consistently uses less energy compared to all base-                                         2% and 1%, respectively.
+ lines, where ServerlessLLM, MuxServe, Dilu, Aegaeon, and                                               Specifically, Festina leverages MPS to allow multiple LLMs
+ AegVoltana consume up to 1.56×, 1.37×, 1.36×, 1.31×, and                                            to share the same GPU and to process requests concurrently,
+ 1.3× energy than Festina, respectively. The reason behind                                           which improves device utilization and shortens the overall
+ this energy gap is two-fold. (i): the global scheduler of Fes-                                      execution time. However, ServerlessLLM utilizes a temporal
+ tina will dispatch requests to GPUs based not only on SLO                                           sharing manner that each LLM occupies the entire GPU in
+ constraints but also on frequency preference. This means                                            turn, which under-utilizes GPUs and prolongs the waiting
+ co-located LLMs will process their requests at a frequency                                          time of co-located LLMs. This leads to significant SLO vio-
+ that won’t hugely deviate from their own optimal frequency,                                         lation, especially when request-per-second becomes high.
+ while other baselines don’t employ such a frequency-aware                                           MuxServe relies on static offline partitioning, preventing
+ dispatching mechanism. (ii): these baselines target higher                                          models from utilizing idle SMs beyond their pre-assigned
+ SLO attainment, which means they adjust resource alloca-                                            quota. Dilu, despite supporting dynamic resizing, employs
+ tion to speed up inference latency without optimizing en-                                           a First-Come-First-Served (FCFS) policy that exacerbates
+ ergy efficiency. In contrast, the local scheduler of Festina                                        Head-of-Line (HOL) blocking, particularly for short decode
+ dynamically reconfigures not only GPU frequency but also                                            tasks stuck behind long prefills. Festina overcomes these lim-
+ SM allocation to meet SLO constraints and minimize en-                                              itations by combining dynamic, on-the-fly SM reallocation
+ ergy consumption. Although AegVoltana adjusts per-GPU                                               with out-of-order task batching, effectively mitigating HOL
+ frequency based on SLO slack, it lacks frequency-aware re-                                          blocking and maximizing SLO attainment.
+ quest dispatching and model placement. As a result, models                                             For Aegaeon and AegVoltana, they benefit from the PD-
+ with mismatched frequency preferences are colocated on the                                          disaggregated architecture. This design inherently eliminates
+ same GPU and forced to operate at a frequency dictated by                                           intra-batch interference, ensuring that latency-sensitive de-
+ their neighbors rather than their own energy-optimal point.                                         code tasks are never stalled by computation-heavy prefill
+ This limited energy reduction underscores the importance                                            tasks. In contrast, Festina utilizes a PD-aggregated (colo-
+ of jointly SLO- and frequency-aware scheduling, which is                                            cated) setup. Consequently, it remains susceptible to minor
+ the core capability of Festina.                                                                     interference when prefill and decode tasks share the same
+    We further plot the GPU frequency of all systems with                                            execution batch, leading to the observed marginal difference
+ respect to the workload variation in Figure 10. As shown, the                                       in SLO attainment.
+ GPU frequency in Festina closely follows the workload pat-
+ tern up and down, whereas all other baseline systems keep                                           4.3        Ablation Study
+ the GPU frequency at a consistently high level across the                                           Next, we quantify the contribution of each design part to-
+ entire one-hour observation window. In summary, Festina                                             ward energy efficiency, isolating six distinct design features:
+                                                                                           10
+                                                       ServerlessLLM                   MuxServe            Dilu                      Aegaeon              AegVoltana                  Festina
+SLO attainment
+
+
+
+
+                                                                                                                                                                                                                    SLO attainment
+                                100%                                                                                                                                                                      100%
+                                 90%                                                                                                                                                                      90%
+                                 80%                                                                                                                                                                      80%
+                                 70%                                                                                                                                                                      70%
+                                                         16 LLMs                                           24 LLMs                                                        32 LLMs
+                                 60%                                                                                                                                                                      60%
+                                       RPS=2       2.5       3   3.5             4        RPS= 1 1.5           2   2.5                      3        RPS= 0.5 1              1.5          2       2.5
+                                                              Figure 11. SLO attainment under various average request-per-second (RPS).
+                                                  ShartGPT-ix2                                         ShartGPT-ix2                                                         ShartGPT-ix2
+SLO attainment SLO attainment
+
+
+
+
+                                                                                                                                                                                                                    Norm. energy
+                                100%                                             1.4    100%                                                     1.4     100%                                                 1.4
+                                                                       16 LLMs                                                         24 LLMs                                                    32 LLMs
+                                95%                                              1.3     95%                                                     1.3      95%                                                 1.3
+                                90%                                              1.2     90%                                                     1.2      90%                                                 1.2
+                                85%                                              1.1     85%                                                     1.1      85%                                                 1.1
+                                80%                                              1       80%                                                     1        80%                                                 1
+                                       RPS=2     2.5     3       3.5       4                   RPS=1   1.5        2             2.5        3                    RPS=0.5     1       1.5       2         2.5
+                                                  ShartGPT-ox2                                         ShartGPT-ox2                                                         ShartGPT-ox2
+
+
+
+
+                                                                                                                                                                                                                    Norm. energy
+                                100%                                   16 LLMs 1.4      100%                                           24 LLMs 1.4       100%                                     32 LLMs 1.4
+                                95%                                            1.3       95%                                                   1.3        95%                                             1.3
+                                90%                                              1.2     90%                                                     1.2      90%                                                 1.2
+                                85%                                              1.1     85%                                                     1.1      85%                                                 1.1
+                                80%                                              1       80%                                                     1        80%                                                 1
+                                       RPS=2     2.5      3      3.5       4                   RPS=1   1.5        2             2.5        3                    RPS=0.5     1       1.5       2         2.5
+                                                         SLO curve:            Aegaeon           Festina          Energy bar:              Aegaeon (normalized to Festina)
+
+
+                                               Figure 12. SLO attainment and normalized energy consumption under various RPS and # of LLMs.
+
+                                                                                                                                     1.4
+                                                                                                                      norm. energy
+
+ 1. SLO-aware Dispatching: Route requests based on re-
+                                                                                                                        Average
+
+
+
+
+   source availability and deadline constraints.                                                                                     1.2
+
+ 2. Frequency-aware Dispatching: Route requests to match                                                                              1
+   frequency affinities while maintaining SLO compliance.                                                                            0.8
+                                                                                                                                                16 LLMs                   24 LLMs                 32 LLMs
+ 3. Fine-grained Runtime Management: Dynamically ad-                                                                                           Stage-1    Stage-2   Stage-3     Stage-4    Stage-5     Stage-6
+                                                                                                                                                                                          (Festina)   (Festina+)
+   just SM partitioning and GPU frequency.
+ 4. SLO-aware Placement: Reallocate LLMs across GPUs                                                                  Figure 13. Breakdown of average energy consumption
+   based on resource demands.                                                                                         across incremental stages. Results are normalized to Stage-5
+ 5. Frequency-Affinity Placement (EWR-aware): Reallo-                                                                 (the standard Festina configuration).
+   cate LLMs based on resource and frequency demands.                                                                 to account for phase dominance (i.e., whether energy con-
+ 6. Idle Power Management: Simulate theoretical energy                                                                sumption is dominated by compute-bound prefill or memory-
+   savings via GPU shutdown or HBM frequency scaling.                                                                 bound decode). Stage-5 (Festina) addresses this by enabling
+    These features are enabled incrementally from Stage-1                                                             EWR-aware placement. By consolidating workloads based
+ to Stage-6. We designate Stage-5 as the standard Festina                                                             on frequency preference, we achieve an additional 11% en-
+ configuration, representing the fully implemented system on                                                          ergy saving. Finally, Stage-6 (Festina+) demonstrates that if
+ our testbed. Stage-6 represents Festina+. We measure energy                                                          idle GPUs can be fully shut down or HBM frequency can be
+ consumption under the same workloads in Section 4.2.                                                                 lowered, a further 16% energy reduction is achievable. This
+    Figure 13 details the energy consumption for each stage,                                                          points to a promising direction, once such hardware-level
+ normalized to Festina (Stage-5). Stage-1 (baseline) exhibits                                                         controls become feasible.
+ the highest consumption due to the absence of energy-aware
+                                                                                                                      4.4             Micro-benchmarks
+ optimizations. Stage-2 introduces frequency-aware dispatch-
+ ing, yielding around 12% energy reduction. By clustering                                                             Workload Sensitivity. We further evaluate Festina under
+ requests with similar optimal frequencies, this stage pre-                                                           extreme workload distributions using ShareGPT-ix2 (prefill-
+ vents the hardware from defaulting to the TDP limit for                                                              heavy) and ShareGPT-ox2 (decode-heavy) from Aegaeon.
+ mismatched workloads. Stage-3 adds fine-grained runtime                                                              Figure 12 compares the SLO attainment and energy con-
+ management, delivering a substantial 25% energy saving.                                                              sumption against the state-of-the-art baseline, Aegaeon.
+ Stage-4 incorporates standard SLO-aware placement (sim-                                                                For the prefill-heavy workload (ShareGPT-ix2), Festina
+ ilar to [27, 52]), which offers a modest 2% energy saving.                                                           maintains SLO attainment comparable to Aegaeon while
+ While this consolidates resources based on demand, it fails                                                          achieving energy savings of 18% to 30%. We observe that
+                                                                                                                      energy gains diminish as workload intensity (RPS and num-
+                                                                                                                      ber of LLMs) increases. This is because high-intensity prefill
+                                                                                                                      workloads generate a massive influx of tokens, requiring
+                                                                                                              11
+SLO attainment
+
+             100%                                        1                          utilization through advanced resource management. Server-
+
+
+
+
+                                                                Norm. energy
+              98%                                        0.98
+              96%                                        0.96                       lessLLM [8] and Medusa [60] prioritize auto-scaling effi-
+              94%                                        0.94                       ciency by reducing cold-start latency and accelerating check-
+              92%                                        0.92                       point migration. To improve GPU utilization, systems like
+              90%                                        0.9
+                     16 LLMs     24 LLMs    32 LLMs                                 MuxServe [7], Prism [58], Dilu [27], and Aegaeon [52] enable
+                    SLO PD-A   SLO PD-D    Energy PD-D                              spatial sharing, allowing multiple models to co-locate on a
+                                                                                    single GPU. These works employ dynamic reconfiguration,
+ Figure 14. Average SLO attainment and energy consumption                           ranging from coarse-grained GPU allocation to fine-grained
+ (normalized to the PD-aggregated setup) comparing PD-A                             SM partitioning, to maximize throughput. However, their
+ and PD-D configurations.                                                           primary objective is performance (SLO attainment) or uti-
+                                                                                    lization, where they do not explicitly target energy efficiency
+                                                                                    or leverage frequency scaling to reduce power consumption.
+                                                                                    Energy-aware serving systems. Recent systems such as
+ the GPU to operate near its TDP limit to meet deadlines,
+                                                                                    DynamoLLM [41], GreenLLM [25], and VoltanaLLM [57]
+ thereby reducing the opportunity for frequency downscaling.
+                                                                                    use DVFS to reduce LLM serving energy. However, they are
+ Conversely, for the decode-heavy workload (ShareGPT-ox2),
+                                                                                    designed around assumptions that do not hold in serverless
+ Festina achieves both higher energy efficiency (saving 28%
+                                                                                    multi-tenant serving. First, they largely assume that a GPU
+ to 35% compared to Aegaeon) and better SLO attainment in
+                                                                                    is dedicated to one model or one serving pipeline. Energy op-
+ specific high-load scenarios (e.g., 32 LLMs at 2.5 RPS).
+                                                                                    timization can therefore be reduced to choosing a frequency
+    The performance advantage stems from resource flexibil-
+                                                                                    based on workload intensity, such as input/output length or
+ ity: Aegaeon relies on static partitioning between prefill and
+                                                                                    serving phase. In contrast, Festina targets a serverless regime
+ decode nodes, leading to bottlenecks when decode demand
+                                                                                    where multiple tenants may share one GPU. Co-location cou-
+ outstrips the fixed decode resources. In contrast, Festina al-
+                                                                                    ples the energy and latency behavior of different requests
+ lows decode tasks to opportunistically utilize free SMs from
+                                                                                    and makes frequency selection a shared scheduling decision
+ prefill tasks. Regarding energy, Aegaeon relies on the default
+                                                                                    rather than a per-model control knob.
+ hardware policy that aggressively boosts frequency to the
+                                                                                       Second, prior DVFS systems do not deal with shared-
+ TDP regardless of phase characteristics. Festina proactively
+                                                                                    frequency contention. Co-resident models share one device-
+ lowers the GPU frequency for the decode phase, yielding
+                                                                                    wide clock while competing for SMs, so the frequency cannot
+ substantial energy savings without violating SLOs.
+                                                                                    be tuned independently for each workload. The GPU clock
+ Extension to PD-disaggregation. We further evaluate Fes-
+                                                                                    may be pinned by the most demanding co-tenant, forcing
+ tina in the prefill-decode disaggregated (PD-D) architecture
+                                                                                    other requests to run at a higher-than-needed frequency
+ and compare it against the PD-aggregated (PD-A) setup using
+                                                                                    and wasting energy. Festina addresses this issue through
+ the same workloads as in §4.2. For PD-D, we adopt Aegaeon’s
+                                                                                    frequency-aware dispatching, which routes requests to GPUs
+ prefill–decode separation strategy.
+                                                                                    whose current clocks better match their energy-optimal fre-
+    Results are presented in Figure 14. Regarding SLO attain-
+                                                                                    quencies, reducing energy waste from frequency mismatch.
+ ment, the PD-D setup exhibits a slight degradation of ap-
+                                                                                       Third, co-location expands the control space beyond what
+ proximately 1.5% compared to PD-A. This drop is attributed
+                                                                                    single-model DVFS systems can efficiently enumerate. Once
+ to the overhead of KV cache transmission, which currently
+                                                                                    multiple tenants share a GPU, frequency selection must be
+ lacks low-level optimization in our testbed, delays the ini-
+                                                                                    coordinated with SM partitioning across requests. The joint
+ tiation of decode tasks, and extends total execution time.
+                                                                                    configuration space grows rapidly with the number of co-
+ However, regarding energy efficiency, the PD-D setup yields
+                                                                                    located tasks, making exhaustive per-batch search impracti-
+ an additional 7% saving over PD-A. This improvement stems
+                                                                                    cal. Festina instead uses a lightweight frequency sweep and
+ from the isolation of workload phases: prefill and decode
+                                                                                    phase-aware (SM, frequency) adaptation, keeping schedul-
+ tasks possess significantly divergent optimal frequencies. By
+                                                                                    ing overhead low while accounting for the distinct energy-
+ separating them onto dedicated GPUs, the local schedulers
+                                                                                    optimal operating points of prefill and decode.
+ can enforce precise frequency tuning for each phase without
+                                                                                       These differences are structural rather than missing fea-
+ the interference caused by mixing frequency-mismatched
+                                                                                    tures that can be added incrementally. DynamoLLM relies
+ prefill and decode tasks.
+                                                                                    on fixed per-pool frequencies from offline profiling and rigid
+    The impact of safety margin can be found in §G. The
+                                                                                    per-LLM pools, which conflict with dynamic serverless co-
+ energy consumption of migration can be found in §H.
+                                                                                    location. GreenLLM and VoltanaLLM introduce phase-specific
+                                                                                    frequency control, but they rely on PD-disaggregated serving
+  5              Related Works                                                      with static prefill/decode partitions and do not provide auto-
+  High-Performance & Spatial Sharing Systems. Numer-                                scaling or multi-tenant spatial multiplexing. Adapting these
+  ous systems focus on optimizing inference latency and device
+                                                                               12
+systems to serverless serving would require co-location-                              [10] Yunchu Han, Zhaojun Nan, Sheng Zhou, and Zhisheng Niu. 2025. Joint
+aware dispatch, shared-frequency conflict resolution, joint                                Memory Frequency and Computing Frequency Scaling for Energy-
+SM/frequency adaptation, and frequency-aware scale-in or                                   efficient DNN Inference. arXiv preprint arXiv:2509.17970 (2025).
+                                                                                      [11] Sarah L Harris and David Harris. 2021. Digital design and RISC-
+migration. These mechanisms are central to Festina rather                                  V computer architecture textbook. In 2021 ACM/IEEE Workshop on
+than extensions to prior designs. Table 1 summarizes the                                   Computer Architecture Education (WCAE). IEEE, 1–5.
+comparison between Festina and prior systems.                                         [12] Zicong Hong, Jian Lin, Song Guo, Sifu Luo, Wuhui Chen, Roger Watten-
+6    Conclusion                                                                            hofer, and Yue Yu. 2024. Optimus: Warming serverless ml inference via
+                                                                                           inter-function model transformation. In Proceedings of the Nineteenth
+We have presented the design, implementation, and evalu-                                   European Conference on Computer Systems. 1039–1053.
+ation of Festina, a power-efficient serverless LLM serving                            [13] Zhengding Hu, Vibha Murthy, Zaifeng Pan, Wanlu Li, Xiaoyi Fang,
+system. Festina leverages a global scheduler and per-GPU                                   Yufei Ding, and Yuke Wang. 2025. HedraRAG: Co-Optimizing Gen-
+local scheduler to jointly optimize the request placement                                  eration and Retrieval for Heterogeneous RAG Workflows. In Proceed-
+                                                                                           ings of the ACM SIGOPS 31st Symposium on Operating Systems Prin-
+and GPU resources to minimize the energy consumption of                                    ciples (Lotte Hotel World, Seoul, Republic of Korea) (SOSP ’25). As-
+LLM serving without violating each request’s latency SLOs.                                 sociation for Computing Machinery, New York, NY, USA, 623–638.
+Moreover, Festina leverages an EWR-aware mechanism that                                    doi:10.1145/3731569.3764806
+consolidates workloads via SLO-aware migration to further                             [14] Tao Huang, Pengfei Chen, Kyoka Gong, Jocky Hawk, Zachary
+reduce static memory power consumption. Evaluations show                                   Bright, Wenxin Xie, Kecheng Huang, and Zhi Ji. 2024. ENOVA: Au-
+                                                                                           toscaling towards Cost-effective and Stable Serverless LLM Serving.
+that Festina can save up to 56% energy compared to existing                                arXiv:2407.09486 [cs.DC] https://arxiv.org/abs/2407.09486
+SOTA LLM serving systems while maintaining SLO attain-                                [15] Hugging Face. [n. d.]. Hugging Face: The AI Community Building the
+ment within a 2% margin.                                                                   Future. Hugging Face. https://huggingface.co/ Accessed: 2026-02-04.
+                                                                                      [16] Shashwat Jaiswal, Kunal Jain, Yogesh Simmhan, Anjaly Parayil, Ankur
+References                                                                                 Mallick, Rujia Wang, Renee St Amant, Chetan Bansal, Victor Rühle,
+                                                                                           Anoop Kulkarni, et al. 2025. Serving models, fast and slow: optimizing
+ [1] Jing Chen, Madhavan Manivannan, Bhavishya Goel, and Miquel Per-                       heterogeneous llm inferencing workloads at scale. arXiv preprint
+     icàs. 2023. JOSS: Joint Exploration of CPU-Memory DVFS and Task                       arXiv:2502.14617 (2025).
+     Scheduling for Energy Efficiency. In Proceedings of the 52nd Inter-              [17] Jinwoo Jeong and Jeongseob Ahn. 2025. Accelerating LLM Serving for
+     national Conference on Parallel Processing (Salt Lake City, UT, USA)                  Multi-turn Dialogues with Efficient Resource Management. Association
+     (ICPP ’23). Association for Computing Machinery, New York, NY, USA,                   for Computing Machinery, New York, NY, USA, 1–15. https://doi.org/
+     828–838. doi:10.1145/3605573.3605586                                                  10.1145/3676641.3716245
+ [2] Andrew A Chien, Liuzixuan Lin, Hai Nguyen, Varsha Rao, Tristan                   [18] Yunho Jin, Chun-Feng Wu, David Brooks, and Gu-Yeon Wei. 2023.
+     Sharma, and Rajini Wijayawardana. 2023. Reducing the Carbon Impact                    S3: increasing GPU utilization during generative inference for higher
+     of Generative AI Inference (today and in 2035). In Proceedings of the                 throughput. In Proceedings of the 37th International Conference on
+     2nd workshop on sustainable computer systems. 1–7.                                    Neural Information Processing Systems (New Orleans, LA, USA) (NIPS
+ [3] Seungbeom Choi, Jeonghoe Goo, Eunjoo Jeon, Mingyu Yang, and                           ’23). Curran Associates Inc., Red Hook, NY, USA, Article 791, 13 pages.
+     Minsung Jang. 2025. ELIS: Efficient LLM Iterative Scheduling System              [19] Harold W Kuhn. 1955. The Hungarian method for the assignment
+     with Response Length Predictor. arXiv:2505.09142 [cs.DC] https:                       problem. Naval research logistics quarterly 2, 1-2 (1955), 83–97.
+     //arxiv.org/abs/2505.09142                                                       [20] Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin
+ [4] Seungbeom Choi, Sunho Lee, Yeonjae Kim, Jongse Park, Youngjin                         Zheng, Cody Hao Yu, Joseph Gonzalez, Hao Zhang, and Ion Stoica.
+     Kwon, and Jaehyuk Huh. 2022. Serving Heterogeneous Machine                            2023. Efficient memory management for large language model serving
+     Learning Models on Multi-GPU Servers with Spatio-Temporal Shar-
+                                                                                           with pagedattention. In Proceedings of the 29th symposium on operating
+     ing. In 2022 USENIX Annual Technical Conference (USENIX ATC 22).                      systems principles. 611–626.
+     USENIX Association, Carlsbad, CA, 199–216. https://www.usenix.org/               [21] Baolin Li, Tirthak Patel, Siddharth Samsi, Vijay Gadepally, and Devesh
+     conference/atc22/presentation/choi-seungbeom                                          Tiwari. 2022. MISO: Exploiting Multi-Instance GPU Capability on
+ [5] Tri Dao. 2023. Flashattention-2: Faster attention with better parallelism             Multi-Tenant GPU Clusters. In Proceedings of the 13th Symposium on
+     and work partitioning. arXiv preprint arXiv:2307.08691 (2023).                        Cloud Computing (San Francisco, California) (SoCC ’22). Association
+ [6] Aditya Dhakal, Sameer G Kulkarni, and KK Ramakrishnan. 2020.                          for Computing Machinery, New York, NY, USA, 173–189. doi:10.1145/
+     Gslice: controlled spatial sharing of gpus for a scalable inference plat-             3542929.3563510
+     form. In Proceedings of the 11th ACM Symposium on Cloud Computing.               [22] Bingyao Li, Yueqi Wang, Tianyu Wang, Lieven Eeckhout, Jun Yang,
+     492–506.                                                                              Aamer Jaleel, and Xulong Tang. 2024. STAR: Sub-Entry Sharing-Aware
+ [7] Jiangfei Duan, Runyu Lu, Haojie Duanmu, Xiuhong Li, Xingcheng                         TLB for Multi-Instance GPU. In 2024 57th IEEE/ACM International
+     Zhang, Dahua Lin, Ion Stoica, and Hao Zhang. 2024. MuxServe: flexible                 Symposium on Microarchitecture (MICRO). IEEE, 309–323.
+     spatial-temporal multiplexing for multiple LLM serving. In Proceed-              [23] Yanying Lin, Shijie Peng, Chengzhi Lu, Chengzhong Xu, and Kejiang
+     ings of the 41st International Conference on Machine Learning (Vienna,                Ye. 2025. FlexPipe: Adapting Dynamic LLM Serving Through Inflight
+     Austria) (ICML’24). JMLR.org, Article 473, 13 pages.                                  Pipeline Refactoring in Fragmented Serverless Clusters. arXiv preprint
+ [8] Yao Fu, Leyang Xue, Yeqi Huang, Andrei-Octavian Brabete, Dmitrii                      arXiv:2510.11938 (2025).
+     Ustiugov, Yuvraj Patel, and Luo Mai. 2024. {ServerlessLLM}:{Low-                 [24] Qianli Liu, Zicong Hong, Peng Li, Fahao Chen, and Song Guo. 2025.
+     Latency} serverless inference for large language models. In 18th                      Mell: Memory-Efficient Large Language Model Serving via Multi-GPU
+     USENIX Symposium on Operating Systems Design and Implementation                       KV Cache Management. In IEEE INFOCOM 2025 - IEEE Conference on
+     (OSDI 24). 135–153.                                                                   Computer Communications. 1–10. doi:10.1109/INFOCOM55648.2025.
+ [9] Shiwei Gao, Qing Wang, Shaoxun Zeng, Youyou Lu, and Jiwu Shu. 2025.                   11044533
+     Weaver: Efficient {Multi-LLM} Serving with Attention Offloading. In
+     2025 USENIX Annual Technical Conference (USENIX ATC 25). 587–595.
+                                                                                 13
+[25] Qunyou Liu, Darong Huang, Marina Zapater, and David Atienza.                          Santa Clara, CA, 173–191. https://www.usenix.org/conference/osdi24/
+     2025. GreenLLM: SLO-Aware Dynamic Frequency Scaling for Energy-                       presentation/sun-biao
+     Efficient LLM Serving. arXiv preprint arXiv:2508.16449 (2025).                   [43] Cheng Tan, Zhichao Li, Jian Zhang, Yu Cao, Sikai Qi, Zherui Liu,
+[26] Chiheng Lou, Sheng Qi, Chao Jin, Dapeng Nie, Haoran Yang, Xuanzhe                     Yibo Zhu, and Chuanxiong Guo. 2021. Serving DNN models with
+     Liu, and Xin Jin. 2025. Towards Swift Serverless LLM Cold Starts with                 multi-instance gpus: A case of the reconfigurable machine scheduling
+     ParaServe. arXiv preprint arXiv:2502.15524 (2025).                                    problem. arXiv preprint arXiv:2109.11067 (2021).
+[27] Cunchi Lv, Xiao Shi, Zhengyu Lei, Jinyue Huang, Wenting Tan, Xiaohui             [44] Gemini Team, R Anil, S Borgeaud, Y Wu, JB Alayrac, J Yu, R Soricut, J
+     Zheng, and Xiaofang Zhao. 2025. Dilu: Enabling GPU Resourcing-                        Schalkwyk, AM Dai, A Hauth, et al. 2024. Gemini: A family of highly
+     on-Demand for Serverless DL Serving via Introspective Elasticity. In                  capable multimodal models, 2024. arXiv preprint arXiv:2312.11805 10
+     Proceedings of the 30th ACM International Conference on Architectural                 (2024).
+     Support for Programming Languages and Operating Systems, Volume 1                [45] Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-
+     (Rotterdam, Netherlands) (ASPLOS ’25). Association for Computing                      Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric
+     Machinery, New York, NY, USA, 311–325. doi:10.1145/3669940.3707251                    Hambro, Faisal Azhar, et al. 2023. Llama: Open and efficient foundation
+[28] Xupeng Miao, Chunan Shi, Jiangfei Duan, Xiaoli Xi, Dahua Lin, Bin                     language models. arXiv preprint arXiv:2302.13971 (2023).
+     Cui, and Zhihao Jia. 2024. Spotserve: Serving generative large lan-              [46] vLLM Project. 2026. vLLM Documentation. https://docs.vllm.ai/en/
+     guage models on preemptible instances. In Proceedings of the 29th ACM                 latest/. Accessed: 2026-02-04.
+     International Conference on Architectural Support for Programming Lan-           [47] Tianyu Wang, Sheng Li, Bingyao Li, Yue Dai, Ao Li, Geng Yuan,
+     guages and Operating Systems, Volume 2. 1112–1127.                                    Yufei Ding, Youtao Zhang, and Xulong Tang. 2024. Improving GPU
+[29] Microsoft. [n. d.]. Microsoft Azure: Cloud Computing Services. Microsoft.             Multi-Tenancy Through Dynamic Multi-Instance GPU Reconfigura-
+     https://azure.microsoft.com/en-us Accessed: 2026-02-04.                               tion. arXiv preprint arXiv:2407.13126 (2024).
+[30] MIT Technology Review. 2026. We did the math on AI’s energy footprint.           [48] Yuxin Wang, Yuhan Chen, Zeyu Li, Xueze Kang, Yuchu Fang, Yeju
+     Here’s the story you haven’t heard. https://www.technologyreview.com/                 Zhou, Yang Zheng, Zhenheng Tang, Xin He, Rui Guo, et al. 2025.
+     2025/05/20/1116327/ai-energy-usage-climate-footprint-big-tech/ Ac-                    Burstgpt: A real-world workload dataset to optimize llm serving sys-
+     cessed: 2026-01-26.                                                                   tems. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge
+[31] Salman Mohamadi, Ghulam Mujtaba, Ngan Le, Gianfranco Doretto,                         Discovery and Data Mining V. 2. 5831–5841.
+     and Donald A Adjeroh. 2023. ChatGPT in the age of generative                     [49] Zibo Wang, Yijia Zhang, Fuchun Wei, Bingqiang Wang, Yanlin Liu,
+     AI and large language models: a concise survey. arXiv preprint                        Zhiheng Hu, Jingyi Zhang, Xiaoxin Xu, Jian He, Xiaoliang Wang,
+     arXiv:2307.04251 (2023).                                                              Wanchun Dou, Guihai Chen, and Chen Tian. 2025. Using Analytical
+[32] C Newell. 2013. Applications of queueing theory. Vol. 4. Springer                     Performance/Power Model and Fine-Grained DVFS to Enhance AI
+     Science & Business Media.                                                             Accelerator Energy Efficiency. In Proceedings of the 30th ACM Inter-
+[33] NVIDIA. 2022.          NVIDIA H100 Tensor Core GPU Architec-                          national Conference on Architectural Support for Programming Lan-
+     ture. https://resources.nvidia.com/en-us-hopper-architecture/nvidia-                  guages and Operating Systems, Volume 1 (Rotterdam, Netherlands)
+     h100-tensor-c Whitepaper.                                                             (ASPLOS ’25). Association for Computing Machinery, New York, NY,
+[34] NVIDIA. 2026. NVIDIA GPU Management and Deployment - Multi-                           USA, 1118–1132. doi:10.1145/3669940.3707231
+     Process Service. https://docs.nvidia.com/deploy/mps/index.html                   [50] Adam Wierman, Lachlan LH Andrew, and Antony Tang. 2009. Power-
+[35] NVIDIA. 2026. NVIDIA Multi-Instance GPU User Guide. https:                            aware speed scaling in processor sharing systems. In IEEE INFOCOM
+     //docs.nvidia.com/datacenter/tesla/mig-user-guide/                                    2009. IEEE, 2007–2015.
+[36] Archit Patke, Dhemath Reddy, Saurabh Jha, Haoran Qiu, Christian                  [51] Tian Xia, Ziming Mao, Jamison Kerney, Ethan J Jackson, Zhifei Li,
+     Pinto, Chandra Narayanaswami, Zbigniew Kalbarczyk, and Ravis-                         Jiarong Xing, Scott Shenker, and Ion Stoica. 2025. SkyLB: A Locality-
+     hankar Iyer. 2025. Queue management for slo-oriented large language                   Aware Cross-Region Load Balancer for LLM Inference. arXiv preprint
+     model serving. arXiv:2407.00047 [cs.DC] doi:10.1145/3698038.369852                    arXiv:2505.24095 (2025).
+[37] Qiangyu Pei, Yongjie Yuan, Haichuan Hu, Qiong Chen, and Fangming                 [52] Yuxing Xiang, Xue Li, Kun Qian, Yufan Yang, Diwen Zhu, Wenyuan Yu,
+     Liu. 2023. Asyfunc: A high-performance and resource-efficient server-                 Ennan Zhai, Xuanzhe Liu, Xin Jin, and Jingren Zhou. 2025. Aegaeon:
+     less inference system via asymmetric functions. In Proceedings of the                 Effective GPU Pooling for Concurrent LLM Serving on the Market. In
+     2023 ACM Symposium on Cloud Computing. 324–340.                                       Proceedings of the ACM SIGOPS 31st Symposium on Operating Systems
+[38] PyPI Contributors. [n. d.]. nvidia-ml-py: Python Bindings to the                      Principles (Lotte Hotel World, Seoul, Republic of Korea) (SOSP ’25).
+     NVIDIA Management Library (NVML). https://pypi.org/project/                           Association for Computing Machinery, New York, NY, USA, 1030–1045.
+     nvidia-ml-py/. Accessed: 2026-02-04.                                                  doi:10.1145/3731569.3764815
+[39] Python Software Foundation. [n. d.]. asyncio — Asynchronous I/O.                 [53] Yuxing Xiang, Xue Li, Kun Qian, Wenyuan Yu, Ennan Zhai, and Xin Jin.
+     https://docs.python.org/3/library/asyncio.html. Accessed: 2026-02-04.                 2025. ServeGen: Workload Characterization and Generation of Large
+[40] Haoran Qiu, Weichao Mao, Archit Patke, Shengkun Cui, Saurabh                          Language Model Serving in Production. arXiv:2505.09999 [cs.DC]
+     Jha, Chen Wang, Hubertus Franke, Zbigniew T Kalbarczyk, Tamer                         https://arxiv.org/abs/2505.09999
+     Başar, and Ravishankar K Iyer. 2024. Efficient interactive llm serving           [54] Kaiqiang Xu, Decang Sun, Han Tian, Junxue Zhang, and Kai Chen.
+     with proxy model-based sequence length prediction. arXiv preprint                     2025. {GREEN}: Carbon-efficient Resource Scheduling for Machine
+     arXiv:2404.08509 (2024).                                                              Learning Clusters. In 22nd USENIX Symposium on Networked Systems
+[41] Jovan Stojkovic, Chaojie Zhang, Íñigo Goiri, Josep Torrellas, and Esha                Design and Implementation (NSDI 25). 999–1014.
+     Choukse. 2025. DynamoLLM: Designing LLM Inference Clusters for                   [55] Yanan Yang, Laiping Zhao, Yiming Li, Huanyu Zhang, Jie Li, Mingyang
+     Performance and Energy Efficiency. In 2025 IEEE International Sympo-                  Zhao, Xingzhen Chen, and Keqiu Li. 2022. Infless: a native serverless
+     sium on High Performance Computer Architecture (HPCA). 1348–1362.                     system for low-latency, high-throughput inference. In Proceedings of
+     doi:10.1109/HPCA61900.2025.00102                                                      the 27th ACM International Conference on Architectural Support for
+[42] Biao Sun, Ziming Huang, Hanyu Zhao, Wencong Xiao, Xinyi Zhang,                        Programming Languages and Operating Systems. 768–781.
+     Yong Li, and Wei Lin. 2024. Llumnix: Dynamic Scheduling for Large                [56] Jie You, Jae-Won Chung, and Mosharaf Chowdhury. 2023. Zeus: Un-
+     Language Model Serving. In 18th USENIX Symposium on Operating                         derstanding and optimizing {GPU} energy consumption of {DNN}
+     Systems Design and Implementation (OSDI 24). USENIX Association,                      training. In 20th USENIX Symposium on Networked Systems Design and
+
+                                                                                 14
+     Implementation (NSDI 23). 119–139.                                            A     Background
+[57] Jiahuan Yu, Aryan Taneja, Junfeng Lin, and Minjia Zhang. 2025.
+     VoltanaLLM: Feedback-Driven Frequency Control and State-Space
+                                                                                   A.1   LLM Inference
+     Routing for Energy-Efficient LLM Serving.              arXiv preprint         Contemporary LLMs [31, 44, 45] are predominantly decoder-
+     arXiv:2509.04827 (2025).                                                      only Transformers composed of repeated blocks that consist
+[58] Shan Yu, Jiarong Xing, Yifan Qiao, Mingyuan Ma, Yangmin Li, Yang              of multi-head attention and feed-forward layers. Given input
+     Wang, Shuo Yang, Zhiqiang Xie, Shiyi Cao, Ke Bao, et al. 2025. Prism:
+     Unleashing GPU Sharing for Cost-Efficient Multi-LLM Serving. arXiv            prompts, LLMs generate tokens in an autoregressive manner.
+     preprint arXiv:2505.04021 (2025).                                             The LLM inference splits into two distinct phases: prefill and
+[59] Anna Yue, Pen-Chung Yew, and Sanyam Mehta. 2025. EVeREST: An                  decode.
+     Effective and Versatile Runtime Energy Saving Tool for GPUs. In                  In the prefill phase, the input prompt is processed once
+     Proceedings of the 30th ACM SIGPLAN Annual Symposium on Principles            to build the key-value (KV) cache [20], an optimization to
+     and Practice of Parallel Programming (Las Vegas, NV, USA) (PPoPP ’25).
+     Association for Computing Machinery, New York, NY, USA, 57–69.                eliminate redundant computation of key-value matrix con-
+     doi:10.1145/3710848.3710875                                                   tents across decoding iterations, and emit the first output
+[60] Shaoxun Zeng, Minhui Xie, Shiwei Gao, Youmin Chen, and Youyou                 token. The prefill phase, characterized by long input prompts,
+     Lu. 2025. Medusa: Accelerating serverless LLM inference with ma-              heavily utilizes computation resources (i.e., SMs). At the end
+     terialization. In Proceedings of the 30th ACM International Conference        of the prefill phase, a new token is generated, then used
+     on Architectural Support for Programming Languages and Operating
+     Systems, Volume 1. 653–668.                                                   as the input in the decode phase. In the decode phase, the
+[61] Huaizheng Zhang, Yuanming Li, Wencong Xiao, Yizheng Huang, Xing               LLM generates one new token per iteration until it reaches
+     Di, Jianxiong Yin, Simon See, Yong Luo, Chiew Tong Lau, and Yang              a predefined sequence length or the end-of-sentence marker.
+     You. 2023. MIGPerf: A Comprehensive Benchmark for Deep Learning               Each iteration reuses the stored KV cache. This KV cache op-
+     Training and Inference Workloads on Multi-Instance GPUs. arXiv                timization typically shifts the bottleneck from computation
+     preprint arXiv:2301.00407 (2023).
+[62] Wei Zhang, Weihao Cui, Kaihua Fu, Quan Chen, Daniel Edward                    to memory bandwidth, making the decode phase memory-
+     Mawhirter, Bo Wu, Chao Li, and Minyi Guo. 2019. Laius: Towards                bound. Moreover, Time-to-First-Token (TTFT) captures la-
+     Latency Awareness and Improved Utilization of Spatial multitask-              tency from request arrival to the first output token, used as
+     ing accelerators in datacenters. In Proceedings of the ACM Interna-           the performance metric for the prefill phase. Time-Between-
+     tional Conference on Supercomputing (Phoenix, Arizona) (ICS ’19).             Tokens (TBT) captures latency between successive output
+     Association for Computing Machinery, New York, NY, USA, 58–68.
+     doi:10.1145/3330345.3330351                                                   tokens, used as the performance metric for the decode phase.
+[63] Yijia Zhang, Qiang Wang, Zhe Lin, Pengxiang Xu, and Bingqiang
+     Wang. 2024. Improving GPU Energy Efficiency through an Application-           A.2   Serverless LLM Serving
+     transparent Frequency Scaling Policy with Performance Assurance. In
+     Proceedings of the Nineteenth European Conference on Computer Systems
+                                                                                   Conventional server-centric LLM deployments have large
+     (Athens, Greece) (EuroSys ’24). Association for Computing Machinery,          resource footprints and require extensive server manage-
+     New York, NY, USA, 769–785. doi:10.1145/3627703.3629584                       ment. In contrast, cloud vendors and researchers have ad-
+[64] Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Tianle Li, Siyuan Zhuang,          vanced serverless serving systems, which elastically scale in-
+     Zhanghao Wu, Yonghao Zhuang, Zhuohan Li, Zi Lin, Eric Xing,                   ference workers to match demand. With pay-as-you-go pric-
+     Joseph E. Gonzalez, Ion Stoica, and Hao Zhang. 2024. LMSYS-Chat-
+     1M: A Large-Scale Real-World LLM Conversation Dataset. In The
+                                                                                   ing—charging only for the time each worker runs—serverless
+     Twelfth International Conference on Learning Representations. https:          is cost-effective for bursty, long-tail workloads [12, 37, 55].
+     //openreview.net/forum?id=BOfDKxfwt0                                             Recent serverless LLM solutions [8, 26, 60] focus on re-
+[65] Zangwei Zheng, Xiaozhe Ren, Fuzhao Xue, Yang Luo, Xin Jiang, and              ducing cold-start latency, incurred when no worker hosts
+     Yang You. 2023. Response length perception and sequence schedul-              the target LLM and a new one must be initialized. However,
+     ing: An llm-empowered llm inference pipeline. Advances in Neural
+                                                                                   they still rely on static, exclusive GPU allocations optimized
+     Information Processing Systems 36 (2023), 65517–65530.
+                                                                                   for the most demanding workloads, which leads to under-
+                                                                                   utilization, GPU waste, and energy inefficiency for lighter
+                                                                                   workloads with shorter inputs.
+
+                                                                                   A.3   GPU Sharing
+                                                                                   Modern GPUs support two advanced sharing mechanisms:
+                                                                                   (i) Multi-Process Service (MPS) [34] and (ii) Multi-Instance
+                                                                                   GPU (MIG) [35]. MPS partitions compute resources (SMs) to
+                                                                                   reduce compute contention, while keeping memory shared,
+                                                                                   making it suitable for memory-hungry workloads like LLMs.
+                                                                                   It also supports runtime SM repartition without disrupting
+                                                                                   running models. MIG partitions both compute and memory
+                                                                                   at the GPC level, providing full physical isolation. However,
+                                                                                   it offers only 5 fixed partition sizes (1, 2, 3, 4, or 7 GPCs),
+                                                                              15
+                          Qwen2.5-7b    Llama2-13b      Llama2-70b     Freq.                                         MuxServe
+(SLO) 1                                                                         1785                                                 1
+                                                                                                                                                      D    Scheduling Latency Breakdown
+
+
+
+
+                                                                                       Frequency (MHz)
+                                       > 18% slack
+Norm. latency
+
+
+
+
+                0.8                                                             1635                                                 0.8
+
+                0.6                                                             1485                                                 0.6              We evaluate the scalability of Festina’s control plane by mea-
+
+
+
+
+                                                                                                                                           CDF
+                0.4                                                             1335                                                 0.4              suring the scheduling latency of both the global and local
+                0.2                                                             1185                                                 0.2
+                                            MuxServe                                                                                                  schedulers across varying cluster sizes and queue depths
+                 0                                                              1035                                                  0
+                      0           15            30           45            60                            0     0.2    0.4 0.6 0.8    1
+                          (a) Normalized latency of three co-located LLMs sec                                        SLO slack                        (i.e., number of pending tasks). Our simulations, which iso-
+                                                                                                             (b) CDF of SLO slack.
+                                  and real-time GPU frequency.
+                                                                                                                                                      late algorithmic overhead by excluding network variance,
+Figure 15. (a) Normalized latency of three co-located LLMs                                                                                            demonstrate that Festina remains highly responsive at scale.
+and real-time GPU frequency. (b) CDF of SLO slack for three                                                                                           As detailed in Table 3, the global scheduler maintains a dis-
+LLMs during serving requests.                                                                                                                         patch latency of under 1 ms even when managing a cluster
+                                                                                                                                                      of 10,000 GPUs. Similarly, the local scheduler determines the
+often with too little memory for LLMs, and reconfiguration is                                                                                         next task batch in less than 0.1 ms, even with 100 tasks in
+possible only when involved GPCs are idle, incurring check-                                                                                           the queue. These results confirm Festina ’s robustness and
+pointing and initialization overheads [21, 22, 47, 61]. Due to                                                                                        ability to handle massive-scale deployments with negligible
+MIG’s coarse granularity, limited memory, and costly recon-                                                                                           overhead.
+figuration, MPS has emerged as the preferred mechanism
+for GPU-shared LLM serving [7, 27, 52]. We align with this
+established paradigm and employ MPS in this work.                                                                                                     Table 3. Scheduling latency of Festina’s control plane (global
+                                                                                                                                                      scheduler and local scheduler) under various cluster sizes
+A.4                       Dynamic Voltage and Frequency Scaling                                                                                       and queue sizes.
+Dynamic voltage and frequency scaling (DVFS) is a preva-
+lent energy management technique for CPUs and GPUs to                                                                                                           Global Scheduler           Local Scheduler
+balance performance and power consumption. By adjusting                                                                                                           (Linear Scan)            (Priority Batching)
+operating voltage and frequency, DVFS exploits the phys-
+ical relationship where power consumption (𝑃) is propor-                                                                                                     Cluster Size   Latency      Queue Size    Latency
+tional to the square of the voltage (𝑉 ) and the frequency (𝑓 ),                                                                                               (GPUs)        (ms)         (Tasks)       (ms)
+expressed as 𝑃 ∝ 𝑉 2 𝑓 [11, 49]. While CPUs often benefit                                                                                                         100            0.011      10          0.0544
+from mature DVFS governors, GPU-based strategies remain                                                                                                          1,000           0.103       25         0.0612
+comparatively under-optimized [1, 49, 63]. Furthermore, ap-                                                                                                      5,000           0.509       50         0.0768
+plying DVFS in the context of LLM serving poses a unique                                                                                                        10,000           0.988      100         0.0942
+challenge: energy efficiency strategies must be implemented
+without compromising SLOs.
+
+B                         SLO Slack for Large LLMs
+                                                                                                                                                      E    EWR-Aware Placement Reconfiguration
+We utilize the same trace described in Section 2.1 and em-
+ploy MuxServe as the serving platform with two H100s due                                                                                              Determining Preferred Configurations. Before reconfig-
+to memory space shortage. As illustrated in Figure 15, even                                                                                           uration, the local scheduler computes the preferred configu-
+when co-locating large LLMs such as Llama2-70b, we observe                                                                                            ration (𝑆𝑀𝑙 , 𝐹𝑙 ) for each model. This calculation utilizes the
+a minimum of 18% SLO slack. This confirms that the oppor-                                                                                             average input/output lengths (𝑙𝑒𝑛𝑖𝑛 , 𝑙𝑒𝑛𝑜𝑢𝑡 ) observed over a
+tunity to enhance energy efficiency by lowering frequency                                                                                             sliding window (Δ = 5 minutes). First, the scheduler queries
+remains viable, even when serving substantial models. We                                                                                              the Look-Up Table (LUT) to identify the optimal independent
+observe consistent results when utilizing Aegaeon as the                                                                                              configurations for the prefill and decode phases—denoted as
+serving platform.                                                                                                                                     (𝑆𝑀𝑝 , 𝐹𝑝 ) and (𝑆𝑀𝑑 , 𝐹𝑑 )—that minimize energy consumption
+                                                                                                                                                      while satisfying SLOs. The LUT also provides the expected
+                                                                                                                                                      power consumption (𝑃𝑝 , 𝑃𝑑 ) and execution duration (𝑇𝑝 ,𝑇𝑑 )
+C                         Energy Waste from Frequency Mismatch
+                                                                                                                                                      for each phase under these settings. To derive a unified con-
+Co-locating multiple LLMs improves utilization and enables                                                                                            figuration (𝑆𝑀𝑙 ), we compute the time-weighted average of
+scale-in, but different models exhibit different energy-optimal                                                                                       the required SMs, ensuring the allocation reflects the phase
+frequencies. Because GPU frequency is effectively device-                                                                                             occupying the majority of the execution time:
+wide and often pinned by the most demanding workload,
+frequency-agnostic packing can force low-frequency work-                                                                                                                         𝑆𝑀𝑝 · 𝑇𝑝 + 𝑆𝑀𝑑 · 𝑇𝑑
+loads to run at an unnecessarily high clock, wasting energy                                                                                                              𝑆𝑀𝑙 =                                    (8)
+                                                                                                                                                                                       𝑇𝑝 + 𝑇𝑑
+(e.g., we observe up to 10–16% overhead under mismatched
+co-location). Therefore, cluster-level placement and consoli-                                                                                         Similarly, we compute the preferred frequency (𝐹𝑙 ) as the
+dation must explicitly account for frequency affinity.                                                                                                energy-weighted average of the phase-specific frequencies.
+                                                                                                                                                 16
+                                 16 LLMs                                          24 LLMs                                       32 LLMs
+SLO attainment
+
+                 100%                                     1.1    100%                                    1.1    100%                                1.1
+
+
+
+
+                                                                                                                                                           Norm. energy
+                 97.5%                                    1.05   97.5%                                   1.05   97.5%                               1.05
+                  95%                                     1         95%                                  1       95%                                1
+                 92.5%                                    0.95   92.5%                                   0.95   92.5%                               0.95
+                  90%                                     0.9       90%                                  0.9     90%                                0.9
+                         15%    10%        5%      0%                     15%   10%         5%      0%                  15%    10%       5%    0%
+                                Safety Margin                                   Safety Margin                                 Safety Margin
+                                                                 SLO attainment            Energy consumption
+
+ Figure 16. Impact of varying safety margins on average SLO attainment and energy consumption. Energy values are normalized
+ to the 5% margin baseline. Same Workloads in Section 4.2 are utilized.
+
+ This weighting scheme prioritizes the frequency require-                                   on GPU 𝑢 to GPU 𝑣, with cost
+ ments of the more energy-intensive phase:
+                                                                                                                        Bytes(𝑢 → 𝑣)
+                                                                                                                𝑒𝑢𝑣 =                ,
+                                      𝑃𝑝 · 𝑇𝑝 · 𝐹𝑝 + 𝑃𝑑 · 𝑇𝑑 · 𝐹𝑑                                                         BW(𝑢, 𝑣)
+                               𝐹𝑙 =                                             (9)
+                                           𝑃𝑝 · 𝑇𝑝 + 𝑃𝑑 · 𝑇𝑑
+                                                                                            where Bytes(·) accounts for the model weights and any re-
+                                                                                            quest state selected for migration, and BW(𝑢, 𝑣) is the mea-
+ Placement reconfiguration algorithm. The pseudo code                                       sured interconnect bandwidth. We then solve the minimum-
+ of the reconfiguration algorithm is shown in Algo. 1.                                      cost assignment using the Kuhn–Munkres (Hungarian) al-
+ A Running Example of Phase Three. As shown in Fig-                                         gorithm [19] to obtain a migration plan with low aggregate
+ ure 9, three LLMs in purple, blue, and green are successfully                              transfer overhead.
+ placed onto their preferred nodes without contention (Di-                                  Selective request migration (finish locally vs. move). To
+ rect Placement). Next (EWR-driven swapping), when trying                                   avoid unnecessary transfers, we adopt a simple cost-based
+ to place the red LLM on the second GPU, which gives the                                    rule, similar in spirit to prior live-migration systems for
+ closest frequency, the memory is insufficient to hold the red                              LLM inference: for each in-flight request, we compare the
+ LLM. The green LLM is then moved from the second GPU                                       estimated remaining computation time if it finishes on the
+ to the first, due to sufficient resources on the first GPU for                             source GPU against the estimated migration time under the
+ the green LLM and the reduced overall EWR after migration.                                 chosen mapping [8, 24]. Requests that are close to completion
+ After migrating the green LLM to the first GPU, the red LLM                                are allowed to finish in place, while requests with substantial
+ is placed on the second GPU. If the prior two actions fail to                              remaining work are migrated, reducing both network traffic
+ find a GPU to deploy the red LLM, the scheduler iteratively                                and reconfiguration disruption.
+ checks the next closest GPUs in the sorted list. The LLM                                   What to transfer (tokens/prompt vs. KV cache). For
+ is placed on the first active GPU found with sufficient re-                                requests selected for migration, we further choose between
+ sources. In this case, the red LLM is placed on the first GPU,                             two state-transfer modes. Following the same principle as
+ despite encountering a huge frequency deviation.                                           ServerlessLLM and related work, we may transfer only the
+                                                                                            minimal token state (input prompt and generated tokens) and
+                                                                                            recompute the KV cache on the destination, or transfer both
+ F                 Efficient State Transfer Across Different                                tokens and KV cache when the link is fast and recomputation
+                   GPUs                                                                     would be slower [28]. This decision is made per request using
+ After the global controller computes a new placement, the                                  lightweight time estimates for (i) KV recomputation and (ii)
+ system needs to (re)initialize the inference engine and move                               KV transmission, favoring the cheaper option.
+ the necessary execution state (model weights and, for in-                                  Staged, memory-safe transfer. Finally, to prevent out-of-
+ flight requests, prompt/KV state) before normal serving can                                memory (OOM) on the destination GPU during reconfigura-
+ resume. Because these states can be large, naïvely trans-                                  tion, we perform transfers in stages using a simple reserva-
+ ferring everything can dominate reconfiguration time and                                   tion/credit protocol inspired by the coordinated, multi-stage
+ visibly disrupt inference.                                                                 migration style in Llumnix [42]. The destination scheduler
+ Transmission plan (device mapping). Motivated by prior                                     first reserves memory for locally retained requests, then ad-
+ work on minimizing reconfiguration communication cost                                      mits incoming transfers only when sufficient free space is
+ (e.g., SpotServe [28]), we compute an explicit mapping from                                available. As local execution frees memory, the destination
+ source GPUs (current placement) to destination GPUs (target                                releases additional credits, allowing the source to continue
+ placement) that minimizes total transfer time. We model                                    sending state incrementally. This staged approach bounds
+ the mapping as a weighted bipartite assignment problem:                                    transient memory pressure and avoids service stalls caused
+ each edge (𝑢, 𝑣) represents transferring the state currently                               by OOM during migration.
+                                                                                      17
+ Algorithm 1: EWR-Aware Placement Reconfigura-                                   Regarding energy, higher margins (10% and 15%) result
+ tion                                                                         in higher consumption, which strict resource reservation
+    Input : List of active LLMs L; GPU Constraints                            restricts opportunities for workload consolidation. While
+              (𝑆𝑀𝑒 𝑓 𝑓 , 𝑀𝑒 𝑓 𝑓 )                                             the 0% margin achieves the lowest energy consumption (ap-
+    Output : Map of LLMs to GPUs                                              proximately 2% lower than the 5% setting), at the cost of SLO
+    // Phase 1: Resource Profiling                                            violations. Consequently, we empirically select a 5% safety
+ 1 foreach LLM 𝑙 ∈ L do                                                       margin as the optimal equilibrium between SLO adherence
+  2     𝑙 .𝑆 ← EstimateSM(model, avg_in, avg_out)                             and energy efficiency.
+  3     𝑙 .𝑀 ← EstimateMem(model_size, max_kv)
+  4     𝑙 .𝐹 ← CalcFreq(model, 𝑙 .𝑆, avg_in, avg_out)
+                                                                              H    Energy Consumption during Migration
+ 5 end
+    // Phase 2: Capacity Planning                                             We measured migration energy on our H100/NVLink testbed.
+ 6 𝑁𝑠𝑚 ← 𝐵𝑒𝑠𝑡𝐹𝑖𝑡𝐷𝑒𝑐𝑟𝑒𝑎𝑠𝑖𝑛𝑔(L.𝑆, 𝑆𝑀𝑒 𝑓 𝑓 )
+                                                                              Migrating Llama2-13B with a 4K-token KV cache costs 10.67
+ 7 𝑁𝑚𝑒𝑚 ← 𝐵𝑒𝑠𝑡𝐹𝑖𝑡𝐷𝑒𝑐𝑟𝑒𝑎𝑠𝑖𝑛𝑔(L.𝑀, 𝑀𝑒 𝑓 𝑓 )
+                                                                              J, recovered after 108 ms of avoided idle power; migrating
+ 8 𝑁𝑚𝑖𝑛 ← max(𝑁𝑠𝑚 , 𝑁𝑚𝑒𝑚 )
+                                                                              Qwen3-32B costs 40.76 J, recovered in 413 ms. Over a 5-
+ 9 Initialize active GPUs set G with count 𝑁𝑚𝑖𝑛
+                                                                              minute consolidation window, disabling one GPU saves 29.6
+    // Phase 3: EWR Minimization Loop                                         kJ: 2788×/727× the two migration costs.
+10 Sort(L by 𝑙 .𝐹 )                         // Group by Frequency
+11 foreach LLM 𝑙 ∈ L do                                                       I   Prior Energy-Efficient LLM Serving
+12      𝑔𝑡𝑎𝑟𝑔𝑒𝑡 ← arg min𝑔∈ G |𝑔.𝑓 𝑟𝑒𝑞 − 𝑙 .𝐹 |                                   Systems
+13      𝑔𝑐𝑎𝑛𝑑 ← arg min𝑔∈ G\𝑔𝑡𝑎𝑟𝑔𝑒𝑡 |𝑔.𝑓 𝑟𝑒𝑞 − 𝑙 .𝐹 |                         Recent research has increasingly focused on improving the
+14      if Fits (𝑔𝑡𝑎𝑟𝑔𝑒𝑡 , 𝑙) then                                            energy efficiency of LLM serving. We explain these represen-
+15           Assign 𝑙 to 𝑔𝑡𝑎𝑟𝑔𝑒𝑡                                              tative systems and highlight their difference with Festina.
+16      else                                                                  DynamoLLM [41]. This system targets server-centric, single-
+17           𝑙𝑜𝑢𝑡 ← Incumbent on 𝑔𝑡𝑎𝑟𝑔𝑒𝑡 with lowest 𝐹                        LLM scenarios. It classifies requests into groups based on
+             // Simulate Swap to check EWR reduction                          input and estimated output lengths. It then assigns a static,
+18           𝐸𝑐𝑢𝑟𝑟 ← CalcEWR (𝑔𝑡𝑎𝑟𝑔𝑒𝑡 ∪ {𝑙 }, 𝑔𝑐𝑎𝑛𝑑 )                         energy-optimal frequency to each group to minimize energy
+19           𝐸𝑠𝑤𝑎𝑝 ← CalcEWR                                                  consumption.
+               (𝑔𝑡𝑎𝑟𝑔𝑒𝑡 \ {𝑙𝑜𝑢𝑡 } ∪ {𝑙 }, 𝑔𝑐𝑎𝑛𝑑 ∪ {𝑙𝑜𝑢𝑡 })                    GreenLLM [25]. GreenLLM is particularly designed for a
+20           if Fits (𝑔𝑐𝑎𝑛𝑑 , 𝑙𝑜𝑢𝑡 ) and Fits (𝑔𝑡𝑎𝑟𝑔𝑒𝑡 \ 𝑙𝑜𝑢𝑡 , 𝑙) and        PD-disaggregated setup. It leverages offline profiling to dy-
+               𝐸𝑠𝑤𝑎𝑝 < 𝐸𝑐𝑢𝑟𝑟 then                                             namically adjust frequencies for prefill batches and employs
+21                Move 𝑙𝑜𝑢𝑡 to 𝑔𝑐𝑎𝑛𝑑 ; Assign 𝑙 to 𝑔𝑡𝑎𝑟𝑔𝑒𝑡
+                                                                              a feedback-driven mechanism to adjust decode frequencies
+22           else
+                                                                              to save energy.
+23                if Fits (𝑔𝑐𝑎𝑛𝑑 , 𝑙) then
+                                                                              VoltanaLLM [57]. Similar to GreenLLM, VoltanaLLM tar-
+ 24                     Assign 𝑙 to 𝑔𝑐𝑎𝑛𝑑
+                                                                              gets single-LLM serving under PD-disaggregated setups. It
+25                else
+ 26                     Activate new GPU 𝑔𝑛𝑒𝑤 and assign 𝑙                    independently adjusts the frequency for prefill and decode
+ 27                     G ← G ∪ {𝑔𝑛𝑒𝑤 }                                       nodes based on current workloads, aiming to minimize en-
+28                end                                                         ergy usage while satisfying SLO constraints.
+29      Update 𝑔.𝑆𝑀, 𝑔.𝑀, 𝑔.𝑓 𝑟𝑒𝑞 for all affected GPUs                       Limitations in Serverless Contexts. While these works
+30 end
+                                                                              effectively address energy efficiency in dedicated environ-
+                                                                              ments, they are not well-suited for shared, serverless scenar-
+                                                                              ios due to five critical limitations:
+                                                                                 1. Lack of Auto-scaling: GreenLLM and VoltanaLLM
+G     Impact of Safety Margin                                                 rely on static node partitioning for prefill and decode phases
+The safety margin serves as a resource buffer during place-                   in disaggregated setups. They lack the dynamic auto-scaling
+ment reconfiguration, designed to absorb minor workload                       capabilities required for serverless serving. Without scale-
+fluctuations and prevent rapid oscillation between scale-in                   out support, meeting SLOs under high load is difficult; con-
+and scale-out operations. Figure 16 illustrates the trade-off                 versely, without scale-in support, GPUs remain under-utilized
+between SLO attainment and energy consumption across                          during low load, wasting resources and preventing other ten-
+margins ranging from 0% to 15%. Regarding SLO attainment,                     ants from occupying GPUs.
+a 0% margin is insufficient, resulting in a 2% performance                       2. Absence of Spatial Multiplexing: These systems do
+drop compared to a 5% margin. In contrast, margins of 5%,                     not support spatial multiplexing for co-located multi-tenancy.
+10%, and 15% yield comparable reliability, with performance                   Dedicating a single high-performance GPU (e.g., NVIDIA
+variances below 0.5%.                                                         H100) to one LLM often results in severe under-utilization [7,
+                                                                         18
+27, 52]. However, naïve sharing without dedicated resource            neglecting their distinct computational intensities. While
+management (e.g., SM partitioning, frequency control) leads           GreenLLM and VoltanaLLM provide phase-specific adjust-
+to significant interference and SLO violations [4, 6, 62]. The        ments, they are tailored for disaggregated setups and do not
+lack of fine-grained management limits the effectiveness of           support prefill-decode mixed scenarios, where PD-aggregated
+these systems in shared environments.                                 serving is common in current serverless scenarios [8, 14, 23,
+   3. No Shared-Frequency Conflict Resolution: Prior                  27, 60].
+systems assume each frequency setting governs a single                   5. Decoupled, Not Joint, Control: These systems treat
+workload. Under co-location, all tenants on a GPU share one           frequency as the sole energy knob. In a shared GPU, SM
+device-wide clock, so the most demanding co-tenant pins the           partitioning and frequency are coupled—the SM allocation
+frequency and forces models that prefer lower frequencies             shifts each tenant’s latency/energy-optimal frequency—so
+to over-clock, eroding DVFS savings. None of these systems            optimizing either in isolation is sub-optimal. Prior controllers
+provide a dispatching mechanism that groups frequency-                offer no mechanism for the joint SM/frequency adaptation
+compatible tenants to avoid this conflict.                            that co-located serving demands.
+   4. Inflexible Phase Management: DynamoLLM applies
+a single static frequency for both prefill and decode phases,
+
+
+
+
+                                                                 19
+

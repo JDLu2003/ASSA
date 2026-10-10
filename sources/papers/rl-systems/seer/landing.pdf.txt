@@ -1,0 +1,66 @@
+Seer: Online Context Learning for Fast
+Synchronous LLM Reinforcement
+Learning
+Ruoyu Qin, Moonshot AI and Tsinghua University; Weiran He, Weixiao Huang, Yangkun Zhang, Yikai Zhao,
+Bo Pang, and Xinran Xu, Moonshot AI; Yingdi Shan, Yongwei Wu, and Mingxing Zhang, Tsinghua
+University
+
+Reinforcement Learning (RL) has emerged as a critical technique for advancing modern Large
+Language Models (LLMs), yet existing synchronous RL systems face severe performance bottlenecks.
+The rollout phase, which dominates end-to-end iteration time, suffers from substantial long-tail latency
+and poor resource utilization due to inherent workload imbalance. We present Seer, a novel context
+learning RL system that addresses these challenges through a key observation: requests sharing the
+same prompt exhibit strong similarities in output lengths and response patterns. Leveraging this
+insight, Seer introduces three coordinated techniques: (1) divided rollout for dynamic load balancing,
+(2) context-aware scheduling to mitigate long-tail request delays, and (3) adaptive grouped speculative
+decoding to accelerate generation. These mechanisms work in concert to markedly reduce long-tail
+latency and improve resource efficiency during rollout. Evaluations on production-grade RL workloads
+demonstrate that Seer achieves up to 2.04× end-to-end rollout throughput improvement compared to
+the state-of-the-art synchronous RL systems, while notably reducing long-tail latency by 72–94%.
+
+
+
+
+                 OSDI '26 Open Access Sponsored by
+     King Abdullah University of Science and Technology (KAUST)
+
+
+
+Open Access Media
+USENIX is committed to Open Access to the research presented at our events. Papers and proceedings
+are freely available to everyone once the event begins. Any video, audio, and/or slides that are posted
+after the event are also free and open to everyone. Support USENIX and our commitment to Open
+Access.
+
+
+BibTeX
+
+
+    Qin PDF             View the slides
+Presentation Video
+
+
+
+
+AT T E N D                  SCHEDULE             PA R T I C I PAT E            SPONSORS
+Registration Information    Technical Sessions   Call for Papers               Exhibitor Resources
+Registration Discounts      Activities           Requirements for Authors
+Grant Opportunities         Poster Session       Call for Artifacts
+Venue, Hotel, and Travel                         Call for Posters
+                                                 Instructions for Presenters
+                                                 Mentorship
+
+ABOUT
+Symposium Organizers
+Past Symposia
+Conference Policies
+Code of Conduct
+Questions
+
+
+
+
+Privacy Policy Contact Us
+© USENIX 2026
+EIN 13-3055038
+

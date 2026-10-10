@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-10-09T13:58:31.929216+00:00",
+  "priority": "Paper collection resumed following user instruction",
+  "captured_webpages": 90,
+  "captured_papers": 57,
+  "products_index": "catalog/PRODUCTS.md",
+  "git_upload_status": "Google Chinese agent evaluation supplement uploaded via Git LFS; remote source commit verified",
+  "remaining": [
+    "Initial source inventory, not an exhaustive literature or market census.",
+    "ACM publisher page for RhymeRL returned a browser access challenge; arXiv original retained.",
+    "The user-mentioned IPADS OSDI filesystem/RL paper is not conclusively identified."
+  ],
+  "checks": {
+    "source_hashes": "Previous product batch: 415 source hashes verified. Current paper inventory: 240 file hashes verified; all paper PDFs parsed and source archives listed.",
+    "browser_tls": "verification retained; NSS database write access required in sandbox",
+    "print_completeness": "Default and adjusted browser PDFs retained. PDF/DOM text screening passed; Kiro sandbox document uses full body line matching because printed sidebar is omitted. Kiro Web expanded reading layout visually inspected. Dynamic variants and text in images are not guaranteed by these checks.",
+    "git_lfs": "New batch: 79 staged PDF/archive LFS pointers verified; Git LFS fsck passed; push succeeded and remote source commit matched.",
+    "paper_integrity": "240 paper file hashes verified; all paper PDFs parsed, extracted titles matched, all source archives listed.",
+    "google_agent_evaluation": "4 source hashes checked; PDF parsed; all substantive body lines matched in PDF text"
+  },
+  "paper_source_archives": 51,
+  "offering_index_entries": 16,
+  "component_and_agent_type_entries": 11,
+  "previous_product_candidates_resolved": 15,
+  "git_branch": "source-collection-20261009",
+  "verified_uploaded_source_commit": "211bc696ae0ce86394e35fb5f9c9779f304ae905",
+  "papers_index": "catalog/PAPERS.md"
+}

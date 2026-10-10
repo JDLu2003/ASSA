@@ -1,0 +1,67 @@
+{
+  "item": {
+    "topic": "agent-services",
+    "id": "conversational-interoperability",
+    "arxiv": "2407.19438v1",
+    "kind": "arxiv-paper",
+    "title": "Conversational AI Multi-Agent Interoperability, Universal Open APIs for Agentic Natural Language Multimodal Communications",
+    "discovered_by": "all:\"agent as a service\"",
+    "landing_url": "https://arxiv.org/abs/2407.19438v1"
+  },
+  "capture_started_at": "2026-10-09T12:04:30.643314+00:00",
+  "path": "sources/papers/agent-services/conversational-interoperability",
+  "requested_url": "https://arxiv.org/abs/2407.19438v1",
+  "pdf_url": "https://arxiv.org/pdf/2407.19438v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "5375af4f028b60f733b0e7a587c8a826e10870b21085d6ba75579b16135431b9",
+      "bytes": 7340990
+    },
+    "paper.txt": {
+      "sha256": "362b09e5f52cca5cf1d553b2b3a01becd77ab3b86e3962c93694ed3e9e73ed37",
+      "bytes": 65336
+    },
+    "paper.pdf": {
+      "sha256": "7704a5206476e81cdd2982676ff18af44550273299f08e6f57e858d10b393dcf",
+      "bytes": 6974151
+    },
+    "landing.html": {
+      "sha256": "308bb4795f9504b15469bc69ff50ecb94ae1df661930f7a8301a9d0ae1ca94ca",
+      "bytes": 42028
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2407.19438v1",
+    "retrieved_at": "2026-10-09T12:06:38.895897+00:00",
+    "fields": {
+      "citation_title": [
+        "Conversational AI Multi-Agent Interoperability, Universal Open APIs for Agentic Natural Language Multimodal Communications"
+      ],
+      "citation_author": [
+        "Gosmar, Diego",
+        "Dahl, Deborah A.",
+        "Coin, Emmett"
+      ],
+      "citation_date": [
+        "2024/07/28"
+      ],
+      "citation_online_date": [
+        "2024/07/28"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2407.19438"
+      ],
+      "citation_arxiv_id": [
+        "2407.19438"
+      ],
+      "citation_abstract": [
+        "This paper analyses Conversational AI multi-agent interoperability frameworks and describes the novel architecture proposed by the Open Voice Interoperability initiative (Linux Foundation AI and DATA), also known briefly as OVON (Open Voice Network). The new approach is illustrated, along with the main components, delineating the key benefits and use cases for deploying standard multi-modal AI agency (or agentic AI) communications. Beginning with Universal APIs based on Natural Language, the framework establishes and enables interoperable interactions among diverse Conversational AI agents, including chatbots, voicebots, videobots, and human agents. Furthermore, a new Discovery specification framework is introduced, designed to efficiently look up agents providing specific services and to obtain accurate information about these services through a standard Manifest publication, accessible via an extended set of Natural Language-based APIs. The main purpose of this contribution is to significantly enhance the capabilities and scalability of AI interactions across various platforms. The novel architecture for interoperable Conversational AI assistants is designed to generalize, being replicable and accessible via open repositories."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

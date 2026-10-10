@@ -1,0 +1,345 @@
+Skip to main content
+Documentation
+/
+Console
+Sign in
+Gemini Enterprise Agent Platform
+Start free
+Overview
+Studio
+Agents
+Models
+Notebooks
+API reference
+Pricing
+Engineering Blog
+Overview
+Get an API key
+Get started
+Build an agent with ADK and Agents CLI
+Build
+Overview
+Create agents
+Overview
+Set up the environment
+Prebuilt agents
+Create agents in the console
+Managed Agents API on Agent Platform
+Create agents with frameworks
+Quickstart: Develop with agent frameworks on Agent Runtime
+Agent Development Kit (ADK)
+Agent2Agent
+LangChain
+LangGraph
+AG2
+LlamaIndex
+Create a custom agent
+Skill Registry
+Authentication
+RAG Engine
+Tokenizer
+Multimodal datasets
+Use Agent Search
+Perform vector similarity searches
+Agent Retrieval (formerly Vector Search 2.0) - Intelligent Retrieval for AI Applications
+Scale
+Overview
+Agent Runtime
+Sessions
+Feedback service
+Memory Bank
+Sandbox
+Autonomous agent scheduling
+Govern
+Overview
+Safety (Responsible AI)
+Share an agent
+Agent Identity
+Agent Registry
+Topology graphs
+Policies
+Agent Gateway
+Guides
+Security
+Agent Audit
+Optimize
+Overview
+Observability
+Evaluation
+Example Store
+Troubleshooting
+Overview
+Agent Platform Runtime environment setup
+Create an agent
+Agent deployment
+Agent Gateway connectivity
+IAM access policies
+Manage deployed agents
+Code Execution
+Memory Bank
+On this page
+Before you begin
+Install and initialize the Agent Platform SDK for Python
+Develop an agent
+Deploy an agent
+Use an agent
+Clean up
+What's next
+Home
+Documentation
+AI and ML
+Gemini Enterprise Agent Platform
+Agents
+Was this helpful?
+Send feedback
+Develop and deploy agents on Agent Runtime
+
+Agent Runtime lets you host agents developed with various frameworks. This document explains how to create, deploy, and test an agent using LangGraph, LangChain, AG2, or LlamaIndex.
+
+This quickstart guides you through the following steps:
+
+Set up your Google Cloud project.
+Install the Agent Platform SDK for Python and your chosen framework.
+Develop a currency exchange agent.
+Deploy the agent to Agent Runtime.
+Test the deployed agent.
+
+For the quickstart using the Agent Development Kit (ADK), see Develop and deploy agents on Agent Platform with Agent Development Kit.
+
+Before you begin
+Note: To enable APIs, you need the serviceusage.services.enable permission. If you don't have this permission, ask your administrator to grant you the Service Usage Admin (roles/serviceusage.serviceUsageAdmin) role.
+Sign in to your Google Cloud account. If you're new to Google Cloud, create an account to evaluate how our products perform in real-world scenarios. New customers also get $300 in free credits to run, test, and deploy workloads.
+
+In the Google Cloud console, on the project selector page, select or create a Google Cloud project.
+
+Roles required to select or create a project
+
+Note: If you don't plan to keep the resources that you create in this procedure, create a project instead of selecting an existing project. After you finish these steps, you can delete the project, removing all resources associated with the project.
+
+Go to project selector
+
+Verify that billing is enabled for your Google Cloud project.
+
+Enable the Agent Platform and Cloud Storage APIs, if any are not already enabled.
+
+Roles required to enable APIs
+
+Enable the APIs
+
+To get the permissions that you need to use Agent Runtime, ask your administrator to grant you the following IAM roles on your project:
+
+Agent Platform User (roles/aiplatform.user)
+Storage Admin (roles/storage.admin)
+
+For more information about granting roles, see Manage access to projects, folders, and organizations.
+
+You might also be able to get the required permissions through custom roles or other predefined roles.
+
+Install and initialize the Agent Platform SDK for Python
+
+Run the following command to install the Agent Platform SDK for Python and other required packages:
+
+LangGraph
+LangChain
+AG2
+LlamaIndex
+pip install --upgrade --quiet google-cloud-aiplatform[agent_engines,langchain]>=1.112
+
+Authenticate as a user
+
+Colab
+Cloud Shell
+Local Shell
+
+Run the following code:
+
+from google.colab import auth
+
+auth.authenticate_user(project_id="PROJECT_ID")
+
+
+Run the following code to import Agent Platform and initialize the SDK:
+
+(Optional) Before testing an agent you develop, you need to import Agent Platform and initialize the SDK as follows:
+
+Google Cloud project
+import vertexai
+
+vertexai.init(
+    project="PROJECT_ID",               # Your project ID.
+    location="LOCATION",                # Your cloud region.
+)
+
+
+Where:
+
+PROJECT_ID is the Google Cloud project ID under which you develop and deploy agents
+
+LOCATION is one of the supported regions.
+
+Before deploying an agent, you need to import Agent Platform and initialize the SDK as follows:
+
+Google Cloud project
+import vertexai
+
+client = vertexai.Client(
+    project="PROJECT_ID",               # Your project ID.
+    location="LOCATION",                # Your cloud region.
+)
+
+
+Where:
+
+PROJECT_ID is the Google Cloud project ID under which you develop and deploy agents
+
+LOCATION is one of the supported regions.
+
+Develop an agent
+
+Develop a currency exchange tool for your agent:
+
+def get_exchange_rate(
+    currency_from: str = "USD",
+    currency_to: str = "EUR",
+    currency_date: str = "latest",
+):
+    """Retrieves the exchange rate between two currencies on a specified date."""
+    import requests
+
+    response = requests.get(
+        f"https://api.frankfurter.app/{currency_date}",
+        params={"from": currency_from, "to": currency_to},
+    )
+    return response.json()
+
+
+Instantiate an agent:
+
+LangGraph
+LangChain
+AG2
+LlamaIndex
+from vertexai import agent_engines
+
+agent = agent_engines.LanggraphAgent(
+    model="gemini-3.5-flash",
+    tools=[get_exchange_rate],
+    model_kwargs={
+        "temperature": 0.28,
+        "max_output_tokens": 1000,
+        "top_p": 0.95,
+    },
+)
+
+
+Test the agent locally:
+
+LangGraph
+LangChain
+AG2
+LlamaIndex
+agent.query(input={"messages": [
+    ("user", "What is the exchange rate from US dollars to SEK today?"),
+]})
+
+Deploy an agent
+
+Deploy the agent by creating a reasoningEngine resource in Agent Platform:
+
+LangGraph
+LangChain
+AG2
+LlamaIndex
+remote_agent = client.agent_engines.create(
+    agent,
+    config={
+        "display_name": "LangGraph currency exchange agent",
+        "requirements": ["google-cloud-aiplatform[agent_engines,langchain]"],
+        "identity_type": types.IdentityType.AGENT_IDENTITY,
+    },
+)
+
+Use an agent
+
+Test the deployed agent by sending a query:
+
+LangGraph
+LangChain
+AG2
+LlamaIndex
+remote_agent.query(input={"messages": [
+    ("user", "What is the exchange rate from US dollars to SEK today?"),
+]})
+
+Clean up
+
+To avoid incurring charges to your Google Cloud account for the resources used on this page, follow these steps.
+
+remote_agent.delete(force=True)
+
+What's next
+Guide
+Agent Platform Runtime setup
+
+Set up your environment to use Agent Platform Runtime.
+
+Guide
+Deploy agents
+
+Learn the five ways to deploy an agent on Agent Platform Runtime based on your development needs.
+
+Guide
+Manage deployed agents
+
+Learn how to manage agents that have been deployed to the Agent Platform managed runtime.
+
+Guide
+Use an agent
+
+Use an agent with Agent Platform Runtime.
+
+Resource
+Get support
+
+Find resources and support for Google Agent Platform.
+
+Was this helpful?
+Send feedback
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-08 UTC.
+
+Products and pricing
+See all products
+Google Cloud pricing
+Google Cloud Marketplace
+Contact sales
+Support
+Community forums
+Support
+Release Notes
+System status
+Resources
+GitHub
+Getting Started with Google Cloud
+Code samples
+Cloud Architecture Center
+Training and Certification
+Engage
+Blog
+Events
+X (Twitter)
+Google Cloud on YouTube
+Google Cloud Tech on YouTube
+Android
+Chrome
+Firebase
+Google AI
+About Google
+Privacy
+Site terms
+Google Cloud terms
+Our third decade of climate action: join us
+Sign up for the Google Cloud newsletter
+Subscribe

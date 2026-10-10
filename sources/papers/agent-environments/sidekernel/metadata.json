@@ -1,0 +1,69 @@
+{
+  "item": {
+    "topic": "agent-environments",
+    "id": "sidekernel",
+    "arxiv": "2610.02456v1",
+    "kind": "arxiv-paper",
+    "title": "SideKernel: A Usable microVM Sandbox for AI Coding Agents on macOS",
+    "landing_url": "https://arxiv.org/abs/2610.02456v1",
+    "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+    "published": "2026-10-01T20:30:13Z",
+    "authors": [
+      "Dimitrios Prasakis"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:03.088211+00:00",
+  "path": "sources/papers/agent-environments/sidekernel",
+  "requested_url": "https://arxiv.org/abs/2610.02456v1",
+  "pdf_url": "https://arxiv.org/pdf/2610.02456v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "537d6f736de86e13989b3df441c40f7f8f056853b7e1565d11d2a3289b0db27a",
+      "bytes": 447108
+    },
+    "paper.txt": {
+      "sha256": "a96e0962018f47e8e3f36e2579df3f99870c29a2a24054a4c87157dcd6579caf",
+      "bytes": 102521
+    },
+    "paper.pdf": {
+      "sha256": "299e4e1e94ff9aba57302a1e312c978256234b390db2cbfa1aa441b1bd57c81c",
+      "bytes": 530061
+    },
+    "landing.html": {
+      "sha256": "3fe83ee21babb7af5b63236ff1dd8e349136c21e413472d5d1e03fd91c878a80",
+      "bytes": 41539
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2610.02456v1",
+    "retrieved_at": "2026-10-09T13:06:16.851597+00:00",
+    "fields": {
+      "citation_title": [
+        "SideKernel: A Usable microVM Sandbox for AI Coding Agents on macOS"
+      ],
+      "citation_author": [
+        "Prasakis, Dimitrios"
+      ],
+      "citation_date": [
+        "2026/10/01"
+      ],
+      "citation_online_date": [
+        "2026/10/01"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2610.02456"
+      ],
+      "citation_arxiv_id": [
+        "2610.02456"
+      ],
+      "citation_abstract": [
+        "AI coding agents are untrusted system components, yet they require autonomy on the developer machines they run on. This contradiction is a security problem. Sandboxes provide an isolated environment, but for local macOS development, the existing local, open-source options for AI coding agents are few in number and cumbersome to use. I conducted a formative online user survey which indicates that fewer than 40% of AI coding agent users run their agents in a sandbox and identifies the top usability barriers hindering AI coding agent sandbox adoption. These findings are used to develop SideKernel: an open-source, local, microVM-based macOS sandbox for AI coding agents designed for usability. To evaluate SideKernel, I compiled a list of sandboxes available on the market and filtered it against five inclusion criteria. Then I performed a comparative analysis between SideKernel and the sandboxes that satisfy these criteria, across 23 capability tests derived from the usability barriers revealed by the user survey. I discovered that only a few sandboxes are similar to SideKernel, and that among those, Docker Sandboxes and SideKernel score highest on capability features related to usability. A secondary contribution of this paper is a survey of the existing solution space for local, open-source, microVM-based macOS sandboxes for AI coding agents."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

@@ -1,0 +1,1890 @@
+                                             LLM-Based Human-Agent Collaboration and Interaction Systems: A
+                                                                      Survey
+                                            Henry Peng Zou1, * , Wei-Chieh Huang1, * , Yaozu Wu2, * , Jizhou Guo1 , Yankai Chen4,5, † ,
+                                               Chunyu Miao1 , Hoang Nguyen1 , Yue Zhou1 , Weizhi Zhang1 , Liancheng Fang1 ,
+                                              Hanrong Zhang1 , Fangxin Wang1 , Pengfei Zhang6 , Huacan Wang, Langzhou He1 ,
+                                                    Yangning Li3 , Dongyuan Li2 , Renhe Jiang2 , Xue Liu4,5 Philip S. Yu1, †
+                                                  1
+                                                    University of Illinois Chicago, 2 University of Tokyo, 3 Tsinghua University,
+                                                        4
+                                                          MBZUAI, 5 McGill University, 6 University of California Irvine
+                                             {pzou3, whuang80, psyu}@uic.edu, yaozuwu279@gmail.com, yankaichen@acm.org
+
+                                                                                                 goals (Wang et al., 2024a; Li et al., 2024; Zhang
+                                                                                                 et al., 2026). These agents are often equipped with
+                                                               Abstract
+arXiv:2505.00753v5 [cs.CL] 6 May 2026
+
+
+
+
+                                                                                                 modules for memory, planning, and tool use, aim-
+                                             Recent advances in large language models            ing to automate complex workflows with minimal
+                                             (LLMs) have sparked growing interest in build-      human involvement (Xie et al., 2024a; Xi et al.,
+                                             ing fully autonomous agents. However, fully         2025; Huang et al., 2026). However, the pursuit of
+                                             autonomous LLM-based agents still face sig-         full autonomy faces critical hurdles. (1) Reliability
+                                             nificant challenges, including limited reliabil-    remains a major concern due to LLMs’ propensity
+                                             ity due to hallucinations, difficulty in handling
+                                                                                                 for hallucination, generating plausible but factu-
+                                             complex tasks, and substantial safety and eth-
+                                             ical risks, all of which limit their feasibility    ally incorrect or nonsensical outputs, which un-
+                                             and trustworthiness in real-world applications.     dermines trust and can lead to significant errors,
+                                             To overcome these limitations, LLM-based            especially when actions are chained (Gosmar and
+                                             human-agent systems (LLM-HAS) incorporate           Dahl, 2025; Xu et al., 2024; Glickman and Sharot,
+                                             human-provided information, feedback, or con-       2025). (2) Complexity often stalls autonomous
+                                             trol into the agent system to enhance system        agents; they struggle with very complicated tasks
+                                             performance, reliability, and safety. These         requiring deep domain expertise, long multi-step
+                                             human-agent collaboration systems enable hu-
+                                                                                                 execution, nuanced reasoning, dynamic adaptation,
+                                             mans and LLM-based agents to collaborate ef-
+                                             fectively by leveraging their complementary         or strict long-context consistency dependencies, as
+                                             strengths. This paper provides the first compre-    seen in scientific research (Feng et al., 2024; Yehu-
+                                             hensive and structured survey of LLM-HAS. It        dai et al., 2025). (3) Safety and Ethical Risks es-
+                                             clarifies fundamental concepts, systematically      calate with autonomy; agents can take unintended
+                                             presents core components shaping these sys-         harmful actions, amplify societal biases present in
+                                             tems, including environment and profiling, hu-      training data, or create accountability gaps, particu-
+                                             man feedback, interaction types, orchestration,
+                                                                                                 larly in critical decision-making scenarios involv-
+                                             and communication, explores emerging appli-
+                                             cations, and discusses unique challenges and        ing finance, healthcare, or security (Mitchell et al.,
+                                             opportunities arising from human-AI collabora-      2025; Deng et al., 2024; Wang et al., 2024c).
+                                             tion. By consolidating current knowledge and           The persistence of these challenges suggests that
+                                             offering a structured overview, we aim to foster    full autonomy may be unsuitable for many real-
+                                             further research and innovation in this rapidly     world applications (Mitchell et al., 2025; Natarajan
+                                             evolving interdisciplinary field. Paper lists and   et al., 2025) and underscores a crucial insight often
+                                             resources are available at Github Repository.       overlooked in the drive for pure automation: the
+                                                                                                 indispensable role of human involvement. Humans
+                                        1     Introduction
+                                                                                                 are frequently needed to provide additional infor-
+                                        Recent advances in Large Language Models                 mation, essential clarification, or domain knowl-
+                                        (LLMs) have led to growing enthusiasm for build-         edge, offer vital feedback and corrections, and ex-
+                                        ing fully autonomous agent systems that use LLMs         ercise necessary oversight and control. These moti-
+                                        as a central engine to perceive environments,            vate a paradigm shift towards systems explicitly de-
+                                        make decisions, and execute actions to achieve           signed for human-agent collaboration: LLM-based
+                                             ∗
+                                                                                                 Human-Agent Systems (LLM-HAS).
+                                             Equal Contribution. † Corresponding Author.
+                                           https://github.com/HenryPengZou/Awesome-Human-           While surveys on LLM-based autonomous
+                                        Agent-Collaboration-Interaction-Systems                  agents (Wang et al., 2024a; Li et al., 2024), multi-
+                                                                      Roger that!(🤖 ) I’ll start               Dinner is ready! I
+                                                                      cleaning right away.                     hope you (👩 ) enjoy
+    Human Feedback                                                    Understood!(👩 ) I’ll wait
+                                                                                                               tonight’s meal.                                                   Interaction Type
+                                                                      until you’ve finished your               Could you (🧹 ) please
+                                                                      meal.                                    help me to start
+                                                                                                               cleaning the floor now?
+
+
+           Type               Granularity            Phase                                                                                 Competition            Collaboration              Coopetition
+    Evaluative, Corrective,       Holistic,        Initial, During,
+     Guidance, Implicit                                Post Task                                                                                       Delegation, Supervision, Coordination, Cooperation
+                               Segment-Level
+
+
+
+
+    Orchestration Paradigm                                                    En                                                                                                 Communication
+                                                                                vir
+                                                                                   onm                      g
+       One by One      Simultaneous        Synchronous    Asynchronous
+                                                                                             ent     ofilin                                                                            Observation
+            ：
+            ：
+                          ：    ：
+                                                                                                 & Pr                                Centralized Decentralized Hierarchical Conversation        Message Pool
+            ：
+                                                                                                   Wait a second (🧹 ) …
+                                                                                                   It’s too noisy while
+                                                  Temporal                                         I’m eating.
+          Task Strategy                                                                                                                           Structure                               Mode
+                                               Synchronization                                     Can you start cleaning
+                                                                                                   after I finish dinner?
+
+
+                                          LLM-based Human-Agent Systems (LLM-HAS)
+Figure 1: Overview of LLM-based Human-Agent Systems (LLM-HAS). LLM-HAS are interactive frameworks
+where humans actively provide additional information, feedback, or control during interaction with an LLM-powered
+agent to enhance system performance, reliability, and safety. The system is composed of five core components:
+Environment & Profiling (including environment settings, and role definitions, goals, and agent capabilities such
+as planning and memory), Human Feedback (with varying types, timing, and granularity), Interaction Types
+(collaborative, competitive, cooperative, or mixed), Orchestration (task strategy and temporal synchronization),
+and Communication (information flow structure and mode).
+
+
+agent systems (Tran et al., 2025; Wu et al., 2025b),                                                          safety (Feng et al., 2024; Shao et al., 2024; Mehta
+and specific applications exist (Wang et al., 2025b;                                                          et al., 2024). The core idea is synergy: combining
+Peng et al., 2025), a dedicated synthesis focusing                                                            unique human strengths—like intuition, creativity,
+specifically on LLM-based human-agent systems                                                                 expertise, ethical judgment, and adaptability—with
+is lacking. This survey fills the gap by provid-                                                              LLM agent capabilities such as vast knowledge
+ing a comprehensive and structured overview of                                                                recall, computational speed, and sophisticated lan-
+the LLM-HAS. It clarifies the fundamental con-                                                                guage processing. LLM-HAS builds upon core
+cepts (Section 2) and systematically presents its                                                             LLM agent components but places critical empha-
+core components (Section 3), major implementa-                                                                sis on the human’s interactive role and capabilities:
+tion strategies (Section 4), emerging applications
+(Section 5), open-source frameworks, datasets and                                                               (1) Providing Information / Clarification: Hu-
+benchmarks (Section 6), and unique challenges                                                                       mans provide additional information that
+and opportunities (Section 7) within this specific                                                                  agents lack or cannot reliably infer, such as
+niche. To the best of our knowledge, this is still                                                                  login credentials, payment details, domain ex-
+the first survey on LLM-based human-agent sys-                                                                      pertise, constraints, or resolve ambiguities,
+tems. We aim to consolidate current knowledge                                                                       helping agents interpret situations more ac-
+and inspire further research and application in this                                                                curately (Naik et al., 2025; Kim et al., 2025b).
+rapidly evolving field. We maintain an open-source                                                              (2) Providing Feedback / Error Correction: Hu-
+GitHub repository to provide a sustainable resource                                                                 mans evaluate agent outputs and provide feed-
+complementing our survey paper.                                                                                     back, ranging from simple ratings to complex
+                                                                                                                    critiques, demonstrations or corrections, effec-
+2     LLM-Based Human-Agent Systems                                                                                 tively guiding agents’ adjustment (Gao et al.,
+We define LLM-based human-agent systems as in-                                                                      2024b; Dutta et al., 2024; Zou et al., 2026).
+teractive frameworks where humans actively pro-                                                                 (3) Taking Control / Action: In high-stakes or
+vide additional information, feedback, or control                                                                   sensitive scenarios (e.g., healthcare, privacy,
+during interaction with an LLM-powered agent                                                                        or ethics), humans retain the authority to over-
+to enhance system performance, reliability, and                                                                     ride, redirect, or halt agent actions, ensuring
+                                                                                                           AgentCoord (Pan et al., 2024a), CowPilot (Huq et al., 2025),
+                                                                        Evaluative
+                                                                                                ConvCodeWorld (Han et al., 2025), GDfC (Wang et al., 2025c), DigiRL (Bai et al., 2024)
+
+                                                                                                          Collaborative Gym (Shao et al., 2024), ReHAC (Feng et al., 2024),
+                                                                        Corrective
+                                                                                                  AI Chains (Wu et al., 2022a), HRC DMP (Liu et al., 2024a), BPMN (Ait et al., 2024)
+                                                       Feedback
+                                                         Type                                               FineArena (Xu et al., 2025), InteractGen (Sun et al., 2024b),
+                                                                        Guidance
+                                                                                         ConvCodeWorld (Han et al., 2025), DPT Agent (Zhang et al., 2025), Organized Teams (Guo et al., 2024b)
+
+                                                                                                Prison Dilemm (Jiang et al., 2025), AXIS (Lu et al., 2024), AssistantX (Sun et al., 2024a),
+                                                                         Implicit
+                                                                                                                               EmoAgent (Qiu et al., 2025)
+                                         Human                                                 Help Feedback (Mehta et al., 2024), PARTNR (Chang et al., 2024), A2C (Tariq et al., 2025),
+                                        Feedback                         Holistic
+                                                                                                            CoELA (Zhang et al., 2024a), DPT Agent (Zhang et al., 2025)
+                                        (Sec 3.2)      Feedback
+                                                      Granularity                          CowPilot (Huq et al., 2025), SWEET-RL (Zhou et al., 2025), PDFChatAnnotator (Tang et al., 2024),
+                                                                         Segment
+                                                                                                                               TaPA (Wu et al., 2023)
+
+                                                                        Initial Task       AgentCoord (Pan et al., 2024a), AssistantX (Sun et al., 2024a), Hierarchical Agent(Liu et al., 2023b)
+                                                       Feedback        During Task          ConvCodeWorld (Han et al., 2025), HRC Manipulation (Liu et al., 2023a), A2C (Tariq et al., 2025)
+                                                        Phase
+                                                                                                   GDfC (Wang et al., 2025c), SOTOPIA (Zhou et al., 2024),DigiRL (Bai et al., 2024),
+                                                                        Post-Task
+                                                                                                                             EmoAgent (Qiu et al., 2025)
+
+                                                                                              EasyLAN (Pan et al., 2024b), CowPilot (Huq et al., 2025), Hierarchical Agent (Liu et al., 2023b),
+                                                                          Supervision
+                                                                                                       ConvCodeWorld (Han et al., 2025), HRC Manipulation (Liu et al., 2023a)
+      LLM-based Human-Agent Systems
+
+
+
+
+                                                                                             Collaborative Gym (Shao et al., 2024), GDfC (Wang et al., 2025c), HRC Manufa (Lim et al., 2024),
+                                                                          Delegation
+                                                                                                                  PaLM-E (Driess et al., 2023), DigiRL (Bai et al., 2024)
+                                                      Collaboration
+                                                                                           MTOM (Zhang et al., 2024b), Ask Before Plan (Zhang et al., 2024c), MindAgent (Gong et al., 2023),
+                                                                        Coordination
+                                                                                                                           MetaGPT (Hong et al., 2023)
+                                        Interaction
+                                                                                                CoELA (Zhang et al., 2024a), InteractGen (Sun et al., 2024b), PARTNR (Chang et al., 2024),
+                                           Type                          Cooperation
+                                                                                                                               MAIH (Wang et al., 2024c)
+                                         (Sec 3.3)
+                                                      Competition                                                     SOTOPIA (Zhou et al., 2024)
+
+                                                      Coopetition                                   Prison Dilemm (Jiang et al., 2025), SOTOPIA (Zhou et al., 2024)
+
+                                                                                                WebLINX (Lù et al., 2024), Co-STORM (Jiang et al., 2024), Agency Task (Sharma et al., 2024),
+                                                                            One by One
+                                                                                                        Help Feedback (Mehta et al., 2024), Ask Before Plan (Zhang et al., 2024c)
+                                                           Task
+                                                         Strategy                                 MTOM (Zhang et al., 2024b), HRT-ML (Liu et al., 2024b), DPT Agent (Zhang et al., 2025),
+                                      Orchestration                         Simultaneous
+                                                                                                                               CoELA (Zhang et al., 2024a)
+                                       Paradigm
+                                       (Sec 3.4)                                                        AgentCoord (Pan et al., 2024a), HRC Assembly (Gkournelos et al., 2024),
+                                                                            Synchronous
+                                                         Temporal                                HRC Manufa (Lim et al., 2024), UserBench (Qian et al., 2025a), MUA-RL (Zhao et al., 2025)
+                                                      Synchronization
+                                                                           Asynchronous          Collaborative Gym (Shao et al., 2024), MetaGPT (Hong et al., 2023), TaPA (Wu et al., 2023)
+
+                                                                                                      Drive As You Speack (Cui et al., 2024), Organized Teams (Guo et al., 2024b),
+                                                                       Centralized
+                                                                                                               HRC Manufa (Lim et al., 2024), DigiRL (Bai et al., 2024)
+
+                                                                                               Prison Dilemm (Jiang et al., 2025), InteractGen (Sun et al., 2024b), TaPA (Wu et al., 2023),
+                                                       Structure      Decentralized
+                                                                                                                               MINT (Wang et al., 2024b)
+
+                                                                                                            FineArena (Xu et al., 2025), AgentCoord (Pan et al., 2024a),
+                                                                      Hierarchical
+                                      Communication                                         EasyLAN (Pan et al., 2024b), Hierarchical Agent (Liu et al., 2023b), EmoAgent (Qiu et al., 2025)
+                                        (Sec 3.5)
+                                                                                               DigiRL (Bai et al., 2024), WebLINX (Lù et al., 2024), Organized Teams (Guo et al., 2024b),
+                                                                      Conversation
+                                                                                                        ConvCodeWorld (Han et al., 2025), Help Feedback (Mehta et al., 2024)
+
+                                                        Mode                                  AXIS (Lu et al., 2024), Attentive Supp (Tanneberg et al., 2024), EasyLAN (Pan et al., 2024b),
+                                                                      Observation
+                                                                                                                              MineWorld (Guo et al., 2025)
+                                                                        Message
+                                                                                                 SMALL (Wang et al., 2024c), HRT-ML (Liu et al., 2024b), MetaGPT (Hong et al., 2023)
+                                                                         Pool
+
+
+Figure 2: Taxonomy of LLM-based Human-Agent Systems. A more detailed and structured categorization of
+representative works is provided in the appendix (Table 6 and 7).
+
+
+    accountability, safety, and alignment with hu-                                                              Types may be collaborative (most common), com-
+    man values (Chen et al., 2025c; Natarajan                                                                   petitive, cooperative, or mixed. The Orchestration
+    et al., 2025; Xiao and Wang, 2023).                                                                         layer governs high-level coordination, choosing a
+                                                                                                                task strategy (e.g., sequential one-by-one versus
+   Figure 1 provides a generalized overview of                                                                  parallel simultaneous execution) and a temporal
+LLM-based human-agent systems. These systems                                                                    synchronization mode (real-time synchronous ex-
+operate within a defined Environment (e.g., phys-                                                               changes versus delayed asynchronous workflows)
+ical world, simulation) that provides context and                                                               so that each actor acts at the right moment. The
+stimuli. Human & Agent Profiling characterizes                                                                  Communication layer specifies how information
+the participants’ roles and goals, and the agent’s                                                              flows, defining message structure (centralized, de-
+core LLM engine augmented with capabilities like                                                                centralized, hierarchical) and mode (conversation,
+planning, memory, and tool use. Human Feed-                                                                     observation signals, or shared message pools). The
+back can occur during different phases in various                                                               effective interplay and configuration of these com-
+types and granularities. Human-Agent Interaction                                                                ponents, along with various human feedback, are
+critical for tailoring the system to specific tasks and   binary assessment. A prime example is preference
+optimizing the overall system’s performance. The          ranking, where users compare agent outputs,
+taxonomy of LLM-based human-agent systems is              forming the basis of Reinforcement Learning
+outlined in Figure 2. A detailed and structured cat-      from Human Feedback (RLHF) (Chaudhari et al.,
+egorization of representative works is provided in        2024). Alternatively, platforms like Uni-RLHF
+the Table 6 and Table 7.                                  (Yuan et al., 2024) support scalar ratings or binary
+                                                          assessments. (2) Corrective Feedback offers direct
+3     Core Components                                     edits or fixes to the agent’s behavior. For instance,
+                                                          the PRELUDE (Gao et al., 2024a) framework
+In this section, we examine LLM-HAS through
+                                                          learns latent preferences from user edits made
+five core aspects: environment & profiling, human
+                                                          to agent-generated text. (3) Guidance Feedback
+feedback, interaction type, orchestration paradigm,
+                                                          means the human proactively provides instructions,
+and communication. These dimensions provide a
+                                                          critiques, or demonstrations to shape the agent’s
+unified standard for analyzing existing work and
+                                                          behavior. Agents like InteractGen (Sun et al.,
+guiding the design of future systems.
+                                                          2024b), AutoManual (Chen et al., 2024a) can be
+3.1    Environment and Profiling                          bootstrapped using initial demonstrations, while
+                                                          methods like Self-Refine (Choudhury and Sodhi,
+Environment Setting.        The environment in            2025) employ iterative critiques and refinements to
+LLM-HAS defines a shared interaction space that           improve outputs. (4) Implicit Feedback is inferred
+can exist either in the physical world, such as           by the agent observing user actions or control
+offices (Sun et al., 2024b), or in fully simulated        signals, rather than explicitly stated or direct output
+virtual environments where agents and humans              modifications. For example, an agent might learn
+engage under controlled conditions (Sun et al.,           user priorities by observing how a user adjusts
+2024b; Zhang et al., 2024a; Guo et al., 2024b).           control sliders in a system like VeriPlan (Lee et al.,
+These systems can be configured in various ways,          2025a), or infer preferences by analyzing user
+including single-human single-agent, single-              behaviors like clicks and purchases in frameworks
+human multi-agent, multi-human single-agent, and          such as AgentA/B (Wang et al., 2025a). This
+multi-human multi-agent setups, each reflecting           contrasts with corrective feedback, where the user
+different collaboration dynamics and complexities.        directly edits the output; here, the agent interprets
+                                                          the user’s independent actions or control choices.
+Human & Agent Profiling. Human participants
+can be broadly categorized as lazy or informative         Human Feedback Granularity. Human feedback
+users. Lazy users provide minimal guidance, typ-          also varies in granularity, from coarse-grained,
+ically offering evaluative feedback such as binary        holistic judgments to fine-grained, segment-level
+correctness or scalar rating. In contrast, informa-       critiques. (1) Coarse-grained/Holistic feedback
+tive users engage deeply by offering demonstra-           provides a single assessment for the entire agent
+tions, detailed guidance, refinements, or even tak-       output. Standard RLHF often relies on holistic
+ing over parts of the task (Wang et al., 2024b; Liu       preferences between complete responses, which
+et al., 2024b; Han et al., 2025). On the other side,      simplifies feedback collection but struggles with
+agents are profiled by their roles and capabilities,      credit assignment in complex tasks. (2) Fine-
+which range from versatile general assistants to          grained/Segment-Level Feedback by contrast,
+specialized experts in mathematics, engineering,          targets specific parts (e.g., sentences, paragraphs,
+medicine, or robotic cleaning, each adapted to the        code blocks). This is crucial in environments
+particular demands of its operational context (Guo        like ConvCodeWorld (Han et al., 2025), where
+et al., 2024a; Samuel et al., 2024).                      feedback pertains to specific conversational turns
+                                                          or generated code segments, or in annotation tasks
+3.2    Human Feedback                                     like PDFChatAnnotator (Tang et al., 2024), where
+Human Feedback Type. We categorize human                  feedback applies to specific annotations or parts of
+feedback as evaluative, corrective, guidance, and         the document. This finer granularity provides more
+implicit feedback. (1) Evaluative Feedback pro-           precise learning signals, crucial for debugging
+vides an assessment of the agent’s output quality,        complex behaviors.
+typically as preference ranking, scalar rating, or
+ Dimension     Category            Definition Summary                        Key Characteristics / Trade-offs           Example Work
+
+ Type          Evaluative          User provides an assessment of the        ① Easy to collect, scalable. ② Less        EmoAgent (Qiu et al., 2025), MINT
+                                   agent’s output quality, typically as      specific signal for improvement.           (Wang et al., 2024b), SOTOPIA
+                                   binary assessment, scalar rating, or                                                 (Zhou et al., 2024)
+                                   preference ranking.
+               Corrective          User offers edits or fixes to the         ① Highly informative, clear signal for     SymbioticRAG (Sun et al., 2025a),
+                                   agent’s behavior.                         improvement. ② Higher user effort,         SWEET-RL (Zhou et al., 2025), AI
+                                                                             often fine-grained & interactive.          Chains (Wu et al., 2022a)
+               Guidance            User proactively provides                 ① Bootstraps learning, conveys             Drive As You Speack (Cui et al.,
+                                   instructions, demonstrations, or          complex goals, proactive alignment.        2024), Hierarchical Agent(Liu
+                                   critiques to shape the agent’s            ② Requires clear specification from        et al., 2023b), Ask Before Plan
+                                   behavior.                                 user.                                      (Zhang et al., 2024c)
+               Implicit            Inferred by the agent observing           ① Natural, unobtrusive collection.         MTOM (Zhang et al., 2024b),
+                                   user actions or control signals,          ② Ambiguous, requires careful              Attentive Supp. (Tanneberg et al.,
+                                   rather than explicitly stated or direct   interpretation.                            2024), MineWorld (Guo et al.,
+                                   output modifications.                                                                2025)
+ Granularity   Coarse-grained /    Single assessment/signal for an entire    ① Simple for user, good for overall        AssistantX (Sun et al., 2024a), Help
+               Holistic            agent output, trajectory, or task         assessment ② Obscures specific             Feedback (Mehta et al., 2024), AXIS
+                                   outcome.                                  errors, less precise learning signal.      (Lu et al., 2024)
+               Fine-grained /      Feedback targeting specific parts of      ① Precise learning signal, crucial for     Collaborative Gym (Shao et al.,
+               Segment-Level       agent output, actions, or process.        debugging complex skills                   2024), Prison Dilemm (Jiang et al.,
+                                                                             ② Potentially higher user                  2025), FineArena (Xu et al., 2025)
+                                                                             effort/burden.
+ Phase         Initial Setup &     Feedback provided before task             ① Initial and proactive alignment,         AgentCoord (Pan et al., 2024a),
+               Goal Definition     execution, configuring the agent          prevents costly errors, sets constraints   GDfC (Wang et al., 2025c), SMALL
+                                   system and defining the task, goals,      ② Requires upfront user input.             (Wang et al., 2024c)
+                                   constraints, and preference.
+               During Task         Online, interactive feedback while the    ① Enables real-time adaptation,            InteractGen (Sun et al., 2024b),
+               Execution           agent is actively performing the          crucial for dynamic/collaborative          CowPilot (Huq et al., 2025),
+                                   task, enabling real-time adaptation.      tasks ② Requires timely notification       EasyLAN (Pan et al., 2024b)
+                                                                             and responsive interfaces.
+               Post-Task Eval. &   Feedback provided after task              ① Non-disruptive, good for aggregate       HRT-ML (Liu et al., 2024b), M3HF
+               Refinement          completion to assess outcomes and         data/offline learning ② No impact on       (Wang et al., 2025d), MAIH (Wang
+                                   provide suggestions for future use.       completed task.                            et al., 2024c)
+
+
+Table 1: Dimensions of Human Feedback in LLM-based human–agent systems, including feedback type, granularity,
+and phase. For each dimension, a summary, key characteristics, and example works are provided for comparison. A
+detailed overview of human feedback types and their subtypes is provided in our appendix (Table 5).
+
+
+Human Feedback Phase. Human feedback can                                     completion to assess outcomes and provide feed-
+be incorporated at different phases of the LLM-                              back for future use. Frameworks like MAIH (Wang
+agent pipeline (Wang et al., 2025d). (1) Initial                             et al., 2024c) and EmoAgent (Qiu et al., 2025)
+Setup & Goal Definition occurs before task ex-                               apply feedback loops after initial generation for
+ecution, configuring the agent system and defin-                             benchmarking or offline learning, while AdaPlan-
+ing goals, such as setting coordination strategies                           ner (Sun et al., 2023) archives successful plans
+(AgentCoord (Pan et al., 2024a)) or critiquing plans                         post-task as skills for future use. Table 1 summa-
+before execution (Ask-before-Plan (Zhang et al.,                             rizes different dimensions of human feedback, key
+2024c)). (2) During Task Execution involves on-                              characteristics, and example work.
+line, interactive feedback while the agent is ac-
+tively performing the task, enabling real-time adap-                         3.3     Human-Agent Interaction Types
+tation. Examples include interactive instruction                             Interaction types define how individuals communi-
+editing (InstructEdit (Wang et al., 2023)), mid-task                         cate, exchange information, and take actions with
+refinements (Mutual Theory of Mind (Zhang et al.,                            one another. In LLM-HAS, interactions tend to
+2024b), Collaborative Gym (Shao et al., 2024)),                              be more dynamic and complex compared to multi-
+or online interventions (HG-DAgger (Kelly et al.,                            agent systems. This complexity arises from the
+2019), InterruptBench (Zou et al., 2026)). (3) Post-                         various roles and responsibilities assigned to both
+Task Evaluation & Refinement happens after task                              human agents and those based on LLMs, necessi-
+    Handle the                          Checking           Check the wiring.           This means the agent follows a predetermined set
+    inventory update.                   wiring now.        I’ll monitor.
+                                                                                       of tasks rather than adapting to the situation. For
+                              Got it!                                                  instance, an investor specifies their risk preference
+                                                                                       to the agent executing the investment strategy like
+                                                                                       FineArena (Xu et al., 2025), or a driver utters the
+           Delegation                                    Supervision
+   A task is assigned to the agent to            The agent performs the task while     command to LLM-based agent like Drive as you
+       complete independently                      human oversees its activities       Speak (Cui et al., 2024).
+    Hold the frame. I’ll guide             I’ll begin once             Clean the
+    the placement.                         the lab is clear.           lab at 4 PM.
+                                                                                       Supervision. Supervision is the process by which
+                                                                                       one party, usually a human operator, oversees,
+                              Holding frame
+                              steady.                                                  monitors, and guides the actions of an LLM-based
+                                                                                       agent. This involves real time evaluation and
+          Cooperation                                   Coordination
+ Human and agent work together, each             Tasks are managed in sync to avoid    intervention to ensure the agent’s output aligns
+    performing a part of the task               conflict and ensure smooth operation
+                                                                                       with established goals and quality standards. Su-
+                                                                                       pervision also encompasses setting alert thresholds
+Figure 3: The subtype of the collaboration between
+humans and LLM-based agents.                                                           and providing corrective inputs when deviations
+                                                                                       occur. By maintaining a continuous feedback loop
+                                                                                       between the human and the agent, supervision
+tating a finer-grained framework to describe their                                     helps calibrate agent behavior, catch and mitigate
+collaborative behaviors. The following categoriza-                                     errors before they propagate and build confidence
+tion highlights the three key interaction types: Col-                                  in the system. It also enables agents to handle
+laboration, Competition, and Coopetition.                                              routine tasks with increasing independence. For
+                                                                                       instance, agents notify humans to verify alignment
+3.3.1       Collaboration                                                              (Liu et al., 2023b), and teleoperators monitor the
+Collaborations are by far the most common                                              LLM-generated motion plans (Liu et al., 2023a).
+interaction and foundational interaction, which
+involve humans and LLM-based agents working                                            Cooperation. Cooperation refers to the voluntary
+together to achieve a common goal. This partner-                                       and joint efforts of multiple parties to achieve
+ship combines human creativity and contextual                                          agreed-upon goals.        This collaboration type
+understanding with LLM-based agents to address                                         combines the various efforts and outcomes of
+challenges and improve the efficiency and quality                                      different individuals and LLM-based agents toward
+of results (Vats et al., 2024; Du et al., 2024;                                        a common objective. It emphasizes collective
+Sun et al., 2025a; Tang et al., 2026; Chen et al.,                                     commitment, mutual assistance, and the pooling of
+2025b). Depending on the type of collaboration                                         resources to attain a shared result, thereby fostering
+considered, it can be categorized into four main                                       a collaborative problem-solving environment.
+fine-grained subtypes (Figure 3): (1) Delegation                                       For instance, the human robot coordination in
+& Direct Command (Kiewiet and McCubbins,                                               household activities (Chang et al., 2024), the
+1991), (2) Supervision (Loganbill et al., 1982), (3)                                   cooperative embodied language agent (CoELA)
+Cooperation (Rand and Nowak, 2013), and (4)                                            (Zhang et al., 2024a), human designers collaborat-
+Coordination (Turvey, 1990).                                                           ing with an LLM-based agent (Sharma et al., 2024).
+
+Delegation & Direct Command. In this inter-                                            Coordination. Coordination is the organized pro-
+action modality, a controlling party, usually a                                        cess of aligning and synchronizing the actions of
+human, assigns explicit tasks to the LLM-based                                         humans and LLM-based agents to achieve a shared
+agent by providing clear and direct instructions.                                      objective. Unlike cooperation, the key idea behind
+The agent is expected to execute these directives                                      coordination is to avoid conflict and bias in both hu-
+autonomously or on behalf of humans, ensuring                                          mans and LLM-based agents to reach the final goal.
+that responsibilities are well-defined and actions                                     It involves clear communication, strategic planning,
+align with the system’s overarching objectives.                                        and the intentional division of tasks, ensuring that
+Unlike supervision, where strategies can be                                            individual efforts are harmonized and effectively
+dynamically adjusted in response to new situations,                                    integrated to support common goals. For example,
+delegation involves providing instructions upfront.                                    humans and agents work in a shared workspace
+to complete interdependent tasks (Zhang et al.,
+2024b), human–agent integration supports adap-          Orchestration    Description
+                                                        Paradigm
+tive decision-making (Sun et al., 2024b), and the
+collaborative framework facilitates coordination        Task Strategy    What order and grouping of tasks do
+between humans and agents (Pan et al., 2024a).                           participants perform?
+                                                        One-by-One       Actors take turns (e.g., human plans →
+3.3.2    Competition                                                     agent executes → human reviews → agent
+                                                                         refines).
+Competition is a form of interaction where par-         Simultaneous     Actors work in parallel (e.g., agent
+ticipants aim to achieve their own goals, which                          streams partial suggestions while human
+                                                                         types).
+often conflict with the objectives of others. In the
+                                                        Temporal        When and how tightly do actors’ steps
+LLM-HAS, competition emerges when agents or             Synchronization need to align in time?
+humans seek to enhance their personal performance       Synchronous      (1) Real-time interaction: Humans and
+or obtain resources, even if it negatively impacts                       agents communicate simultaneously or in
+collective results. In addition, competition also                        immediate sequence; (2) Immediate
+                                                                         response: Participants expect or require
+necessitates effective balancing mechanisms, like                        prompt feedback. (e.g., live chat session,
+performance regulation or conflict resolution strate-                    real-time voice assistant).
+gies, to prevent unproductive behaviors and ensure      Asynchronous     (1) Delayed interaction: Communication
+that the overall goals of the system remain intact.                      occurs without the expectation of
+                                                                         immediate responses; (2) Flexible timing:
+For instance, the SOTOPIA framework simulates                            Participants can respond at their
+social behaviors between humans and LLM-based                            convenience. (e.g., email queues, human
+agents (Zhou et al., 2024).                                              leaves comments, agent processes offline).
+
+
+3.3.3    Coopetition                                    Table 2: Orchestration paradigms in LLM-based hu-
+                                                        man–agent systems encompass two orthogonal dimen-
+Coopetition is an interaction where cooperation         sions: task strategy, which can be one-by-one or simul-
+and competition coexist at the same time. Within        taneous, and temporal synchronization, which can be
+this interaction, participants collaborate on shared    synchronous or asynchronous.
+tasks or mutual goals while also seeking to outdo
+each other to improve their own performance or          3.4.1   Task Strategy
+gain extra advantages. In terms of the LLM-HAS,         In LLM-HAS, the chosen task strategy, defined
+this dual aspect implies that agents and human may      by the order and grouping of tasks performed by
+join forces to address complex issues while com-        humans and agents, significantly impacts task
+peting in specific domains such as efficiency or        execution effectiveness and efficiency. These
+precision. This approach not only combines the          strategies can typically be categorized into
+strengths of both collaboration and competition,        one-by-one and simultaneous paradigms.
+but also fosters innovation driven by competitive
+incentives while also reaping the benefits of co-
+                                                        One-by-One. The one-by-one strategy requires
+operative synergy. Successfully managing coope-
+                                                        participants (humans and LLM-based agents) to
+tition typically requires mechanisms for building
+                                                        perform tasks sequentially, taking clearly defined
+trust and adaptable strategies that reconcile collec-
+                                                        turns. For example, a human first outlines a
+tive advantages with personal aspirations, which is
+                                                        plan, the agent then executes the task, the human
+a challenge for the LLM-HAS. For example, hu-
+                                                        subsequently reviews the output, and finally,
+mans and agents play the prisoner’s dilemma in the
+                                                        the agent refines its work based on feedback
+shared workspace (Jiang et al., 2025).
+                                                        (Liu et al., 2024a; Zhou et al., 2025). Such
+                                                        sequential interaction helps maintain a clear order
+3.4     Orchestration Paradigm
+                                                        of execution and reduces the complexity associated
+The orchestration paradigm in LLM-HAS refers to         with concurrent task management. However, this
+how tasks and interactions are managed between          rigidity may limit overall efficiency and flexibility,
+humans and agents, covering two dimensions in our       especially in dynamic scenarios requiring parallel
+survey: Task Strategy (ordering) and Temporal           processing or rapid interaction cycles (Bansal et al.,
+Synchronization (timing). Table 2 summarizes the        2024; Guo et al., 2024b).
+two dimensions of the orchestration paradigm.
+Simultaneous. Simultaneous strategy describes          tems (Yan et al., 2025), human-agent systems in-
+an interaction pattern in which LLM-based agents       troduce a unique dimension (i.e., flexible, and cog-
+and humans respond concurrently in real time.          nitively diverse human participation). This leads
+Compared to the one-by-one strategy, the simul-        to a broader and more complex communication
+taneous approach more closely mirrors real-world       landscape, encompassing both human-to-agent and
+conditions encountered in many simulation tasks        agent-to-agent exchanges, each influenced by hu-
+(Wang et al., 2025d; Zhang et al., 2025). However,     man interpretability, feedback style, and interaction
+this strategy demands sophisticated mechanisms to      latency.
+handle latency mitigation and seamless coordina-          To systematically analyze communication behav-
+tion between participants.                             ior in such systems, we propose a two-dimensional
+                                                       taxonomy that captures the communication be-
+3.4.2    Temporal Synchronization
+                                                       havior characteristics of humans and agents from
+Temporal synchronization in LLM-HAS refers             macro-structures to micro-interaction rules. Specif-
+to the timing and coordination of interactions         ically, we divide this section into the follow-
+between humans and agents. It significantly            ing parts: Communication Structure, which de-
+influences system responsiveness, user experience,     scribes the macro-level organization of informa-
+and task efficiency. It can be broadly categorized     tion channels, and Communication Mode, which
+into two modes: synchronous and asynchronous.          characterizes the micro-level methods of message
+                                                       exchange.
+Synchronous. Synchronous interaction involves
+real-time interactions where humans and agents         3.5.1   Communication Structure
+engage simultaneously. Immediate response is           Communication structure refers to the organiza-
+expected, facilitating dynamic exchanges. Exam-        tional structure of agents, including both humans
+ples include live chat sessions, real-time voice       and agents, in LLM-HAS. It determines how in-
+assistants (e.g., Siri, Alexa), and collaborative      formation flows at the macro level and shapes the
+decision-making scenarios (Zhang et al., 2024b;        rules of interaction at the micro level. While origi-
+Liu et al., 2023b). This mode is advantageous          nally developed for LLM-based multi-agent envi-
+for tasks requiring rapid responses, immediate         ronments (Guo et al., 2024a), these structures have
+clarification, or real-time collaboration (Mehta       been effectively adapted to human-agent scenar-
+et al., 2024; Han et al., 2025).                       ios by treating humans as specialized agents. In
+                                                       such systems, the communication structure not only
+Asynchronous. In contrast, asynchronous in-            governs the efficiency of information exchange but
+teraction occurs without the necessity for imme-       also significantly impacts the system’s adaptability,
+diate responses. Participants can engage at their      scalability, and robustness to human variability. We
+convenience, allowing for flexibility in communi-      categorize the representative structures into three
+cation. Examples include email exchanges, mes-         types: Centralized, Decentralized, and Hierar-
+sage queues, ticket-based support systems, and task    chical.
+assignments where agents process and report out-          In Centralized structure, one primary agent or a
+comes independently (Shao et al., 2024; Zhang          group of core agents acts as a central node to coor-
+et al., 2025). Asynchronous communication is ben-      dinate all communications within the system. This
+eficial for complex issues that require thoughtful     central agent manages interactions among other
+analysis or when participants are in different time    agents, simplifying coordination and minimizing
+zones (Sun et al., 2024b,a).                           conflicts (Cui et al., 2024). Decentralized structure
+                                                       employs peer-to-peer communication, enabling di-
+3.5     Communication                                  rect interactions among agents without centralized
+In LLM-HAS, communication serves as the fun-           control. Agents autonomously manage their com-
+damental mechanism defining the transmission,          munications based on systemic information, en-
+reception, and transformation of information be-       hancing system flexibility, adaptability, and robust-
+tween humans and LLM-based agents. It focuses          ness (Shao et al., 2024; Driess et al., 2023). In addi-
+specifically on how information flows across partic-   tion, Hierarchical structure organizes agents into
+ipants to support effective interaction and mutual     clearly defined levels, assigning distinct roles and
+understanding. Unlike LLM-based multi-agent sys-       responsibilities according to their position within
+the hierarchy (Liu et al., 2023b; Pan et al., 2024b).   Message Pool. The shared message pool mode in-
+High-level agents typically fulfill managerial or       volves agents and humans exchanging information
+strategic roles, providing overarching guidance and     through a common information repository. Partici-
+supervision, while lower-level agents perform spe-      pants publish messages or data into a message pool,
+cialized tasks and execute detailed operations.         subscribing and retrieving relevant messages based
+                                                        on specific interests or tasks (Sun et al., 2024a).
+3.5.2   Communication Mode                              This approach significantly simplifies direct agent-
+Communication mode defines the manner through           to-agent or human-to-agent interactions, reduces
+which humans and agents exchange information            communication complexity, and enhances infor-
+within LLM-HAS. Specifically, communication             mation management efficiency. A prominent ex-
+mode describes the methods employed by partici-         ample includes the MetaGPT framework (Hong
+pants to transmit, acquire, and utilize information,    et al., 2023), where LLM-based agents collabo-
+critically shaping interaction efficiency and the       ratively retrieve information dynamically from a
+overall performance of the system. Broadly, com-        shared message pool, streamlining cooperation and
+munication modes can be categorized into three          information dissemination. Despite these advan-
+primary approaches: Conversation, Observation,          tages, shared message pools must carefully manage
+and Shared Message Pool.                                access control to avoid information conflicts or in-
+                                                        efficient retrieval.
+Conversation. The conversation-based mode is
+currently the most prevalent and intuitive approach     3.6    Human Agency Scale
+in LLM-HAS, wherein agents and humans directly          The five components discussed above collectively
+engage through natural language dialogues. This         characterize how humans and agents collaborate
+interaction format typically utilizes conversa-         or interact. However, they do not directly address
+tional interfaces that allow iterative exchanges,       a fundamental question: to what extent should
+questions, clarifications, and dynamic responses,       humans be involved in task completion? Differ-
+facilitating efficient collaboration and mutual         ent tasks and application contexts call for varying
+understanding (Shao et al., 2024). For instance,        degrees of human participation, ranging from full
+conversational LLM agents can assist users by           automation to essential human involvement. Draw-
+answering queries, explaining complex concepts,         ing on recent work that examines worker prefer-
+or collaboratively solving reasoning tasks through      ences and technological capabilities across occupa-
+iterative dialogues (Wang et al., 2024b). While         tional tasks (Shao et al., 2025), we introduce the
+intuitive and flexible, conversational interactions     Human Agency Scale, a system-level framework
+rely significantly on the communicative clarity and     that quantifies the desired or required level of hu-
+dialogue management capabilities of LLM agents.         man involvement in LLM-HAS (Shao et al., 2025).
+                                                        This scale defines five levels based on the degree of
+Observation. In the observation-based com-              human involvement required for effective task com-
+munication mode, agents acquire information             pletion: A1:Full Automation, A2:Minimal Human
+implicitly by observing participants behaviors,         Input, A3:Equal Partnership, A4:Agent-Assisted
+decisions, or interactions within their environment,    and A5:Human-Driven. Levels A1–A2 correspond
+rather than through explicit verbal communication.      to automation, where agent replaces human ef-
+This mode leverages indirect signals, including         fort, while A3–A5 represent augmentation, where
+user actions, feedback cues, or behavioral traces,      agent enhances human capabilities. A detailed dis-
+to infer intentions, preferences, or states (Lu         cussion of each level is provided in Appendix C.
+et al., 2024). For example, an LLM-driven
+tutoring system may adaptively provide targeted         4     Implementation Strategies
+instructions by continuously observing student
+problem-solving behaviors without explicit verbal       This section compares major implementation
+queries (Pan et al., 2024b). However, relying solely    strategies adopted in LLM-based human-agent
+on observational signals can introduce ambiguity,       systems. Specifically, we include three widely-
+potentially impacting inference accuracy unless         used categories: 1) Prompting-based methods, (2)
+complemented by robust inferential mechanisms.          Supervised Fine-Tuning (SFT)-based methods,
+                                                        and (3) Reinforcement Learning (RL)-based
+ Level   Name                    Description                                                              Agent Role
+  A1     Full Automation         Agent handles task entirely without human involvement                    Automation
+  A2     Minimal Human Input     Agent needs human input only at key points (e.g., spot-checking or       Automation
+                                 exception handling)
+  A3     Equal Partnership       Human and agent collaborate closely, outperforming either alone (e.g.,   Augmentation
+                                 planning/analysis tasks requiring iterative back-and-forth)
+  A4     Agent-Assisted          Agent requires substantial human input to complete task                  Augmentation
+  A5     Human-Driven            Task fully relies on continuous human involvement                        Augmentation
+
+Table 3: Human Agency Scale (Shao et al., 2025), a system-level framework that quantifies the desired or required
+level of human involvement in LLM-HAS. Automation: The agent takes primary responsibility for task execution
+with minimal human oversight. Augmentation: The human retains meaningful involvement with Agent providing
+collaborative support. The scale spans five levels (A1–A5), ranging from full automation to human-driven workflows.
+Detailed discussions of the motivation and each level are provided in Section 3.6 and Appendix C.
+
+
+methods. For each category, we summarize                     et al., 2025a) demonstrate how user edits can be
+representative methods and analyze their strengths           treated as supervision signals, allowing agents to
+and limitations.                                             learn latent user preferences or revision strategies
+                                                             beyond single-turn prompting. Hybrid systems,
+Prompting-based collaboration remains the most               such as Ask-before-Plan (Zhang et al., 2024c)
+widely adopted strategy due to its flexibility, easy         and CollabLLM (Wu et al., 2025a), combine
+implementation and minimal training overhead.                prompting with SFT to balance adaptability
+Recent work demonstrates that carefully structured           and stability, enabling agents to proactively ask
+prompts can elicit sophisticated collaborative               questions while grounding behavior in learned
+behaviors, such as proactive clarification, shared           collaboration policies. Compared to prompting,
+planning, and theory-of-mind reasoning. Systems              SFT yields more consistent agent behavior and
+like MToM (Zhang et al., 2024b) and Collaborative            stronger performance on specific tasks, but it
+Gym (Shao et al., 2024) show that explicit role,             incurs higher data and engineering costs and
+belief, or goal modeling in prompts enables agents           remains constrained by the coverage and bias of
+to anticipate user intent and adapt responses                collected interaction data.
+accordingly. Interactive benchmarks and interfaces,
+such as RECODE-H (Miao et al., 2025), Magentic-              Reinforcement learning (RL) formulates hu-
+UI (Mozannar et al., 2025), InterruptBench (Zou              man–agent interaction as a sequential decision-
+et al., 2026), and ARIA (He et al., 2025), further           making problem with explicit reward objectives.
+illustrate how real-time human feedback (e.g.,               Recent RL-based work, such as UserRL (Qian
+critiques, corrections, or preferences) can be               et al., 2025b), MUA-RL (Zhao et al., 2025),
+injected into the agent loop at inference time               SWEET-RL (Zhou et al., 2025), and ReHAC (Feng
+to guide task execution and self-improvement.                et al., 2024), optimizes agents for proactive help-
+Analyses of real-world usage, such as PATHs                  seeking, tool use, and multi-turn coordination un-
+(Mysore et al., 2025), reveal recurring human–AI             der delayed rewards. Interactive environments like
+collaboration patterns that prompting can exploit            UserBench (Qian et al., 2025a) provide controlled
+without modifying model parameters. However,                 testbeds for evaluating user-centric policies, mov-
+despite their agility, prompting-based methods are           ing beyond static benchmarks toward longitudinal
+often brittle: behaviors are sensitive to prompt             interaction. Compared to prompting and SFT, RL
+design, have limited controllability, and struggle to        enables agents to reason over long horizons and
+accumulate learning across sessions.                         trade off immediate assistance against future user
+                                                             satisfaction. However, RL approaches face chal-
+Supervised fine-tuning (SFT) addresses these                 lenges in reward specification, sample efficiency,
+limitations by converting human interaction traces,          and training stability. Thus, many recent works
+such as edits, revisions, or clarifications, into            (Zhao et al., 2025; Qian et al., 2025b) adopt hybrid
+persistent behavioral improvements. Works like               pipelines that bootstrap RL from prompting or SFT,
+PRELUDE (Gao et al., 2024a) and XtraGPT (Chen                suggesting that effective human–agent collabora-
+       Domain                          Datasets & Benchmarks   Proposed or Used by                     Data Link
+                                       TaPA                    TaPA (Wu et al., 2023)                    Link
+                                       EmboInteract            InteractGen (Sun et al., 2024b)             –
+                                       AssistantX              AssistantX (Sun et al., 2024a)              –
+                                       IGLU Multi-Turn         Help Feedback (Mehta et al., 2024)        Link
+       Embodied AI
+                                       PARTNR                  PARTNR (Chang et al., 2024)               Link
+                                       MINT                    MINT (Wang et al., 2024b)                 Link
+                                       C-WAH                   REVECA (Seo et al., 2025)                 Link
+                                       HSRI                    HSRI (Lee et al., 2025b)                    –
+                                       WEBLINX                 WebLINX (Lù et al., 2024)                   –
+                                       Ask-before-Plan         Ask Before Plan (Zhang et al., 2024c)     Link
+                                       Agency Dialogue         Agency Task (Sharma et al., 2024)           –
+       Conversational Systems          WildSeek                Co-STORM (Jiang et al., 2024)             Link
+                                       MINT                    MINT (Wang et al., 2024b)                 Link
+                                       HOTPOTQA                ReHAC (Feng et al., 2024)                 Link
+                                       StrategyQA              ReHAC (Feng et al., 2024)                 Link
+                                       MINT                    MINT (Wang et al., 2024b)                 Link
+                                       InterCode               ReHAC (Feng et al., 2024)                 Link
+       Software Development            ColBench                SWEET-RL (Zhou et al., 2025)              Link
+                                       ConvCodeWorld           ConvCodeWorld (Han et al., 2025)          Link
+                                       ConvCodeBench           ConvCodeWorld (Han et al., 2025)          Link
+                                       RECODE-H                RECODE-H (Miao et al., 2025)              Link
+                                       CuisineWorld            MindAgent (Gong et al., 2023)             Link
+       Gaming
+                                       MineWorld               MineWorld (Guo et al., 2025)              Link
+                                       EmoEval                 EmoAgent (Qiu et al., 2025)               Link
+       Healthcare
+                                       GenoTEX                 GenoMAS (Liu et al., 2025)                Link
+                                       τ 2-Bench               τ 2-Bench (Barres et al., 2025)           Link
+       Retail
+                                       τ -Bench                τ -Bench (Yao et al., 2025)               Link
+                                       UserBench               UserBench (Qian et al., 2025a)            Link
+       Travel                          τ 2-Bench               τ 2-Bench (Barres et al., 2025)           Link
+                                       τ -Bench                τ -Bench (Yao et al., 2025)               Link
+       Finance                         FinArena-Low-Cost       FineArena (Xu et al., 2025)               Link
+       Web Navigation & Computer Use   InterruptBench          InterruptBench (Zou et al., 2026)         Link
+
+
+                            Table 4: Datasets and Benchmarks across various domains.
+
+
+tion arises from complementary learning signals            memory management and optimal planning.
+rather than a single paradigm.                             Additionally, Tanneberg et al. (2024) extends the
+                                                           agents’ collaboration with a group of humans
+5   Applications                                           via Attentive Support, enabling agents’ ability to
+                                                           remain silent to not disturb the group if desired.
+A diverse range of applications has emerged for
+LLM-HAS. We elaborate on the five most frequent            Software Development. The inherently collab-
+domains below and summarize corresponding                  orative nature of software development makes
+datasets and benchmarks in Table 4. With                   human-agent collaboration vital to improve
+new applications appearing almost weekly in                development efficiency (Lu et al., 2024; Han
+this fast-growing field, we maintain a GitHub              et al., 2025; Zhou et al., 2025). Feng et al. (2024)
+repository to track recent developments.                   introduces ReHAC framework, wherein agents are
+                                                           trained to determine the optimal stages for human
+Embodied AI. Applications in Embodied AI                   intervention within the problem-solving process,
+involve various aspects of dynamic and complex             offering improved generalizability over the
+real-world tasks, benefiting from valuable human           traditional heuristic-based approaches. Building
+feedback and interactions in LLM-HAS. Ye et al.            on this direction, Zhou et al. (2025); Han et al.
+(2023) explores incorporating LLMs in human-               (2025); Wang et al. (2024b) investigate a broader
+robotic collaboration assembly tasks, allowing             spectrum of human feedback types via multi-turn
+seamless communication between robots and                  human-agent interactions. These approaches
+humans and increasing trust in human operators.            incorporate carefully designed optimization
+To address the challenges of false planning due            objectives to effectively capture more diverse and
+to suboptimal environment changes, Seo et al.              nuanced interactions between humans and agents.
+(2025) proposes REVECA to enable efficient
+Conversational Systems.          In conversational       returns and Sharpe ratios (Xu et al., 2025).
+systems, due to the frequent presence of ambiguity
+and lack of necessary information that agents            6     Implementation Tools and Resources
+cannot reliably infer, such as login credentials
+                                                         6.1    Human-Agent Framework
+and payment details, effective human-agent
+collaboration constitutes a critical component           This section provides a detailed introduction to
+of the system. Zhang et al. (2024c) introduces           three representative open-source LLM-HAS frame-
+Proactive Agent Planning, wherein agents are             works: Collaborative Gym (Shao et al., 2024),
+trained to predict classification needs based on         COWPILOT (Huq et al., 2025), and DPT-Agent
+the user-agent conversational interactions and           (Zhang et al., 2025). They differ in key configu-
+current environment, thereby leading to improved         ration aspects, including environment settings, in-
+reasoning efficacy. Wu et al. (2022a) introduces         teraction types, orchestration paradigms, and com-
+Chaining the LLM to improve the quality of               munication strategies. Specifically, Collaborative
+task outcomes and enhance the transparency and           Gym (Shao et al., 2024) facilitates asynchronous
+controllability of the conversational systems.           interactions among humans, agents, and task envi-
+                                                         ronments, supporting various simulated and real-
+Gaming. LLM-HAS are naturally well-suited to             world tasks such as travel planning, data analysis,
+simulated gaming environments due to their dy-           and academic writing. It emphasizes flexible, real-
+namicity and sophistication. Proper human-agent          time collaboration and evaluates both outcomes and
+interactions have been shown to enhance humans’          interaction quality, making it a robust tool for study-
+experience, satisfaction and understanding of both       ing human-agent dynamics. COWPILOT (Huq
+the environment and agents (Gong et al., 2023;           et al., 2025) provides a framework for human-agent
+Gao et al., 2024c). Collaborative interactions also      collaborative web navigation through a Chrome
+contribute to improved agents’ task performance          extension. It employs a "Suggest-then-Execute"
+and decision-making capabilities. For instance,          model under human supervision, allowing dynamic
+MindAgent framework (Gong et al., 2023)                  interventions to enhance task completion rates and
+illustrates the efficacy of human-agent collabo-         reduce human workload. It effectively demon-
+ration through measurable improvements in task           strates how human intervention can significantly
+outcomes when humans and agents work together.           improve agent performance. DPT-Agent (Zhang
+Mehta et al. (2024) demonstrates agents achieve          et al., 2025) applies Dual Process Theory (DPT) to
+improved outcomes when interacting with humans           enable real-time simultaneous human-agent inter-
+via autonomous confusion detection and clarifi-          actions. It features intuitive, fast decision-making
+cation questions and inquiries. Ait et al. (2024)        and deliberative reasoning components, employ-
+introduces Meta-Command Communication-based              ing Theory of Mind and asynchronous reflection
+framework to enable effective human-agent                to manage latency and adapt dynamically to hu-
+collaboration. To address challenges related             man actions. This approach excels in environments
+to execution latency while maintaining strong            requiring immediate and adaptive responses.
+reasoning capabilities, Liu et al. (2023a) proposes         Other frameworks, such as A2C (Tariq et al.,
+Hierarchical Language Agent that promotes                2025), FinArena (Xu et al., 2025), and human-
+faster responses, stronger cooperation, and more         robot collaboration framework (Liu et al.,
+consistent language communications.                      2023a), also contribute significantly to specific do-
+                                                         mains like cybersecurity, financial forecasting, and
+Finance. Given the complexity of stock markets           robotic manipulation, respectively. These frame-
+and financial systems, where investors’ strategies       works further demonstrate the diverse potential and
+and risk preferences are critical determinants of out-   adaptability of LLM-HAS.
+comes, human-agent collaboration is increasingly
+recognized as a valuable paradigm. FinArena (Xu          6.2    Datasets and Benchmarks
+et al., 2025) demonstrates the potential of integrat-    We summarize the commonly used datasets and
+ing experienced investors with advanced AI agents        benchmarks for Large Language Model-based
+to support stock prediction tasks. This collabora-       Human-Agent Systems in Table 4. Diverse do-
+tive framework has been shown to improve invest-         mains employ distinct methodologies for evaluat-
+ment performance, yielding competitive annualized        ing these systems, aligned closely with their unique
+application contexts. Within the domain of embod-        exceeds that of an average human. As a result, the
+ied AI, the primary approach involves simulated          simulated conversation rarely involves extensive
+environments (Sun et al., 2024b,a; Mehta et al.,         classification and verification steps (Yao et al.,
+2024), designed to assess how effectively agents         2025), which are often expressed in imprecise
+cooperate and execute tasks in dynamic, interactive      language in the human perspective. In contrast,
+scenarios. Another significant domain, Conver-           real users frequently produce grammatical errors
+sational Systems, encompasses applications such          or struggle to articulate their intentions clearly,
+as question answering (Feng et al., 2024), web-          behaviors that are rarely observed in LLM agents.
+site navigation (Lù et al., 2024; Levy et al., 2024),    The performance gap between humans and the
+design decision assistance (Sharma et al., 2024),        simulated human remains unknown, potentially
+and travel planning (Zhang et al., 2024c), adopting      making the comparison incomparable.
+benchmarks that evaluate the ability of language
+models to function as user-aligned conversational        Mostly Agent-Centered Work. In most LLM-
+assistants, ensuring interactions meet user expecta-     HAS studies, guidance flows in a single direction,
+tions. Despite the extensive application coverage        with humans evaluating agent outputs and provid-
+of current benchmarks, there remains a clear neces-      ing corrective or evaluative feedback. Namely, the
+sity for the development of more comprehensive           current studies are mostly agent-centered. This
+and standardized benchmarking frameworks.                agent-centered framework relegates humans to
+                                                         passive evaluators and overlooks the potential
+7   Challenges and Opportunities                         for agents to proactively monitor and guide
+                                                         human actions, thereby undercutting bidirectional
+In this section, we highlight some existing              collaboration (Zhang et al., 2024a). For example,
+challenges and opportunities for LLM-HAS.                ConvCodeWorld (Han et al., 2025) treats humans
+                                                         as scripted evaluators. Within the framework,
+Human Flexibility and Variability.           Human       LLM-simulated humans provide feedback logs
+feedback varies widely in terms of role, timing,         to the agent, rather than empowering agents to
+and style across various LLM-HAS. Humans are             observe and coach human coding actions dynami-
+often subjective, influenced by their personalities,     cally. However, enabling agents to observe human
+which means different individuals interacting with       actions, detect errors or inefficiencies, and offer
+an LLM-HAS may lead to different outcomes                timely suggestions can transform collaboration
+and conclusions. This highlights the need and            and reduce human effort by leveraging agent
+opportunity for i) thorough investigations or            intelligence. When agents act as instructors by
+benchmarks on how varied human feedback affects          proposing alternative strategies, drawing attention
+entire systems, and ii) flexible frameworks that can     to overlooked risks, and reinforcing effective
+support and adapt to diverse human feedback. In          practices as tasks unfold in real time, both humans
+addition, humans, regarded as a ”special agent” in       and agents benefit. We believe that exploring
+the LLM-HAS, are subject to fewer restrictions           human-centered LLM-HAS, or shifting toward an
+and evaluations than LLM-based agents. This              equalized LLM-HAS, will unlock the full promise
+limits how the LLM-HAS can be improved                   of teamwork between humans and agents.
+because the impedance may be on the human side
+instead of the agent. This concern remains and           Inadequate Evaluation Methodologies.           In
+requires a refined strategy to define the strict, fine   existing evaluation frameworks for LLM-HAS,
+interaction rule and evaluation equally for both         improvements focus primarily on agent accuracy
+human and LLM-based agents. Also, many studies           and static benchmarks, which ignore the real
+today substitute real human participants with LLM        burden placed on human collaborators (Ma et al.,
+simulated human proxies, failing to capture human        2025). People dedicate varying amounts of time,
+input’s variety and unpredictability. For example,       attention and cognitive effort depending on the
+CollabLLM (Wu et al., 2025a) employs a user              type and frequency of feedback they must provide,
+simulator to mimic human interaction according           yet no standard metric captures this human
+to a predefined linguistic style. Nevertheless, the      workload or its impact on overall efficiency. For
+model still relies on fixed prompts to reproduce the     example, frameworks like CoELA (Jiang et al.,
+requested actions, and its internal knowledge far        2024) evaluate success purely by metrics such as
+transport rate improvements, yet ignore entirely      to their human partners (Glickman and Sharot,
+the invisible coordination costs and cognitive        2025). Without studies that emphasize human
+load on humans (Qiu et al., 2025). Evaluation         experience in safety and privacy design, real-world
+methods should measure factors such as time spent     deployments will struggle to gain trust or meet
+offering feedback, feedback quality, frequency,       acceptable risk thresholds. Rigorous investigation
+and impact (Fragiadakis et al., 2024), perceived      of how safety, robustness and privacy shape human
+mental workload and effort required to detect and     agent workflows from design through deployment
+correct errors, and they should cover every phase     is essential to build collaborations that are both
+of the human agent collaboration from initial         effective and respectful of human needs.
+task assignment through post execution review,
+to systematically evaluate LLM-HAS. Evaluation        Applications and Beyond. The potential of LLM-
+methods should measure factors such as time spent     HAS extends well beyond current applications.
+offering feedback, perceived mental workload and      Many opportunities remain to be explored in chal-
+effort required to detect and correct errors, and     lenging domains such as healthcare, finance, sci-
+they should cover every phase of the human agent      entific research, education, and so on (Luo et al.,
+collaboration from initial task assignment through    2025; Guo et al., 2024a). While fully autonomous
+post execution review. As human expertise and         LLM-based agent systems encounter difficulties in
+LLM-based agent capabilities merge to deliver         handling complex, long-term tasks and earning full
+unprecedented performance, both uncertainty and       trust in safety and reliability, the involvement of hu-
+variability grow. A new evaluation approach or set    mans to provide additional information, feedback,
+of metrics that systematically and comprehensively    and control allows LLM-HAS to greatly improve
+quantifies contributions and costs for both humans    overall system performance and safety. This opens
+and agents is essential to ensure truly efficient     the door to impactful applications across a broad
+collaboration.                                        range of critical fields.
+
+                                                      8   Conclusion
+Unresolved Safety Vulnerabilities.            Most
+                                                      This paper presents a comprehensive review of
+LLM-HAS works emphasize improving agent
+                                                      LLM-based Human-Agent Systems. We introduce
+performance and have left safety, robustness and
+                                                      a structured taxonomy covering five core dimen-
+privacy underexplored in the context of human
+                                                      sions: environment and profiling, human feed-
+interaction (Qiu et al., 2025). As people and LLM-
+                                                      back, interaction types, orchestration paradigms,
+based agents collaborate in dynamic workflows, the
+                                                      and communication, and use it to classify and ana-
+risk of misaligned behavior, unexpected failures,
+                                                      lyze existing research on LLM-HAS. We also sum-
+or unintended disclosure of sensitive information
+                                                      marize representative implementation frameworks,
+grows. For example, the MetaGPT agent-centered
+                                                      benchmark datasets, and evaluation metrics to sup-
+framework (Hong et al., 2023), while integrating
+                                                      port reproducibility and comparative analysis. Fi-
+task decomposition and communication, fails to
+                                                      nally, we identify key challenges and unresolved
+integrate essential safety measures such as input
+                                                      issues in current LLM-HAS research. These issues
+sanitization, privacy-preserving data handling, and
+                                                      remain major obstacles to the development of effec-
+robust error-containment protocols. The MINT
+                                                      tive, adaptive, safe and trustworthy human-agent
+benchmark (Wang et al., 2024b), though it quanti-
+                                                      systems. We hope this review offers a comprehen-
+fies performance gains from multi-turn tool use and
+                                                      sive understanding of the LLM-HAS landscape and
+language feedback, omits any analysis of whether
+                                                      serves as a practical guide for future research.
+these interactive protocols might be exploited for
+code-injection attacks, data exfiltration, or other   Limitations
+emergent safety failures. Humans engaging with
+these systems need clear safeguards around data       Although we strive to include a wide range of rep-
+sharing, error recovery protocols when agents         resentative works (e.g., ACL, EMNLP, NAACL,
+behave unpredictably and privacy protections that     EACL, COLM, NeurIPS, ICLR, ICML, etc.), some
+cover every stage of the interaction. Robustness      relevant research may not be included, especially
+measures must ensure agents handle ambiguous          recent preprints or interdisciplinary research in
+or adversarial inputs without passing harm on         fields such as cognitive science.
+Acknowledgements                                          Nuo Chen, Andre Lin Huikai, Jiaying Wu, Junyi Hou,
+                                                            Zining Zhang, Qian Wang, Xidong Wang, and Bing-
+This work is supported in part by NSF under grants          sheng He. 2025a. Xtragpt: Context-aware and con-
+III-2106758, and POSE-2346158. Any opinions,                trollable academic paper revision.
+findings, and conclusions expressed here are those        Yankai Chen, Xinni Zhang, Yifei Zhang, Yangning Li,
+of the authors and do not necessarily reflect the           Henry Peng Zou, Chunyu Miao, Weizhi Zhang, Xue
+views of NSF. We thank our reviewers for their              Liu, and Philip S Yu. 2025b. Embracing trustwor-
+                                                            thy brain-agent collaboration as paradigm extension
+insightful feedback and comments which helped               for intelligent assistive technologies. arXiv preprint
+improve the quality of our paper.                           arXiv:2510.22095.
+                                                          Ying-Jung Chen, Chi-Sheng Chen, and Ahmad Albar-
+                                                            qawi. 2025c. Reinforcing clinical decision support
+References                                                  through multi-agent systems and ethical ai gover-
+                                                            nance. arXiv preprint arXiv:2504.03699.
+Adem Ait, Javier Luis Cánovas Izquierdo, and Jordi
+  Cabot. 2024. Towards modeling human-agentic col-        Yixin Chen, Guoxi Zhang, Yaowei Zhang, Hongming
+  laborative workflows: A bpmn extension. arXiv             Xu, Peiyuan Zhi, Qing Li, and Siyuan Huang. 2024b.
+  preprint arXiv:2412.05958.                                Synergai: Perception alignment for human-robot col-
+                                                            laboration. arXiv preprint arXiv:2409.15684.
+Hao Bai, Yifei Zhou, Mert Cemri, Jiayi Pan, Alane
+  Suhr, Sergey Levine, and Aviral Kumar. 2024. Di-        Sanjiban Choudhury and Paloma Sodhi. 2025. Better
+  girl: Training in-the-wild device-control agents with     than your teacher: LLM agents that learn from privi-
+  autonomous reinforcement learning. In Advances in         leged AI feedback. In The Thirteenth International
+  Neural Information Processing Systems, volume 37,         Conference on Learning Representations.
+  pages 12461–12495. Curran Associates, Inc.
+                                                          Michelle Cohn, Mahima Pushkarna, Gbolahan O
+Gagan Bansal, Jennifer Wortman Vaughan, Saleema             Olanubi, Joseph M Moran, Daniel Padgett, Zion
+  Amershi, Eric Horvitz, Adam Fourney, Hussein              Mengesha, and Courtney Heldreth. 2024. Believing
+  Mozannar, Victor Dibia, and Daniel S Weld. 2024.          anthropomorphism: examining the role of anthropo-
+  Challenges in human-agent communication. arXiv            morphic cues on trust in large language models. In
+  preprint arXiv:2412.10380.                                Extended Abstracts of the CHI Conference on Human
+                                                           Factors in Computing Systems, pages 1–15.
+Victor Barres, Honghua Dong, Soham Ray, Xujie Si,         Can Cui, Yunsheng Ma, Xu Cao, Wenqian Ye, and Ziran
+  and Karthik Narasimhan. 2025. τ 2-bench: Evaluat-         Wang. 2024. Drive as you speak: Enabling human-
+  ing conversational agents in a dual-control environ-      like interaction with large language models in au-
+  ment. ArXiv, abs/2506.07982.                              tonomous vehicles. In Proceedings of the IEEE/CVF
+                                                            Winter Conference on Applications of Computer Vi-
+Uwe M Borghoff, Paolo Bottoni, and Remo Pareschi.           sion, pages 902–909.
+ 2025. Human-artificial interaction in the age of agen-
+ tic ai: a system-theoretical approach. Frontiers in      Chengyuan Deng, Yiqun Duan, Xin Jin, Heng Chang,
+ Human Dynamics, 7:1579166.                                 Yijun Tian, Han Liu, Yichen Wang, Kuofeng Gao,
+                                                            Henry Peng Zou, Yiqiao Jin, Yijia Xiao, Sheng-
+Matthew Chang, Gunjan Chhablani, Alexander Clegg,           hao Wu, Zongxing Xie, Weimin Lyu, Sihong He,
+ Mikael Dallaire Cote, Ruta Desai, Michal Hlavac,           Lu Cheng, Haohan Wang, and Jun Zhuang. 2024. De-
+ Vladimir Karashchuk, Jacob Krantz, Roozbeh Mot-            constructing The Ethics of Large Language Models
+ taghi, Priyam Parashar, and 1 others. 2024. Partnr: A      from Long-standing Issues to New-emerging Dilem-
+ benchmark for planning and reasoning in embodied           mas: A Survey. arXiv e-prints, arXiv:2406.05392.
+ multi-agent tasks. arXiv preprint arXiv:2411.00081.
+                                                          Danny Driess, Fei Xia, Mehdi S. M. Sajjadi, Corey
+                                                            Lynch, Aakanksha Chowdhery, Brian Ichter, Ayzaan
+Shreyas Chaudhari, Pranjal Aggarwal, Vishvak Mura-          Wahid, Jonathan Tompson, Quan Vuong, Tianhe
+  hari, Tanmay Rajpurohit, Ashwin Kalyan, Karthik           Yu, Wenlong Huang, Yevgen Chebotar, Pierre Ser-
+  Narasimhan, Ameet Deshpande, and Bruno Castro             manet, Daniel Duckworth, Sergey Levine, Vincent
+  da Silva. 2024. Rlhf deciphered: A critical analysis      Vanhoucke, Karol Hausman, Marc Toussaint, Klaus
+  of reinforcement learning from human feedback for         Greff, and 3 others. 2023. Palm-e: an embodied
+  llms. arXiv preprint arXiv:2404.08555.                    multimodal language model. In Proceedings of the
+                                                            40th International Conference on Machine Learning,
+Minghao Chen, Yihang Li, Yanting Yang, Shiyu Yu,            ICML’23. JMLR.org.
+  Binbin Lin, and Xiaofei He. 2024a. Automanual:
+  Generating instruction manuals by LLM agents via        Jiangshu Du, Yibo Wang, Wenting Zhao, Zhongfen
+  interactive environmental learning. In The Thirty-         Deng, Shuaiqi Liu, Renze Lou, Henry Peng Zou,
+  eighth Annual Conference on Neural Information             Pranav Narayanan Venkit, Nan Zhang, Mukund Sri-
+  Processing Systems.                                        nath, Haoran Ranran Zhang, Vipul Gupta, Yinghui Li,
+  Tao Li, Fei Wang, Qin Liu, Tianlin Liu, Pengzhi Gao,        Ran Gong, Qiuyuan Huang, Xiaojian Ma, Hoi Vo, Zane
+  Congying Xia, and 21 others. 2024. LLMs assist                Durante, Yusuke Noda, Zilong Zheng, Song-Chun
+  NLP researchers: Critique paper (meta-)reviewing.             Zhu, Demetri Terzopoulos, Li Fei-Fei, and 1 oth-
+  In Proceedings of the 2024 Conference on Empiri-              ers. 2023. Mindagent: Emergent gaming interaction.
+  cal Methods in Natural Language Processing, pages             arXiv preprint arXiv:2309.09971.
+  5081–5099, Miami, Florida, USA. Association for
+  Computational Linguistics.                                  Diego Gosmar and Deborah A Dahl. 2025. Hal-
+                                                                lucination mitigation using agentic ai natural
+Subhabrata Dutta, Timo Kaufmann, Goran Glavaš, Ivan             language-based frameworks.     arXiv preprint
+  Habernal, Kristian Kersting, Frauke Kreuter, Mira             arXiv:2501.13946.
+  Mezini, Iryna Gurevych, Eyke Hüllermeier, and
+  Hinrich Schuetze. 2024. Problem solving through             Junliang Guo, Yang Ye, Tianyu He, Haoyu Wu, Yushu
+  human-ai preference-based cooperation. arXiv                  Jiang, Tim Pearce, and Jiang Bian. 2025. Mineworld:
+  preprint arXiv:2408.07461.                                    a real-time and open-source interactive world model
+                                                                on minecraft. arXiv preprint arXiv:2504.08388.
+Selin S Everett, Bryan J Bunning, Priyank Jain, Ivan
+  Lopez, Anup Agarwal, Manisha Desai, Robert Gallo,           Taicheng Guo, Xiuying Chen, Yaqi Wang, Ruidi Chang,
+  Ethan Goh, Vinay B Kadiyala, Zahir Kanjee, and                 Shichao Pei, Nitesh V Chawla, Olaf Wiest, and Xian-
+  1 others. 2025. From tool to teammate: A random-               gliang Zhang. 2024a. Large language model based
+  ized controlled trial of clinician-ai collaborative work-      multi-agents: a survey of progress and challenges. In
+  flows for diagnosis. MedRxiv.                                 Proceedings of the Thirty-Third International Joint
+                                                                Conference on Artificial Intelligence, pages 8048–
+Xueyang Feng, Zhi-Yuan Chen, Yujia Qin, Yankai Lin,              8057.
+  Xu Chen, Zhiyuan Liu, and Ji-Rong Wen. 2024.                Xudong Guo, Kaixuan Huang, Jiale Liu, Wenhui
+  Large language model-based human-agent collab-                Fan, Natalia Vélez, Qingyun Wu, Huazheng Wang,
+  oration for complex task solving. In Findings of the          Thomas L. Griffiths, and Mengdi Wang. 2024b. Em-
+  Association for Computational Linguistics: EMNLP              bodied LLM agents learn to cooperate in organized
+  2024, pages 1336–1357, Miami, Florida, USA. Asso-             teams. In Language Gamification - NeurIPS 2024
+  ciation for Computational Linguistics.                        Workshop.
+George Fragiadakis, Christos Diou, George Kousiouris,         Hojae Han, Seung-won Hwang, Rajhans Samdani,
+  and Mara Nikolaidou. 2024. Evaluating human-ai                and Yuxiong He. 2025. Convcodeworld: Bench-
+  collaboration: A review and methodological frame-             marking conversational code generation in repro-
+  work. arXiv preprint arXiv:2407.19098.                        ducible feedback environments. arXiv preprint
+                                                                arXiv:2502.19852.
+Ge Gao, Alexey Taymanov, Eduardo Salinas, Paul
+  Mineiro, and Dipendra Misra. 2024a. Aligning LLM            Allyson I Hauptman, Beau G Schelble, Nathan J Mc-
+  agents by learning latent preference from user edits.         Neese, and Kapil Chalil Madathil. 2023. Adapt
+  In The Thirty-eighth Annual Conference on Neural              and overcome: Perceptions of adaptive autonomous
+  Information Processing Systems.                               agents for human-ai teaming. Computers in Human
+                                                                Behavior, 138:107451.
+Jie Gao, Simret Araya Gebreegziabher, Kenny Tsu Wei
+   Choo, Toby Jia-Jun Li, Simon Tangi Perrault, and           Yufei He, Ruoyu Li, Alex Chen, Yue Liu, Yulin
+   Thomas W Malone. 2024b. A taxonomy for human-                Chen, Yuan Sui, Cheng Chen, Yi Zhu, Luca Luo,
+   llm interaction modes: An initial exploration. In            Frank Yang, and Bryan Hooi. 2025. Enabling self-
+   Extended Abstracts of the CHI Conference on Human            improving agents to learn at test time with human-
+   Factors in Computing Systems, pages 1–11.                    in-the-loop guidance. In Proceedings of the 2025
+                                                                Conference on Empirical Methods in Natural Lan-
+Yiming Gao, Feiyu Liu, Liang Wang, Zhenjie Lian,                guage Processing: Industry Track, pages 1625–1653,
+  Dehua Zheng, Weixuan Wang, Wenjin Yang, Siqin                 Suzhou (China). Association for Computational Lin-
+  Li, Xianliang Wang, Wenhui Chen, and 1 others.                guistics.
+  2024c. Enhancing human experience in human-
+  agent collaboration: A human-centered modeling ap-          Sirui Hong, Xiawu Zheng, Jonathan Chen, Yuheng
+  proach based on positive human gain. arXiv preprint            Cheng, Jinlin Wang, Ceyao Zhang, Zili Wang, Steven
+  arXiv:2401.16444.                                              Ka Shing Yau, Zijuan Lin, Liyang Zhou, and 1
+                                                                 others. 2023. Metagpt: Meta programming for
+Christos Gkournelos, Christos Konstantinou, and Sotiris          multi-agent collaborative framework. arXiv preprint
+  Makris. 2024. An llm-based approach for enabling               arXiv:2308.00352, 3(4):6.
+  seamless human-robot collaboration in assembly.
+  CIRP Annals, 73(1):9–12.                                    Wei-Chieh Huang, Weizhi Zhang, Yueqing Liang,
+                                                               Yuanchen Bei, Yankai Chen, Tao Feng, Xinyu Pan,
+Moshe Glickman and Tali Sharot. 2025. How human–ai             Zhen Tan, Yu Wang, Tianxin Wei, and 1 others.
+ feedback loops alter human perceptual, emotional              2026. Rethinking memory mechanisms of foun-
+ and social judgements. Nature Human Behaviour,                dation agents in the second half. arXiv preprint
+ 9(2):345–359.                                                 arXiv:2602.06052.
+Wei-Chieh Huang, Henry Peng Zou, Yaozu Wu,                Ido Levy, Ben Wiesel, Sami Marreed, Alon Oved,
+ Dongyuan Li, Yankai Chen, Weizhi Zhang, Yangn-             Avi Yaeli, and Segev Shlomov. 2024.           St-
+ ing Li, Angelo Zangari, Jizhou Guo, Chunyu                 webagentbench: A benchmark for evaluating safety
+ Miao, and 1 others. 2025. Deepresearchguard:               and trustworthiness in web agents. arXiv preprint
+ Deep research with open-domain evaluation and              arXiv:2410.06703.
+ multi-stage guardrails for safety. arXiv preprint
+ arXiv:2510.10994.                                        Xinyi Li, Sai Wang, Siqi Zeng, Yu Wu, and Yi Yang.
+                                                            2024. A survey on llm-based multi-agent sys-
+Faria Huq, Zora Zhiruo Wang, Frank F. Xu, Tianyue           tems: workflow, infrastructure, and challenges. Vici-
+  Ou, Shuyan Zhou, Jeffrey P. Bigham, and Graham            nagearth, 1(1):9.
+  Neubig. 2025. Cowpilot: A framework for au-
+  tonomous and human-agent collaborative web navi-        Q Vera Liao, Daniel Gruen, and Sarah Miller. 2020.
+  gation. Preprint, arXiv:2501.16609.                       Questioning the ai: informing design practices for ex-
+                                                            plainable ai user experiences. In Proceedings of the
+Guanxuan Jiang, Yuyang Wang, and Pan Hui. 2025.             2020 CHI conference on human factors in computing
+  Experimental exploration: Investigating cooperative       systems, pages 1–15.
+  interaction behavior between humans and large lan-
+  guage model agents. Preprint, arXiv:2503.07320.         Jonghan Lim, Sujani Patel, Alex Evans, John Pim-
+                                                            ley, Yifei Li, and Ilya Kovalenko. 2024. Enhancing
+Yucheng Jiang, Yijia Shao, Dekun Ma, Sina Semnani,          human-robot collaborative assembly in manufactur-
+  and Monica Lam. 2024. Into the unknown unknowns:          ing systems using large language models. In 2024
+  Engaged human learning through participation in lan-      IEEE 20th International Conference on Automation
+  guage model agent conversations. In Proceedings           Science and Engineering (CASE), pages 2581–2587.
+  of the 2024 Conference on Empirical Methods in
+  Natural Language Processing, pages 9917–9955, Mi-       Haokun Liu, Yaonan Zhu, Kenji Kato, Izumi
+  ami, Florida, USA. Association for Computational          Kondo, Tadayoshi Aoyama, and Yasuhisa Hasegawa.
+  Linguistics.                                              2023a. Llm-based human-robot collaboration frame-
+                                                            work for manipulation tasks.      arXiv preprint
+Seth Karten, Mycal Tucker, Huao Li, Siva Kailas,            arXiv:2308.14972.
+  Michael Lewis, and Katia Sycara. 2023. Inter-
+  pretable learned emergent communication for human–      Haokun Liu, Yaonan Zhu, Kenji Kato, Atsushi Tsuka-
+  agent teams. IEEE Transactions on Cognitive and           hara, Izumi Kondo, Tadayoshi Aoyama, and Ya-
+  Developmental Systems, 15(4):1801–1811.                   suhisa Hasegawa. 2024a. Enhancing the llm-based
+                                                            robot manipulation through human-robot collabora-
+Michael Kelly, Chelsea Sidrane, Katherine Driggs-           tion. IEEE Robotics and Automation Letters.
+  Campbell, and Mykel J Kochenderfer. 2019. Hg-
+  dagger: Interactive imitation learning with human ex-   Haoyang Liu, Yijiang Li, and Haohan Wang. 2025.
+  perts. In 2019 International Conference on Robotics       Genomas: A multi-agent framework for scientific
+  and Automation (ICRA), pages 8077–8083. IEEE.             discovery via code-driven gene expression analysis.
+                                                            ArXiv, abs/2507.21035.
+D Roderick Kiewiet and Mathew D McCubbins. 1991.
+  The logic of delegation. University of Chicago Press.   Jijia Liu, Chao Yu, Jiaxuan Gao, Yuqing Xie, Qingmin
+                                                              Liao, Yi Wu, and Yu Wang. 2023b. Llm-powered
+Been Kim, John Hewitt, Neel Nanda, Noah Fiedel, and           hierarchical language agent for real-time human-ai
+  Oyvind Tafjord. 2025a. Because we have llms, we             coordination. ArXiv, abs/2312.15224.
+  can and should pursue agentic interpretability. arXiv
+  preprint arXiv:2506.12152.                              Shipeng Liu, FNU Shrutika, Boshen Zhang, Zhehui
+                                                            Huang, and Feifei Qian. 2024b. Effect of adaptive
+JiWoo Kim, Minsuk Chang, and JinYeong Bak. 2025b.           communication support on human-ai collaboration.
+  Beyond turn-taking: Introducing text-based over-          arXiv preprint arXiv:2412.06808.
+  lap into human-llm interactions. arXiv preprint
+  arXiv:2501.18103.                                       Xiao Liu, Hao Yu, Hanchen Zhang, Yifan Xu, Xuanyu
+                                                            Lei, Hanyu Lai, Yu Gu, Hangliang Ding, Kaiwen
+Christine Lee, David J. Porfirio, Xinyu Jessica Wang,       Men, Kejuan Yang, and 1 others. 2024c. Agentbench:
+  Kevin Zhao, and Bilge Mutlu. 2025a. Veriplan: In-         Evaluating llms as agents. In The Twelfth Interna-
+  tegrating formal verification and llms into end-user      tional Conference on Learning Representations.
+  planning. ArXiv, abs/2502.17898.
+                                                          Carol Loganbill, Emily Hardy, and Ursula Delworth.
+Dong Won Lee, Yubin Kim, Denison Guvenoz,                   1982. Supervision: A conceptual model. The coun-
+  Sooyeon Jeong, Parker Malachowsky, Louis-Philippe         seling psychologist, 10(1):3–42.
+  Morency, Cynthia Breazeal, and Hae Won Park.
+  2025b. The human robot social interaction (hsri)        Bowen Lou, Tian Lu, Raghu Santanam, and Yingjie
+  dataset: Benchmarking foundational models’ social         Zhang. 2025. Unraveling human-ai teaming: A re-
+  reasoning. arXiv preprint arXiv:2504.13898.               view and outlook. arXiv preprint arXiv:2504.05755.
+Ryan Lowe, Yi I Wu, Aviv Tamar, Jean Harb, OpenAI          Grunde-McLaughlin, Eric Zhu, Griffin Bassman, Ja-
+  Pieter Abbeel, and Igor Mordatch. 2017. Multi-agent      cob Alber, Peter Chang, Ricky Loynd, Friederike
+  actor-critic for mixed cooperative-competitive envi-     Niedtner, Ece Kamar, Maya Murad, Rafah Hosn,
+  ronments. Advances in neural information process-        and Saleema Amershi. 2025. Magentic-ui: To-
+  ing systems, 30.                                         wards human-in-the-loop agentic systems. ArXiv,
+                                                           abs/2507.22358.
+Junting Lu, Zhiyang Zhang, Fangkai Yang, Jue Zhang,
+  Lu Wang, Chao Du, Qingwei Lin, Saravan Rajmohan,       Anirban Mukherjee and Hannah Hanwen Chang. 2025.
+  Dongmei Zhang, and Qi Zhang. 2024. Turn every            Stochastic, dynamic, fluid autonomy in agentic ai:
+  application into an agent: Towards efficient human-      Implications for authorship, inventorship, and liabil-
+  agent-computer interaction with api-first llm-based      ity. arXiv preprint arXiv:2504.04058.
+  agents. arXiv preprint arXiv:2409.17140.
+                                                         Sheshera Mysore, Debarati Das, Hancheng Cao, and
+Xing Han Lù, Zdeněk Kasner, and Siva Reddy. 2024.         Bahareh Sarrafzadeh. 2025. Prototypical human-AI
+  Weblinx: Real-world website navigation with multi-       collaboration behaviors from LLM-assisted writing
+  turn dialogue. arXiv preprint arXiv:2402.05930.          in the wild. In Proceedings of the 2025 Conference
+                                                           on Empirical Methods in Natural Language Process-
+Junyu Luo, Weizhi Zhang, Ye Yuan, Yusheng Zhao,            ing, pages 16830–16857, Suzhou, China. Association
+  Junwei Yang, Yiyang Gu, Bohan Wu, Binqi Chen,            for Computational Linguistics.
+  Ziyue Qiao, Qingqing Long, and 1 others. 2025.
+  Large language model agent: A survey on method-        Riya Naik, Ashwin Srinivasan, Estrid He, and Swati
+  ology, applications and challenges. arXiv preprint       Agarwal. 2025. An empirical study of the role
+  arXiv:2503.21460.                                        of incompleteness and ambiguity in interactions
+                                                           with large language models.       arXiv preprint
+Qianou Ma, Dora Zhao, Xinran Zhao, Chenglei Si,
+                                                           arXiv:2503.17936.
+  Chenyang Yang, Ryan Louie, Ehud Reiter, Diyi
+  Yang, and Tongshuang Wu. 2025. Sphere: An eval-        Sriraam Natarajan, Saurabh Mathur, Sahil Sidheekh,
+  uation card for human-ai systems. arXiv preprint         Wolfgang Stammer, and Kristian Kersting. 2025.
+  arXiv:2504.07971.                                         Human-in-the-loop or ai-in-the-loop? automate or
+Andrea Madotto, Zhaojiang Lin, Chien-Sheng Wu, and          collaborate? In Proceedings of the AAAI Conference
+  Pascale Fung. 2019. Personalizing dialogue agents         on Artificial Intelligence, volume 39, pages 28594–
+  via meta-learning. In Proceedings of the 57th an-         28600.
+  nual meeting of the association for computational
+                                                         Bo Pan, Jiaying Lu, Ke Wang, Li Zheng, Zhen Wen,
+  linguistics, pages 5454–5459.
+                                                           Yingchaojie Feng, Minfeng Zhu, and Wei Chen.
+Nikhil Mehta, Milagro Teruel, Xin Deng, Sergio             2024a. Agentcoord: Visually exploring coordina-
+  Figueroa Sanz, Ahmed Awadallah, and Julia Kiseleva.      tion strategy for llm-based multi-agent collaboration.
+  2024. Improving grounded language understanding          arXiv preprint arXiv:2404.11943.
+  in a collaborative environment by interacting with
+  agents through help feedback. In Findings of the As-   Lihang Pan, Yuxuan Li, Chun Yu, and Yuanchun Shi.
+  sociation for Computational Linguistics: EACL 2024,      2024b. A human-computer collaborative tool for
+  pages 1306–1321, St. Julian’s, Malta. Association        training a single large language model agent into
+  for Computational Linguistics.                           a network through few examples. arXiv preprint
+                                                           arXiv:2404.15974.
+Yannick Metz, David Lindner, Raphaël Baur, and
+  Mennatallah El-Assady. 2024. Mapping out the           Pat Pataranutaporn, Sheer Karny, Chayapatr Archi-
+  space of human feedback for reinforcement learn-         waranguprok, Constanze Albrecht, Auren R Liu, and
+  ing: A conceptual framework. arXiv preprint              Pattie Maes. 2025. " my boyfriend is ai": A computa-
+  arXiv:2411.11761.                                        tional analysis of human-ai companionship in reddit’s
+                                                           ai community. arXiv preprint arXiv:2509.11391.
+Chunyu Miao, Henry Peng Zou, Yangning Li, Yankai
+  Chen, Yibo Wang, Fangxin Wang, Yifan Li,               Qiyao Peng, Hongtao Liu, Hua Huang, Qing Yang,
+  Wooseong Yang, Bowei He, Xinni Zhang, and 1 oth-         and Minglai Shao. 2025. A survey on llm-powered
+  ers. 2025. Recode-h: A benchmark for research code       agents for recommender systems. arXiv preprint
+  development with interactive human feedback. arXiv       arXiv:2502.10050.
+  preprint arXiv:2510.06186.
+                                                         Cheng Qian, Zuxin Liu, Akshara Prabhakar, Zhiwei Liu,
+Margaret Mitchell, Avijit Ghosh, Alexandra Sasha Luc-      Jianguo Zhang, Haolin Chen, Heng Ji, Weiran Yao,
+ cioni, and Giada Pistilli. 2025. Fully autonomous         Shelby Heinecke, Silvio Savarese, Caiming Xiong,
+ ai agents should not be developed. arXiv preprint         and Huan Wang. 2025a. Userbench: An interac-
+ arXiv:2502.02649.                                         tive gym environment for user-centric agents. ArXiv,
+                                                           abs/2507.22034.
+Hussein Mozannar, Gagan Bansal, Cheng Tan, Adam
+  Fourney, Victor Dibia, Jingya Chen, Jack Gerrits,      Cheng Qian, Zuxin Liu, Akshara Prabhakar, Jielin Qiu,
+  Tyler Payne, Matheus Kunzler Maldaner, Madeleine         Zhiwei Liu, Haolin Chen, Shirley Kokane, Heng Ji,
+  Weiran Yao, Shelby Heinecke, Silvio Savarese, Caim-       Nan Sun, Bo Mao, Yongchang Li, Lumeng Ma,
+  ing Xiong, and Huan Wang. 2025b. Userrl: Training           Di Guo, and Huaping Liu. 2024a. Assistantx:
+  interactive user-centric agent via reinforcement learn-     An llm-powered proactive assistant in collabora-
+  ing. ArXiv, abs/2509.19736.                                 tive human-populated environment. arXiv preprint
+                                                              arXiv:2409.17655.
+Jiahao Qiu, Yinghui He, Xinzhe Juan, Yiming Wang,
+   Yuhan Liu, Zixin Yao, Yue Wu, Xun Jiang, Ling            Nan Sun, Chengming Shi, and Yuwen Dong. 2024b.
+   Yang, and Mengdi Wang. 2025. Emoagent: Assess-             Interactgen: Enhancing human-involved embodied
+   ing and safeguarding human-ai interaction for mental       task reasoning through llm-based multi-agent collab-
+   health safety. arXiv preprint arXiv:2504.09689.            oration. In under review.
+David G Rand and Martin A Nowak. 2013. Human
+  cooperation. Trends in cognitive sciences, 17(8):413–     Qiang Sun, Tingting Bi, Sirui Li, Eun-Jung Holden,
+  425.                                                        Paul Duuring, Kai Niu, and Wei Liu. 2025a. Sym-
+                                                              bioticrag: Enhancing document intelligence through
+Vinay Samuel, Henry Peng Zou, Yue Zhou, Shreyas               human-llm symbiotic collaboration. arXiv preprint
+  Chaudhari, Ashwin Kalyan, Tanmay Rajpurohit,                arXiv:2505.02418.
+  Ameet Deshpande, Karthik Narasimhan, and Vishvak
+  Murahari. 2024. Personagym: Evaluating persona            Weiwei Sun, Xuhui Zhou, Weihua Du, Xingyao Wang,
+  agents and llms. arXiv preprint arXiv:2407.18416.           Sean Welleck, Graham Neubig, Maarten Sap, and
+                                                             Yiming Yang. 2025b. Training proactive and person-
+SeungWon Seo, SeongRae Noh, Junhyeok Lee, SooBin              alized llm agents. arXiv preprint arXiv:2511.02208.
+  Lim, Won Hee Lee, and HyeongYeop Kang. 2025.
+  Reveca: Adaptive planning and trajectory-based vali-
+                                                            Yi Tang, Chia-Ming Chang, and Xi Yang. 2024.
+  dation in cooperative language agents using informa-
+                                                              Pdfchatannotator: A human-llm collaborative multi-
+  tion relevance and relative proximity. In Proceedings
+                                                              modal data annotation tool for pdf-format catalogs.
+  of the AAAI Conference on Artificial Intelligence,
+                                                              In Proceedings of the 29th International Conference
+  volume 39, pages 23295–23303.
+                                                              on Intelligent User Interfaces, IUI ’24, page 419–430,
+Kathrin Seßler, Arne Bewersdorff, Claudia Nerdel, and         New York, NY, USA. Association for Computing Ma-
+  Enkelejda Kasneci. 2025. Towards adaptive feed-             chinery.
+  back with ai: Comparing the feedback quality of llms
+  and teachers on experimentation protocols. arXiv          Yinghao Tang, Yupeng Xie, Yingchaojie Feng, Tingfeng
+  preprint arXiv:2502.12842.                                  Lan, Jiale Lao, Yue Cheng, and Wei Chen.
+                                                              2026. Vividoc: Generating interactive documents
+Yijia Shao, Vinay Samuel, Yucheng Jiang, John Yang,           through human-agent collaboration. arXiv preprint
+  and Diyi Yang. 2024. Collaborative gym: A frame-            arXiv:2603.27991.
+  work for enabling and evaluating human-agent col-
+  laboration. arXiv preprint arXiv:2412.15701.              Daniel Tanneberg, Felix Ocker, Stephan Hasler, Joerg
+                                                              Deigmoeller, Anna Belardinelli, Chao Wang, Heiko
+Yijia Shao, Humishka Zope, Yucheng Jiang, Jiaxin Pei,
+                                                              Wersing, Bernhard Sendhoff, and Michael Gienger.
+   David Nguyen, Erik Brynjolfsson, and Diyi Yang.
+                                                              2024. To help or not to help: Llm-based attentive
+   2025. Future of work with ai agents: Auditing au-
+                                                              support for human-robot group interactions. In 2024
+   tomation and augmentation potential across the us
+                                                              IEEE/RSJ International Conference on Intelligent
+  workforce. arXiv preprint arXiv:2506.06576.
+                                                              Robots and Systems (IROS), pages 9130–9137. IEEE.
+Ashish Sharma, Sudha Rao, Chris Brockett, Akanksha
+  Malhotra, Nebojsa Jojic, and Bill Dolan. 2024. In-        Shahroz Tariq, Mohan Baruwal Chhetri, Surya Nepal,
+  vestigating agency of llms in human-ai collaboration        and Cecile Paris. 2025. A2c: A modular multi-stage
+  tasks. Preprint, arXiv:2305.12815.                          collaborative decision framework for human-ai teams.
+                                                              Expert Systems with Applications, page 127318.
+Amanpreet Singh, Tushar Jain, and Sainbayar
+ Sukhbaatar. 2018. Learning when to communicate at          Khanh-Tung Tran, Dung Dao, Minh-Duong Nguyen,
+ scale in multiagent cooperative and competitive tasks.       Quoc-Viet Pham, Barry O’Sullivan, and Hoang D
+ arXiv preprint arXiv:1812.09755.                             Nguyen. 2025. Multi-agent collaboration mech-
+Jonathan Spencer, Sanjiban Choudhury, Matthew                 anisms: A survey of llms.       arXiv preprint
+  Barnes, Matthew Schmittle, Mung Chiang, Peter Ra-           arXiv:2501.06322.
+  madge, and Siddhartha Srinivasa. 2020. Learning
+  from interventions: Human-robot interaction as both       Michael T Turvey. 1990. Coordination. American psy-
+  explicit and implicit feedback. In 16th robotics: sci-      chologist, 45(8):938.
+  ence and systems, RSS 2020. MIT Press Journals.
+                                                            Vanshika Vats, Marzia Binta Nizam, Minghao Liu,
+Haotian Sun, Yuchen Zhuang, Lingkai Kong, Bo Dai,             Ziyuan Wang, Richard Ho, Mohnish Sai Prasad, Vin-
+  and Chao Zhang. 2023. Adaplanner: Adaptive plan-            cent Titterton, Sai Venkat Malreddy, Riya Aggarwal,
+  ning from feedback with language models. In Thirty-         Yanwen Xu, and 1 others. 2024. A survey on human-
+  seventh Conference on Neural Information Process-           ai teaming with large pre-trained models. arXiv
+  ing Systems.                                                preprint arXiv:2403.04931.
+Ben Wang. 2024. Golf: Goal-oriented long-term life       Tongshuang Wu, Michael Terry, and Carrie Jun Cai.
+  tasks supported by human-ai collaboration. In Pro-       2022a. Ai chains: Transparent and controllable
+  ceedings of the 47th International ACM SIGIR Con-        human-ai interaction by chaining large language
+  ference on Research and Development in Information       model prompts. In Proceedings of the 2022 CHI
+  Retrieval, pages 3072–3072.                              Conference on Human Factors in Computing Sys-
+                                                           tems, CHI ’22, New York, NY, USA. Association for
+Dakuo Wang, Ting-Yao Hsu, Yuxuan Lu, Limeng Cui,           Computing Machinery.
+  Yaochen Xie, William Headean, Bingsheng Yao,
+  Akash Veeragouni, Jiapeng Liu, Sreyashi Nag, and       Xingjiao Wu, Luwei Xiao, Yixuan Sun, Junhang Zhang,
+  1 others. 2025a. Agenta/b: Automated and scalable        Tianlong Ma, and Liang He. 2022b. A survey of
+  web a/btesting with interactive llm agents. arXiv        human-in-the-loop for machine learning. Future
+  preprint arXiv:2504.09723.                               Generation Computer Systems, 135:364–381.
+
+Lei Wang, Chen Ma, Xueyang Feng, Zeyu Zhang, Hao         Yaozu Wu, Dongyuan Li, Yankai Chen, Renhe Jiang,
+  Yang, Jingsen Zhang, Zhiyuan Chen, Jiakai Tang,          Henry Peng Zou, Liancheng Fang, Zhen Wang, and
+  Xu Chen, Yankai Lin, and 1 others. 2024a. A survey       Philip S Yu. 2025b. Multi-agent autonomous driving
+  on large language model based autonomous agents.         systems with large language models: A survey of
+  Frontiers of Computer Science, 18(6):186345.             recent advances. arXiv preprint arXiv:2502.16804.
+Qian Wang, Biao Zhang, Michael Birsak, and Peter         Zhenyu Wu, Ziwei Wang, Xiuwei Xu, Jiwen Lu,
+  Wonka. 2023. Instructedit: Improving automatic           and Haibin Yan. 2023.     Embodied task plan-
+  masks for diffusion-based image editing with user        ning with large language models. arXiv preprint
+  instructions. arXiv preprint arXiv:2305.18047.           arXiv:2307.01848.
+Wenxuan Wang, Zizhan Ma, Zheng Wang, Chenghan            Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yi-
+ Wu, Wenting Chen, Xiang Li, and Yixuan Yuan.              wen Ding, Boyang Hong, Ming Zhang, Junzhe Wang,
+ 2025b. A survey of llm-based agents in medicine:          Senjie Jin, Enyu Zhou, and 1 others. 2025. The
+ How far are we from baymax? arXiv preprint                rise and potential of large language model based
+ arXiv:2502.11211.                                         agents: A survey. Science China Information Sci-
+                                                           ences, 68(2):121101.
+Xingyao Wang, Zihan Wang, Jiateng Liu, Yangyi Chen,
+  Lifan Yuan, Hao Peng, and Heng Ji. 2024b. MINT:
+                                                         Hengjia Xiao and Peng Wang. 2023. Llm a*: Human
+  Evaluating LLMs in multi-turn interaction with tools
+                                                           in the loop large language models enabled a* search
+  and language feedback. In The Twelfth International
+                                                           for robotics. arXiv preprint arXiv:2312.01797.
+  Conference on Learning Representations.
+
+Xingzhi Wang, Zhoumingju Jiang, Yi Xiong, and Ang        Chengxing Xie, Canyu Chen, Feiran Jia, Ziyu Ye,
+  Liu. 2025c. Human-llm collaboration in generative        Shiyang Lai, Kai Shu, Jindong Gu, Adel Bibi, Ziniu
+  design for customization. Journal of Manufacturing       Hu, David Jurgens, and 1 others. 2024a. Can large
+  Systems, 80:425–435.                                     language model agents simulate human trust behav-
+                                                           ior? In The Thirty-eighth Annual Conference on
+Ziyan Wang, Meng Fang, Tristan Tomilin, Fei Fang,          Neural Information Processing Systems.
+  and Yali Du. 2024c. Safe multi-agent reinforcement
+  learning with natural language constraints. arXiv      Jian Xie, Kai Zhang, Jiangjie Chen, Tinghui Zhu, Renze
+  preprint arXiv:2405.20018.                                Lou, Yuandong Tian, Yanghua Xiao, and Yu Su.
+                                                            2024b. Travelplanner: A benchmark for real-world
+Ziyan Wang, Zhicheng Zhang, Fei Fang, and Yali Du.          planning with language agents. In ICLR 2024 Work-
+  2025d. M3hf: Multi-agent reinforcement learning           shop on Large Language Model (LLM) Agents.
+  from multi-phase human feedback of mixed quality.
+  arXiv preprint arXiv:2503.02077.                       Congluo Xu, Zhaobin Liu, and Ziyang Li. 2025.
+                                                           Finarena: A human-agent collaboration framework
+Joseph Weizenbaum. 1966. Eliza—a computer program          for financial market analysis and forecasting. arXiv
+   for the study of natural language communication be-     preprint arXiv:2503.02692.
+   tween man and machine. Communications of the
+  ACM, 9(1):36–45.                                       Hongshen Xu, Zichen Zhu, Lei Pan, Zihan Wang,
+                                                           Su Zhu, Da Ma, Ruisheng Cao, Lu Chen, and Kai
+Terry Winograd. 1972. Understanding natural language.      Yu. 2024. Reducing tool hallucination via reliability
+  Cognitive psychology, 3(1):1–191.                        alignment. arXiv preprint arXiv:2412.04141.
+
+Shirley Wu, Michel Galley, Baolin Peng, Hao Cheng,       Wei Xu, Marvin J Dainoff, Liezhong Ge, and Zaifeng
+  Gavin Li, Yao Dou, Weixin Cai, James Zou, Jure          Gao. 2023. Transitioning to human interaction with
+  Leskovec, and Jianfeng Gao. 2025a. CollabLLM:           ai systems: New challenges and opportunities for
+  From passive responders to active collaborators. In     hci professionals to enable human-centered ai. Inter-
+  Forty-second International Conference on Machine        national Journal of Human–Computer Interaction,
+  Learning.                                               39(3):494–518.
+Bingyu Yan, Xiaoming Zhang, Litian Zhang, Lian            Shao Zhang, Xihuai Wang, Wenhao Zhang, Chaoran
+  Zhang, Ziyi Zhou, Dezhuang Miao, and Chaozhuo Li.         Li, Junru Song, Tingyu Li, Lin Qiu, Xuezhi Cao,
+  2025. Beyond self-talk: A communication-centric           Xunliang Cai, Wen Yao, and 1 others. 2025. Leverag-
+  survey of llm-based multi-agent systems. arXiv            ing dual process theory in language agent framework
+  preprint arXiv:2502.14321.                                for real-time simultaneous human-ai collaboration.
+                                                            arXiv preprint arXiv:2502.11882.
+Lixiang Yan. 2025. From passive tool to socio-cognitive
+  teammate: A conceptual framework for agentic ai         Xuan Zhang, Yang Deng, Zifeng Ren, See-Kiong Ng,
+  in human-ai collaborative learning. arXiv preprint        and Tat-Seng Chua. 2024c. Ask-before-plan: Proac-
+  arXiv:2508.14825.                                         tive language agents for real-world planning. In Find-
+                                                            ings of the Association for Computational Linguistics:
+Shunyu Yao, Noah Shinn, Pedram Razavi, and                  EMNLP 2024, pages 10836–10863, Miami, Florida,
+  Karthik R Narasimhan. 2025. {$\tau$}-bench: A             USA. Association for Computational Linguistics.
+  benchmark for \underline{T}ool-\underline{A}gent-
+  \underline{U}ser interaction in real-world domains.     Weikang Zhao, Xili Wang, Chengdi Ma, Lingbin Kong,
+  In The Thirteenth International Conference on Learn-      Zhaohua Yang, Mingxiang Tuo, Xiaowei Shi, Yi-
+  ing Representations.                                      tao Zhai, and Xunliang Cai. 2025. Mua-rl: Multi-
+                                                            turn user-interacting agent reinforcement learning for
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak            agentic tool use. ArXiv, abs/2508.18669.
+  Shafran, Karthik R Narasimhan, and Yuan Cao. 2022.
+  React: Synergizing reasoning and acting in language     Xuhui Zhou, Hao Zhu, Leena Mathur, Ruohong Zhang,
+  models. In The eleventh international conference on       Haofei Yu, Zhengyang Qi, Louis-Philippe Morency,
+  learning representations.                                 Yonatan Bisk, Daniel Fried, Graham Neubig, and
+                                                            Maarten Sap. 2024. SOTOPIA: Interactive evalua-
+Yang Ye, Hengxu You, and Jing Du. 2023. Im-                 tion for social intelligence in language agents. In
+  proved trust in human-robot collaboration with chat-      The Twelfth International Conference on Learning
+  gpt. IEEE Access, 11:55748–55754.                         Representations.
+
+Asaf Yehudai, Lilach Eden, Alan Li, Guy Uziel, Yilun      Yifei Zhou, Song Jiang, Yuandong Tian, Jason We-
+  Zhao, Roy Bar-Haim, Arman Cohan, and Michal               ston, Sergey Levine, Sainbayar Sukhbaatar, and
+  Shmueli-Scheuer. 2025. Survey on evaluation of llm-       Xian Li. 2025. Sweet-rl: Training multi-turn llm
+  based agents. arXiv preprint arXiv:2503.16416.            agents on collaborative reasoning tasks. Preprint,
+                                                            arXiv:2503.15478.
+Steve Young, Milica Gašić, Blaise Thomson, and Ja-
+   son D Williams. 2013. Pomdp-based statistical spo-     Henry Peng Zou, Wei-Chieh Huang, Yaozu Wu, Chunyu
+   ken dialog systems: A review. Proceedings of the         Miao, Dongyuan Li, Aiwei Liu, Yue Zhou, Yankai
+   IEEE, 101(5):1160–1179.                                  Chen, Weizhi Zhang, Yangning Li, and 1 others.
+                                                            2025. A call for collaborative intelligence: Why
+Yifu Yuan, Jianye HAO, Yi Ma, Zibin Dong, Hebin             human-agent systems should precede ai autonomy.
+  Liang, Jinyi Liu, Zhixin Feng, Kai Zhao, and YAN          arXiv preprint arXiv:2506.09420.
+  ZHENG. 2024. Uni-RLHF: Universal platform and
+  benchmark suite for reinforcement learning with di-     Henry Peng Zou, Chunyu Miao, Wei-Chieh Huang,
+  verse human feedback. In The Twelfth International        Yankai Chen, Yue Zhou, Hanrong Zhang, Yaozu
+  Conference on Learning Representations.                   Wu, Liancheng Fang, Zhengyao Gu, Zhen Zhang,
+                                                            and 1 others. 2026. When users change their mind:
+Hanrong Zhang, Shicheng Fan, Henry Peng Zou, Yankai         Evaluating interruptible agents in long-horizon web
+  Chen, Zhenting Wang, Jiayu Zhou, Chengze Li, Wei-         navigation. arXiv preprint arXiv:2604.00892.
+  Chieh Huang, Yifei Yao, Kening Zheng, and 1 oth-
+  ers. 2026. Evoskills: Self-evolving agent skills
+  via co-evolutionary verification. arXiv preprint
+  arXiv:2604.01687.
+
+Hongxin Zhang, Weihua Du, Jiaming Shan, Qinhong
+  Zhou, Yilun Du, Joshua B. Tenenbaum, Tianmin Shu,
+  and Chuang Gan. 2024a. Building cooperative em-
+  bodied agents modularly with large language models.
+  In The Twelfth International Conference on Learning
+  Representations.
+
+Shao Zhang, Xihuai Wang, Wenhao Zhang, Yongshan
+  Chen, Landi Gao, Dakuo Wang, Weinan Zhang, Xin-
+  bing Wang, and Ying Wen. 2024b. Mutual theory
+  of mind in human-ai collaboration: An empirical
+  study with llm-driven ai agents in a real-time shared
+  workspace task. ArXiv, abs/2409.08811.
+                                                       et al., 2024). These factors have led to growing
+                                                       interest in a new class of systems explicitly de-
+Appendix                                               signed for human-agent collaboration: LLM-based
+                                                       Human-Agent Systems (LLM-HAS). Rather than
+                                                       aiming to replace humans, LLM-HAS frameworks
+Table of Contents                                      are presupposed with active human involvement,
+     A Motivation:   Why LLM-based                     leveraging human expertise, supervision, and guid-
+       Human-Agent Systems         22                  ance to compensate for the limitations of the auton-
+                                                       omy agent system.
+     B Evolution of Human-Agent Collabo-
+       ration and Interaction Systems    22               By integrating human collaborators, LLM-HAS
+                                                       systems become more trustworthy, adaptable, and
+     C Human Agency Scale                       23     context-aware. In high-stakes fields such as health-
+         C.1 Definition . . . . . . . . . . .   23     care or finance, collaborative systems are better
+         C.2 Human Agency Scale for De-                able to handle complex and sensitive tasks than
+             sign and Analysis . . . . . . .    23     standalone agent systems. For example, the suc-
+                                                       cess of the "FTT" (Everett et al., 2025) (a hybrid
+     D Empirical Distributions of Core Tax-
+       onomy Dimensions                     24
+                                                       team of human clinicians and agents) in the di-
+                                                       agnostic reasoning challenge proves that human-
+     E Evaluation Metrics                       24     agent collaboration can surpass both humans and
+                                                       agents alone. Human-agent collaboration allows
+     F Ethical and Societal Issues              25     building intelligent systems that are more robust,
+                                                       ethical, and value-aligned than either humans or
+     G Human Feedback Type and Subtype 26
+                                                       agents could achieve alone.
+     H Difference with Traditional Human-
+       in-the-Loop and Human-Computer                  B   Evolution of Human-Agent
+       Interaction Systems                26
+                                                           Collaboration and Interaction Systems
+     I   Difference with Multi-Agent Systems 27
+                                                       The evolution of human-agent collaboration and in-
+     J Tables                                   28     teraction systems has been shaped by a series of ma-
+                                                       jor paradigm shifts. Early systems were grounded
+                                                       in rule-based and symbolic AI approaches, relying
+                                                       on predefined rules and handcrafted scripts to sim-
+A   Motivation: Why LLM-based
+                                                       ulate human interactions. Iconic systems such as
+    Human-Agent Systems
+                                                       ELIZA (Weizenbaum, 1966) and SHRDLU (Wino-
+Despite the rapid development of fully autonomous      grad, 1972) enabled basic language interactions,
+agents based on LLMs in recent years, such sys-        but only within highly constrained environments.
+tems face persistent challenges in terms of reli-      These agents acted as deterministic tools, offering
+ability, complexity, and safety and ethical risks.     little room for flexibility, adaptation, or learning
+Autonomous agents frequently generate incorrect        from user behaviors. Interactions were largely one-
+or misleading information and often lack a true        directional, with humans issuing commands and
+understanding of human goals or contextual nu-         agents executing tasks in a fixed, scripted manner.
+ances. These limitations suggest that full autonomy        The second major shift emerged with the rise
+may not be suitable for many real-world applica-       of machine learning and data-driven NLP in the
+tions(Mitchell et al., 2025; Natarajan et al., 2025;   2010s. Fueled by large annotated corpora and su-
+Zou et al., 2025) and highlight a critical but of-     pervised learning techniques, agents began to ex-
+ten overlooked insight: the indispensable role of      hibit more robust and flexible behavior, particularly
+human involvement.                                     in tasks such as speech recognition and dialogue
+   Humans can provide important complemen-             generation (Young et al., 2013). Commercial sys-
+tary capabilities such as disambiguation, domain-      tems like Siri and Google Assistant exemplified
+specific knowledge, feedback, corrections, and         this transition, allowing broader-domain conver-
+high-level supervision that are difficult for auto-    sations and more natural interactions. However,
+mated systems to replicate (Wang, 2024; Dutta          these systems remained primarily agent-centric: op-
+timization efforts largely focused on improving task    in the context of LLM-HAS:
+performance, with less attention given to human
+adaptivity or user-centered design. Users were of-         • System Design: Helping designers deter-
+ten treated as passive input providers, with limited         mine appropriate configurations of interaction
+opportunities for active collaboration, personaliza-         types, feedback mechanisms, and orchestra-
+tion, or mutual learning (Madotto et al., 2019; Liao         tion paradigms based on target agency levels.
+et al., 2020).                                             • System Analysis: Providing a unified lens
+   In recent years, the advent of large language             for comparing and categorizing existing LLM-
+models (LLMs) has fundamentally transformed                  HAS implementations.
+the landscape of human-agent collaboration. Sys-
+tems powered by LLMs, such as ChatGPT and                  • Responsible Deployment: Ensuring that hu-
+Claude, exhibit remarkable abilities in reason-              man oversight and control are appropriately
+ing, co-creation, and open-ended problem solving.            calibrated to task requirements, particularly in
+These agents move beyond reactive responses to               high-stakes domains.
+actively engage in collaborative workflows with hu-
+mans, supporting iterative refinement, clarification,   C.1   Definition
+and joint decision-making (Lou et al., 2025; Yan,       The human agency scale defines five levels
+2025). This new paradigm emphasizes human-AI            (A1–A5) based on the degree of human involve-
+collaboration as a core design principle, spurring      ment required for effective task completion (as
+a growing focus on human-centered design, per-          shown in Table 3).
+sonalized adaptation, and interactive learning. As        Different human agency scale levels suit differ-
+research shifts from optimizing isolated agent capa-    ent situations depending on various factors. For
+bilities toward co-optimizing human-agent systems       example, routine, well-structured tasks may be suit-
+as integrated, adaptive teams, human adaptivity,        able for A1–A2, while open-ended or creative tasks
+transparency, and control are increasingly priori-      benefit from A3–A5. Tasks requiring specialized
+tized as central components of effective collabora-     domain knowledge or tacit expertise typically de-
+tion (Qian et al., 2025a; Sun et al., 2025b).           mand higher human involvement (A4–A5), as do
+                                                        high-stakes decisions in healthcare, finance, or le-
+C    Human Agency Scale                                 gal domains where human oversight and account-
+                                                        ability are essential.
+The development of LLM-based human-agent sys-
+tems raises a fundamental question: how much hu-        C.2   Human Agency Scale for Design and
+man involvement is appropriate for a given task?              Analysis
+Traditional perspectives on LLM-based Agents of-        The Human agency scale framework is not merely
+ten adopt an "Agent-first" view, focusing primar-       a descriptive tool, it also serves as a practical guide
+ily on the extent to which tasks can be automated.      for system design. By identifying the appropriate
+While useful for assessing technological capabili-      agency level for a given task, designers can make
+ties, such perspectives do not adequately capture       informed decisions about interaction types, feed-
+the human-centered considerations essential for re-     back mechanisms, and orchestration strategies (Dis-
+sponsible agent deployment, including human pref-       cussed in Section 3). Conversely, observing a sys-
+erences, decision-making authority, and account-        tem’s component configuration allows researchers
+ability (Zou et al., 2025). Drawing on recent work      to infer its effective human agency level.
+that examines worker preferences and technolog-            Each human agency level implies distinct re-
+ical capabilities across occupational tasks (Shao       quirements for system configuration. At lower lev-
+et al., 2025), human agency scale provides a uni-       els (A1–A2), systems typically employ delegation-
+fied framework for quantifying the degree of hu-        based interaction, asynchronous orchestration, and
+man involvement required or desired in human-           centralized communication with minimal human
+agent collaboration. This framework centers on          touchpoints. Additional, feedback tends to be eval-
+human agency (i.e., the capacity for humans to ex-      uative and occurs post-task (Yao et al., 2022; Xie
+ercise meaningful control, judgment, and decision-      et al., 2024b; Liu et al., 2024c). As human agency
+making authority within the system).                    increases toward A3, cooperation and coordina-
+   Human agency scale serves three key purposes         tion become the dominant interaction patterns, with
+feedback shifting to guidance and corrective types      tors, rather than leveraging asynchronous (21.3%)
+during task execution. Systems at this level of-        or concurrent operations.
+ten balance synchronous and asynchronous modes
+                                                        Human Feedback Dynamics. The distribution
+and adopt decentralized communication to facil-
+                                                        of Human Feedback highlights that humans are
+itate equal partnership (Shao et al., 2024; Feng
+                                                        primarily viewed as directors. Guidance is the
+et al., 2024; Barres et al., 2025). At higher levels
+                                                        most prevalent type, appearing in 63.9% (N = 39)
+(A4–A5), supervision emerges as the primary in-
+                                                        of works, indicating that humans are frequently
+teraction type, requiring synchronous orchestration
+                                                        involved in proactively steering task execution.
+and continuous feedback loops. Communication
+                                                        In contrast, Corrective (37.7%) and Evaluative
+structures become hierarchical with richer interac-
+                                                        (32.8%) feedback are less frequent, suggesting that
+tion modes such as conversation and observation
+                                                        while error recovery and final grading are essen-
+to support sustained human engagement (Qiu et al.,
+                                                        tial, the core value proposition of humans in cur-
+2025).
+                                                        rent loops is to provide intermediate direction. Im-
+D   Empirical Distributions of Core                     plicit feedback remains the least utilized category
+    Taxonomy Dimensions                                 at 24.6%, pointing to a significant, under-explored
+                                                        opportunity for systems to learn from passive hu-
+In this section, we provide quantitative analysis       man signals without demanding explicit user effort.
+and empirical distribution of communication struc-
+tures, orchestration paradigms, and human feed-         E   Evaluation Metrics
+back types across the surveyed literature.              In this section, we introduce evaluation metrics
+Communication Patterns. The empirical evi-              specifically designed for human-agent systems
+dence indicates a strong preference for flexible        across four key aspects: feedback mechanisms,
+and direct interaction architectures. As shown in       adaptability, trust and safety, and communication
+Figure 4, Communication Structure is predomi-           methods. To evaluate feedback mechanisms, (Liu
+nantly Decentralized (65.6%, N = 40), signifi-          et al., 2024b) assesses a human-robot teaming
+cantly outpacing Hierarchical (21.3%) and Cen-          framework using multi-modal language feedback at
+tralized (14.8%) arrangements. This suggests a          varying frequency levels (inactive, passive, active,
+trend towards autonomous agent behaviors rather         superactive). (Metz et al., 2024) proposes seven
+than rigid command-and-control topologies from          metrics, expressiveness, ease, definiteness, context
+the conventional setting. This decentralization is      independence, precision, unbiasedness, and infor-
+mirrored in the Communication Mode, where Con-          mativeness, to evaluate feedback quality. In the
+versation is the overwhelming standard, utilized in     education domain, (Seßler et al., 2025) adopts six
+88.5% (N = 54) of the surveyed papers. This indi-       dimensions based on educational feedback theory.
+cates that current LLM-HAS designs focus on nat-        (Spencer et al., 2020) evaluates the Expert Interven-
+ural language dialogue, mimicking human interper-       tion Learning (EIL) method by comparing robot
+sonal interactions, over more systemic approaches       performance with and without expert intervention.
+like Observation (13.1%) or shared Message Pools        For adaptability, (Hauptman et al., 2023) exam-
+(4.9%).                                                 ines how human-LLM agents respond to cyber inci-
+                                                        dents under different levels of autonomy across five
+Orchestration Strategies. In terms of Orches-           NIST-defined phases. For trust and safety, (Levy
+tration, the landscape is heavily skewed towards        et al., 2024) introduces a benchmark that evaluates
+linear, sequential workflows. A substantial 90.2%       web agents on their ability to comply with policies,
+(N = 55) of works employ a One-by-One strat-            avoid unsafe behavior, respect security constraints,
+egy, whereas only 9.8% attempt Simultaneous ex-         and handle errors gracefully, including seeking user
+ecution. This sequential bias is reinforced by the      input when needed. Finally, (Karten et al., 2023)
+synchronization protocols, with 78.7% (N = 48)          assess four categories of communication methods
+of systems operating Synchronously. These figures       in human-agent teaming, focusing on effectiveness
+suggest that, despite the potential for parallel pro-   and interpretability within simulated environments
+cessing in LLM agents, current human-agent work-        of Predator-Prey(Lowe et al., 2017) and Traffic
+flows are designed to align with the linear, turn-      Junction(Singh et al., 2018).
+taking cognitive limitations of human collabora-           In addition to these aspects, AXIS (Lu et al.,
+Figure 4: Distributions of core LLM-HAS design dimensions of the collected papers (N = 61). Bar labels indicate
+paper count followed by percentage.
+
+
+2024) and SYNERGAI (Chen et al., 2024b)                  creasingly able to maintain long-term, emotionally
+evaluate the effectiveness and robustness of hu-         charged interactions, users may begin to anthropo-
+man–LLM agent systems in the domains of operat-          morphize them or view them as social partners. Re-
+ing systems and embedded AI, respectively. These         cent empirical studies have shown that while users
+studies highlight how evaluation criteria can vary       report an increase in sense of support and engage-
+significantly depending on the specific task or ap-      ment when interacting with artificial intelligence
+plication context, reflecting differences in system      partners, such relationships may also weaken real-
+constraints, performance expectations, and interac-      world social connections and exacerbate loneliness
+tion complexity.                                         or emotional dependence, especially among so-
+                                                         cially isolated people (Pataranutaporn et al., 2025)
+F   Ethical and Societal Issues                          . These risks suggest that we need to be wary of
+                                                         users’ over-reliance and unrealistic expectations on
+Although LLM-based human-agent systems have
+                                                         intelligent agents and balance the boundaries be-
+demonstrated impressive capabilities in different
+                                                         tween human and agent interaction and real social
+fields, there are still some unresolved social and
+                                                         interaction.
+ethical issues. These problems do not stem purely
+from model behavior, but from the process of
+agents interacting with humans and transmitting          Responsibility gaps and ambiguous autonomy.
+information. Over time, agents will subtly influ-        LLM-driven agents often act with partial autonomy,
+ence human cognition, emotions, and behavior.            planning and executing tasks without full human
+                                                         oversight and participation. As these systems be-
+Emotional connection and dependence. One                 come more capable, it becomes increasingly diffi-
+point of concern is that LLM-based human-agent           cult to separate the user’s intent from the agent’s au-
+systems can establish emotional connections with         tonomous behavior or to assign blame when things
+users, allowing people to have emotional projec-         go wrong (Zou et al., 2025; Mukherjee and Chang,
+tions and trust in agents similar to those between       2025). This problem means that harm may occur
+people (Cohn et al., 2024). As agents are in-            without a clearly identifiable responsible party. If
+errors or harmful results occur, it is often difficult   tionally, the systematic breakdown of human feed-
+to clearly identify the responsible party. In most       back provides a foundation for cross-study compar-
+current LLM-HAS architectures, such mechanisms           isons. It underscores the diverse strategies through
+are still inadequate or missing. Solving this prob-      which human users can guide, correct, or collab-
+lem requires systematic efforts in interpretability,     orate with LLM-based agents in a more detailed
+procedural transparency, and governance standards.       way.
+Privacy and data-protection risks. Because               H    Difference with Traditional
+LLMs’ generative outputs rely on extensive train-             Human-in-the-Loop and
+ing corpora and user inputs, they have the poten-             Human-Computer Interaction Systems
+tial to leak private information. Sensitive informa-
+tion, including identity numbers or medical records,     LLM-based human-agent systems (LLM-HAS) dif-
+may unintentionally be replicated in generated re-       fer from traditional human-in-the-loop (HITL) sys-
+sponses due to the generative nature of these mod-       tems and classic human-computer interaction (HCI)
+els, according to a recent survey of LLM-based           frameworks. They vary in system structure, interac-
+agents. When data moves through several mod-             tion dynamics, and the way they use feedback. Al-
+ules, such as the core LLM controller, multi-source      though all three involve human participation, they
+inputs, and long-term memory, privacy risks are          have different ideas about the role of humans, the
+increased in the long and complex agentic work-          independence of intelligent systems, and how col-
+flow. Sensitive information may be disseminated to       laboration works (Wu et al., 2022b; Borghoff et al.,
+other users or outside tools as a result of these com-   2025).
+ponents’ unregulated data flow. Therefore, strong
+protections such as strict data usage, safeguards        LLM-HAS vs. HITL. Traditional HITL sys-
+(Huang et al., 2025), and processing filters are nec-    tems often include humans at fixed and predictable
+essary to stop LLM agents from disclosing private        stages of the machine learning pipeline, like data
+information. These issues highlight the need for         labeling, model selection, or post-correction (Kim
+a comprehensive strategy for developing, imple-          et al., 2025a). Human involvement is usually occa-
+menting, and policing LLM-based human-agent              sional and specific to tasks, and feedback is mostly
+systems. It is possible to ensure that such agents       gathered offline in structured formats, such as la-
+promote rather than undermine human well-being           bels, binary corrections, or rankings. Because of
+by paying close attention to the emotional effects,      this, HITL frameworks focus on control, supervi-
+establishing explicit accountability structures, and     sion, and reducing errors but provide little support
+enforcing strict privacy protections.                    for ongoing, interactive, or two-way collaboration
+                                                         during task execution. In contrast, LLM-HAS al-
+G    Human Feedback Type and Subtype                     low continuous, multi-round interaction using nat-
+                                                         ural language. This lets humans guide, critique,
+In this appendix, we present a detailed overview         refine, or redirect agent behavior as tasks progress.
+of human feedback types and their subtypes, as           Instead of mainly being supervisors or annotators,
+summarized in Table 5. This table provides con-          humans in LLM-HAS become active collaborators
+cise definitions and illustrates how humans pro-         whose input influences both the process and the
+vide feedback to LLM-based agents in LLM-HAS.            results of agent actions.
+While the main paper introduced the broad cate-
+gories of evaluative, corrective, guidance, and im-      LLM-HAS vs. Traditional HCI Systems. Clas-
+plicit feedback, here we expand each category into       sic HCI systems are often set up for direct manip-
+more granular subtypes, ranging from scalar ratings      ulation or command-response interaction, where
+and preference rankings to direct edits, demonstra-      users specify actions that systems respond to in a
+tions, and inferred behavioral signals. Recognizing      fixed way. Even though modern HCI research in-
+these subtypes clarifies the ways in which humans        creasingly focuses on user-centered design and in-
+interact with LLM agents, by offering precise in-        teractive experiences, most HCI systems do not see
+structions and well-defined tasks, to enhance the        computational components as independent agents
+accuracy and quality of generated outputs. This          with their own initiative or reasoning abilities (Xu
+deeper understanding empowers users to optimize          et al., 2023). In contrast, LLM-HAS introduce
+their interactions with LLM-based agents. Addi-          agentic elements that can create plans, start ac-
+ Human Feedback Type          Description                                        How it Helps Agents
+
+ Evaluative Feedback          User provides an assessment of the agent’s         Signals overall correctness or preference, guiding
+                              output quality.                                    general alignment.
+ Preference Ranking           User compares two or more agent outputs and        Helps the agent learn relative quality and
+                              selects the preferred one.                         subjective nuances.
+ Scalar Rating                User assigns a numerical score (e.g., 1–5) to      Provides a quantitative measure of satisfaction or
+                              the agent’s output.                                quality.
+ Binary Assessment            User indicates simple correctness (e.g., yes/no,   Offers a basic signal of success or failure.
+                              thumbs up/down).
+ Corrective Feedback          User modifies or directly improves the agent’s     Provides explicit examples of desired output,
+                              output.                                            enabling direct learning from errors.
+ Direct Edits / Refinements   User manually changes the agent’s generated        Shows the agent the precise correction needed.
+                              text or code.
+ Guidance Feedback            User provides instructions or explanations to      Offers deeper context, reasoning, or
+                              steer the agent.                                   demonstrations for learning complex behaviors.
+ Demonstrations               User shows the agent how to perform a task         Teaches specific procedures or desired interaction
+                              correctly.                                         patterns.
+ Instructions / Critiques     User provides natural language explanations,       Helps the agent understand why an output is
+                              critiques, or step-by-step guidance.               wrong and how to improve.
+ Implicit Feedback            Agent infers user preference from their            Reveals preferences and usability issues without
+                              behavior.                                          explicit feedback requests.
+ Human Action / Control       Human directly takes actions and control.          Collaborates with humans to effectively finish
+                                                                                 tasks or learns from human actions.
+
+Table 5: Human Feedback Types and Subtypes. The subtypes of evaluative feedback includes preference ranking,
+scalar rating, and binary assessment. The subtypes of corrective feedback includes the direct edits or refinement.
+The subtypes of guidance feedback includes the demonstration and instructions or critiques. The subtypes of implicit
+feedback include the human action or control.
+
+
+tions, ask for clarification, and change their behav-                  Together, these differences position LLM-HAS
+ior based on ongoing interactions. This change                      as a new type of interactive intelligent system that
+moves the interaction from simple tool use to col-                  blends adaptive intelligence with human-centered
+laboration, allowing for smoother and more flexible                 design. Rather than just enhancing existing HITL
+human-agent workflows that go beyond traditional                    or HCI frameworks, LLM-HAS function under a
+interface-based interaction models.                                 different model where humans and agents work
+                                                                    together in reasoning, decision-making, and action
+Feedback and Adaptation. Another major dif-                         throughout the interaction process.
+ference is how feedback is represented and used.
+                                                                    I     Difference with Multi-Agent Systems
+HITL systems typically depend on infrequent,
+structured feedback gathered for training or evalua-                While both LLM-HAS and MAS involve collabo-
+tion, while traditional HCI systems often see user                  ration among multiple entities, the key distinction
+feedback as temporary signals that don’t directly af-               lies in the nature and role of the collaborating par-
+fect system behavior during a session. LLM-HAS,                     ties (Feng et al., 2024; Shao et al., 2024). Multi-
+on the other hand, can take in rich, natural language               agent systems are typically composed exclusively
+feedback in real time. This allows users to express                 of autonomous agents—each designed to make de-
+complex intentions, preferences, and judgments as                   cisions, communicate, and coordinate tasks with
+they work on tasks. Supported by large language                     one another. In these MAS, each agent operates
+models, agents in LLM-HAS can learn from mini-                      based on its own set of objectives and algorithms,
+mal input, modify their responses immediately, and                  and the overall behavior emerges from their inter-
+change their behavior without needing retraining.                   actions (Tran et al., 2025; Guo et al., 2024a).
+This ability for quick adaptation and personaliza-                     In contrast, LLM-based human–agent systems
+tion sets LLM-HAS apart from both HITL and                          explicitly incorporate humans as active partici-
+traditional HCI models.                                             pants within the decision-making loop (Feng et al.,
+2024). Rather than letting the system run purely on
+the combined strategies of several LLM-powered
+agents, these systems are engineered with mech-
+anisms to allow human supervision, intervention,
+and feedback (Mehta et al., 2024). This human-
+in-the-loop design is critical when balancing the
+strengths of LLMs,such as processing vast amounts
+of knowledge and performing rapid reasoning,
+with the need for contextual, ethical, and domain-
+specific judgments that humans uniquely provide
+(Vats et al., 2024).
+   Furthermore, multi-agent systems often assume
+that the collaboration among agents can lead to
+a form of “collective intelligence” where agents
+work toward shared objectives (Sun et al., 2024b).
+In many such frameworks, the communication pro-
+tocols, coordination strategies, and role dynamics
+are all defined among non-human entities. In con-
+trast, in human–agent systems, the interaction pro-
+tocols are designed to enhance transparency and
+provide control for human decision-makers (Shao
+et al., 2024). The system can selectively escalate
+issues for human review, enable corrective actions
+when the automated decision may be off-mark, and
+integrate human feedback to iteratively improve the
+agent’s performance over time (Mehta et al., 2024).
+
+J   Tables
+Table 6 catalogs the environmental configuration
+and human feedback type, and Table 7 categorizes
+the interaction, orchestration, and communication
+of representative works, respectively. Both tables
+present the representative work. For all the col-
+lected work, please refer to the Github page.
+Table 6: ① Environment Configuration and ② Human Feedback to LLM-based agents in human–agent systems.
+Environment Configuration specifies whether a single or multiple humans collaborate with one or more LLM-based
+agents, while Human Feedback characterizes the type, subtype, granularity, and interaction phase of the human
+feedback to the LLM-based agents.
+
+                                                                   Environment Configuration                               Human Feedback to LLM-based Agent
+
+Paper                                      Venue      Code/ Data    Human        LLM Agent             Type                         Subtype                Granularity          Phase
+
+Collaborative Gym (Shao et al., 2024)     Arxiv’24       Link        Single        Single      Corrective, Guidance         Refinements, Instructions       Segment           During Task
+MTOM (Zhang et al., 2024b)                Arxiv’24        –          Single        Single            Implicit                    Human Action               Segment           During Task
+FineArena (Xu et al., 2025)               Arxiv’25        –          Single        Multiple         Guidance                     Demonstrations             Segment,     Initial Setup, During
+                                                                                                                                                            Holistic              Task
+Prison Dilemm (Jiang et al., 2025)        Arxiv’25        –          Single         Single           Implicit                     Human Action              Segment           During Task
+PPP (Sun et al., 2025b)                   Arxiv’25       Link        Single         Single      Guidance, Evaluate          Scalar rating, Refinements      Segment,          During task
+                                                                                                                                                            Holistic
+AI Chains (Wu et al., 2022a)              CHI’24          –          Single        Single           Corrective                     Refinements              Segment           During Task
+Drive As You Speak (Cui et al., 2024)    WACV’24          –          Single        Single            Guidance                    Demonstrations             Holistic          Initial Setup
+AgentCoord (Pan et al., 2024a)           Arxiv’24        Link        Single        Multiple    Evaluative, Corrective    Preference Ranking, Refinements    Segment,     Initial Setup, During
+                                                                                                                                                            Holistic              Task
+CowPilot (Huq et al., 2025)               Arxiv’25       Link        Single        Single      Corrective, Evaluative    Binary Assessment, Refinements     Segment           During Task
+EasyLAN (Pan et al., 2024b)               Arxiv’24        –          Single        Multiple    Corrective, Guidance       Demonstrations, Refinements       Segment,          During Task
+                                                                                                                                                            Holistic
+Hierarchical Agent (Liu et al., 2023b)   AAMAS’24         –          Single        Multiple         Guidance                     Demonstrations             Segment           During Task
+SWEET-RL (Zhou et al., 2025)              Arxiv’25       Link        Single        Single       Corrective, Implicit       Refinements, Human Action        Segment      Initial Setup, During
+                                                                                                                                                                                  Task
+HRC Assembly (Gkournelos et al.,          CIRP’24         –          Single        Multiple          Guidance                    Demonstrations             Segment           During Task
+2024)
+REVECA (Seo et al., 2025)                 Arxiv’24        –         Single         Multiple         Guidance                   Demonstrations               Holistic          Initial Setup
+AssistantX (Sun et al., 2024a)            Arxiv’24       Link       Multiple       Multiple     Implicit, Guidance       Human Action, Demonstrations       Holistic,    Initial Setup, During
+                                                                                                                                                            Segment               Task
+MINT (Wang et al., 2024b)                 ICLR’24        Link       Multiple        Single     Evaluative, Corrective,   Binary Assessment, Refinements,    Holistic          During Task
+                                                                                                     Guidance                      Instructions
+Help Feedback (Mehta et al., 2024)        EACL’24         –          Single         Single     Evaluative, Guidance        Demonstrations, Instructions,    Holistic,        During Task
+                                                                                                                               Binary Assessment            Segment
+ConvCodeWorld (Han et al., 2025)          ICLR’25        Link        Single         Single     Guidance, Evaluative        Demonstrations, Instructions,    Segment,         During Task
+                                                                                                                               Binary Assessment            Holistic
+ReHAC (Feng et al., 2024)                  ACL’24        Link        Single        Single           Corrective                    Refinements               Segment           During Task
+DPT Agent (Zhang et al., 2025)            Arxiv’25       Link        Single        Single           Guidance                       Instructions             Holistic          During Task
+HRC Manipulation (Liu et al., 2023a)      IEEE’23         –          Single        Single      Corrective, Guidance       Demonstrations, Refinements       Segment           During Task
+HRC DMP (Liu et al., 2024a)               IEEE’24         –          Single        Single      Corrective, Guidance       Refinements, Demonstrations       Segment           During Task
+PARTNR (Chang et al., 2024)               ICLR’25        Link        Single        Single           Guidance                     Demonstrations             Holistic          Inital Setup
+Organized Teams (Guo et al., 2024b)       Arxiv’24       Link        Single        Multiple         Guidance                     Demonstrations             Holistic,    Initial Setup, During
+                                                                                                                                                            Segment               Task
+CoELA (Zhang et al., 2024a)               ICLR’23         –          Single        Multiple          Guidance                    Demonstrations             Holistic,    Initial Setup, During
+                                                                                                                                                            Segment               Task
+Agency Task (Sharma et al., 2024)         EACL’24        Link        Single        Single           Guidance                    Demonstrations              Segment           During Task
+GDfC (Wang et al., 2025c)                 SME’25          –          Single        Multiple    Guidance, Evaluative          Demonstrations, Binary         Holistic,    Initial Setup, During
+                                                                                                                         Assessment, Preference Ranking     Segment         Task, Post Task
+PDFChatAnnotator (Tang et al., 2024)       IUI’24         –         Single          Single     Corrective, Guidance       Demonstrations, Refinements       Segment           During Task
+Attentive Supp. (Tanneberg et al.,        IEEE’24        Link       Multiple        Single      Implicit, Guidance       Demonstrations, Human Action       Segment           During Task
+2024)
+HRC Trust (Ye et al., 2023)               IEEE’23         –         Single         Single           Guidance               Demonstrations, Instructions     Segment           During Task
+BPMN (Ait et al., 2024)                   Arxiv’24       Link       Multiple       Multiple    Guidance, Corrective         Instructions, Refinements       Segment       During Task, Post
+                                                                                                                                                                                  Task
+Co-STORM (Jiang et al., 2024)            EMNLP’24        Link        Single        Multiple         Guidance                    Demonstrations              Segment           During Task
+HRC Manufa. (Lim et al., 2024)            IEEE’24         –          Single        Single      Corrective, Guidance       Demonstrations, Refinements,      Segment      Initial Setup, During
+                                                                                                                                  Instructions                                    Task
+A2C (Tariq et al., 2025)                  Arxiv’24       Link       Multiple       Multiple    Guidance, Evaluative      Binary Assessment, Instructions    Holistic,         During Task
+                                                                                                                                                            Segment
+MindAgent (Gong et al., 2023)            NAACL’24        Link        Single        Multiple          Guidance                    Demonstrations             Segment           During Task
+Ask Before Plan (Zhang et al., 2024c)    EMNLP’24        Link        Single        Multiple          Guidance                    Demonstrations             Segment      Initial Setup, During
+                                                                                                                                                                                  Task
+SOTOPIA (Zhou et al., 2024)               ICLR’24         –         Multiple       Multiple     Evaluative, Implicit      Scaler Rating, Human Action       Holistic,     During Task, Post
+                                                                                                                                                            Segment               Task
+PaLM-E (Driess et al., 2023)              ICML’23        Link        Single         Single      Guidance, Implicit       Demonstrations, Human Action       Holistic,    Initial Setup, During
+                                                                                                                                                            Segment               Task
+TaPA (Wu et al., 2023)                    Arxiv’23       Link        Single         Single           Guidance                    Demonstrations             Holistic,         Initial Setup
+                                                                                                                                                            Segment
+MetaGPT (Hong et al., 2023)               ICLR’24        Link        Single        Multiple         Guidance                    Demonstrations              Holistic          Initial Setup
+DigiRL (Bai et al., 2024)                NeurIPS’24      Link        Single        Single      Evaluative, Guidance            Binary Assessment,           Holistic      During Task, Post
+                                                                                                                                Demonstrations                                    Task
+WebLINX (Lù et al., 2024)                 Arxiv’24       Link        Single        Multiple          Guidance                   Demonstrations              Holistic,    Initial Setup, During
+                                                                                                                                                            Segment               Task
+MineWorld (Guo et al., 2025)              Arxiv’25       Link       Multiple       Single            Implicit                    Human Action               Segment           During Task
+M3HF (Wang et al., 2025d)                 ICML’25         –         Multiple       Multiple    Evaluative, Guidance      Binary Assessment, Instructions    Segment,      During Task, Post
+                                                                                                                                                            Holistic              Task
+UserBench (Qian et al., 2025a)            Arxiv’25       Link        Single         Single      Implicit, Guidance         Human Action, Refinement         Segment      Initial Setup, During
+                                                                                                                                                                                  Task
+ 2
+τ -Bench (Barres et al., 2025)            Arxiv’25       Link        Single         Single      Evaluative, Implicit     Human Action, Binary assessment    Segment,     Initial Setup, During
+                                                                                                                                                            Holistic              Task
+Magentic-UI (Mozannar et al., 2025)       Arxiv’24       Link        Single        Multiple    Evaluative, Corrective,   Binary Assessment, Refinement,     Segment       During Task, Post
+                                                                                                Guidance, Implicit          Corrective, Human Action                              Task
+RECODE-H (Miao et al., 2025)              Arxiv’25       Link        Single         Single     Guidance, Corrective          Refinements, Corrective,       Segment           During Task
+                                                                                                                                  Demonstration
+EmoAgent (Qiu et al., 2025)               Arxiv’25        –          Single        Multiple     Corrective, Implicit,      Human Action, Instructions,      Segment,      During Task, Post
+                                                                                                     Guidance                  Binary Assessment            Holistic              Task
+SymbioticRAG (Sun et al., 2025a)          Arxiv’25        –          Single         Single      Corrective, Implicit,    Binary Assessment, Refinements,    Segment      Initial Setup, During
+                                                                                                    Evaluative             Demonstrations, Instructions,                    Task, Post Task
+                                                                                                                                  Human Action
+Table 7: ① Interaction ② Orchestration ③ Communication in LLM-based human–agent systems. Interaction types
+capture the human and agent collaboration type; Orchestration covers task strategy and temporal synchronization;
+Communication describes how messages are structured and delivered in the system.
+
+                                                                            Interaction                            Orchestration                            Communication
+
+Paper                                      Venue      Code/ Data      Types           Variant         Strategy               Synchronization         Structure          Mode
+
+Collaborative Gym (Shao et al., 2024)     Arxiv’24       Link      Collaboration    Cooperation,    One-by-One                Asynchronous          Decentralized    Conversation
+                                                                                     Delegation
+MTOM (Zhang et al., 2024b)                Arxiv’24        –        Collaboration    Coordination,   Simultaneous               Synchronous          Decentralized    Conversation
+                                                                                    Cooperation
+FineArena (Xu et al., 2025)               Arxiv’25        –        Collaboration     Delegation,    One-by-One                 Synchronous          Hierarchical     Conversation
+                                                                                    Cooperation
+Prison Dilemm (Jiang et al., 2025)       Arxiv’25         –         Coopetition          –          One-by-One                Asynchronous          Decentralized    Conversation
+PPP (Sun et al., 2025b)                  Arxiv’25        Link      Collaboration    Cooperation     One-by-One                Asynchronous          Decentralized    Conversation
+AI Chains (Wu et al., 2022a)              CHI’24          –        Collaboration    Cooperation     One-by-One                Synchronous           Decentralized    Conversation
+Drive As You Speak (Cui et al., 2024)    WACV’24          –        Collaboration     Delegation     One-by-One                Synchronous            Centralized     Conversation
+AgentCoord (Pan et al., 2024a)           Arxiv’24        Link      Collaboration    Coordination    One-by-One                Synchronous           Hierarchical     Conversation
+CowPilot (Huq et al., 2025)              Arxiv’25        Link      Collaboration    Supervision,    One-by-One                Synchronous           Decentralized    Conversation
+                                                                                     Delegation,
+                                                                                    Coordination
+EasyLAN (Pan et al., 2024b)               Arxiv’24        –        Collaboration     Delegation,    One-by-One                 Synchronous          Hierarchical     Observation
+                                                                                    Supervision
+Hierarchical Agent (Liu et al., 2023b)   AAMAS’24         –        Collaboration    Supervision,    One-by-One                 Synchronous          Hierarchical     Conversation
+                                                                                     Delegation,
+                                                                                    Cooperation
+SWEET-RL (Zhou et al., 2025)              Arxiv’25       Link      Collaboration     Delegation     One-by-One                 Synchronous           Centralized     Conversation
+HRC Assembly (Gkournelos et al.,          CIRP’24         –        Collaboration     Delegation,    One-by-One                 Synchronous          Decentralized    Conversation
+2024)                                                                               Cooperation
+REVECA (Seo et al., 2025)                 Arxiv’24        –        Collaboration    Cooperation     One-by-One                Synchronous           Decentralized    Conversation
+AssistantX (Sun et al., 2024a)            Arxiv’24       Link      Collaboration     Delegation,    One-by-One                Asynchronous          Decentralized    Message Pool
+                                                                                    Cooperation
+MINT (Wang et al., 2024b)                 ICLR’24        Link      Collaboration     Delegation,    One-by-One                 Synchronous          Decentralized    Conversation
+                                                                                    Cooperation
+Help Feedback (Mehta et al., 2024)        EACL’24         –        Collaboration    Supervision,    One-by-One                Asynchronous          Decentralized    Conversation
+                                                                                     Delegation,
+                                                                                    Cooperation
+ConvCodeWorld (Han et al., 2025)          ICLR’25        Link      Collaboration    Supervision,    One-by-One                Asynchronous          Decentralized    Conversation
+                                                                                     Delegation
+ReHAC (Feng et al., 2024)                 ACL’24         Link      Collaboration    Coordination,   One-by-One                 Synchronous          Decentralized    Conversation
+                                                                                    Supervision
+DPT Agent (Zhang et al., 2025)            Arxiv’25       Link      Collaboration    Coordination    Simultaneous              Asynchronous          Decentralized    Observation
+HRC Manipulation (Liu et al., 2023a)      IEEE’23         –        Collaboration    Supervision,    One-by-One                Synchronous           Decentralized    Conversation
+                                                                                     Delegation
+HRC DMP (Liu et al., 2024a)               IEEE’24         –        Collaboration     Delegation,    One-by-One                 Synchronous          Decentralized    Conversation
+                                                                                    Supervision
+PARTNR (Chang et al., 2024)               ICLR’25        Link      Collaboration    Coordination,   Simultaneous               Synchronous          Decentralized,   Observation
+                                                                                    Cooperation                                                      Centralized
+Organized Teams (Guo et al., 2024b)       Arxiv’24       Link      Collaboration    Cooperation,    One-by-One                 Synchronous          Decentralized,   Conversation
+                                                                                    Coordination                                                     Centralized,
+                                                                                                                                                     Hierarchical
+CoELA (Zhang et al., 2024a)               ICLR’23         –        Collaboration    Cooperation,    Simultaneous               Synchronous          Decentralized    Conversation
+                                                                                    Coordination
+Agency Task (Sharma et al., 2024)         EACL’24        Link      Collaboration    Cooperation,    One-by-One                 Synchronous          Decentralized    Conversation
+                                                                                     Delegation
+GDfC (Wang et al., 2025c)             SME’25              –        Collaboration     Delegation     One-by-One                 Synchronous          Decentralized    Conversation
+PDFChatAnnotator (Tang et al., 2024)   IUI’24             –        Collaboration     Delegation     One-by-One                 Synchronous          Decentralized    Conversation
+Attentive Supp. (Tanneberg et al.,    IEEE’24            Link      Collaboration    Coordination    One-by-One                 Synchronous          Decentralized    Observation
+2024)
+HRC Trust (Ye et al., 2023)           IEEE’23             –        Collaboration     Delegation     One-by-One                Synchronous           Decentralized    Conversation
+BPMN (Ait et al., 2024)               Arxiv’24           Link      Collaboration    Coordination    Simultaneous              Asynchronous          Decentralized    Message Pool
+Co-STORM (Jiang et al., 2024)        EMNLP’24            Link      Collaboration    Coordination    One-by-One                Synchronous            Centralized     Conversation
+HRC Manufa. (Lim et al., 2024)        IEEE’24             –        Collaboration     Delegation,    One-by-One                Synchronous            Centralized     Conversation
+                                                                                    Cooperation
+A2C (Tariq et al., 2025)                  Arxiv’24       Link      Collaboration    Cooperation     One-by-One                Asynchronous          Hierarchical     Conversation
+MindAgent (Gong et al., 2023)            NAACL’24        Link      Collaboration    Coordination    Simultaneous              Synchronous           Centralized      Conversation
+Ask Before Plan (Zhang et al., 2024c)    EMNLP’24        Link      Collaboration    Coordination,   One-by-One                Synchronous           Hierarchical     Conversation
+                                                                                     Delegation
+SOTOPIA (Zhou et al., 2024)               ICLR’24         –        Collaboration,   Coordination,   One-by-One                 Synchronous          Decentralized    Conversation
+                                                                   Competition,     Cooperation
+                                                                    Coopetition
+PaLM-E (Driess et al., 2023)              ICML’23        Link      Collaboration     Delegation     One-by-One                Synchronous           Decentralized    Conversation
+TaPA (Wu et al., 2023)                    Arxiv’23       Link      Collaboration     Delegation     One-by-One                Asynchronous          Decentralized    Conversation
+MetaGPT (Hong et al., 2023)               ICLR’24        Link      Collaboration    Coordination    One-by-One                Asynchronous          Decentralized    Message Pool
+DigiRL (Bai et al., 2024)                NeurIPS’24      Link      Collaboration     Delegation     One-by-One                Synchronous            Centralized     Conversation
+WebLINX (Lù et al., 2024)                 Arxiv’24       Link      Collaboration     Delegation     One-by-One                Synchronous           Hierarchical     Conversation
+MineWorld (Guo et al., 2025)              Arxiv’25       Link      Collaboration     Delegation     One-by-One                Synchronous           Decentralized    Observation
+M3HF (Wang et al., 2025d)                 ICML’25         –        Collaboration    Cooperation     One-by-One,               Synchronous            Centralized     Message Pool
+                                                                                                    Simultaneous
+UserBench (Qian et al., 2025a)            Arxiv’25       Link      Collaboration    Cooperation     One-by-One                Asynchronous          Decentralized    Conversation
+τ 2 -Bench (Barres et al., 2025)          Arxiv’25       Link      Collaboration    Cooperation,    One-by-One,               Synchronous           Decentralized,   Conversation
+                                                                                    Coordination    Simultaneous                                     Hierarchical
+Magentic-UI (Mozannar et al., 2025)       Arxiv’24       Link      Collaboration    Cooperation,    Simultaneous        Asynchronous, Synchronous   Hierarchical,    Conversation,
+                                                                                    Coordination                                                     Centralized     Observation
+RECODE-H (Miao et al., 2025)              Arxiv’25       Link      Collaboration    Supervision,    One-by-One                 Synchronous           Hierarchical    Conversation
+                                                                                    Cooperation
+EmoAgent (Qiu et al., 2025)               Arxiv’25        –        Collaboration    Supervision,    One-by-One                 Synchronous          Hierarchical,    Conversation,
+                                                                                    Coordination,                                                   Centralized      Observation
+                                                                                    Cooperation
+SymbioticRAG (Sun et al., 2025a)          Arxiv’25        –        Collaboration    Cooperation,    One-by-One                 Synchronous           Centralized     Conversation
+                                                                                    Supervision,
+                                                                                     Delegation
+

@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "exa",
+    "product": "search",
+    "id": "pricing",
+    "url": "https://docs.exa.ai/reference/pricing",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:05:29.274893+00:00",
+  "path": "sources/official/exa/search/pricing",
+  "requested_url": "https://docs.exa.ai/reference/pricing",
+  "final_url": "https://exa.ai/docs/admin/pricing",
+  "http_status": 200,
+  "title": "Pricing - Exa",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "003eb9386d9d3f155512d4a9871ed06ca95af7503322245b364b4f781df3c541",
+      "bytes": 6180
+    },
+    "page.txt": {
+      "sha256": "584be3d998974f5f3ba932803aea15dec76b9bdadf64ca6fa6a0210688112dbe",
+      "bytes": 4750
+    },
+    "page.pdf": {
+      "sha256": "7d099ffbc8d10f4d2e9056d607d678e543eb79930a2a4533206ab27fd1e90fb4",
+      "bytes": 300696
+    }
+  }
+}

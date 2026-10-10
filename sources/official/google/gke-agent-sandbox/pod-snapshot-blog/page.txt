@@ -1,0 +1,114 @@
+Jump to Content
+Cloud
+Blog
+Solutions & technology
+Ecosystem
+Developers & Practitioners
+Transform with Google Cloud
+Contact sales
+Get started for free
+Developers & Practitioners
+Agent Factory Recap: Supercharging Agents on GKE with Agent Sandbox and Pod Snapshots
+December 19, 2025
+Shir Meir Lador
+
+Head of AI Engineering, Google Cloud Developer Relations
+
+In the latest episode of the Agent Factory, Mofi Rahman and I had the pleasure of hosting, Brandon Royal, the PM working on agentic workloads on GKE. We dove deep into the critical questions around the nuances of choosing the right agent runtime, the power of GKE for agents, and the essential security measures needed for intelligent agents to run code.
+
+This post guides you through the key ideas from our conversation. Use it to quickly recap topics or dive deeper into specific segments with links and timestamps.
+
+Why GKE for Agents?
+
+Timestamp: 01:49 
+
+We kicked off our discussion by tackling a fundamental question: why choose GKE as your agent runtime when serverless options like Cloud Run or fully managed solutions like Agent Engine exist?
+
+Brandon explained that the decision often boils down to control versus convenience. While serverless options are perfectly adequate for basic agents, the flexibility and governance capabilities of Kubernetes and GKE become indispensable in high-scale scenarios involving hundreds or thousands of agents. GKE truly shines when you need granular control over your agent deployments.
+
+ADK on GKE
+
+Timestamp: 06:58
+
+We've discussed the Agent Development Kit (ADK) in previous episodes, and Mofi highlighted to us how seamlessly it integrates with GKE and even showed a demo with the agent he built. ADK provides the framework for building the agent's logic, traces, and tools, while GKE provides the robust hosting environment. You can containerize your ADK agent, push it to Google Artifact Registry, and deploy it to GKE in minutes, transforming a local prototype into a globally accessible service.
+
+The Sandbox problem
+
+Timestamp: 15:20
+
+As agents become more sophisticated and capable of writing and executing code, a critical security concern emerges: the risk of untrusted, LLM-generated code. Brandon emphasized that while code execution is vital for high-performance agents and deterministic behavior, it also introduces significant risks in multi-tenant systems. This led us to the concept of a "sandbox."
+
+What is a Sandbox?
+
+Timestamp: 19:18
+
+For those less familiar with security engineering, Brandon clarified that a sandbox provides kernel and network isolation. Mofi further elaborated, explaining that agents often need to execute scripts (e.g., Python for data analysis). Without a sandbox, a hallucinating or prompt-injected model could potentially delete databases or steal secrets if allowed to run code directly on the main server. A sandbox creates a safe, isolated environment where such code can run without harming other systems.
+
+Agent Sandbox on GKE Demo
+
+Timestamp: 20:25
+
+So, how do we build this "high fence" on Kubernetes? Brandon introduced the Agent Sandbox on Kubernetes, which leverages technologies like gVisor, an application kernel sandbox. When an agent needs to execute code, GKE dynamically provisions a completely isolated pod. This pod operates with its own kernel, network, and file system, effectively trapping any malicious code within the gVisor bubble. 
+
+Mofi walked us through a compelling demo of the Agent Sandbox in action.We observed an ADK agent being given a task requiring code execution. As the agent initiated code execution, GKE dynamically provisioned a new pod, visibly labeled as "sandbox-executor," demonstrating the real-time isolation. Brandon highlighted that this pod is configured with strict network policies, further enhancing security.
+
+The Future: Pod Snapshots
+
+Timestamp: 29:39
+
+While the Agent Sandbox offers incredible security, the latency of spinning up a new pod for every task is a concern. Mofi demoed the game-changing solution: Pod Snapshots. This technology allows us to save their state of running sandboxes and then near-instantly restore them when an agent needs them. Brandon noted that this reduces startup times from minutes to seconds, revolutionizing real-time agentic workflows on GKE.
+
+Conclusion
+
+It's incredible to see how GKE isn't just hosting agents; it's actively protecting them and making them faster. 
+
+Your turn to build
+
+Ready to put these concepts into practice? Dive into the full episode to see the demos in action and explore how GKE can supercharge your agentic workloads.
+
+Learn how to deploy an ADK agent to Google Kubernetes Engine and how to get your run agent to run code safely using the GKE agent Sandbox.  
+
+Connect with us
+
+Shir Meir Lador → LinkedIn, X
+
+Mofi Rahman → LinkedIn
+
+Brandon Royal → LinkedIn
+
+Posted in
+Developers & Practitioners
+Related articles
+Developers & Practitioners
+Announcing MCP Toolbox Java SDK v1.0: Agentic data access for the enterprise
+
+By Abirami Sukumaran • 8-minute read
+
+Developers & Practitioners
+Networking for AI inference model serving - GKE only and for all other backends
+
+By Ammett Williams • 6-minute read
+
+Containers & Kubernetes
+GKE CPU startup boost: Accelerate app starts without over-provisioning
+
+By Abdel Sghiouar • 6-minute read
+
+Developers & Practitioners
+Democratizing Managed Lustre with lower cost and frictionless development
+
+By Barak Epstein • 6-minute read
+
+Footer Links
+Follow us
+Google Cloud
+Google Cloud Products
+Privacy
+Terms
+Help
+Language
+‪English‬
+‪Deutsch‬
+‪Français‬
+‪한국어‬
+‪日本語‬

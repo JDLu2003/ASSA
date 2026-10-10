@@ -1,0 +1,75 @@
+{
+  "item": {
+    "topic": "agent-performance",
+    "id": "budgetmlagent",
+    "arxiv": "2411.07464v2",
+    "kind": "arxiv-paper",
+    "title": "BudgetMLAgent: A Cost-Effective LLM Multi-Agent system for Automating Machine Learning Tasks",
+    "landing_url": "https://arxiv.org/abs/2411.07464v2",
+    "discovered_by": "all:LLM AND all:agent AND (all:latency OR all:cost) AND all:benchmark",
+    "authors": [
+      "Shubham Gandhi",
+      "Manasi Patwardhan",
+      "Lovekesh Vig",
+      "Gautam Shroff"
+    ],
+    "published": "2024-11-12T00:57:30Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:36.793469+00:00",
+  "path": "sources/papers/agent-performance/budgetmlagent",
+  "requested_url": "https://arxiv.org/abs/2411.07464v2",
+  "pdf_url": "https://arxiv.org/pdf/2411.07464v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "3354773b7e1d2701ff78ee62b3f1ce43206de96cc2ce564c0086fdbd0a7baaf6",
+      "bytes": 774867
+    },
+    "paper.txt": {
+      "sha256": "da9c5f2c7ca4bfac3d7bc1561c14b496dc75dab2fcc38ac898570eeabdab1adc",
+      "bytes": 69243
+    },
+    "paper.pdf": {
+      "sha256": "99b711c8f5ef321292eb8bb3da5108fe7946125dffccdaf9643bf300c9b3214b",
+      "bytes": 960898
+    },
+    "landing.html": {
+      "sha256": "1b2b555563780c386ab5aa7973443a82267dc2ecb3b7c1b2b398ecb5da76990d",
+      "bytes": 43420
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2411.07464v2",
+    "retrieved_at": "2026-10-09T13:06:19.247600+00:00",
+    "fields": {
+      "citation_title": [
+        "BudgetMLAgent: A Cost-Effective LLM Multi-Agent system for Automating Machine Learning Tasks"
+      ],
+      "citation_author": [
+        "Gandhi, Shubham",
+        "Patwardhan, Manasi",
+        "Vig, Lovekesh",
+        "Shroff, Gautam"
+      ],
+      "citation_date": [
+        "2024/11/12"
+      ],
+      "citation_online_date": [
+        "2025/01/08"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2411.07464"
+      ],
+      "citation_arxiv_id": [
+        "2411.07464"
+      ],
+      "citation_abstract": [
+        "Large Language Models (LLMs) excel in diverse applications including generation of code snippets, but often struggle with generating code for complex Machine Learning (ML) tasks. Although existing LLM single-agent based systems give varying performance depending on the task complexity, they purely rely on larger and expensive models such as GPT-4. Our investigation reveals that no-cost and low-cost models such as Gemini-Pro, Mixtral and CodeLlama perform far worse than GPT-4 in a single-agent setting. With the motivation of developing a cost-efficient LLM based solution for solving ML tasks, we propose an LLM Multi-Agent based system which leverages combination of experts using profiling, efficient retrieval of past observations, LLM cascades, and ask-the-expert calls. Through empirical analysis on ML engineering tasks in the MLAgentBench benchmark, we demonstrate the effectiveness of our system, using no-cost models, namely Gemini as the base LLM, paired with GPT-4 in cascade and expert to serve occasional ask-the-expert calls for planning. With 94.2\\% reduction in the cost (from \\$0.931 per run cost averaged over all tasks for GPT-4 single agent system to \\$0.054), our system is able to yield better average success rate of 32.95\\% as compared to GPT-4 single-agent system yielding 22.72\\% success rate averaged over all the tasks of MLAgentBench."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

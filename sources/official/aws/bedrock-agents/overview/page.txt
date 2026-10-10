@@ -1,0 +1,135 @@
+Skip to main content
+English
+Preferences 
+Contact Us
+Feedback
+Get started
+Service guides
+Developer tools
+AI resources
+Search in this guide
+Create an AWS Account
+Amazon Bedrock
+User Guide
+Overview
+Quickstart
+Models at a glance
+Model availability & compatibility
+Build
+Model customization
+Security, Guardrails, and Observability
+Capacity and Performance
+Track usage and costs
+Additional capabilities
+Optimize and migrate prompts
+Data Automation
+Knowledge Bases
+Evaluate models
+Prompt management
+Agents: Automate tasks
+How Amazon Bedrock Agents work
+Amazon Bedrock Agents Classic maintenance mode
+Supported Regions
+Tutorial: Building a simple agent
+Build and modify agents for your application
+Use action groups to define actions for your agent
+Use multi-agent collaboration for complex tasks
+Configure agent to request information from user
+Augment response generation for your agent with knowledge base
+Retain conversational context using memory
+Generate, run, and test code with code interpretation
+Implement safeguards for your application
+Provision additional throughput
+Configure an agent to use computer use tools
+Test and troubleshoot agent behavior
+Customize agent for your use case
+Deploy and use an agent in your application
+Prompt engineering concepts
+Amazon Bedrock Marketplace
+Flows
+Session management
+Managed agents by OpenAI
+Code examples
+References/Advanced
+AWS Glossary
+Document history
+Documentation
+Amazon Bedrock
+User Guide
+Documentation
+Amazon Bedrock
+User Guide
+Automate tasks in your application using AI agents
+ PDF
+ RSS
+ Markdown
+Agent Setup
+Focus mode
+Note
+
+Amazon Bedrock Agents (now Amazon Bedrock Agents Classic) is no longer open to new customers. For capabilities similar to Bedrock Agents Classic, explore Amazon Bedrock AgentCore. Existing customers can continue to use the service as normal. For more information, see Amazon Bedrock Agents Classic maintenance mode.
+
+Amazon Bedrock Agents offers you the ability to build and configure autonomous agents in your application. An agent helps your end-users complete actions based on organization data and user input. Agents orchestrate interactions between foundation models (FMs), data sources, software applications, and user conversations. In addition, agents automatically call APIs to take actions and invoke knowledge bases to supplement information for these actions. By integrating agents, you can accelerate your development effort to deliver generative artificial intelligence (generative AI) applications.
+
+With agents, you can automate tasks for your customers and answer questions for them. For example, you can create an agent that helps customers process insurance claims or an agent that helps customers make travel reservations. You don't have to provision capacity, manage infrastructure, or write custom code. Amazon Bedrock manages prompt engineering, memory, monitoring, encryption, user permissions, and API invocation.
+
+Agents perform the following tasks:
+
+Extend foundation models to understand user requests and break down the tasks that the agent must perform into smaller steps.
+
+Collect additional information from a user through natural conversation.
+
+Take actions to fulfill a customer's request by making API calls to your company systems.
+
+Augment performance and accuracy by querying data sources.
+
+To use an agent, you perform the following steps:
+
+(Optional) Create a knowledge base to store your private data in that database. For more information, see Retrieve data and generate AI responses with Amazon Bedrock Knowledge Bases.
+
+Configure an agent for your use case and add at least one of the following components:
+
+At least one action group that the agent can perform. To learn how to define the action group and how it's handled by the agent, see Use action groups to define actions for your agent to perform.
+
+Associate a knowledge base with the agent to augment the agent's performance. For more information, see Augment response generation for your agent with knowledge base.
+
+(Optional) To customize the agent's behavior to your specific use-case, modify prompt templates for the pre-processing, orchestration, knowledge base response generation, and post-processing steps that the agent performs. For more information, see Enhance agent's accuracy using advanced prompt templates in Amazon Bedrock.
+
+Test your agent in the Amazon Bedrock console or through API calls to the TSTALIASID. Modify the configurations as necessary. Use traces to examine your agent's reasoning process at each step of its orchestration. For more information, see Test and troubleshoot agent behavior and Track agent's step-by-step reasoning process using trace.
+
+When you have sufficiently modified your agent and it's ready to be deployed to your application, create an alias to point to a version of your agent. For more information, see Deploy and use an Amazon Bedrock agent in your application.
+
+Set up your application to make API calls to your agent alias.
+
+Iterate on your agent and create more versions and aliases as necessary.
+
+Related resources
+Amazon Bedrock API Reference
+AWS CLI commands for Amazon Bedrock
+SDKs & Tools 
+Did this page help you?
+Yes
+No
+Provide feedback
+Next topic:How Amazon Bedrock Agents work
+Previous topic:Run code samples
+Get Started
+AWS Hands-On Tutorials 
+AWS Solutions Library 
+AWS Decision Guides
+Service Guides
+Choosing a generative AI service
+AWS service guides
+AWS CLI Tutorials on GitHub 
+Developer Tools
+AWS Code Example Library
+AWS CLI
+AWS Builder Center 
+AWS Developer Tools Blog 
+Helpful Links
+Download the AWS Docs MCP Server 
+Sign into the AWS Console 
+AWS re:Post 
+PrivacySite termsCookie preferences © 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+English
+Top

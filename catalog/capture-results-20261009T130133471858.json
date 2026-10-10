@@ -1,0 +1,782 @@
+{
+  "run_at": "2026-10-09T13:01:33.471966+00:00",
+  "results": [
+    {
+      "item": {
+        "topic": "agent-environments",
+        "id": "crab",
+        "arxiv": "2604.28138v1",
+        "kind": "arxiv-paper",
+        "title": "Crab: A Semantics-Aware Checkpoint/Restore Runtime for Agent Sandboxes",
+        "landing_url": "https://arxiv.org/abs/2604.28138v1",
+        "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+        "published": "2026-04-30T17:20:19Z",
+        "authors": [
+          "Tianyuan Wu",
+          "Chaokun Chang",
+          "Lunxi Cao",
+          "Wei Gao",
+          "Wei Wang"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:00:41.766012+00:00",
+      "path": "sources/papers/agent-environments/crab",
+      "requested_url": "https://arxiv.org/abs/2604.28138v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.28138v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "6b9b82ff70df7fc6fe5330103477298c289f1a6a9eed77b0e47420aa2eb5010e",
+          "bytes": 813506
+        },
+        "paper.txt": {
+          "sha256": "8cffee9052599d6b38d2b983b6885c4cc0e34eeb21d18c0b1ceb8c8d76dae42f",
+          "bytes": 135129
+        },
+        "paper.pdf": {
+          "sha256": "faa2188190cc191240596a92487b86df4fda75e345da8b3b41542773c0ab23c0",
+          "bytes": 1496161
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:00:45.427719+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-environments",
+        "id": "acrfence",
+        "arxiv": "2603.20625v1",
+        "kind": "arxiv-paper",
+        "title": "ACRFence: Preventing Semantic Rollback Attacks in Agent Checkpoint-Restore",
+        "landing_url": "https://arxiv.org/abs/2603.20625v1",
+        "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+        "published": "2026-03-21T03:39:36Z",
+        "authors": [
+          "Yusheng Zheng",
+          "Yiwei Yang",
+          "Wei Zhang",
+          "Andi Quinn"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:00:45.428541+00:00",
+      "path": "sources/papers/agent-environments/acrfence",
+      "requested_url": "https://arxiv.org/abs/2603.20625v1",
+      "pdf_url": "https://arxiv.org/pdf/2603.20625v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "f0d4d709b3aea8526da02549c0ba7fe27450a0a72e902fe9b461e22552ee037a",
+          "bytes": 110693
+        },
+        "paper.txt": {
+          "sha256": "a2e9c71558c3c681a62072d36e9750e3e332add8ab8879e24ea34907ba3e23a6",
+          "bytes": 32446
+        },
+        "paper.pdf": {
+          "sha256": "5b88ebb1f9dc1cb136c2e8b282a5b9d31122dc172ecd9c1893f4a5b578e86263",
+          "bytes": 463072
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:00:47.123174+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-environments",
+        "id": "safe-to-resume",
+        "arxiv": "2608.29381v1",
+        "kind": "arxiv-paper",
+        "title": "Safe to Resume? Breaking Execution Continuity of Agent Execution via Rollback",
+        "landing_url": "https://arxiv.org/abs/2608.29381v1",
+        "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+        "published": "2026-08-29T17:40:13Z",
+        "authors": [
+          "Guanlong Wu",
+          "Dahui Li",
+          "Ke Jiang",
+          "Jianyu Niu",
+          "Cong Wang",
+          "Yinqian Zhang"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:00:47.123246+00:00",
+      "path": "sources/papers/agent-environments/safe-to-resume",
+      "requested_url": "https://arxiv.org/abs/2608.29381v1",
+      "pdf_url": "https://arxiv.org/pdf/2608.29381v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "bc989266026c57eb78a73a6548f1e1a5e1ed4a2a46f7a5eb68f559b0e6ffb616",
+          "bytes": 1094159
+        },
+        "paper.txt": {
+          "sha256": "3777904235074a99aec063d4ca48c418651b189096423c54881d6b29e78023ff",
+          "bytes": 121602
+        },
+        "paper.pdf": {
+          "sha256": "531cb45c7cc051ef992110f2910911c437b33a88aacf31fe9b1b0be733283048",
+          "bytes": 432998
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:00:49.078960+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "science-sandboxes",
+        "arxiv": "2608.30165v1",
+        "kind": "arxiv-paper",
+        "title": "Science sandboxes measure the scientific capability of AI agents",
+        "landing_url": "https://arxiv.org/abs/2608.30165v1",
+        "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+        "published": "2026-08-31T02:33:38Z",
+        "authors": [
+          "Arya S. Rao",
+          "Rodrigo I. Castro",
+          "Sager J. Gosai",
+          "Kenneth B. Hsu",
+          "Yasha Ektefaie",
+          "Shantanu Singh",
+          "Sangeeta N. Bhatia",
+          "Steven K. Reilly",
+          "Ryan Tewhey",
+          "Eric S. Lander",
+          "Pardis C. Sabeti"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:00:49.079342+00:00",
+      "path": "sources/papers/agent-evaluation/science-sandboxes",
+      "requested_url": "https://arxiv.org/abs/2608.30165v1",
+      "pdf_url": "https://arxiv.org/pdf/2608.30165v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "0232ec69bcea9c52d0de28243c3455ec1576b1c240e21f2b64fe753c0b106866",
+          "bytes": 17595952
+        },
+        "paper.txt": {
+          "sha256": "a3dd91ff0e6e598899cb6c50fddb048177cbbbefb2288d1bbba70fb6f5e47311",
+          "bytes": 166209
+        },
+        "paper.pdf": {
+          "sha256": "b3491685df914002adf65a32b001bdcd65c0d17954bb46f716171b6af18bbbd2",
+          "bytes": 6365545
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:03.087712+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-environments",
+        "id": "sidekernel",
+        "arxiv": "2610.02456v1",
+        "kind": "arxiv-paper",
+        "title": "SideKernel: A Usable microVM Sandbox for AI Coding Agents on macOS",
+        "landing_url": "https://arxiv.org/abs/2610.02456v1",
+        "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+        "published": "2026-10-01T20:30:13Z",
+        "authors": [
+          "Dimitrios Prasakis"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:03.088211+00:00",
+      "path": "sources/papers/agent-environments/sidekernel",
+      "requested_url": "https://arxiv.org/abs/2610.02456v1",
+      "pdf_url": "https://arxiv.org/pdf/2610.02456v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "537d6f736de86e13989b3df441c40f7f8f056853b7e1565d11d2a3289b0db27a",
+          "bytes": 447108
+        },
+        "paper.txt": {
+          "sha256": "a96e0962018f47e8e3f36e2579df3f99870c29a2a24054a4c87157dcd6579caf",
+          "bytes": 102521
+        },
+        "paper.pdf": {
+          "sha256": "299e4e1e94ff9aba57302a1e312c978256234b390db2cbfa1aa441b1bd57c81c",
+          "bytes": 530061
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:04.290403+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-environments",
+        "id": "ripplecp",
+        "arxiv": "2610.09088v1",
+        "kind": "arxiv-paper",
+        "title": "RippleCP: Measuring Counterfactual Checkpoint Advantage in Coding Agents",
+        "landing_url": "https://arxiv.org/abs/2610.09088v1",
+        "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+        "published": "2026-10-06T20:40:51Z",
+        "authors": [
+          "Mayur Akewar",
+          "Ravi Ranjan"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:04.290533+00:00",
+      "path": "sources/papers/agent-environments/ripplecp",
+      "requested_url": "https://arxiv.org/abs/2610.09088v1",
+      "pdf_url": "https://arxiv.org/pdf/2610.09088v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "4a3777f0e3fe822278b377fce759cecb04637a820b65aaad1a6c6711b5185ba2",
+          "bytes": 73534
+        },
+        "paper.txt": {
+          "sha256": "208724be6c64bea9c05f8e07fb8872fa208aa35ea35035ad76e50b7f8a9c9788",
+          "bytes": 64791
+        },
+        "paper.pdf": {
+          "sha256": "6570a38cd214c80b8d4a62bd346d0057d7f62b63e05c1201929c7dd2fa341078",
+          "bytes": 362949
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:04.883137+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-memory",
+        "id": "chronomem",
+        "arxiv": "2607.27773v2",
+        "kind": "arxiv-paper",
+        "title": "ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory",
+        "landing_url": "https://arxiv.org/abs/2607.27773v2",
+        "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+        "published": "2026-07-30T07:07:39Z",
+        "authors": [
+          "Yongye Su",
+          "Wujiang Xu",
+          "Chaoji Zuo",
+          "Elisa Bertino"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:04.883212+00:00",
+      "path": "sources/papers/agent-memory/chronomem",
+      "requested_url": "https://arxiv.org/abs/2607.27773v2",
+      "pdf_url": "https://arxiv.org/pdf/2607.27773v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "8871ba9e88591eed60ec26e392716a6b38be3cb9014f008b95c9ffa3b6eb5f27",
+          "bytes": 269070
+        },
+        "paper.txt": {
+          "sha256": "36e2e48c24713f825f32a35e9d39566b2dc4aaa283497d3bf00bc233d360dd36",
+          "bytes": 78758
+        },
+        "paper.pdf": {
+          "sha256": "0212789228dfd4a76ab24e1a883057487095edcd0e92678cdab1c595b8596279",
+          "bytes": 854839
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:06.181597+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-filesystems",
+        "id": "agent-native-filesystems",
+        "arxiv": "2604.13536v5",
+        "kind": "arxiv-paper",
+        "title": "Don't Let AI Agents YOLO Your Files: Information and Control in Agent-Native Filesystems",
+        "landing_url": "https://arxiv.org/abs/2604.13536v5",
+        "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+        "published": "2026-04-15T06:32:07Z",
+        "authors": [
+          "Shawn Wanxiang Zhong",
+          "Junxuan Liao",
+          "Jing Liu",
+          "Mai Zheng",
+          "Andrea C. Arpaci-Dusseau",
+          "Remzi H. Arpaci-Dusseau"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:06.181883+00:00",
+      "path": "sources/papers/agent-filesystems/agent-native-filesystems",
+      "requested_url": "https://arxiv.org/abs/2604.13536v5",
+      "pdf_url": "https://arxiv.org/pdf/2604.13536v5",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "a00785d462b4c20106a3687b1af39b642c7a1599a4f7a31053ec8e29e5bbbeff",
+          "bytes": 310251
+        },
+        "paper.txt": {
+          "sha256": "18e71f1b7a7aa8d171971e6a63e8d9c3f1dfe97b274e061f5f76fbe25b428e44",
+          "bytes": 215256
+        },
+        "paper.pdf": {
+          "sha256": "e5d55c3faa7219b2f841f95f519266054b6c27d02b46cee07c5a46ca7aebf653",
+          "bytes": 923855
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:07.057702+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-memory",
+        "id": "filesystem-memory",
+        "arxiv": "2607.26637v1",
+        "kind": "arxiv-paper",
+        "title": "Filesystem-Based Memory for LLM Agents: Organization, Evolution, and Sustainability",
+        "landing_url": "https://arxiv.org/abs/2607.26637v1",
+        "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+        "published": "2026-07-29T08:59:43Z",
+        "authors": [
+          "Sizhe Zhou",
+          "Sheldon Yu",
+          "Hui Wei",
+          "Junda Wu",
+          "Siru Ouyang",
+          "Yizhu Jiao",
+          "Shijia Pan",
+          "Julian McAuley",
+          "Yu Zhang",
+          "Tong Yu",
+          "Jiawei Han"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:07.057875+00:00",
+      "path": "sources/papers/agent-memory/filesystem-memory",
+      "requested_url": "https://arxiv.org/abs/2607.26637v1",
+      "pdf_url": "https://arxiv.org/pdf/2607.26637v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "ef77cd11a986a0dbb40501469474b61e28e91481209530be5c20e9b85b29cb3e",
+          "bytes": 1095714
+        },
+        "paper.txt": {
+          "sha256": "83f4d3b307134880d876713c8bdcc0e878b7a164c628719c00ee1dbdbf7685b0",
+          "bytes": 279874
+        },
+        "paper.pdf": {
+          "sha256": "4186ea9a8ca5b5534e644a2a8c36e5594226df440b167093ea406e0e9a9bf42c",
+          "bytes": 2232154
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:08.741978+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-filesystems",
+        "id": "fs-researcher",
+        "arxiv": "2602.01566v2",
+        "kind": "arxiv-paper",
+        "title": "FS-Researcher: Test-Time Scaling for Long-Horizon Research Tasks with File-System-Based Agents",
+        "landing_url": "https://arxiv.org/abs/2602.01566v2",
+        "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+        "published": "2026-02-02T03:00:19Z",
+        "authors": [
+          "Chiwei Zhu",
+          "Benfeng Xu",
+          "Mingxuan Du",
+          "Shaohan Wang",
+          "Xiaorui Wang",
+          "Zhendong Mao",
+          "Yongdong Zhang"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:08.742051+00:00",
+      "path": "sources/papers/agent-filesystems/fs-researcher",
+      "requested_url": "https://arxiv.org/abs/2602.01566v2",
+      "pdf_url": "https://arxiv.org/pdf/2602.01566v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "16fc2daf85a303dbf9f3f82128380f65228f45534021764a7cd6326572561a0d",
+          "bytes": 1491032
+        },
+        "paper.txt": {
+          "sha256": "dc81c556f3e27cef8b65c895b6486f84250bd1a4b090c28d16959035c552c87b",
+          "bytes": 75052
+        },
+        "paper.pdf": {
+          "sha256": "d6ba43ae729a00a93cecaa72ac34a414b441c6bd81a5ef65b80f5fe23c27a1f8",
+          "bytes": 1860416
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:10.079707+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-filesystems",
+        "id": "everything-is-context",
+        "arxiv": "2512.05470v1",
+        "kind": "arxiv-paper",
+        "title": "Everything is Context: Agentic File System Abstraction for Context Engineering",
+        "landing_url": "https://arxiv.org/abs/2512.05470v1",
+        "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+        "published": "2025-12-05T06:56:45Z",
+        "authors": [
+          "Xiwei Xu",
+          "Robert Mao",
+          "Quan Bai",
+          "Xuewu Gu",
+          "Yechao Li",
+          "Liming Zhu"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:10.079867+00:00",
+      "path": "sources/papers/agent-filesystems/everything-is-context",
+      "requested_url": "https://arxiv.org/abs/2512.05470v1",
+      "pdf_url": "https://arxiv.org/pdf/2512.05470v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "3a0c7485970974f5a9d41612b7fefea2db556742fb3894dc9b887ac497329e36",
+          "bytes": 297135
+        },
+        "paper.txt": {
+          "sha256": "6f46a4a45459c2f021cee78bebf232f103734b7c2dacc993ec45a0fb4968f553",
+          "bytes": 59656
+        },
+        "paper.pdf": {
+          "sha256": "b2a8a219e70525d3ebde919f5a328a6e39474b73bc313bc6c97f2b1d958388ec",
+          "bytes": 181999
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:10.804711+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-filesystems",
+        "id": "semantic-fs-aios",
+        "arxiv": "2410.11843v5",
+        "kind": "arxiv-paper",
+        "title": "From Commands to Prompts: LLM-based Semantic File System for AIOS",
+        "landing_url": "https://arxiv.org/abs/2410.11843v5",
+        "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+        "published": "2024-09-23T08:39:16Z",
+        "authors": [
+          "Zeru Shi",
+          "Kai Mei",
+          "Mingyu Jin",
+          "Yongye Su",
+          "Chaoji Zuo",
+          "Wenyue Hua",
+          "Wujiang Xu",
+          "Yujie Ren",
+          "Zirui Liu",
+          "Mengnan Du",
+          "Dong Deng",
+          "Yongfeng Zhang"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:10.805921+00:00",
+      "path": "sources/papers/agent-filesystems/semantic-fs-aios",
+      "requested_url": "https://arxiv.org/abs/2410.11843v5",
+      "pdf_url": "https://arxiv.org/pdf/2410.11843v5",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "b7f4b1055129616a1201c076cf850566504b43ab84364f415cc52880b9f2c883",
+          "bytes": 10130743
+        },
+        "paper.txt": {
+          "sha256": "803d250d7ae4b983545f84171a6366e13765b908b8aa993a68b565866a06ca14",
+          "bytes": 111377
+        },
+        "paper.pdf": {
+          "sha256": "ad0e9bdd30eef0419fba4912c45c95981911626b9388faab7334742a8f9e1448",
+          "bytes": 9225367
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:15.138820+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-filesystems",
+        "id": "sysspec",
+        "arxiv": "2512.13047v4",
+        "kind": "arxiv-paper",
+        "title": "Sharpen the Spec, Cut the Code: A Case for Generative File System with SYSSPEC",
+        "landing_url": "https://arxiv.org/abs/2512.13047v4",
+        "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+        "published": "2025-12-15T07:15:01Z",
+        "authors": [
+          "Qingyuan Liu",
+          "Mo Zou",
+          "Hengbin Zhang",
+          "Dong Du",
+          "Yubin Xia",
+          "Haibo Chen"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:15.138982+00:00",
+      "path": "sources/papers/agent-filesystems/sysspec",
+      "requested_url": "https://arxiv.org/abs/2512.13047v4",
+      "pdf_url": "https://arxiv.org/pdf/2512.13047v4",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "e8d2d56a575eab95c452e2d22a06593562c66f455e26592a9428d1e57a63e431",
+          "bytes": 4770266
+        },
+        "paper.txt": {
+          "sha256": "f43df0978e55dfe3f76d5889765be82c883fd8b757b639eb06bdce9ec42d60e1",
+          "bytes": 151183
+        },
+        "paper.pdf": {
+          "sha256": "8b040d0f07094e478843c16cbe643d2195a2d59c62c5d0cc6bd9d6dada020658",
+          "bytes": 3030921
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:19.185831+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-environments",
+        "id": "fork-explore-commit",
+        "arxiv": "2602.08199v2",
+        "kind": "arxiv-paper",
+        "title": "Fork, Explore, Commit: OS Primitives for Agentic Exploration",
+        "landing_url": "https://arxiv.org/abs/2602.08199v2",
+        "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+        "published": "2026-02-09T01:46:52Z",
+        "authors": [
+          "Cong Wang",
+          "Yusheng Zheng"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:19.185932+00:00",
+      "path": "sources/papers/agent-environments/fork-explore-commit",
+      "requested_url": "https://arxiv.org/abs/2602.08199v2",
+      "pdf_url": "https://arxiv.org/pdf/2602.08199v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "04d9c52a4e1af094fe753b647e8ab9b0a9bc14889c637c003ced4a56c7b39153",
+          "bytes": 19099
+        },
+        "paper.txt": {
+          "sha256": "3d8839b0f1904430e3b1a1a4111c401cf46150232785636e19656634c78c4b77",
+          "bytes": 61483
+        },
+        "paper.pdf": {
+          "sha256": "84d1156141ddb18f97fbc51fdd759f0b0d861eea7f3ef8181dffe4f627f19ce6",
+          "bytes": 576526
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:20.527848+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "enova",
+        "arxiv": "2407.09486v1",
+        "kind": "arxiv-paper",
+        "title": "ENOVA: Autoscaling towards Cost-effective and Stable Serverless LLM Serving",
+        "landing_url": "https://arxiv.org/abs/2407.09486v1",
+        "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+        "published": "2024-05-17T09:48:31Z",
+        "authors": [
+          "Tao Huang",
+          "Pengfei Chen",
+          "Kyoka Gong",
+          "Jocky Hawk",
+          "Zachary Bright",
+          "Wenxin Xie",
+          "Kecheng Huang",
+          "Zhi Ji"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:20.527955+00:00",
+      "path": "sources/papers/model-serving/enova",
+      "requested_url": "https://arxiv.org/abs/2407.09486v1",
+      "pdf_url": "https://arxiv.org/pdf/2407.09486v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "a0e995c22966bb938097c92a77c0a63f313cdc5163d65bf9f9f5e24e6a4f7eb5",
+          "bytes": 3354406
+        },
+        "paper.txt": {
+          "sha256": "349af628b9c959c7901708a00210060fd990f979dfc4307b9bf0b8a1f991e8b2",
+          "bytes": 87784
+        },
+        "paper.pdf": {
+          "sha256": "5962e4853957f002b4c764818efe62f84f7050d82a2443b679b5f3a6269b39de",
+          "bytes": 2730253
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:23.932864+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "hydraserve",
+        "arxiv": "2502.15524v2",
+        "kind": "arxiv-paper",
+        "title": "HydraServe: Minimizing Cold Start Latency for Serverless LLM Serving in Public Clouds",
+        "landing_url": "https://arxiv.org/abs/2502.15524v2",
+        "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+        "published": "2025-02-21T15:25:21Z",
+        "authors": [
+          "Chiheng Lou",
+          "Sheng Qi",
+          "Chao Jin",
+          "Dapeng Nie",
+          "Haoran Yang",
+          "Yu Ding",
+          "Xuanzhe Liu",
+          "Xin Jin"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:23.933140+00:00",
+      "path": "sources/papers/model-serving/hydraserve",
+      "requested_url": "https://arxiv.org/abs/2502.15524v2",
+      "pdf_url": "https://arxiv.org/pdf/2502.15524v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "715a7b865178583cc6c805e90ff4034c73c34fe82b72b14befe0891f3d319d0c",
+          "bytes": 337643
+        },
+        "paper.txt": {
+          "sha256": "dbbae4ef49594309b21a367710504868fb4b59f1824b87227fedff34dbcce826",
+          "bytes": 151825
+        },
+        "paper.pdf": {
+          "sha256": "a8e1e348e4dfe0c79b124630de318abf0f4bb021c4690d0664047379120cc590",
+          "bytes": 555640
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:26.391513+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "energy-aware-serverless",
+        "arxiv": "2606.30391v1",
+        "kind": "arxiv-paper",
+        "title": "Energy-Aware Scheduling for Serverless LLM Serving on Shared GPUs",
+        "landing_url": "https://arxiv.org/abs/2606.30391v1",
+        "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+        "published": "2026-06-29T14:44:24Z",
+        "authors": [
+          "Tianyu Wang",
+          "Gourav Rattihalli",
+          "Aditya Dhakal",
+          "Longfei Shangguan",
+          "Dejan Milojicic"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:26.391602+00:00",
+      "path": "sources/papers/model-serving/energy-aware-serverless",
+      "requested_url": "https://arxiv.org/abs/2606.30391v1",
+      "pdf_url": "https://arxiv.org/pdf/2606.30391v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "ba0321d7f8c006cad6f315f2a63fef0b896385830e6cc7f710fa5fa75be960f0",
+          "bytes": 3057604
+        },
+        "paper.txt": {
+          "sha256": "7a2b53275bc1f7fbbccf16c21d7b5987b3707cda9fae1630191fc69566fda3a7",
+          "bytes": 172203
+        },
+        "paper.pdf": {
+          "sha256": "498f62e7953a888c30dd3d1e41867b5d1a346a15a0215a90242fc63951d6926c",
+          "bytes": 3494391
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:29.125386+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "qserve",
+        "arxiv": "2405.04532v3",
+        "kind": "arxiv-paper",
+        "title": "QServe: W4A8KV4 Quantization and System Co-design for Efficient LLM Serving",
+        "landing_url": "https://arxiv.org/abs/2405.04532v3",
+        "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+        "published": "2024-05-07T17:59:30Z",
+        "authors": [
+          "Yujun Lin",
+          "Haotian Tang",
+          "Shang Yang",
+          "Zhekai Zhang",
+          "Guangxuan Xiao",
+          "Chuang Gan",
+          "Song Han"
+        ]
+      },
+      "capture_started_at": "2026-10-09T13:01:29.125552+00:00",
+      "path": "sources/papers/model-serving/qserve",
+      "requested_url": "https://arxiv.org/abs/2405.04532v3",
+      "pdf_url": "https://arxiv.org/pdf/2405.04532v3",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "840f8840bf54418e352e70c31002e3833d0e341357898701d4f22d78425b82b5",
+          "bytes": 4024798
+        },
+        "paper.txt": {
+          "sha256": "50c3274d02e1a6e5a0c1d51e5b60b9825a4f95621a31e62373521939ddd0bceb",
+          "bytes": 187083
+        },
+        "paper.pdf": {
+          "sha256": "2e8ff61b02bd6a0f0a4a55f94b1c77095905bfb53b77d3a324df43d789a7286d",
+          "bytes": 5354406
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:01:33.197625+00:00"
+    }
+  ]
+}

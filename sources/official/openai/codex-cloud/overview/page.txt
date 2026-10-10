@@ -1,0 +1,258 @@
+For the complete documentation index, see llms.txt. Markdown versions of documentation pages are available by appending .md to the page URL.
+ChatGPT
+Try ChatGPT
+Home
+Docs
+Use cases
+Training
+Resources
+Overview
+Features
+Configuration
+Developers
+Security
+Administration
+Home
+Get started
+Quickstart
+Use ChatGPT
+Get started with Work
+Meet dots
+Import from another agent
+Foundations
+Prompting
+Model selection
+Personalize ChatGPT
+Skills & Plugins
+Permissions
+Explore
+What's new
+Models
+Pricing
+Glossary
+Available on
+ChatGPT desktop app
+ChatGPT mobile app
+ChatGPT on the web
+Codex CLI
+Codex IDE extension
+Codex Cloud
+Releases
+Changelog
+Feature Maturity
+Open Source
+
+Codex Cloud
+
+Run coding tasks in the cloud
+
+Give Codex coding tasks to work through in the cloud, from investigating bugs to building features. Review changes and continue from the web, mobile, or desktop app.
+
+Get started
+developer-portal
+Repository
+4 repositories
+Secrets
+None
+Outbound identity
+None
+Network
+Package managers
+Install script
+Configured
+Start skill
+Configured
+Access
+Everyone at Acme
+Environment published
+Start a new task
+Choose project
+Cloud
+developer-portal
+
+Do anything
+
+Approve for me
+GPT-6 Sol
+Medium
+01
+Start with your project
+
+Choose repositories. Codex inspects the project, works through setup, and asks you for missing details or access.
+
+02
+Keep work moving
+
+Start tasks from a published environment. Each task has its own workspace and can keep working while your computer is asleep.
+
+03
+Review the work
+
+Inspect changed files and check results, request follow-up changes, and commit or open a pull request when you're ready.
+
+Quickstart
+
+Get started with Codex Cloud
+
+Create a cloud environment with the repositories, tools, and access your project needs, or select an existing one. Then start a task.
+
+1
+Open ChatGPT
+
+Open ChatGPT on the web, mobile, or in the desktop app, then sign in with your ChatGPT account.
+
+2
+Create or select an environment
+
+On the web or in the desktop app, choose Work in > Cloud and open Select environment. On mobile, open Codex. Select an existing environment to begin working. To create a new one, use the web or desktop app and select Create environment and continue below.
+
+3
+Let Codex prepare your project
+
+Choose your GitHub repositories and select Get started. Connect GitHub if prompted. Codex inspects your repositories, installs dependencies and tools, and tests the workflow. Provide any missing access or information when asked.
+
+4
+Review and publish
+
+For a new environment, review the setup and test results, save changes, and select Publish. Wait for Environment published.
+
+5
+Start a task
+
+After publishing a new environment, select Start a new task. If you selected an existing environment, you can start right away. Describe your task and send it. Review the changes and test results, request follow-ups, and commit or open a pull request when ready.
+
+Next steps
+
+Configure cloud environments
+Configure internet access
+Set up environment variables and network secrets
+Understand saved state
+Use ChatGPT in Slack
+See what Codex Cloud can do
+
+Run coding tasks with your project tools and service access, then review the results.
+
+01
+Prepare your development workflow
+
+Let Codex inspect your repositories and prepare their dependencies and tools. Review the checks before publishing.
+
+Learn more
+
+Create a cloud environment
+
+Select repositories so Codex can work out what to install and how to configure your environment
+
+Connected to GitHub as alex-dev
+Select repositories
+All repositories
+Search
+acme/developer-portal
+acme/api
+0 selected
+Cancel
+Get started
+02
+Reuse your project setup
+
+Reuse your repositories, dependencies, and tools across tasks. Each task has its own workspace. Update the setup as your project changes.
+
+Learn more
+
+Cloud environment setup
+
+developer-portal
+Repository
+acme/developer-portal
+Install script
+Configured
+Start skill
+Configured
+Access
+Private
+Publish
+03
+Connect your tools and services
+
+Give Codex access to the package registries, APIs, and private services your project needs. Configure network access and supply credentials in the environment settings.
+
+Learn more
+
+Networks
+
+Internet access
+
+Allow Codex to access internet
+Internet access preset
+Package managers
+Additional allowed domains
+No additional domains
+
+Network secrets
+
+Manage
+
+Saving a network secret also allows access to its domains
+
+No proxy secrets added
+
+Environment variables
+
+Manage
+No environment variables added
+
+Privacy
+
+Who can use
+Only me
+
+Advanced
+
+OIDC
+Add
+
+No OIDC connections yet
+
+VPN
+Refresh
+
+VPN isn’t available for this environment
+
+Use Codex Cloud when…
+Work should run remotely
+
+Give Codex a cloud environment with the repositories and tools it needs.
+
+Several tasks need the same setup
+
+Start tasks from a published environment while keeping each task's working state separate.
+
+Your workflow needs service credentials
+
+Use network secrets for allowed HTTPS services and limit the environment's network destinations.
+
+Start cloud work from the CLI
+
+Start a task from your terminal, or list recent cloud chats and check their status.
+
+Other ChatGPT and Codex surfaces
+Desktop app
+
+Coordinate projects and long-running tasks on your desktop.
+
+ChatGPT web
+
+Research, analyze, and create from your browser.
+
+Codex CLI
+
+Inspect, edit, and automate from the terminal.
+
+IDE extension
+
+Work with Codex beside the code in your editor.
+
+Ask AI
+Docs agent
+
+Loading docs agent...

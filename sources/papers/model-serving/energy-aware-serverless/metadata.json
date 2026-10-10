@@ -1,0 +1,77 @@
+{
+  "item": {
+    "topic": "model-serving",
+    "id": "energy-aware-serverless",
+    "arxiv": "2606.30391v1",
+    "kind": "arxiv-paper",
+    "title": "Energy-Aware Scheduling for Serverless LLM Serving on Shared GPUs",
+    "landing_url": "https://arxiv.org/abs/2606.30391v1",
+    "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+    "published": "2026-06-29T14:44:24Z",
+    "authors": [
+      "Tianyu Wang",
+      "Gourav Rattihalli",
+      "Aditya Dhakal",
+      "Longfei Shangguan",
+      "Dejan Milojicic"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:26.391602+00:00",
+  "path": "sources/papers/model-serving/energy-aware-serverless",
+  "requested_url": "https://arxiv.org/abs/2606.30391v1",
+  "pdf_url": "https://arxiv.org/pdf/2606.30391v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "ba0321d7f8c006cad6f315f2a63fef0b896385830e6cc7f710fa5fa75be960f0",
+      "bytes": 3057604
+    },
+    "paper.txt": {
+      "sha256": "7a2b53275bc1f7fbbccf16c21d7b5987b3707cda9fae1630191fc69566fda3a7",
+      "bytes": 172203
+    },
+    "paper.pdf": {
+      "sha256": "498f62e7953a888c30dd3d1e41867b5d1a346a15a0215a90242fc63951d6926c",
+      "bytes": 3494391
+    },
+    "landing.html": {
+      "sha256": "1117e3624209f167330f203b8737a4e759711c167167ac86157f95d92ce8e2bf",
+      "bytes": 42881
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2606.30391v1",
+    "retrieved_at": "2026-10-09T13:06:17.948403+00:00",
+    "fields": {
+      "citation_title": [
+        "Energy-Aware Scheduling for Serverless LLM Serving on Shared GPUs"
+      ],
+      "citation_author": [
+        "Wang, Tianyu",
+        "Rattihalli, Gourav",
+        "Dhakal, Aditya",
+        "Shangguan, Longfei",
+        "Milojicic, Dejan"
+      ],
+      "citation_date": [
+        "2026/06/29"
+      ],
+      "citation_online_date": [
+        "2026/06/29"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2606.30391"
+      ],
+      "citation_arxiv_id": [
+        "2606.30391"
+      ],
+      "citation_abstract": [
+        "As LLM inference becomes a major cloud workload, its growing energy footprint makes cluster-wide energy optimization increasingly important. Serverless LLM serving helps platforms absorb traffic volatility by elastically sharing GPU resources across models, but this sharing also makes energy optimization difficult. Multiple co-resident models run under one device-wide operating point, while their resource demands and latency slack change across execution phases and load conditions. As a result, minimizing energy requires coordinated scheduling across request placement, runtime resource adaptation, and workload consolidation. We present Festina, a profiling-guided, power-aware control plane to minimize cluster-wide energy for serverless LLM serving. Unlike common global-local schedulers that focus on throughput or tail latency, Festina makes energy-first decisions by jointly coordinating request placement, SM partitioning, and GPU operating points under TTFT/TBT SLOs. In our system, a lightweight global scheduler performs fast, SLO-safe, energy-aware placement using constant-time lookups from offline profiles and GPU state summaries. On each GPU, a phase-aware local scheduler continuously adapts task batching and compute resources to minimize power consumption. Festina further performs energy-aware workload consolidation to reduce GPUs' static power consumption via SLO-aware migration. Comparison with four SOTA LLM serving systems and one DVFS-augmented system demonstrates that Festina reduces energy consumption by up to 56% while maintaining parity in SLO attainment (within a 2% margin)"
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

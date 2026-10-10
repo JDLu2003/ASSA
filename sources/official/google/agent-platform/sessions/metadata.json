@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform",
+    "id": "sessions",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:08:09.522845+00:00",
+  "path": "sources/official/google/agent-platform/sessions",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
+  "http_status": 200,
+  "title": "Agent Platform Sessions overview  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "302a6feea7bff070ac8f6af3ea3d1372b09381405d1f64141ba0fdee72d3dca4",
+      "bytes": 2900
+    },
+    "page.txt": {
+      "sha256": "5b7b4f600eab2a50155f26816039d968cda03efdc5e682ee8329eee14a037f21",
+      "bytes": 4141
+    },
+    "page.pdf": {
+      "sha256": "d82467a2a5bd03fec6dc32cb9ba34c117ff0ec9c8c11a567df75b39f9e3aa05b",
+      "bytes": 101887
+    },
+    "page.html": {
+      "sha256": "6d1b210feaf71f9529cc038303e1af32c41c3d4da730493e4739abbe9c54c1a0",
+      "bytes": 226970
+    }
+  }
+}

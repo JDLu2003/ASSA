@@ -1,0 +1,323 @@
+                                        Adaptive GPU Resource Allocation for Multi-Agent
+                                        Collaborative Reasoning in Serverless Environments
+                                                                                       Guilin Zhang∗ , Wulan Guo∗ , Ziqi Tan∗ ,
+                                                  ∗ Department of Engineering Management and Systems Engineering, George Washington University, USA
+
+                                                                      Email: guilin.zhang@gwu.edu, wulan.guo@gwu.edu, ziqi.tan@gwu.edu
+
+
+                                           Abstract—Multi-agent systems powered by large language            growing interest in adaptive resource allocation strategies [5],
+arXiv:2512.22149v2 [cs.DC] 1 Jan 2026
+
+
+
+
+                                        models have emerged as a promising paradigm for solving com-         [6].
+                                        plex reasoning tasks through collaborative intelligence. However,
+                                                                                                                Concurrently, serverless computing has revolutionized
+                                        efficiently deploying these systems on serverless GPU platforms
+                                        presents significant resource allocation challenges due to het-      cloud infrastructure by enabling automatic scaling, pay-per-
+                                        erogeneous agent workloads, varying computational demands,           use pricing, and simplified deployment [7], [8]. The inte-
+                                        and the need for cost-effective scaling. This paper presents an      gration of GPU acceleration into serverless platforms has
+                                        adaptive GPU resource allocation framework that achieves 85%         further expanded possibilities for deploying computationally
+                                        latency reduction compared to round-robin scheduling while
+                                                                                                             intensive AI workloads. Major cloud providers including
+                                        maintaining comparable throughput to static allocation, using
+                                        an O(N ) complexity algorithm for real-time adaptation. Our ap-      Google Cloud Run, Azure Container Apps, and specialized
+                                        proach dynamically allocates GPU resources based on workload         platforms now offer serverless GPU support with sub-second
+                                        characteristics, agent priorities, and minimum resource require-     cold start times and fine-grained billing [9], [10]. Recent ad-
+                                        ments, enabling efficient utilization while maintaining quality      vances in serverless GPU systems address challenges includ-
+                                        of service. The framework addresses three key challenges:
+                                                                                                             ing resource-on-demand provisioning [11], pipeline-conscious
+                                        (1) heterogeneous computational demands across lightweight
+                                        coordinators and heavyweight specialists, (2) dynamic workload       scheduling [12], and fast container setup [13].
+                                        fluctuations requiring millisecond-scale reallocation, and (3)          Despite these advances, deploying multi-agent systems on
+                                        capacity constraints in serverless environments. Through com-        serverless GPU infrastructure presents unique challenges.
+                                        prehensive simulations modeling realistic multi-agent workflows      Multi-agent workflows exhibit heterogeneous demands [6],
+                                        with four heterogeneous agents, we demonstrate that adaptive
+                                        allocation outperforms static equal and round-robin strategies
+                                                                                                             [14]: lightweight coordinators require minimal GPU for or-
+                                        across latency, cost, and GPU utilization metrics. The framework     chestration, while specialists demand substantial compute.
+                                        provides a practical solution for deploying cost-efficient multi-    Traditional static and round-robin allocation strategies fail
+                                        agent AI systems on serverless GPU infrastructure.                   to address this heterogeneity, leading to resource underuti-
+                                           Index Terms—Multi-agent systems, serverless computing,            lization and latency variations. The fundamental challenge
+                                        GPU resource allocation, collaborative reasoning, workload
+                                        scheduling
+                                                                                                             lies in dynamically allocating limited GPU resources across
+                                                                                                             multiple agents with competing requirements while minimiz-
+                                                               I. I NTRODUCTION                              ing costs and maintaining quality of service. Existing GPU
+                                                                                                             scheduling research has primarily focused on either single-
+                                          The rapid advancement of large language models (LLMs)
+                                                                                                             model inference optimization [15], [16] or multi-tenant batch
+                                        has catalyzed the emergence of multi-agent systems as a
+                                                                                                             training workloads [17], [18]. Recent work explores GPU
+                                        powerful paradigm for tackling complex reasoning tasks that
+                                                                                                             multitasking for LLM workloads [19], hierarchical resource
+                                        exceed the capabilities of individual models [1], [2]. These
+                                                                                                             partitioning with reinforcement learning [20], and power-
+                                        systems leverage multiple specialized AI agents working
+                                                                                                             aware scheduling [21]. However, the unique characteristics
+                                        collaboratively, with each agent focusing on specific aspects
+                                                                                                             of multi-agent collaborative reasoning, particularly the depen-
+                                        of problem-solving such as natural language understand-
+                                                                                                             dencies between agent interactions and the need for real-time
+                                        ing, visual reasoning, or logical inference. Recent research
+                                                                                                             responsiveness, remain insufficiently addressed.
+                                        demonstrates that multi-agent collaboration can significantly
+                                                                                                                This paper makes the following contributions:
+                                        enhance performance across diverse applications including
+                                        code generation, scientific reasoning, and decision support             Adaptive Allocation Framework: We present a novel
+                                        systems [3], [4]. The complexity of coordinating multiple            GPU resource allocation framework specifically designed
+                                        agents with heterogeneous resource requirements has sparked          for multi-agent collaborative reasoning in serverless envi-
+                                                                                                             ronments. The framework dynamically adjusts resource dis-
+                                          Corresponding author: guilin.zhang@gwu.edu                         tribution based on agent priorities, workload intensity, and
+minimum computational requirements.                               power-aware methods [21]. Agent.xpu [14] schedules agentic
+   Workload-Aware Scheduling: We propose a priority-              LLM workloads on heterogeneous SoCs, distinguishing reac-
+based scheduling algorithm that accounts for the heteroge-        tive and proactive tasks. Our work extends this to serverless
+neous nature of multi-agent systems, differentiating between      cloud GPUs with elasticity and pay-per-use pricing.
+latency-sensitive coordinator agents and throughput-oriented
+specialist agents.                                                D. Cloud Resource Allocation and Autoscaling
+   Comprehensive Evaluation: Through detailed simula-                Cloud resource allocation leverages ML for demand pre-
+tion studies modeling realistic multi-agent workflows, we         diction and dynamic scheduling [22]–[24]. Autoscaling has
+demonstrate that our approach achieves comparable aggregate       evolved from reactive to predictive methods using hierar-
+throughput to static allocation while reducing latency by 85%     chical forecasting [25], AI-driven microservices optimiza-
+compared to naive round-robin strategies, all within the same     tion [26], distributed RL [27], and meta-RL for transferable
+cost constraints.                                                 policies [28].
+   Practical Insights: We provide actionable guidelines for
+deploying multi-agent systems on serverless GPU platforms,        E. Distributed Inference Frameworks
+including agent profiling methodologies and resource alloca-         Distributed inference frameworks achieve high throughput
+tion policies that practitioners can readily apply.               through disaggregated serving [29], temporal-aware GPU
+   The remainder of this paper is organized as follows. Sec-      allocation [30], cloud-native systems [31], [32], and multi-
+tion II reviews related work in multi-agent systems, serverless   SLO serving [33]. Our work uniquely addresses multi-agent
+GPU computing, and resource allocation. Section III describes     collaboration in serverless GPU environments, where prior
+our system design and adaptive allocation algorithm. Sec-         research has not adequately tackled dynamic allocation for
+tion IV presents the experimental methodology. Section V          heterogeneous workflows requiring both cost efficiency and
+analyzes results and discusses implications. Section VI con-      responsiveness.
+cludes and outlines future work.
+                                                                                      III. S YSTEM D ESIGN
+                    II. R ELATED W ORK
+A. Multi-Agent LLM Systems                                        A. Problem Formulation
+   Multi-agent LLM systems have gained significant attention         We model a multi-agent collaborative reasoning system
+as surveys [1], [2] identify key patterns including cooperative   consisting of N agents A = {A1 , A2 , . . . , AN } deployed
+problem-solving and hierarchical decomposition, enabling          on a serverless GPU platform with total compute capacity
+emergent behaviors beyond individual models. Recent work          normalized to 1.0. Each agent Ai is characterized by:
+explores collaboration mechanisms [3], self-resource allo-           • Mi : Model size in megabytes
+cation [4], multi-agent RL optimization [5], and efficient           • Ti : Base throughput (requests/second) at full GPU allo-
+scaling across heterogeneous systems [6]. However, these                cation
+studies provide limited guidance on infrastructure and re-           • Ri : Minimum GPU resource requirement (fraction of
+source management for production deployments, which our                 total)
+work addresses through serverless GPU allocation.                    • Pi : Priority level (1=high, 2=medium, 3=low)
+
+                                                                     At each discrete timestep t, the system receives workload
+B. Serverless GPU Computing
+                                                                  Wt = {λ1 (t), λ2 (t), . . . , λN (t)} where λi (t) represents the
+   Serverless GPU systems address cold starts [7], hybrid         request arrival rate for agent Ai . The resource allocator must
+auto-scaling [8], low-latency inference [9], and efficient data   determine allocation Gt = {g1 (t), g2 (t), . . . , gN (t)} where
+transfer [10]. Recent advances include GPU resourcing-on-         gi (t) ∈ [0, 1] denotes the GPU fraction allocated to agent
+demand [11], pipeline-conscious scheduling [12], and fast         Ai at time t.
+function setup [13]. These focus on single-model optimiza-           The allocation must satisfy capacity constraints:
+tion, whereas our work addresses multi-agent coordination
+                                                                                        N
+challenges.                                                                             X
+                                                                                              gi (t) ≤ 1,   ∀t                 (1)
+C. GPU Resource Allocation and Scheduling                                               i=1
+
+   GPU scheduling surveys [15], [17] taxonomize approaches           The objective is to minimize a cost function balancing
+for deep learning workloads. Specific strategies include wise     throughput, latency, and resource utilization:
+resource sharing [18], network-sensitive scheduling [16],
+LLM multitasking [19], hierarchical RL partitioning [20], and               min (α · L(Gt ) + β · C(Gt ) − γ · H(Gt ))         (2)
+                                                                             Gt
+  where L(Gt ) represents aggregate latency, C(Gt ) denotes      greater weight in the allocation process. This demand metric
+cost based on GPU usage, H(Gt ) measures throughput, and         captures both workload intensity and agent importance.
+α, β, γ are weighting parameters determined by application          Proportional Allocation: Resources are initially allocated
+requirements.                                                    proportionally to demand scores, ensuring agents with higher
+                                                                 workloads and priorities receive correspondingly larger GPU
+B. System Architecture
+                                                                 fractions. The algorithm enforces minimum resource require-
+  Figure 1 illustrates our adaptive allocation framework.        ments to prevent starvation of low-priority agents with legit-
+The system comprises four agents: a lightweight coordinator      imate computational needs.
+(500MB model, 10% min GPU) for orchestration, and three             Normalization: If total allocated resources exceed avail-
+domain specialists for NLP, vision, and reasoning tasks (1500-   able capacity, allocations are proportionally scaled to satisfy
+3000MB models, 25-35% min GPU). The adaptive allocator           capacity constraints while maintaining relative priorities.
+dynamically distributes GPU resources based on workload             The algorithm has computational complexity O(N ) where
+demand, agent priorities, and minimum requirements, feeding      N is the number of agents, enabling real-time adaptation to
+performance metrics back for continuous optimization.            workload changes with minimal overhead.
+C. Adaptive Allocation Algorithm
+                                                                 D. Implementation Considerations
+Algorithm 1 Adaptive GPU Resource Allocation                         The framework leverages fine-grained GPU allocation (e.g.,
+ 1: Input: Agents A, workload Wt , total capacity Gtotal         NVIDIA MIG, time-slicing) available in modern serverless
+ 2: Output: Allocation Gt                                        platforms. Models are pre-loaded in GPU memory with
+ 3:                                                              checkpoint loading [7] for larger systems, and adaptive par-
+ 4: for each agent Ai ∈ A do                                     titioning [34] across edge-cloud resources. Real-time moni-
+ 5:   di ← λi (t)·R
+               Pi
+                    i
+                      {Compute demand}                           toring of queue lengths and latency metrics drives allocation
+ 6: end for                                                      adaptation, with GPU-aware simulation [35] enabling proac-
+ 7:                                                              tive adjustments.
+              PN
+ 8: Dtotal ←     i=1 di
+ 9:
+10: if Dtotal = 0 then
+                                                                               IV. E XPERIMENTAL E VALUATION
+11:    return Gt ← {0, . . . , 0}                                A. Experimental Setup
+12: end if
+13:                                                                 We evaluate our framework through simulation modeling
+14: for each agent Ai ∈ A do                                     realistic multi-agent workflows on serverless GPU platforms
+15:   giprop ← D di · Gtotal
+                  total
+                                                                 (Google Cloud Run, Azure Container Apps characteristics).
+                             prop
+16:   gi (t) ← max(Ri , gi ) {Respect minimum}                   Our system comprises four agents:
+17: end for
+18:                                                                                           TABLE I
+                 PN
+19: Gallocated ←   i=1 gi (t)                                                          AGENT C HARACTERISTICS
+20:
+21: if Gallocated > Gtotal then                                   Agent                      Model       Base       Min    Priority
+                                                                                           Size (MB)   Tput (rps)   GPU
+22:    for each agent Ai ∈ A do
+                     g (t)                                        Coordinator                 500         100       0.10   1 (high)
+23:     gi (t) ← Gallocated
+                    i
+                            · Gtotal {Normalize}                  Specialist (NLP)           2000          50       0.30   2 (med)
+24:   end for                                                     Specialist (Vision)        1500          60       0.25   2 (med)
+25: end if                                                        Specialist (Reasoning)     3000         30        0.35   1 (high)
+26:
+27: return   Gt                                                     Throughput scales proportionally with GPU allocation. We
+                                                                 simulate 100-second workloads with arrival rates: coordinator
+   Algorithm 1 presents our adaptive allocation approach. The    (80 rps), NLP (40 rps), vision (45 rps), reasoning (25 rps).
+algorithm operates in three phases:                              The platform models NVIDIA T4 GPU (16GB, $0.72/hour).
+   Demand Calculation: For each agent, we compute a              Baselines include Static Equal (25% per agent) and Round-
+demand score combining arrival rate, minimum resource            Robin (100% sequential). Metrics: latency, throughput, queue
+requirements, and priority. Higher-priority agents receive       length, cost, and GPU utilization.
+Fig. 1. System architecture showing the adaptive GPU resource allocation framework with four heterogeneous agents (coordinator and three specialists) and
+dynamic resource distribution based on workload demand and priorities.
+
+
+
+B. Simulation Methodology                                                      sharing in multi-agent systems where coordination overhead
+   The simulation operates in one-second timesteps over 100                    depends on rapid agent interactions.
+seconds: requests arrive, the allocator determines GPU distri-                    The adaptive strategy exhibits balanced per-agent latency.
+bution, agents process requests proportionally, and metrics are                The reasoning specialist achieves lowest latency (91.6s) due to
+recorded. Fixed random seed ensures reproducibility. Adap-                     high priority, while the vision specialist experiences slightly
+tive demand calculation incorporates arrival rates, minimum                    higher latency (128.6s), aligning with priority semantics while
+requirements, and priorities per Algorithm 1.                                  avoiding starvation.
+                                                                                  Throughput Results: Total system throughput reaches
+                 V. R ESULTS AND D ISCUSSION                                   58.1 requests/second under adaptive allocation, slightly be-
+A. Overall Performance Comparison                                              low the 60.0 rps achieved by both baseline strategies. This
+  Figure 2 presents comprehensive performance results com-                     marginal throughput reduction reflects the cost of dynamic
+paring the three allocation strategies. Table II quantifies key                adaptation and the overhead of maintaining minimum re-
+metrics across all approaches.                                                 source guarantees. However, the 3.2% throughput sacrifice
+                                                                               is minimal compared to the substantial latency improvements
+                                                                               gained.
+                             TABLE II
+                 P ERFORMANCE M ETRICS C OMPARISON                                The coordinator maintains high throughput (approximately
+                                                                               20 rps) despite minimal GPU allocation, while specialist
+        Metric                    Static    Round      Adaptive                agents exhibit throughput proportional to their allocated re-
+                                  Equal     Robin     (Proposed)
+                                                                               sources.
+        Avg Latency (s)            110.3     756.1       111.9                    Dynamic Adaptation: Figure 2(c) shows GPU alloca-
+        Total Throughput (rps)      60.0      60.0        58.1
+        Cost (100s)               $0.020    $0.020      $0.020                 tion evolution. The reasoning specialist receives the largest
+        Latency Std Dev (s)          4.2       0.5        3.8                  allocation (approximately 35%) reflecting high priority, the
+                                                                               coordinator operates with minimal allocation (10-15%), while
+   Latency Analysis: The adaptive allocation strategy                          medium-priority specialists share remaining capacity (25-30%
+achieves average latency of 111.9 seconds, comparable to                       each). The smooth allocation curves demonstrate stability
+static equal allocation (110.3s) while dramatically outper-                    without disruptive oscillations.
+forming round-robin (756.1s). Round-robin’s poor latency                          Cost-Performance Trade-off: Figure 2(d) visualizes the
+performance stems from forcing agents to wait for their                        cost-performance space, with average latency on the x-axis
+allocated time slice, resulting in queue buildup during idle                   and total throughput on the y-axis. All three strategies achieve
+periods. This 85% latency reduction compared to round-robin                    identical cost ($0.020 for 100 seconds of operation) as they
+demonstrates the critical importance of concurrent resource                    utilize equivalent total GPU resources. However, they occupy
+Fig. 2. Performance comparison of resource allocation strategies. (a) Average latency per agent showing adaptive allocation maintains balanced latency
+across agents. (b) Throughput comparison demonstrating effective resource utilization. (c) Dynamic GPU allocation over time illustrating adaptive strategy’s
+responsiveness to workload demands. (d) Cost-performance trade-off analysis with cost annotations.
+
+
+
+distinct positions in the latency-throughput space.                             C. Practical Implications
+   Static equal and adaptive allocation cluster in the low-                        Our results provide actionable insights for deploying multi-
+latency, high-throughput region, while round-robin exhibits                     agent systems on serverless GPU infrastructure. Carefully
+high latency. Within fixed cost constraints, allocation strategy                configuring agent priorities significantly influences system
+profoundly impacts quality of service.                                          behavior—coordinator agents should receive high priority
+B. Robustness and Scalability Analysis                                          to minimize orchestration overhead, while specialist agents
+   We evaluated algorithm robustness under extreme condi-                       can operate at medium priority if their workloads tolerate
+tions: when demand exceeds capacity by 3x, normalization                        moderate latency variations. Setting appropriate minimum
+gracefully degrades latency by 24% while preventing starva-                     GPU allocations prevents starvation while enabling efficient
+tion; during 10x arrival rate spikes, adaptation occurs within                  resource sharing, with larger models requiring higher mini-
+100ms; when a single agent dominates 90% of requests,                           mums for acceptable throughput.
+priority-based weighting prevents monopolization. The O(N )
+                                                                                             VI. C ONCLUSION AND F UTURE W ORK
+complexity ensures scalability, with allocation computation
+consuming under 1ms—negligible compared to inference                               This paper presented an adaptive GPU resource alloca-
+latency.                                                                        tion framework for multi-agent collaborative reasoning in
+serverless environments, demonstrating 85% latency reduc-                       [19] Y. Li, Y. Chen, and X. Zhang, “Towards efficient and practical gpu
+tion compared to round-robin scheduling through workload-                            multitasking in the era of llm,” arXiv preprint arXiv:2508.08448, 2025.
+                                                                                [20] S. Kim, J. Park, and J. W. Lee, “Hierarchical resource partitioning
+aware allocation with O(N ) complexity.                                              on modern gpus: A reinforcement learning approach,” arXiv preprint
+   Future directions include predictive workload modeling                            arXiv:2405.08754, 2024.
+for proactive allocation, multi-GPU scheduling with inter-                      [21] M. Li, L. Wang, and H. Zhang, “Power- and fragmentation-aware online
+                                                                                     scheduling for gpu datacenters,” arXiv preprint arXiv:2412.17484,
+GPU communication overhead modeling, and hierarchical                                2024.
+allocation strategies across cluster and node levels. Empirical                 [22] Q. Chen, X. Gao, and H. Yao, “Intelligent resource allocation opti-
+validation on production serverless platforms would pro-                             mization for cloud computing via machine learning,” arXiv preprint
+                                                                                     arXiv:2504.03682, 2025.
+vide insights into real-world performance. As multi-agent AI                    [23] X. Li, D. Zhang, and W. Sun, “Adaptive, efficient and fair resource allo-
+systems grow in adoption, intelligent resource management                            cation in cloud datacenters leveraging weighted a3c deep reinforcement
+becomes critical for cost-effective deployments.                                     learning,” arXiv preprint arXiv:2506.00929, 2025.
+                                                                                [24] H. Wang, Y. Liu, and X. Chen, “Secure resource alloca-
+                                                                                     tion via constrained deep reinforcement learning,” arXiv preprint
+                             R EFERENCES                                             arXiv:2501.11557, 2025.
+                                                                                [25] W. Zhang, M. Li, and L. Wang, “Adaptive two-stage cloud re-
+ [1] T. Guo et al., “A survey on llm-based multi-agent system: Re-                   source scaling via hierarchical multi-indicator forecasting and bayesian
+     cent advances and new frontiers in application,” arXiv preprint                 decision-making,” arXiv preprint arXiv:2408.01000, 2024.
+     arXiv:2412.17481, 2024.                                                    [26] X. Gao, Q. Chen, and H. Yao, “Ai-driven resource allocation frame-
+ [2] T. Guo, X. Chen, Y. Wang, R. Chang, S. Pei, N. V. Chawla, O. Wiest,             work for microservices in hybrid cloud platforms,” arXiv preprint
+     and X. Zhang, “Large language model based multi-agents: A survey of             arXiv:2412.02610, 2024.
+     progress and challenges,” arXiv preprint arXiv:2402.01680, 2024.           [27] Y. Liu, W. Zhang, and X. Chen, “Drpc: Distributed reinforcement
+ [3] H. Wang et al., “Multi-agent collaboration mechanisms: A survey of              learning approach for scalable resource provisioning in container-based
+     llms,” arXiv preprint arXiv:2501.06322, 2025.                                   clusters,” arXiv preprint arXiv:2407.10169, 2024.
+ [4] Y. Liu, W. Zhang, and X. Chen, “Self-resource allocation in multi-agent    [28] Q. Chen, C. Xiao, Y. Ding et al., “A meta reinforcement learning
+     llm systems,” arXiv preprint arXiv:2504.02051, 2025.                            approach for predictive autoscaling in the cloud,” in Proceedings of the
+ [5] L. Wang, M. Li, and H. Zhang, “Multi-agent reinforcement learn-                 28th ACM SIGKDD Conference on Knowledge Discovery and Data
+     ing for resources allocation optimization: A survey,” arXiv preprint            Mining, 2022, pp. 1979–1989.
+     arXiv:2504.21048, 2025.                                                    [29] NVIDIA Corporation, “Nvidia dynamo: A low-latency distributed in-
+ [6] Y. Chen, X. Zhang, and Y. Li, “Efficient and scalable agentic ai with           ference framework for scaling reasoning ai models,” NVIDIA Technical
+     heterogeneous systems,” arXiv preprint arXiv:2507.19635, 2025.                  Blog, 2025.
+ [7] Y. Fu, L. Xue, Y. Huang, A.-O. Brabec, D. Ustiugov, Y. Patel, and          [30] Y. Li, Y. Chen, and X. Zhang, “Temporal-aware gpu resource allocation
+     L. M. Franke, “Serverlessllm: Low-latency serverless inference for large        for distributed llm inference via reinforcement learning,” arXiv preprint
+     language models,” arXiv preprint arXiv:2401.14351, 2024.                        arXiv:2507.10259, 2025.
+ [8] R. Yang and X. Wang, “Has-gpu: Efficient hybrid auto-scaling with          [31] H. Wang, H. Liu, and C. Lu, “Cloud native system for llm inference
+     fine-grained gpu allocation for slo-aware serverless inferences,” in            serving,” arXiv preprint arXiv:2507.18007, 2025.
+     European Conference on Computer Systems, 2025.                             [32] D. Zhang, X. Li, and W. Sun, “Aibrix: Towards scalable, cost-
+ [9] F. Romero, Q. Zhao, N. J. Yadwadkar, and C. Kozyrakis, “Torpor:                 effective large language model inference infrastructure,” arXiv preprint
+     Gpu-enabled serverless computing for low-latency, resource-efficient            arXiv:2504.03648, 2025.
+     inference,” arXiv preprint arXiv:2306.03622, 2023, revised 2024.           [33] R. Yang, X. Wang, and H. Chen, “Polyserve: Efficient multi-slo serving
+[10] H. Liu, C. Xue, C. Lu, H. Li, and H. Wang, “Faastube: Optimizing                at scale,” arXiv preprint arXiv:2507.17769, 2025.
+     gpu-oriented data transfer for serverless computing,” arXiv preprint       [34] G. Zhang, W. Guo, Z. Tan, and H. Jiang, “Amp4ec: Adaptive model
+     arXiv:2411.01830, 2024.                                                         partitioning framework for efficient deep learning inference in edge
+[11] H. Wang, H. Liu, and C. Lu, “Dilu: Enabling gpu resourcing-on-demand            computing environments,” in 2025 10th International Conference on
+     for serverless deep learning,” arXiv preprint arXiv:2503.05130, 2025.           Fog and Mobile Edge Computing (FMEC). IEEE, 2025, pp. 97–104.
+[12] D. Zhang, X. Li, and W. Sun, “Esg: Pipeline-conscious efficient            [35] G. Zhang, W. Guo, Z. Tan, Q. Guan, and H. Jiang, “Kis-s: A gpu-
+     scheduling of dnn workflows on serverless platforms with shareable              aware kubernetes inference simulator with rl-based auto-scaling,” arXiv
+     gpus,” arXiv preprint arXiv:2404.16812, 2024.                                   preprint arXiv:2507.07932, 2025.
+[13] R. Yang, X. Wang, and H. Chen, “Towards fast setup and high through-
+     put of gpu serverless computing,” arXiv preprint arXiv:2404.14691,
+     2024.
+[14] Y. Chen, X. Zhang, Y. Li, R. Wang, and X. Zhang, “Agent.xpu: Efficient
+     scheduling of agentic llm workloads on heterogeneous soc,” arXiv
+     preprint arXiv:2506.24045, 2025.
+[15] F. Shi, Y. Deng, B. Wu, X. Wu, X. Wang, and L. Huang, “Deep learning
+     workload scheduling in gpu datacenters: Taxonomy, challenges and
+     vision,” ACM Computing Surveys, vol. 56, no. 6, pp. 1–39, 2024.
+[16] Q. Wang, W. Jiang, Y. Liu, and M. Chowdhury, “Gpu cluster scheduling
+     for network-sensitive deep learning,” arXiv preprint arXiv:2401.16492,
+     2024.
+[17] Q. Chen, X. Gao, H. Yao, J. Liu, W. Xu, and Y. Wang, “Resource
+     allocation and workload scheduling for large-scale distributed deep
+     learning: A survey,” arXiv preprint arXiv:2406.08115, 2024.
+[18] D. Zhang, X. Li, W. Sun, and C. Xue, “Scheduling deep learning jobs
+     in multi-tenant gpu clusters via wise resource sharing,” arXiv preprint
+     arXiv:2407.13088, 2024.
+

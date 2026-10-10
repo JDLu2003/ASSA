@@ -1,0 +1,122 @@
+{
+  "run_at": "2026-10-09T12:23:34.082945+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "bedrock-managed-agents",
+        "id": "overview",
+        "url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+        "kind": "official-web",
+        "discovery": "Linked by captured OpenAI Bedrock Managed Agents page"
+      },
+      "capture_started_at": "2026-10-09T12:22:37.314407+00:00",
+      "path": "sources/official/aws/bedrock-managed-agents/overview",
+      "requested_url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+      "final_url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+      "http_status": 200,
+      "title": "Amazon Bedrock Managed Agents",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "49a981580ba6e2e42dddd17e47f6e9f975a7e3ed89e79aa4a5f7ea11a961e808",
+          "bytes": 5797
+        },
+        "page.txt": {
+          "sha256": "a7fe0a87ab0d719dbc6a2201a629a78f83764563da4860f602becee728b5535e",
+          "bytes": 4684
+        },
+        "page.pdf": {
+          "sha256": "0837186b0999a243466c5131116ffaae97fe9b5cd32055d96ffdf08d2c2d8dd3",
+          "bytes": 2301371
+        },
+        "page.html": {
+          "sha256": "bb1827f82d2bca425b8ca051c9983f588dec385378069c45a13003924fe8933a",
+          "bytes": 660776
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:22:57.181263+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gemini-enterprise-agent-platform",
+        "id": "vertex-ai-name-changes",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes",
+        "kind": "official-web",
+        "discovery": "Linked by captured platform overview"
+      },
+      "capture_started_at": "2026-10-09T12:22:57.181523+00:00",
+      "path": "sources/official/google/gemini-enterprise-agent-platform/vertex-ai-name-changes",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes",
+      "http_status": 200,
+      "title": "Gemini Enterprise Agent Platform name changes  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "4ab4a472f192393b4ae659852f7a5514d51dba49e3f9a6bbfaf8daaba0b60c1a",
+          "bytes": 9198
+        },
+        "page.txt": {
+          "sha256": "f976bb96fce8471263b8c038754ef32dac6335d260d157aa585a7b716df496c1",
+          "bytes": 6345
+        },
+        "page.pdf": {
+          "sha256": "c59e60707bd7d5c59782f75279ce82083a87e57468ab430279a1d6f9829990fc",
+          "bytes": 70658
+        },
+        "page.html": {
+          "sha256": "ebe1bd3175751217f0949b35f340c41629401af48f7d073153f3e9b99d5129f4",
+          "bytes": 160965
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:23:14.418063+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gemini-enterprise-agent-platform",
+        "id": "generative-ai-pricing",
+        "url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+        "kind": "official-web",
+        "discovery": "Linked by captured Managed Agents API overview"
+      },
+      "capture_started_at": "2026-10-09T12:23:14.418581+00:00",
+      "path": "sources/official/google/gemini-enterprise-agent-platform/generative-ai-pricing",
+      "requested_url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+      "final_url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+      "http_status": 200,
+      "title": "Agent Platform Pricing | Google Cloud",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "6362ac3c6a72c1a2faf5b44ea36ec5d41555b2055c27ac493cb6b183e7328ff1",
+          "bytes": 117462
+        },
+        "page.txt": {
+          "sha256": "ca68895d4f8b988d10992fe2aa3c0c204d9e2f6dbe0d7eb96546ed73d90e3994",
+          "bytes": 62843
+        },
+        "page.pdf": {
+          "sha256": "87feb0a7e89662b18681548caf3bcf6ef62499d88dd669e2a3e68286a3c4be75",
+          "bytes": 370945
+        },
+        "page.html": {
+          "sha256": "ea3749e1ddbf4aa387b4ad993ed55d69a94d27ea14a268f3886977805b2ac53c",
+          "bytes": 3160077
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:23:33.686190+00:00"
+    }
+  ]
+}

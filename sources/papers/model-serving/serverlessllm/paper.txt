@@ -1,0 +1,1685 @@
+                                              ServerlessLLM: Low-Latency Serverless Inference for Large Language Models
+
+                                             Yao Fu1 Leyang Xue1 Yeqi Huang1 Andrei-Octavian Brabete1 Dmitrii Ustiugov2 Yuvraj Patel1 Luo Mai1
+                                                                                 1 University of Edinburgh            2 NTU Singapore
+arXiv:2401.14351v2 [cs.LG] 25 Jul 2024
+
+
+
+
+                                                                  Abstract                                      response time constraints demanded by interactive services.
+                                            This paper presents ServerlessLLM, a distributed system             Additionally, LLM inference latency is unpredictable as it
+                                         designed to support low-latency serverless inference for Large         depends on the output length, which varies significantly due
+                                         Language Models (LLMs). By harnessing the substantial near-            to iterative token generation [27, 42, 81].
+                                         GPU storage and memory capacities of inference servers,                   To achieve low latency, processing an LLM request often
+                                         ServerlessLLM achieves effective local checkpoint storage,             requires multiple GPUs for durations ranging from seconds to
+                                         minimizing the need for remote checkpoint downloads and                minutes. In practice, service providers hosting LLMs need to
+                                         ensuring efficient checkpoint loading. The design of Server-           cater to a diverse range of developers, leading to substantial
+                                         lessLLM features three core contributions: (i) fast multi-tier         GPU consumption [20] and impacting the sustainability of
+                                         checkpoint loading, featuring a new loading-optimized check-           LLM services [23]. Consequently, LLM inference services
+                                         point format and a multi-tier loading system, fully utilizing          are compelled to impose strict limits on the number of re-
+                                         the bandwidth of complex storage hierarchies on GPU servers;           quests users can send (e.g., 40 messages per 3 hours for Chat-
+                                         (ii) efficient live migration of LLM inference, which enables          GPT [54]), highlighting the providers’ current challenges in
+                                         newly initiated inferences to capitalize on local checkpoint           meeting demand. Researchers predict that LLM inference
+                                         storage while ensuring minimal user interruption; and (iii)            costs could escalate by more than 50 times as it approaches
+                                         startup-time-optimized model scheduling, which assesses the            the popularity of Google Search [23].
+                                         locality statuses of checkpoints on each server and schedules             To reduce GPU consumption, LLM service operators are
+                                         the model onto servers that minimize the time to start the             turning to serverless inference, as demonstrated in platforms
+                                         inference. Comprehensive evaluations, including microbench-            such as Amazon SageMaker [63], Azure [50], KServe [16],
+                                         marks and real-world scenarios, demonstrate that Serverless-           and HuggingFace [35]. In this model, developers upload their
+                                         LLM dramatically outperforms state-of-the-art serverless sys-          LLM checkpoints, which include both model execution and
+                                         tems, reducing latency by 10 - 200X across various LLM                 parameter files, to a checkpoint storage system. When a re-
+                                         inference workloads.                                                   quest is received, a model loading scheduler selects available
+                                                                                                                GPUs to initiate these checkpoints. A request router then di-
+                                         1     Introduction                                                     rects the inference request to the selected GPUs. This server-
+                                                                                                                less approach allows infrastructure providers to efficiently
+                                         Large Language Models (LLMs) have recently been inte-                  multiplex LLMs on GPUs, improving resource utilization.
+                                         grated into various online applications, such as program-              Additionally, it offers economic advantages to infrastructure
+                                         ming assistants [26], search engines [21], and conversational          users, who incur costs only for each request’s duration, thereby
+                                         bots [54]. These applications process user inputs, such as ques-       avoiding expensive long-term GPU reservations.
+                                         tions, by breaking them down into tokens (e.g., words). LLMs              While serverless inference offers cost savings for deploy-
+                                         generate responses in an autoregressive manner, predicting             ing LLMs, it also introduces significant latency overheads.
+                                         each subsequent token based on the combination of input                These overheads are commonly attributed to inference cold
+                                         tokens and those already generated, until a sentence-ending            starts, a frequent issue in serverless workloads, as demon-
+                                         token (EoS) is reached. To optimize this process, LLMs uti-            strated by public traces [64, 92]. Cold starts are especially
+                                         lize key-value caches to store intermediate results, thereby           prolonged for LLM checkpoints, whose sizes can range from
+                                         minimizing redundant computations.                                     gigabytes [11, 76, 91] to terabytes [29]. The vast size is due to
+                                            Serving LLMs at scale presents significant challenges due           the immense number of parameters in such models, leading
+                                         to the extensive GPU resources required and the stringent low          to notable delays when downloading from remote storage.
+
+
+                                                                                                            1
+Moreover, these checkpoints consist of numerous tensors,                rather than the large kv-cache, which significantly reduces
+each with unique structures and sizes. The complex process              network traffic during the migration; and (ii) it triggers an
+of loading these tensors onto GPUs, which involves file de-             efficient re-computation of the kv-cache at the destination
+serialization, memory allocation, and tensor shape parsing,             server, ensuring migration can complete in a timely manner.
+further compounds these delays.                                         (3) Startup-time-optimized model scheduling. Serverless-
+   We aim to explore system designs that support low-latency            LLM aids serverless inference systems by enabling latency-
+serverless inference for LLMs. We note that GPU-based in-               preserving, locality-aware model scheduling. It integrates cost
+ference servers typically feature a sophisticated yet underuti-         models for accurately estimating the time of loading check-
+lized storage hierarchy, equipped with extensive host memory            points from different tiers in the storage hierarchy and the
+and storage capacities. Current serverless inference systems,           time of migrating an LLM inference to another server. Based
+such as KServe [16] and Ray Serve [73], often only utilize              on the estimation results, Phantom can choose the best server
+a fraction of the available host memory and minimally em-               to minimize model startup latency.
+ploy SSDs for caching checkpoints from the model reposi-                   We have conducted comprehensive evaluation to compare
+tory. This observation has led us to propose a novel system             ServerlessLLM against various baseline methods in a GPU
+design: leveraging the multi-tier storage hierarchy for local           cluster. Micro-benchmark results revealed that Serverless-
+checkpoint storage and harnessing their significant storage             LLM’s LLM checkpoint loading significantly outperforms
+bandwidth for efficient checkpoint loading.                             existing systems such as Safetensors [36], and PyTorch [58],
+   However, several open concerns arise when implementing               achieving loading times that are 3.6 - 8.2X faster. This perfor-
+local checkpoint storage: (i) Given the complex storage ar-             mance enhancement is particularly notable with large LLMs
+chitecture of a GPU server, which includes multiple GPUs,               like OPT [91], LLaMA-2 [76], and Falcon [11]. Serverless-
+DRAM, SSDs, and remote storage, all interconnected through              LLM also supports emerging LoRA adaptors [34], achieving
+various links such as PCIe, NVMe, and network connections,              4.4X speed-ups in checkpoint loading.
+how can we optimize the loading of LLM checkpoints to fully                Furthermore, we evaluated ServerlessLLM with real-world
+exploit the available bandwidth? (ii) Assigning requests to             serverless workloads, modeled on the public Azure Trace [64],
+servers with pre-loaded checkpoints can avoid the need for              and benchmarked it against KServe, Ray Serve, and a Ray
+remote checkpoint downloads, but this strategy might lead               Serve variant with local checkpoint caching. In these scenar-
+to prolonged queuing delays or high preemption costs. This              ios, ServerlessLLM demonstrated a 10 to 200 times improve-
+is particularly challenging as LLMs typically have long, un-            ment in latency for running OPT model inferences across
+predictable inference durations, which differ markedly from             datasets (i.e., GSM8K [25] and ShareGPT [83]). These re-
+traditional deep neural network inference. (iii) In a distributed       sults underscore ServerlessLLM’s effectiveness in combining
+cluster where model requests are concurrently served and                fast checkpoint loading, efficient inference migration, and op-
+checkpoints are preloaded onto various layers of local storage,         timized scheduling for model loading. The source code for
+which servers should be strategically selected to minimize the          ServerlessLLM is released at https://github.com/Serve
+time required to start a model inference?                               rlessLLM/ServerlessLLM.
+   To address the above, we have designed and implemented
+ServerlessLLM, which includes three core contributions:
+                                                                        2     Background and Motivation
+(1) Fast multi-tier checkpoint loading. ServerlessLLM can
+maximize the storage bandwidth usage of GPU servers for
+LLM checkpoint loading. It introduces (i) a new loading-                2.1    Why Serverless Inference for LLMs
+optimized checkpoint that supports sequential, chunk-based              Numerous companies, including Amazon, Azure, Google,
+reading and efficient tensor in-memory addressing, and (ii)             HuggingFace, Together AI [6], Deepinfra [2], Replicate [5],
+an efficient multi-tier checkpoint storage system that can har-         Databricks [7], Fireworks-AI [3], and Cohere [4], have intro-
+ness the substantial capacity and bandwidth on a multi-tier             duced serverless inference services (also known as serverless
+storage hierarchy, through an in-memory data chunk pool,                model entrypoints). These services enable users to deploy
+memory-copy efficient data path, and a multi-stage data load-           standard open-source LLMs either in their original form or
+ing pipeline.                                                           by modifying them through fine-tuning or by running custom-
+(2) Efficient live migration of LLM inference. We moti-                 built models.
+vate the need for live migration of LLM inference and are                  Serverless inference can significantly reduce costs for LLM
+the first to implement LLM live migration in serverless infer-          users by charging only for the duration of inference and the
+ence systems to enhance the performance when supporting                 volume of processed data. These serverless platforms also
+locality-driven inference. To achieve high efficiency when              offer functionalities such as auto-scaling and auto-failure-
+migrating LLM inference, we have implemented two strate-                recovery to keep instances in an "always-on" state. For the
+gic designs: (i) the source server migrates only the tokens,            providing companies, serverless inference allows effective
+
+
+                                                                    2
+                 Controller                     Model Storage            KV Cache        Next           LLM applications interactive by nature. Their performance
+                                                                                        Token
+ Inference
+               Request Router     Route      Download
+                                                                            LLM                         is thus measured by both first-token latency (i.e., the time to
+  Request
+              Start-up
+                                                 GPU Server
+                                                                                  No                    return the first token) and per-token latency (i.e., the average
+              request                         Inference Process                         EOS?
+                                               GPU       GPU                           Yes              time to generate a token).
+               Model Loading    Allocate
+                                                 DRAM / SSD                                  …
+                Scheduler
+                                                                       Input Tokens Output Tokens
+
+    Serverless Cluster                                                     LLM Inference                2.3 Challenges with Serverless LLM Inference
+    ServerlessLLM
+                                                                                                        The deployment of LLMs on serverless systems, although
+               Fast Multi-Tier             Efficient Live Migration   Startup-Time-Optimized
+             Checkpoint Loading               of LLM inference           Model Scheduling               promising, often incurs significant latency overheads. This
+                                                                                                        is largely due to the substantial proportions of cold-start in
+Figure 1: Overview of GPU serverless clusters, LLM infer-                                               serverless clusters, as demonstrated by public data: the Azure
+ence and new designs introduced by ServerlessLLM.                                                       Trace [64] shows that over 40% of functions exhibit a cold-
+                                                                                                        start rate exceeding 25%, and approximately 25% of func-
+                                                                                                        tions experience a cold-start rate greater than 60%, within
+multiplexing of models within a GPU cluster, improving re-                                              a 5-minute keep-alive interval. These figures align with the
+source utilization, and generating a software premium for                                               findings from our experiments, underscoring the impact of
+managing infrastructure on behalf of users.                                                             cold-starts in real-world settings. Consequently, many server-
+   Serverless inference systems are especially advantageous                                             less providers, including Bloomberg, have publicly acknowl-
+for LLM applications with dynamic and unpredictable work-                                               edged experiencing extremely high latencies, often reaching
+loads. These may include newly launched products without                                                tens of seconds, when initializing state-of-the-art LLMs for
+clear predictions of user engagement (e.g., the launch of the                                           inference on their platforms.
+ChatGPT service) or those facing spontaneous and unpre-                                                    We observe several primary reasons for the prolonged LLM
+dictable demands, which are typical in sectors such as health-                                          cold-start latency:
+care, education, legal, and sales. Unlike global-scale LLM                                              (1) LLM checkpoints are large, prolonging downloads.
+services, these applications are activated only when users                                              LLM checkpoints are significantly larger than conventional
+access the LLM service.                                                                                 DNN checkpoints, which leads to longer download times.
+                                                                                                        For instance, Grok-1 [82] checkpoints are over 600 GB,
+2.2          Serverless Cluster and LLM Inference                                                       DBRX [72] are 250GB, and Mixtral-8x22B [71] are about
+                                                                                                        280GB 1 Downloading such large checkpoints from remote
+We introduce the key components in GPU serverless clus-                                                 storage becomes costly. For example, acquiring an LLM
+ters in Figure 1. Upon receiving a new inference request, the                                           checkpoint with a size of 130GB (e.g., LLaMA-2-70B [76])
+controller dispatches it to GPU-equipped nodes in a cluster                                             from S3 or blob storage takes a minimum of 26 seconds using
+running LLM inference service instances, and to cloud storage                                           a fast commodity network capable of 5GB/s [19].
+hosting model checkpoints. The controller typically consists                                            (2) Loading LLM checkpoints incurs a lengthy process.
+of two main components: the request router and the model                                                Even when model checkpoints are stored locally on NVMe
+loading scheduler. The request router directs incoming re-                                              SSDs, loading these checkpoints into GPUs remains a com-
+quests to nodes already running LLM inference processes, or                                             plex process including model initialization, GPU memory
+instructs the model loading scheduler to activate LLM infer-                                            allocation, tensor creation, and tensor data copy, typically tak-
+ence processes on unallocated GPUs. The selected GPU node                                               ing tens of seconds (as detailed in §7.2). For instance, loading
+initiates a GPU process/container, setting up an inference li-                                          the OPT-30B model into 4 GPUs requires 34 seconds using
+brary (e.g., HuggingFace Accelerate [32] and vLLM [42]).                                                PyTorch, and loading LLaMA-2-70B into 8 GPUs takes 84
+This inference process involves downloading the requested                                               seconds. This loading latency far exceeds the time required
+model’s checkpoint from a remote model storage and loading                                              for generating a token during the inference process, which is
+it into the GPU, passing through SSD and DRAM.                                                          usually less than 100ms [55]. Consequently, the prolonged
+    The LLM inference process often handle requests that in-                                            first-token latency can significantly disrupt user experience.
+clude user-specified input prompts, i.e., a list of tokens, as
+shown in Figure 1. This process iteratively generates tokens
+based on the prompt and all previously generated tokens, con-                                           2.4     Existing Solutions and Associated Issues
+tinuing until an end-of-sentence token (denoted as EoS) is pro-                                         To improve the latency performance when supporting LLMs,
+duced, resulting in non-deterministic total inference time [55].                                        existing solutions show a variety of issues:
+During each iteration, the LLM caches intermediate compu-
+                                                                                                        (1) Over-subscribing GPUs. The prevalent solutions [13,84],
+tations in a KV-cache to accelerate subsequent token gen-
+                                                                                                        aimed at circumventing model download and loading times
+eration [42, 56]. The tokens generated by each iteration are
+continuously streamed back to the requesting client, making                                                1 Model size calculated in float16 precision.
+
+
+
+
+                                                                                                    3
+in serverless inference clusters, frequently involve over-              and 192 TBs on SATA SSDs [52]. Additionally, we observe
+subscribing GPUs to accommodate peak demand scenarios.                  that in the serverless inference context, a significant portion of
+For instance, AWS Serverless Inference [13] maintains a cer-            the host memory and storage devices in GPU servers remains
+tain number of GPU instances in a warmed state to alleviate             underutilized.
+the impacts of slow cold starts. While this strategy is effective           Regarding bandwidth, GPU servers typically house multi-
+for managing conventional smaller models, such as ResNet                ple GPUs, each connected to the host memory via a dedicated
+and BERT, it proves challenging for LLMs, which require                 PCIe connection, providing significant aggregated bandwidth
+substantially greater resources from costly GPUs.                       between the memory and GPU. NVMe and SATA SSDs also
+(2) Caching checkpoints in host memory. Several solu-                   connect through their respective links and can be configured in
+tions [33, 39] have been developed that cache model check-              RAID to enhance throughput. For instance, an 8-GPU server
+points in the host memory of GPU servers to eliminate the               utilizing PCIe 5.0 technology can achieve an aggregated band-
+need for model downloads. This approach is typically ef-                width of 512 GB/s between the host memory and GPUs, and
+fective for smaller conventional models (e.g., up to a few              around 60 GB/s from NVMe SSDs (RAID 0) to host memory.
+GBs [39]). However, solely relying on host-memory-based                     Building on these observations, we propose a design ap-
+caching proves inadequate for LLMs. LLMs can easily ex-                 proach that leverages the unused in-server multi-tier storage
+ceed hundreds of GBs in size, challenging the capacity of               capacity to store models locally and load them more rapidly,
+host memory to store a sufficient number of their checkpoints           thus reducing latency. This approach is (i) cost-effective, as
+adequately. The limited size of host memory leads to signifi-           it reutilizes existing, underutilized storage resources in GPU
+cant cache misses, resulting in frequent model downloads, as            servers; (ii) scalable, given that the available local storage
+further discussed in §7.4.                                              capacities and bandwidth can naturally increase with the ad-
+(3) Deploying additional storage servers. Various strate-               dition of more inference servers; and (iii) long-term viable, as
+gies [19] recommend the deployment of additional storage                upcoming GPU servers will include even greater capacities
+servers within a local cluster to cache model checkpoints.              and bandwidth (e.g., each Grace-Hopper GPU features 1 TB
+Despite these enhancements, recent trace studies [19] indi-             on-chip DRAM and a 900GB/s C2C link between on-chip
+cate that model downloads can exceed 20 seconds through                 DRAM and HBM).
+an optimized pipeline, even when connected to local com-
+modity storage servers equipped with a 100 Gbps NIC. Al-
+                                                                        3.2    Design Concerns and Overview
+though the integration of faster networks (e.g., 200 Gbps Eth-
+ernet or InfiniBand) could reduce this latency, the associated          In implementing our design, we identify three crucial con-
+costs of implementing additional storage servers and high-              cerns that must be addressed.
+bandwidth networks are substantial [18, 31]. For instance,
+                                                                        (1) Support complex multi-tiered storage hierarchy. Cur-
+utilizing network-optimized AWS ElasticCache servers [1]
+                                                                        rent checkpoint and model loading tools such as PyTorch [58],
+to support a 70B model can lead to a 100% increase in
+                                                                        TensorFlow [75], and ONNX Runtime [62] are primarily de-
+costs. Specifically, cache.c7gn.16xlarge servers, which pro-
+                                                                        signed to enhance the training and debugging phases of model
+vide 210GB of memory and 200 Gbps of network perfor-
+                                                                        development. However, these tools are not optimized for read
+mance, are priced at $16.3/h, equivalent to the cost of an
+                                                                        performance, which becomes critically important in a server-
+8-GPU g5.48xlarge server.
+                                                                        less inference environment. In these settings, model check-
+                                                                        points are stored once but need to be frequently loaded and
+3     Exploiting In-Server Multi-Tier Storage                           accessed across multiple GPUs. This insufficient optimization
+                                                                        for read operations results in significant loading delays. While
+ServerlessLLM addresses the challenges highlighted in the               solutions like Safetensors [36] can enhance loading perfor-
+previous sections—namely, high model download times and                 mance, as demonstrated in Section 7, they still fail to fully
+lengthy model loading—using a design approach that is cost-             leverage the capabilities of a multi-tiered storage hierarchy.
+effective, scalable, and long-term viable.                              (2) Strong locality-driven inference. Supporting efficient
+                                                                        model loading alone is insufficient; we also need approaches
+3.1    Design Intuitions                                                that can effectively schedule requests onto GPU servers
+                                                                        with locally stored checkpoints. Implementing locality-driven
+Our design is inspired by the simple observation that GPU               LLM inference, however, presents challenges. Current ML
+servers used for inference feature a multi-tier storage hierar-         model serving systems such as ClockWork [33] and Shep-
+chy with substantial capacity and bandwidth. From a capacity            herd [90] take checkpoint locality into account. Yet, they ei-
+standpoint, these servers are equipped with extensive memory            ther depend on accurate predictions of model inference time,
+capabilities. For example, a contemporary 8-GPU server can              which is problematic with LLMs, or they preempt ongoing
+support up to 4 TBs of main memory, 64 TBs on NVMe SSDs,                model inferences, causing significant downtime and redun-
+
+
+                                                                    4
+dant computations. Therefore, ServerlessLLM must adopt a                            Loading-optimised checkpoint                       Initialize        Inference Process
+                                                                                                                                        model
+new approach that is tailored to the unique characteristics of            Model execution       class Model(nn.Module):                                         Model
+                                                                          files                   …
+                                                                                                                                                                   Tensor
+LLM inference (i.e., this workload is interactive and features                                                                                                     address
+long, unpredictable durations), necessitating the support for                                                                         Tensor offset
+                                                                          Tensor index file     <Name, GPU id, offset, size>                                      +
+inference live migration, which is further detailed in Section 5.                                             …                                                    GPU memory
+                                                                                                                                                                   base address
+(3) Scheduling models for optimized startup time. Server-                 Tensor binary files                                                            Model Manager
+lessLLM is designed to minimize the model startup latency.                     Partition 0               101001101                     multi-tier          GPU Memory
+                                                                                                                                        loading
+The cluster scheduler (or controller) plays a crucial role in                   Partition 1                                           subsystem            GPU Memory
+scheduling models onto GPU resources to answer incoming
+inference requests. However, the scheduler needs to carefully                                                               Chunk-based memory
+                                                                                                                               management      IO                      GPU
+consider the checkpoint’s locality in the entire cluster. Many                                                                                        threads         memory
+                                                                                                            Local                      Pinned
+                                                                             Remote              IO                          IO
+factors may influence the overall startup latency, such as the                                threads       SSDs          threads
+                                                                                                                                       memory            IO            GPU
+                                                                             storage
+difference in the bandwidth offered by each layer in the mem-                                                         Via Direct IO                   threads         memory
+
+ory hierarchy. There may be instances where it is beneficial
+to move the current inference execution to a new GPU than                Figure 2: Components in fast multi-tier checkpoint loading.
+to allocate the request to a GPU where the model may have
+to be loaded from the storage media. Hence, ServerlessLLM
+needs to accurately estimate the startup times considering the           we operate under a set of assumptions that are common in
+cluster’s checkpoint locality status and accordingly allocate            checkpoints. The checkpoints have: (i) Model execution files
+resources to minimize startup time.                                      which define the model architecture. Depending on the frame-
+   Overview. ServerlessLLM addresses these concerns with                 work, the format varies; TensorFlow typically uses protobuf
+three novel designs, as depicted in Figure 1. Firstly, it facil-         files [74], while PyTorch employs Python scripts [57]. Be-
+itates fast multi-tier checkpoint loading (Section 4) to fully           yond architecture, these files detail the size and shape of each
+utilize the storage capacity and bandwidth of each GPU server.           tensor and include a model parallelism plan. This plan speci-
+It also coordinates GPU servers and the cluster controller for           fies the target GPU for each tensor during checkpoint loading.
+efficient live migration of LLM inference (Section 5), ensur-            (ii) Model parameter files which stores the binary data of
+ing locality-driven inference with minimal resource overhead             parameters in an LLM. Tensors within these files can be ar-
+and user disruption. Lastly, ServerlessLLM features a startup-           ranged in any sequence. Runtimes such as PyTorch may also
+time-optimized model scheduling policy (Section 6) imple-                store tensor shapes as indices to calculate the offset and size
+mented in its controller, effectively analyzing the checkpoint           for each tensor.
+storage status of each server within a cluster, and it chooses a            To ensure fast loading performance, we implement two
+server for initiating a model, minimizing its startup time.              main features for the converted checkpoints: (i) Sequential
+                                                                         chunk-based reading: To ensure efficient sequential reading,
+                                                                         tensors for each GPU are grouped in partitions (shown in
+4     Fast Multi-Tier Checkpoint Loading                                 Figure 2). These files contain only the binary data of model
+                                                                         parameters and exclude metadata such as tensor shapes, fa-
+In this section, we introduce the design of fast multi-tier check-       cilitating large chunk reading. (ii) Direct tensor addressing:
+point loading in ServerlessLLM, with several key objectives:             We create a tensor index file (shown in Figure 2) that maps
+(i) to fully utilize the bandwidth and capacity of multi-tier            tensor names to a tuple of GPU id, offset, and size, facilitating
+local storage on GPU servers, (ii) to ensure predictable load-           the efficient restoration of tensors. The tensors are aligned
+ing performance, critical for ServerlessLLM’s readiness in               with memory word sizes, facilitating direct computation of
+low-latency inference clusters, and (iii) to maintain a generic          memory address.
+design that supports checkpoints from various deep learning                 We observe that decoupling the loading and inference pro-
+frameworks.                                                              cesses can further enhance loading performance. This sep-
+                                                                         aration allows checkpoint loading to be pre-scheduled and
+4.1    Loading-Optimized Checkpoints                                     overlapped with the initialization of the inference process. For
+                                                                         this, ServerlessLLM uses a model manager to load tensor data,
+Our design is motivated by the observation that LLM check-               while allowing the inference process to focus on initializing
+points are often written frequently during training and de-              the model by setting the data pointers for each tensor. More
+bugging but loaded infrequently. Conversely, in serverless               specifically, the model manager allocates memory on GPUs
+inference environments, checkpoints are uploaded once and                and loads the binary data of the checkpoint via a fast multi-tier
+loaded multiple times. This discrepancy has inspired us to               loading subsystem (see details in 4.2). The inference process
+convert these checkpoints into a loading-optimized format.               initializes the model object and sets the GPU memory address
+   To ensure our design is generic for different frameworks,             for each tensor. It acquires the base addresses for each GPU
+
+
+                                                                     5
+(i.e., CUDA IPC handles) from the model manager and reads                   Setup                                    Timeline                           Performance
+
+the tensor offset from the tensor index file, facilitating the                          Request to start up model B
+                                                                        Server 1 (S1)
+
+computation of the tensor GPU memory address (i.e., base +                 GPU           S1              Load B                        Infer B
+                                                                                                                                                        A Latency:
+offset). To ensure the model is fully initialized before infer-                          S2   Infer A                                                   B Latency:
+                                                                        DRAM
+ence, the inference process and the model manager perform a              Model A
+                                                                                        (a) Availability-driven policy
+
+synchronization.                                                           SSD           S1                                                             A Latency:
+                                                                            Model B                                                                     B Latency:
+                                                                                         S2   Infer A                              Load B     Infer B
+
+                                                                                        (b) Locality-driven policy
+                                                                                                                      Long interruption time
+4.2    Multi-Tier Loading Subsystem                                     Server 2 (S2)
+                                                                                         S1              Load A      Recompute A            Infer A
+                                                                           GPU
+                                                                                                                                                        A Latency:
+To achieve fast and predictable checkpoint loading perfor-                  Model A      S2   Infer A    Load B      Infer B                            B Latency:
+
+                                                                                        (c) Preemption-driven policy
+mance, we design a multi-tier loading subsystem, integrated                DRAM
+                                                                             Model B
+within the model manager. This subsystem incorporates sev-                               S1              Load A       Infer A
+                                                                                                                                                        A Latency:
+                                                                                                                      Live migration
+eral techniques:                                                           SSD
+                                                                                         S2   Infer A                Load B Infer B
+                                                                                                                                                        B Latency:
+
+                                                                                        (d) Live-migration-supported locality-driven policy
+Chunk-based data management. For fast loading perfor-
+mance, we have implemented chunk-based data management
+                                                                             Figure 3: Analysis of different locality-driven policies
+with three main features: (i) Utilizing parallel PCIe links. To
+mitigate the bottleneck caused by a single PCIe link from
+storage when loading multiple models into GPUs, we employ
+                                                                       pipeline design, supporting new storage tiers to be efficiently
+parallel DRAM-to-GPU PCIe links to facilitate concurrent
+                                                                       integrated. I/O threads read storage chunks and enqueue their
+checkpoint loading across GPUs. (ii) Supporting application-
+                                                                       indices (offset and size) for the I/O threads in the next tier.
+specific controls. Our memory pool surpasses simple caching
+by providing APIs for the allocation and deallocation of
+memory. This enables fine-grained management of cached                 5         Efficient Live Migration of LLM Inference
+or evicted data chunks, based on specific requirements of
+the application. (iii) Mitigating memory fragmentation. We             In this section, we describe why live migration is the key to
+address latency and space inefficiencies caused by memory              effective locality-driven LLM inference, and how to make
+fragmentation by using fixed-size memory chunks.                       such a live migration process particularly efficient.
+Predictable data path. We have created an efficient data path
+in our model manager with two main strategies: (i) Exploiting
+direct file access. We use direct file access (e.g., ‘O_DIRECT’        5.1         Need for Live Migration
+in Linux) to avoid excessive data copying by directly read-            We consider a simple example to analyze the performance
+ing data into user space. This method outperforms memory-              of different current approaches in supporting the checkpoint
+mapped files (mmap), currently adopted in high-speed loaders           locality. In this example, we have two servers (named Server
+such as Safetensors [36], which rely on system cache and lack          1 and Server 2) and two models (named Model A and Model
+consistent performance guarantees (critical for predictable per-       B), as illustrated in Figure 3. Server 1 currently has Model
+formance). (ii) Exploiting pinned memory. We utilize pinned            A in DRAM and Model B in SSD and its GPU is idle, while
+memory to eliminate redundant data copying between DRAM                Server 2 currently has Model B in DRAM, and its GPU is
+and GPU. This approach allows direct copying to the GPU                running the inference of Model A.
+with minimal CPU involvement, ensuring efficient use of PCIe              In Figure 3, we analyze the performance of potential poli-
+bandwidth with a single thread.                                        cies for starting up Model B. Our analysis is based on their
+Multi-tier loading pipeline. We have developed a multi-tier            impact on the latency performance of both Model A and B:
+loading pipeline to support various storage interfaces and im-
+prove loading throughput. This pipeline has three features:            • Availability-driven policy chooses Server 1 currently with
+(i) Support for multiple storage interfaces. ServerlessLLM               an available GPU, and it is agnostic to the location of Model
+offers dedicated function calls for various storage interfaces,          B. As a result, the Model B’s startup latency suffers while
+including local storage (e.g., NVMe, SATA), remote storage               the Model A remains unaffected.
+(e.g., S3 object store [12]), and in-memory storage (pinned
+memory). It utilizes appropriate methods for efficient data            • Locality-driven policy opts for the locality in choosing the
+access in each case. (ii) Support for intra-tier concurrency. To         server and thus launching Model B on Server 2. However,
+leverage modern storage devices’ high concurrency, Server-               it waits for Model A to complete, making Model B suffer
+lessLLM employs multiple I/O threads for reading data within             from a long queuing delay. Furthermore, the locality policy
+each storage tier, improving bandwidth utilization. (iii) Flex-          leaves Server 1 under-utilized, preventing all servers from
+ible pipeline structure. We use a flexible task queue-based              being fully utilized.
+
+
+                                                                   6
+• Preemption-driven policy preempts Model A on Server 2                      Request         Loading                 Source                  Destination
+                                                                             Router         Scheduler                Server                    Server
+  and startups Model B. It identifies that Server 1 is free and
+                                                                                               1              Load(Model A)
+  reinitiates Model A there. This policy reduces Model B’s
+  latency but results in significant downtime for Model A
+  when it performs reloading and recomputation.                                 Migration      2
+                                                                                time                 Migrate(Dest)        3
+                                                                                                                              Resume
+• Live-migration-supported locality-driven policy prioritizes                                                                 intermediate tok     4
+                                                                                                                                               ens
+  locality without disrupting Model A. It initially preloads                                                              5
+                                                                                               6                      )
+  Model A on Server 1, maintaining inference operations.                                                       tokens                     Migration
+                                                                                                      est, all
+                                                                                              ted", D                                     impact
+  When Model A is set on Server 1, its intermediate state                      7       ("migra
+  is transferred there, continuing the inference seamlessly.                                    Continue inference with
+                                                                        Time                                            all tok     ens
+  Following this, Model B commences on Server 2, taking
+  advantage of locality. This policy optimizes latency for both
+                                                                             Figure 4: Live migration process for LLM inference
+  Models A and B.
+
+   According to the examples above, live migration stands out
+in improving latency for both Model A and Model B among                5.3     Multi-Round Live Migration Process
+all locality-driven policies.                                          We implement the above proposal as a multi-round live mi-
+                                                                       gration process. In each migration round (step 3 , 4 and 5 ),
+5.2    Making Live Migration Efficient                                 the destination server (referred to as the dest server) recom-
+                                                                       putes the KV cache using the intermediate tokens sent by
+We aim to achieve efficient live migration of LLM inference,
+                                                                       the source server (referred to as the src server). When the
+incurring minimal resource overhead and minimal user inter-
+                                                                       gap (i.e., the tokens generated after the last round) between
+ruption. We initially considered using the snapshot method
+                                                                       the source server and the destination server is close enough,
+from Singularity [68], which involves snapshotting the LLM
+                                                                       the src server stops generating and sends all tokens to the
+inference. However, this method is slow due to lengthy snap-
+                                                                       dest via the request router, ensuring minimal interruption on
+shot creation and transfer times (e.g., typically 10s seconds or
+                                                                       ongoing inference during migration. This migration process
+even minutes). Dirty-page-based migration might be consid-
+                                                                       is depicted in Figure 4 with its steps defined below:
+ered to accelerate virtual machine migration, but this approach
+is currently not supported in GPU-enabled containers and vir-
+                                                                       1. The model loading scheduler sends a model loading re-
+tual machines. Hence, we decided to explore live migration
+                                                                          quest to dest server to load model A into GPUs. If there is
+methods that can be easily implemented in applications.
+                                                                          an idle instance of model A on dest server, the scheduler
+   To make the live migration method effective for LLM in-
+                                                                          skips this step.
+ference, we aim to achieve two objectives: (i) the migrated
+inference state must be minimal to reduce network traffic, and         2. After loading, the scheduler sends a migration request
+(ii) the destination server must quickly synchronize with the             carrying the address of dest server to src server.
+source server’s progress to minimize migration times.                  3. Upon receiving a migrate request, src server sets itself
+   For (i), we propose to migrate tokens (typically 10-100s               as “migrating”, sends a resume request with intermediate
+KB) instead of the large KV-Cache (typically 1-10s GB), as                tokens (i.e., input tokens and the output tokens produced
+recomputing the KV-Cache based on the migrated tokens on                  before step 3) to dest server if the inference is not com-
+the destination GPU is generally much faster than transferring            pleted. Otherwise, it immediately returns to the scheduler.
+the dirty state over the network. In certain conditions (e.g.,         4. dest server recomputes KV cache given the tokens in the
+given high-bandwidth network and short input sequences),                  resume request.
+migrating KV-Cache might also be fast yet it still increases
+                                                                       5. Once resume request is done, src server stops inference,
+cluster network traffic compared to migrating tokens.
+                                                                          returns to the scheduler, and replies to the request router
+   For (ii), we leverage an insight from LLM inference: re-
+                                                                          with all tokens (i.e., the intermediate tokens together with
+computing the KV-Cache for current tokens on the destination
+                                                                          the remaining tokens produced between step 3 and step 5)
+GPU is significantly faster (usually an order of magnitude
+                                                                          and a flag “migrated”.
+shorter) than generating an equivalent number of new tokens
+on the source GPU. This approach facilitates efficient conver-         6. The scheduler finishes the migration, unloads model A at
+gence of multi-round token-based migration, with the quan-                src server and starts loading model B.
+tity of tokens generated on the source diminishing with each           7. The request router checks the flag in the inference response.
+round. For example, time to recompute the KV-Cache for                    If it is “migrated”, the request router replaces src server
+1000 tokens equals to the time to generate about 100 new                  with dest server in its route table and sends all tokens to
+tokens according to [70].                                                 dest server to continue inference.
+
+
+                                                                   7
+ Inference             Controller                                       Server 1                 different servers’ DRAM and SSD, aiding in server selection.
+                                                    Inference
+ Request                                            Request       GPU
+                      Request Router
+                                                                           Model C               Similarly, for Model B ( B ), it assesses whether to migrate
+                                                                                         B
+                                                                  DRAM     Model B
+                                                                                                 Model C to another server or load Model B from Server 2’s
+      Loading      Loading          Inference
+      Task         Results          Status
+                                                                                                 SSD.
+                                                                  SSD
+                                                                                                    To ensure robust time estimation, the ServerlessLLM sched-
+             ServerlessLLM Model Loading
+                       Scheduler                                        Server 2
+                                                                                                 uler employs distinct loading task queues for each server, ef-
+         Model Loading        Model Migration                     GPU        A       B
+                                                                                                 fectively mitigating the impact of contentions caused by con-
+         Time Estimator       Time Estimator        Loading
+                                                    Task
+                                                                                                 current loading activities. Upon assigning a task, it promptly
+                                                                  DRAM     Model A
+              Model Loading Task Queues
+                                                                                                 updates the server status—including GPU and DRAM/SSD
+                                                        Loading
+                                                                  SSD      Model B               states—in a reliable key-value store (e.g., , etcd [30] and
+                    Server Task Queue
+                                                        Results                                  ZooKeeper [38]). This mechanism enables ServerlessLLM to
+                                                                        Server 3                 maintain continuity and recover efficiently from failures.
+                                                                  GPU            A
+         Server               GPU          DRAM &
+         Status               Status       SSD Status
+                                                                  DRAM
+                                                                                                 6.1    Estimating Model Loading Time
+                Reliable Key-Value Store                          SSD       Model A
+                                                                                                 To estimate the time needed to load models from different
+                                                                                                 storage tiers, we consider three primary factors: (i) queuing
+ Figure 5: Overview of the model loading scheduler design                                        time (q), which is the wait time for a model in the server’s
+                                                                                                 loading task queue. This occurs when other models are pend-
+                                                                                                 ing load on the same server; (ii) model size (n), the size of the
+5.4      Practical Concerns                                                                      model in bytes, or its model partition in multi-GPU inference
+                                                                                                 scenarios; (iii) bandwidth (b), the available speed for transfer-
+Handling inference completion. The autoregressive nature
+                                                                                                 ring the model from storage to GPUs. ServerlessLLM tracks
+of LLM inference may lead to task completion at src server
+                                                                                                 bandwidth for network, SSD, and DRAM, allowing us to cal-
+between steps 3 and 5 . In such cases, src server informs the
+                                                                                                 culate loading time as q + n/b. Here, q accumulates from
+request router of the inference completion as usual. Addition-
+                                                                                                 previous estimations for the models already in the queue.
+ally, it notifies the loading scheduler, which then instructs dest
+server to cease resuming, terminating the migration.                                                For precise estimations, we have implemented: (i) Sequen-
+                                                                                                 tial model loading per server, with single I/O queues for both
+Handling server failures. ServerlessLLM can manage server                                        Remote-SSD and SSD-DRAM paths (since these paths are
+failures during LLM inference migration. In scenarios where                                      shared by multiple GPUs on a server), reducing bandwidth
+src server fails, if the failure happens during loading (i.e.,                                   contention which complicates estimation; (ii) In multi-tier
+before step 2 in Figure 4), the scheduler aborts the migration                                   storage, ServerlessLLM uses the slowest bandwidth for esti-
+and unloads the model from the destination. If the failure                                       mation because of ServerlessLLM’s pipeline loading design.
+occurs during migration (i.e., between steps 2 and 3 ), the                                      For example, when SSD and DRAM are both involved, SSD
+scheduler directs the destination to clear any resumed KV                                        bandwidth is the critical bottleneck since it is orders of mag-
+cache and unload the model.                                                                      nitude slower than DRAM; (iii) The scheduler monitors the
+   In cases where dest server fails, if the failure takes place                                  loading latency returned by the servers. It leverages the moni-
+during loading, the migration is canceled by the scheduler.                                      toring metrics to continuously improve its estimation of the
+Should the failure occur while resuming, the source notifies                                     bandwidth through different storage media.
+the scheduler of the failure and continues with the inference.
+
+                                                                                                 6.2    Estimating Model Migration Time
+6     Startup-Time-Optimized Model Scheduling
+                                                                                                 For live migration time estimation, our focus is on model
+In this section, we describe the design of the startup-time-                                     resuming time (as shown in step 4 in Figure 4), as this is
+optimized model scheduling implemented in Serverless-                                            significantly slower (seconds) than token transfer over the
+LLM’s cluster scheduler (denoted as controller), as shown                                        network (milliseconds). We calculate model resuming time
+in Figure 5. This scheduler processes loading tasks from the                                     considering: (i) input tokens (tin ), the number of tokens in
+request router and employs two key components: a model                                           the LLM’s input prompt; (ii) output tokens (tout ), the tokens
+loading time estimator and a model migration time estima-                                        generated so far; and (iii) model-specific parameters (a and
+tor. The former assesses loading times from various storage                                      b), which vary with each LLM’s batch sizes and other factors,
+media, while the latter estimates times for necessary model                                      based on LLM system studies like vLLM [42]. With all the
+migrations. For example, as shown in Figure 5, the scheduler                                     above factors, we can compute the model resuming time as
+calculates the time to load Model A (indicated by A ) from                                       a × (tin + tout ) + b.
+
+
+                                                                                             8
+   However, obtaining real-time output tokens from servers             manager, (ii) examining the efficiency and overheads associ-
+for the scheduler can lead to bottlenecks due to exces-                ated with live migration for LLM inference, and (iii) evaluat-
+sive server interactions. To circumvent this, we developed             ing ServerlessLLM against a large-scale serverless workload,
+a method where the scheduler queries the local request router          modelled on real-world serverless trace data.
+for the inference status of a model, as illustrated in Figure 5.
+With the inference duration (d) and the average time to pro-
+duce a token (t), we calculate tout = d/t.
+   For selecting the optimal server for model migration,
+ServerlessLLM employs a dynamic programming approach                   7.1    Evaluation Setup
+to minimize migration time.
+                                                                       Setup. We have two test beds: (i) a GPU server has 8 NVIDIA
+6.3    Practical Concerns                                              A5000 GPUs, 1TB DDR4 memory and 2 AMD EPYC 7453
+                                                                       CPUs, two PCIe 4.0-capable NVMe 4TB SSDs (in RAID 0)
+Selecting best servers. Utilizing our time estimations, Server-        and two SATA 3.0 4TB SSDs (in RAID 0). This server is
+lessLLM evaluates all servers for loading the forthcoming              connected to a storage server via 1 Gbps networks on which
+model, selecting the one offering the lowest estimated startup         we have deployed MinIO [51], an S3 compatible object store;
+time. The selection includes the server ID and GPU slots to            (ii) a GPU cluster with 4 servers connected with 10 Gbps
+assign. If no GPUs are available, even after considering mi-           Ethernet connections. Each server has 4 A40 GPUs, 512 GB
+gration, the loading task is held pending and retried once the         DDR4 memory, 2 Intel Xeon Silver 4314 CPUs and one PCIe
+request router informs the scheduler to release GPUs.                  4.0 NVMe 2TB SSD.
+Handling scheduler failures. ServerlessLLM is built to with-           Models. We use state-of-the-art LLMs, including OPT [91],
+stand failures, utilizing a reliable key-value store to track          LLaMA-2 [76] and Falcon [11] in different sizes. For cluster
+server statuses. On receiving a server loading task, its GPU           evaluation (§7.3 and §7.4) on test bed (ii), following prior
+status is promptly updated in this store. Post server’s confir-        work [44], we replicate OPT-6.7B/OPT-13B/OPT-30B models
+mation of task completion, the scheduler updates the server’s          for 32/16/8 instances respectively (unless otherwise indicated)
+storage status in the store. Once recorded, the scheduler no-          that are treated as different models during evaluation.
+tifies the request router of the completion, enabling request
+routing to the server. In the event of a scheduler failure, re-        Datasets. We use real-world LLM datasets as the input to
+covery involves retrieving the latest server status from the           models. This includes GSM8K [25] that contains problems
+key-value store and synchronizing it across all servers.               created by human problem writers, and ShareGPT [83] that
+                                                                       contains multilanguage chat from GPT4. Since the models
+Scaling schedulers. The performance of the loading sched-
+                                                                       we used can handle at most 2048 context lengths, we trun-
+uler has been significantly enhanced by implementing asyn-
+                                                                       cate the input number of tokens to the max length. We also
+chronous operations for server status reads, writes, and esti-
+                                                                       randomly sample 4K samples from each dataset to create a
+mations. Current benchmarks demonstrate its capability to
+                                                                       mixed workload, emulating real-world inference workloads.
+handle thousands of loading tasks per second on a standard
+server. Plans for its distributed scaling are earmarked for fu-        Workloads. Since there are no publicly available LLM server-
+ture development.                                                      less inference workloads, we use Azure Serverless Trace [64]
+Resource fairness. ServerlessLLM treats all models with                which is a representative serverless workload used in recent
+equal importance and it ensures migrations do not impact               serverless studies [61] and model-serving studies [44, 90].
+latency. While we currently adopt sequential model loading             We designate functions to models and creates bursty request
+on the I/O path, exploring concurrent loading on servers with          traces (CV=8 using Gamma distribution), following the work-
+a fairness guarantee is planned for future work.                       load generation method used in AlpaServe [44]. We then scale
+Estimator accuracy. Our estimator can continuously improve             this trace to the desired requests per second (RPS). For cluster
+their estimation based on the monitored loading metrics re-            evaluation, we replicate each model based on its popularity
+turned by the servers. They offer sufficient accuracy for server       and distribute them across nodes’ SSDs using round-robin
+selection, as shown in Section 7.                                      placement until the total cluster-wide storage limit is reached.
+                                                                       Optimization of checkpoint placement is considered a sepa-
+                                                                       rate issue and is not addressed in this paper. For all experi-
+7     Evaluation                                                       ments (unless we indicate otherwise), we report the model
+                                                                       startup latency, a critical metric for serverless inference sce-
+This section offers a comprehensive evaluation of Server-              narios. When migration or preemption is enabled, this latency
+lessLLM, covering three key aspects: (i) assessing the per-            is added with pause latency, accounting for the impacts of
+formance of our loading-optimized checkpoints and model                delays.
+
+
+                                                                   9
+                                                                        PyTorch           Safetensors               ServerlessLLM
+                                                                                                                                                   Normalized Throughput
+
+
+
+
+                                                                                    .0
+                                                        .0
+
+
+
+
+                                                                                  84
+                                                                                                                                                                                 1.00
+
+
+
+
+                                                       80
+ Mean Latency (s)
+
+
+
+
+                                                                                                                                            0.22
+                                                                                                                     RAID0_NVMe
+0 20 40 60 80
+
+
+
+
+                                                                                                                                     0.13
+                                                                                                                                                                                 1.00
+                                                                                                                                                0.32
+
+
+
+
+                                                                                                         .0
+                                                                                                                           NVMe
+
+
+
+
+                                                                                       .0
+                                                                                                                                              0.27
+
+
+
+
+                                                            .0
+
+
+
+
+                                                                                                        50
+                                                                                    48
+                                                        45
+                                                                                                                                                                                 1.00
+
+
+
+
+                                            .0
+                                                                                                                                                                             0.92
+
+
+
+
+                                          34
+                                                                                                                     RAID0_SATA
+
+
+
+
+                                                                                                            .0
+                                                                                                                                                                      0.74
+
+
+
+
+                                                                                                          25
+                                              .5
+
+
+
+
+                                                                       9. 5
+                                                                                                                                                                                  1.00
+                               8. 0
+
+
+
+                                            18
+
+
+
+
+                                                                           .
+                                   .
+
+
+
+
+                                                                                           .3
+                                                               .0
+
+
+
+
+                                                                         14
+                                                                                                                                                                               0.94
+                                 14
+
+
+                                                                                                                           SATA
+
+
+
+
+                                                                    1. 5
+
+
+
+                                                                                         10
+                            2. 2
+
+
+
+
+                                                             10
+
+
+
+
+                                                                                                 4. 0
+                                                                     4. 8
+                             4. 4
+
+
+
+
+                                                                                                                                                                             0.90
+
+
+
+
+                                                                                                                2
+                                                                    1. 8
+
+
+
+
+                                                                                                1. 7
+                                                   5
+
+
+
+
+                                                                                                  8.
+                                                                      7.
+                            1. 0
+                              7.
+                    1. 0
+
+
+
+
+                                                                                                              6.
+                              0
+
+
+
+
+                                                                      9
+                    0. 8
+
+
+
+
+                                                                                                  1
+                              0
+
+
+
+
+                                                                      0
+                                                 4.
+                      5
+                     3.
+
+
+
+
+                                                                                                                                                                                  1.00
+                                                                                                                                                                               0.95
+                     OPT     OPT    OPT      OPT            OPT     LLaMA-2 LLaMA-2 LLaMA-2 Falcon       Falcon            MinIO                                              0.94
+                     2.7B    6.7B   13B      30B            66B        7B     13B     70B     7B          40B                  0.0    0.2           0.4       0.6      0.8     1.0
+
+
+                                          (a) Checkpoint loading speed.                                                     (b) Normalized bandwidth utilization.
+
+                                                                      Figure 6: Checkpoint loading performance.
+
+
+7.2                  ServerlessLLM Checkpoint Loading                                                   Loading performance with LoRA adapters. Serverless-
+                                                                                                        LLM also supports loading LoRA adapters [34] in PEFT
+We now evaluate the model manager’s effectiveness in reduc-
+                                                                                                        format [49]. We conducted experiments using the same set-
+ing the model loading latency. For our experiments, we test
+                                                                                                        ting in [65]. For an adapter (rank=32, size=1GB) of LLaMA-
+the checkpoint read on test bed (i). We record reads from 20
+                                                                                                        70B model, ServerlessLLM achieves 83.5ms loading latency
+copies of each model checkpoint to get a statistically signifi-
+                                                                                                        which is 4.4X faster than Safetensors whose loading latency
+cant performance report. We clear the page and inode caches
+                                                                                                        is 370ms. This demonstrates ServerlessLLM’s loader design
+after checkpoint copies are made to ensure a cold start. For
+                                                                                                        efficiency in small checkpoint loading.
+each type of model, we randomly access the 20 copies to
+simulate real-world access patterns.                                                                    Harness full bandwidth of the storage devices. We now
+Loading performance. We aim to quantify the performance                                                 move to understand if ServerlessLLM can utilize the entire
+gains achieved by the ServerlessLLM checkpoint manager.                                                 bandwidth that a storage medium offers to achieve low la-
+We compare PyTorch [58] and Safetensors [36], represent-                                                tency. We use the same setup as described above. We choose
+ing the read-by-tensor checkpoint loading and mmap-based                                                LLaMA-2-7B to represent the SOTA LLM model. We use
+checkpoint loading, respectively. We use all types of models                                            FIO [17] with the configuration of asynchronous 4M direct
+with all checkpoints in FP16 and run the test on RAID0-                                                 sequential read with the depth of 32 as the optimal baseline
+NVMe SSD having a throughput of 12 GB/s.                                                                and optimized throughput using the result in all storage media.
+   Figure 6a shows the performance comparison in terms of                                               We test various settings of FIO to make sure the configuration
+mean latency for all the models2 . We observe that Serverless-                                          chosen has the highest bandwidth on each storage media. For
+LLM is 6X and 3.6X faster than PyTorch and Safetensors,                                                 object storage over the network, we use the official MinIO
+respectively, for our smallest model (OPT-2.7B). We observe                                             benchmark to get the maximum throughput.
+similar results with the largest model (LLaMA-2-70B) where                                                 Figure 6b shows the bandwidth utilization across different
+ServerlessLLM is faster than PyTorch and Safetensors by                                                 storage devices, normalized relative to the measurements ob-
+8.2X and 4.7X respectively. Safetensors is slower than Server-                                          tained using FIO and MinIO. The storage device from bottom
+lessLLM due to a lot of page faults (112K for LLaMA-2-7B)                                               to top is ascending in maximum bandwidth. We observe that
+on cold start. In contrast, ServerlessLLM’s checkpoint man-                                             ServerlessLLM’s model manager is capable of harnessing dif-
+ager leverages direct I/O and realizes chunk-based parallel                                             ferent storage mediums and saturating their entire bandwidth
+loading, all contributing to the significant improvement in                                             to get maximum performance. Interestingly, we observe that
+loading throughput. PyTorch is about 2X slower than Safeten-                                            ServerlessLLM is well suited for faster storage devices such
+sors in our evaluation, consistent with the results in a public                                         as RAID0-NVMe compared to Pytorch and Safetensors. It
+benchmark [37] reported by Safetensors. The primary reason                                              shows that existing mechanisms are not adaptive to newer and
+is that PyTorch first copies data into host memory and then                                             faster storage technology. Despite the loading process passing
+into GPU memory.                                                                                        through the entire memory hierarchy, ServerlessLLM is capa-
+   Furthermore, we observe that the loading performance of                                              ble of saturating the bandwidth highlighting the effectiveness
+ServerlessLLM is agnostic to the type of the model. For ex-                                             of pipelining the loading process.
+ample, the performance of both OPT-13B and LLaMA-2-13B                                                  Performance breakdown. We now move to highlight how
+is similar signifying the fact that the performance is only                                             each optimization within the model manager contributes to-
+dependent on the checkpoint size.                                                                       wards the overall performance. We run an experiment using
+        2 The number after the model name represents the number of parameters                           RAID0-NVMe with various OPT models. We start from the
+in the figure and B stands for Billion.                                                                 basic implementation (ReadByTensor) and incrementally add
+
+
+                                                                                                 10
+                                                                                                                   Serverless                     SHEPHERD*                 ServerlessLLM
+                      12      OPT-350M       OPT-6.7B                                                1.0                               1.0                                1.0
+  Throughput (GB/s)
+
+
+
+                              OPT-1.3B       OPT-13.0B
+                      10      OPT-2.7B
+                                                                                                                                       0.8                                0.8
+                                                                                                     0.8
+                       8
+                                                                                                     0.6                               0.6                                0.6
+                       6                                                                                                                            1.00                               1.00
+
+
+
+
+                                                                                               CDF
+                                                                                                               1.00
+
+                       4                                                                             0.4
+                                                                                                               0.98
+                                                                                                                                       0.4
+                                                                                                                                                    0.98
+                                                                                                                                                                          0.4
+                                                                                                                                                                                       0.98
+                       2                                                                             0.2                               0.2                                0.2
+                                                                                                               0.96                                 0.96                               0.96
+                      ReadByTensor   +Bulk      +Direct   +Thread   +Pinned   +Pipeline                           2.25      2.50                           2    3                             2     4
+                                                                                                     0.0                               0.0                                0.0
+                                                                                                           0        2                     0.0      2.5   5.0        7.5         0         5             10
+                                                                                                               Latency(s)                          Latency(s)                         Latency(s)
+ Figure 7: Performance breakdown of checkpoint loaders.
+                                                                                                           (a) GSM8K,                            (b) GSM8K,                         (c) GSM8K,
+                                                                                                             RPS=0.2                               RPS=0.8                            RPS=1.4
+                                                                                                     1.0                               1.0                                1.0
+optimizations until the Pipeline implementation. Figure 7
+                                                                                                     0.8                               0.8                                0.8
+shows the performance breakdown for each model. We ob-
+serve similar contributions by different optimizations for all                                       0.6                               0.6
+                                                                                                                                                    1.00
+                                                                                                                                                                          0.6
+
+
+
+
+                                                                                               CDF
+                                                                                                               1.00                                                                   0.975
+the models despite having different checkpoint size.                                                 0.4                               0.4                                0.4
+                                                                                                               0.98                                 0.98
+                                                                                                                                                                                      0.950
+   Bulk reading improves 1.2x throughput, mitigating the                                             0.2                               0.2                                0.2
+                                                                                                               0.96                                 0.96
+throughput degradation from reading small tensors one after                                                        2.0   2.5                           10           20
+                                                                                                                                                                                      0.925
+                                                                                                                                                                                              250   300
+                                                                                                     0.0                               0.0                                0.0
+another (on average one-third of the tensors in the model are                                              0       2
+                                                                                                               Latency(s)
+                                                                                                                                   4         0     20    40
+                                                                                                                                                   Latency(s)
+                                                                                                                                                                    60          0      200
+                                                                                                                                                                                      Latency(s)
+                                                                                                                                                                                                 400
+
+less than 1MB). Direct IO improves 2.1x throughput, bypass-
+                                                                                                       (d) ShareGPT,                         (e) ShareGPT,                      (f) ShareGPT,
+ing cache and data copy in the kernel. Multi-thread improves
+                                                                                                          RPS=0.2                               RPS=0.8                            RPS=1.4
+2.3x throughput, as multiple channels within the SSD can be
+concurrently accessed. Pinned memory provides a further 1.4x                                          Figure 8: Impacts of RPS on model loading schedulers.
+throughput, bypassing the CPU with GPU DMA. Pipeline
+provides a final 1.5x improvement in throughput, helping to
+avoid synchronization for all data on each storage tier.                                       unlike ServerlessLLM and Shepherd* leading to longer la-
+   We run ServerlessLLM in a container to limit the CPU                                        tency. For 40% of the time, the model is loaded from SSD due
+cores it can use. We find that with 4 CPU cores, Serverless-                                   to random allocation of the GPUs. As there is no migration or
+LLM can achieve maximum bandwidth utilization. We set                                          preemption, the performance of Shepherd and ServerlessLLM
+a sufficiently large chunk size in bulk reading (16MB) to in-                                  is similar.
+volve less number of reads and also pinned memory-based                                           When the schedulers are subjected to medium requests
+chunk pool does not need extra CPU cycles for data copy.                                       per second, for GSM8K (Figure 8b, without locality-aware
+                                                                                               scheduling, the loading times start causing queueing latency
+7.3                     ServerlessLLM Model Scheduler                                          leading with Serverless scheduler resulting in increasing the
+                                                                                               P99 latency by 1.86X. As there is no migration or preemption,
+In this section, we evaluate the performance of the Server-                                    the performance of Shepherd and ServerlessLLM is similar.
+lessLLM’s cluster scheduler on test bed (ii). We compare                                       With a longer inference time with ShareGPT (Figure 8e, we
+ServerlessLLM against two schedulers – the de-facto server-                                    even observe 2X higher P99 latency with Shepherd* com-
+less scheduler and Shepherd [90] scheduler. The serverless                                     pared to ServerlessLLM due to preemption. As Serverless-
+scheduler randomly chooses any GPU available and does                                          LLM relies on live migration in case of locality contention,
+not comprise any optimization for loading time. We imple-                                      ServerlessLLM performs better than the other schedulers de-
+ment Shepherd scheduler and use ServerlessLLM’s loading                                        spite the number of migrations is higher (114 out of 513 total
+time estimation strategy to identify the correct GPU. We call                                  requests) than the number of preemptions (40 out of 513 total
+the modified scheduler as Shepherd*. Therefore, in principle,                                  requests).
+Shepherd* and ServerlessLLM will choose the same GPU.                                             On further stressing the system by increasing the requests
+However, Shepherd* will continue to rely on preemption,                                        per second to 1.4, for GSM8K, one can clearly observe the
+while ServerlessLLM will rely on live migration to ensure                                      impact of live migration and preemption. ServerlessLLM out-
+lower latency times.                                                                           performs Shepherd* and Serverless schedulers by 1.27X and
+   Figure 8a shows the result of a scenario where we run all                                   1.95X on P99 latency respectively. There are 9 preemptions
+three schedulers against OPT-6.7B model and GSM8K and                                          and 53 migrations respectively for a total of 925 requests. As
+ShareGPT dataset while increasing the requests per second.                                     discussed in Section 5.1, preemptions lead to longer latency
+ShareGPT dataset’s average inference time is 3.7X longer                                       compared to migrations. We also observe that with Shepherd*,
+than GSM8K. Figure 8a and Figure 8d show the case where                                        model checkpoints are read from SSD 2X times more than
+there is no locality contention for both datasets. The serverless                              with ServerlessLLM. With ShareGPT (figure 8f, we observe
+scheduler cannot take advantage of locality-aware scheduling                                   that the GPU occupancy reaches 100% leading to requests
+
+
+                                                                                          11
+                 Serverless           SHEPHERD*         ServerlessLLM                                                Ray Serve                       Ray Serve w/ Cache               ServerlessLLM
+
+      1.00                                1.00                                                       250
+
+
+
+
+                                                                                                                                                                                                        8
+                                                                                                                                                                                                  26 2
+                                                                                                                                            0
+
+
+
+
+                                                                                                                                                                                                     1.
+                                                                                                                                                                                                    0.
+                                                                                                                                        3.
+
+
+
+
+                                                                                                                                                                                                  26
+                                                                                                                                                 2
+                                                                                                                                       21
+
+                                                                                                                                                9.
+                                                                                                                                                              250
+
+
+
+
+                                                                                  Mean Latency (s)
+
+
+
+
+                                                                                                                                            19
+      0.75                                0.75                                                       200
+
+
+
+
+                                                                                                                                                                                     2
+                                                                                                                                                                                     2.
+                                                                                                                                                              200
+
+
+
+
+                                                                                                                          14 8
+                                                                                                                               1
+                                                                                                                             2.
+
+
+
+
+                                                                                                                                                                                          4
+                                                                                                                                                                                   18
+                                                       1.00
+
+
+
+
+                                                                                                                            0.
+                  1.00
+
+
+
+
+                                                                                                                                                                                        2.
+CDF
+
+
+
+
+                                                                                                     150
+
+
+
+
+                                                                                                                          14
+                                          0.50
+
+
+
+
+                                                                                                                                                                                      16
+      0.50
+                                                                                                                                                              150
+                  0.95                                                                               100
+
+
+
+
+                                                                                                                                                                                                            .8
+      0.25                                0.25                                                                                                                100
+
+
+
+
+                                                                                                                                                                                                        89
+                                                       0.95                                           50
+                     4.25      4.50                           25   50                                                                                          50
+
+
+
+
+                                                                                                                                                                     .6
+                                          0.00
+
+
+
+
+                                                                                                                                                                          .9
+      0.00
+
+
+
+
+                                                                                                                                                                    27
+                                                                                                            .1
+
+
+
+
+                                                                                                                                                                         17
+                                                                                                           12
+
+                                                                                                                 2
+                                                  0   20     40         60
+
+
+
+
+                                                                                                                                                     5
+             0          5
+
+
+
+
+                                                                                                                                                                                              6
+                                                                                                                8.
+
+
+
+
+                                                                                                                                                                               8
+                                                                                                                                   9
+                                                                                                                     8
+
+
+
+
+                                                                                                                                                 7.
+
+
+
+
+                                                                                                                                                                                          1.
+                                                                                                                                                                              0.
+                                                                                                                               0.
+                                                                                                                     0.
+                  Latency(s)                          Latency(s)                                       0                                                        0
+                                                                                                                6.7B        13B             30B                          6.7B         13B            30B
+
+         (a) OPT-13B GSM8K                        (b) OPT-30B GSM8K                                              (a) GSM8K                                                (b) ShareGPT
+      1.00                                1.00
+                                                                                  Figure 10: Impacts of datasets and models on overall serving
+      0.75                                0.75                                    systems.
+                  1.00                                  1.0
+CDF
+
+
+
+
+      0.50                                0.50
+
+      0.25                                0.25
+                  0.95                                  0.9
+                                                                                  torch.cuda.empty_cache() can lead to inaccurate estima-
+                         10    15                              225 250
+      0.00
+             0       20             40
+                                          0.00
+                                                  0    200       400
+                                                                                  tions, resulting in an average underestimation of 25.78 ms.
+                 Latency(s)                           Latency(s)                  While infrequent, we observed a maximum underestimation
+        (c) OPT-13B ShareGPT                  (d) OPT-30B ShareGPT                of 623 ms during GPU state cleanup in one out of 119 migra-
+                                                                                  tions (as depicted in Figure 8e).
+Figure 9: Impacts of datasets and models on model loading
+schedulers.
+                                                                                  7.4                      Entire ServerlessLLM in Action
+                                                                                  We aimed to deploy the entire ServerlessLLM with a server-
+timeouts with all the three schedulers3 . Shepherd behaves                        less workload on test bed (ii). Here, we compare Server-
+the worst compared to Serverless and ServerlessLLM sched-                         lessLLM against state-of-the-art distributed model serving
+ulers, i.e., 1.43X and 1.5X higher P95 latency respectively.                      systems: (i) Ray Serve (Version 2.7.0), a version we have
+ServerlessLLM and Shepherd* issue 64 migrations and 166                           extended to support serverless inference scenarios with per-
+preemptions, respectively for a total of 925 requests. In this                    formance that can match SOTA serverless solutions such as
+scenario, ServerlessLLM’s effectiveness is constrained by                         KServe; (ii) Ray Serve with Cache, a version we improved
+resource limitations.                                                             to adopt a local SSD cache on each server (utilizing the LRU
+   We further stress the system by running even larger mod-                       policy as in ServerlessLLM) to avoid costly model down-
+els (OPT-13B and OPT-30B) with GSM8K and ShareGPT                                 loads; and (iii) KServe (Version 0.10.2), the SOTA serverless
+datasets. Figure 9 shows the results for those experiments.                       inference system designed for Kubernetes clusters.
+locality-aware scheduling is more important for larger models                        For best performance, Ray Serve and its cache variant are
+as caching them in the main memory can reap better perfor-                        both enhanced by storing model checkpoints on local SSDs
+mance. As ServerlessLLM and Shepherd* are both locality-                          and estimating download latency by assuming an exclusively
+aware, they can make better decisions while scheduling the                        occupied 10 Gbps network. For each system, we set the maxi-
+requests leading to better performance. As Serverless sched-                      mum concurrency to one and set the keep-alive period equal
+uler makes decisions randomly, for GSM8K, we observe that                         to its loading latency, following prior work [60]. We launch
+for 35-40% times, the model is loaded from SSD leading to                         parallel LLM inference clients to generate various workloads,
+poor performance. We see similar behavior for ShareGPT,                           where each request has a timeout threshold of 300 seconds.
+OPT-13B experiment too. For the OPT-30B ShareGPT case,
+the model size is 66 GB. Hence, only two models can be                            Effectiveness of loading-optimized checkpoints. We aimed
+stored in the main memory at any given time reducing the                          to assess the effectiveness of loading-optimized checkpoints
+impact of locality-aware scheduling. Even in this extreme                         within a complete serverless workload, employing various
+case, ServerlessLLM still achieves 35% and 45% lower P99                          model sizes and datasets to diversely test the checkpoint load-
+latency compared to Serverless and Shepherd* respectively.                        ers.
+                                                                                     In this experiment, as depicted in Figure 10, Ray Serve
+Time Estimation. The GPU time estimation error is                                 and Ray Serve with Cache utilize Safetensors. Owing to the
+bounded at 5ms, while the SSD loading error is bounded                            large sizes of the models, the SSD cache cannot accommo-
+at 40ms. However, we do observe instability in CUDA                               date all models, necessitating some to be downloaded from
+driver calls. For instance, when migrating a model, we                            the storage server. With OPT-6.7B and GSM 8K, Serverless-
+noted that cleaning up GPU states (e.g., KV cache) using                          LLM starts models in an average of 0.8 seconds, whereas
+    3 Based on the average inference time of OPT-6.7B on ShareGPT dataset,        Ray Serve takes 12.1 seconds and Ray Serve with Cache 8.2
+the maximum theoretically RPS is 1.79.                                            seconds, demonstrating an improvement of over 10X. Even
+
+
+                                                                             12
+                      Ray Serve           Ray Serve w/ cache                  ServerlessLLM                                     Ray Serve         Ray Serve w/ cache        ServerlessLLM
+               75
+
+
+
+
+                                                                                                                   75 150 225
+                                                    75 150 225
+
+
+
+
+                                                                                                                                                           75
+Mean Latency (s)
+
+
+
+
+                                                                                                    Mean Latency (s)
+               50
+
+
+
+
+                                                                                                                                                           50
+               25
+
+
+
+
+                                                                                                                                                           25
+               0
+
+
+
+
+                                                    0
+
+
+
+
+                                                                                                                   0
+
+
+
+
+                                                                                                                                                           0
+                    0.2   0.5     0.8   1.1   1.4                0.2   0.5   0.8   1.1   1.4                                    1     2       3        4        16     32      48         64
+                                  RPS                                        RPS                                                    # GPU Per Node                       # Model
+
+                          (a) GSM8k                                    (b) ShareGPT
+                                                                                                    (a) Impacts of # GPUs per node                              (b) Impacts of # models
+                   Figure 11: Impacts of RPS on overall serving systems.
+                                                                                                                       Figure 12: System scalability and resource efficiency.
+
+
+with a faster network (i.e., 100 Gbps), the average latency
+                                                                                                    inference for locality release or to achieve load balancing,
+of Ray Serve could drop to 3.8 seconds, making it still 4.7
+                                                                                                    unlike ServerlessLLM, results in performance degradation.
+times slower than ServerlessLLM. The significance of the
+model loader becomes more pronounced with larger models,                                               With the more demanding ShareGPT workload, as shown
+as ServerlessLLM can utilize parallel PCIe links when load-                                         in Figure 11b, ServerlessLLM maintains significant perfor-
+ing large models partitioned on multiple GPUs from pinned                                           mance improvements — up to 212 times better — over Ray
+memory pool. For instance, with OPT-30B, ServerlessLLM                                              Serve and Ray Serve with Cache across RPS ranging from
+still initiates the model in 7.5 seconds, while Ray Serve’s time                                    0.2 to 1.1. However, at an RPS of 1.4, ServerlessLLM’s la-
+escalates to 213 seconds and Ray Serve with Cache to 199.2                                          tency begins to rise, indicating that despite live migration
+seconds, marking a 28X improvement.                                                                 and optimized server scheduling, the limited GPU resources
+   This considerable difference in latency substantially affects                                    eventually impact ServerlessLLM’s performance.
+the user experience in LLM services. Our observations indi-                                         Resource efficiency. A major advantage of the low model
+cate that ServerlessLLM can fulfill 89% of requests within a                                        startup latency in ServerlessLLM is its contribution to re-
+300-second timeout with OPT-30B, whereas Ray Serve with                                             source savings when serving LLMs. We vary the number of
+Cache manages only 26%.                                                                             GPUs available on each server to represent different levels
+   With the ShareGPT dataset (Figure 10b), which incurs a                                           of resource provisioning. As shown in Figure 12a, Server-
+3.7X longer inference time than GSM 8K, the challenge for                                           lessLLM scales well with elastic resources. With just one
+model loaders becomes even more intense. For models like                                            GPU per server, ServerlessLLM already achieves a 4-second
+6.7B and 13B, ServerlessLLM achieves latencies of 0.8 and                                           latency by efficient migrations and swaps. In contrast, Ray
+1.6 seconds on average, respectively, compared to Ray Serve                                         Serve with Cache requires at least four GPUs per server to at-
+and Ray Serve with Cache, which soar to 182.2 and 162.4                                             tain a 12-second latency, which is still higher than Serverless-
+seconds. When utilizing OPT-30B, ServerlessLLM begins                                               LLM’s performance with only one GPU per node. With larger
+to confront GPU limitations (with all GPUs occupied and                                             clusters, the resource-saving efficiency of ServerlessLLM is
+migration unable to free up more resources), leading to an                                          expected to become even more pronounced, as larger clusters
+increased latency of 89.9 seconds. However, this is still a                                         offer more options for live migration and server scheduling.
+significant improvement over Ray Serve with Cache, which                                               The resource efficiency of ServerlessLLM is further ev-
+reaches a latency of 261.8 seconds                                                                  ident when maintaining a fixed number of GPUs while in-
+Effectiveness of live migration and loading scheduler. In                                           creasing the number of LLMs in the cluster. In Figure 12b,
+evaluating the effectiveness of LLM live migration and the                                          with a limited number of models, Ray Serve with Cache can
+loading scheduler, we created workloads with varying RPS                                            match ServerlessLLM in latency performance. However, as
+levels. Scenarios with higher RPS highlight the importance of                                       the number of models grows, the performance gap widens,
+achieving load balancing and locality-aware scheduling since                                        showcasing ServerlessLLM’s potential suitability for large-
+simply speeding up model loading is insufficient to address                                         scale serverless platforms.
+the resource contention common at large RPS levels.                                                 KServe comparison. In our study, we assess KServe and
+   From Figure 11a, it is evident that ServerlessLLM,                                               ServerlessLLM within a Kubernetes cluster. Given that our
+equipped with GSM8K, consistently maintains low latency,                                            four-server cluster is unsuitable for a Kubernetes deployment,
+approximately 1 second, even as RPS increases. In contrast,                                         we instead utilize an eight-GPU server, simulating four nodes
+both Ray Serve and Ray Serve with Cache experience rising                                           with two GPUs each. Since KServe performs slower than the
+latency once the RPS exceeds 0.5, which can be attributed                                           other baselines considered in our evaluation, we only briefly
+to GPU resource shortages. Their inability to migrate LLM                                           mention KServe’s results without delving into details.
+
+
+                                                                                               13
+   With KServe, the GPU nodes initially exhibited a first to-          inference. AlpaServe [44] shows that model parallelism can
+ken latency of 128 seconds. This latency was primarily due to          enhance throughput while meeting SLO constraints, though
+KServe taking 114 seconds to download an OPT-6.7B model                it has yet to be tested on generative models. vLLM [42] in-
+checkpoint from the local S3 storage over a 1 Gbps network.            troduces PagedAttention for efficient KV cache management.
+However, after applying the same enhancement as those for              SplitWise [55] improves throughput by distributing prompt
+Ray Serve, we reduced the first token latency to 28 seconds.           and token generation phases across different machines. Some
+Despite this improvement, KServe’s best latency was signifi-           approaches [14, 66] also use storage devices to offload param-
+cantly higher than those achieved by ServerlessLLM. Notably,           eters from GPUs to manage large LLM sizes. However, these
+ServerlessLLM was the only system able to reduce the latency           systems often overlook model loading challenges, leading to
+to within one second.                                                  increased first token latencies when multiple models share
+                                                                       GPUs. ServerlessLLM addresses this by focusing on mini-
+                                                                       mizing loading latency to complement these throughput and
+8   Related Work
+                                                                       latency optimizations.
+Serverless inference systems. Extensive research has fo-
+cused on optimizing ML model serving in serverless archi-              9    Conclusion
+tectures, targeting batching [10, 84, 89], scheduling [60, 87],
+and resource efficiency [24, 43]. Industry solutions like AWS          This paper describes ServerlessLLM, a low-latency serverless
+SageMaker and Azure ML [50], along with the open-source                inference system purposefully designed for LLMs. The de-
+KServe [16], demonstrate practical implementations. Despite            sign of ServerlessLLM uncovers significant opportunities for
+these advancements, serverless inference systems still per-            system research, including designing new loading-optimized
+form suboptimally with LLMs, as our paper demonstrates.                checkpoints, discovering the need to support live migration
+Serverless cold-start optimizations. Cold-start latency is a           when conducting locality-driven LLM inference, and enabling
+significant issue in serverless systems, addressed through var-        a serverless cluster scheduler to be aware of the locality of
+ious strategies including fast image pulling [79], lightweight         checkpoints in a cluster when optimizing its model scheduling
+isolation [45, 53], snapshot and restore [15, 22, 28, 67, 77],         decision. We believe our work can be extended to ensure fair-
+resource pre-provision [64], elastic resource provisioning [48,        ness of resources across the cluster and explore the possibility
+78], and fork [9, 80]. These approaches mainly focus on re-            of smart checkpoint placement. We look forward to address-
+ducing startup times for containers or VMs without loading             ing these issues in the future. We consider ServerlessLLM
+large external states. Recent research has explored optimizing         as the first step towards unlocking the potential of serverless
+cold-starts by facilitating faster model swaps between GPUs            computing for LLMs. We will continue to develop the open-
+and host memory [39, 88], though scalability with LLMs is              source version of ServerlessLLM. Given its versatility, we
+still challenging. In contrast, ServerlessLLM effectively mini-        envision it as a platform to test new research ideas.
+mizes cold-start latency through LLM-specific innovations,
+such as optimized checkpoint formats and loading pipelines,            10    Acknowledgments
+live migration, and a cluster scheduler tailored to LLM infer-
+ence characteristics.                                                  We sincerely thank our shepherd, Amar Phanishayee, and the
+Exploiting locality in serverless systems. Locality plays a            OSDI reviewers for their insightful feedback, which helped
+crucial role in various optimization strategies for serverless         improve the quality of this paper. We also extend our thanks
+systems. This includes leveraging host memory and local                to Boris Grot for his feedback. We acknowledge Zhaonan
+storage for data cache [41, 59, 69], optimizing the reading of         Zhang, Mingyu Dai, and Yusen Fei for their work in the early
+shared logs [40], and enhancing communication efficiency in            stages of this project. We are grateful for the GPU resources
+serverless Directed Acyclic Graphs (DAGs) [46, 47]. Server-            provided by the School of Informatics and the Edinburgh
+lessLLM, distinct from existing methods, introduces a high-            International Data Facility. This work is supported by UK
+performance checkpoint cache for GPUs, markedly improving              EPSRC and gifts from Tencent.
+checkpoint loading from multi-tier local storage to GPU mem-
+ory. Recent studies [8, 86] have also recognized the need for
+leveraging locality in orchestrating serverless functions. Be-
+                                                                       References
+yond these studies, ServerlessLLM leverages LLM-specific
+                                                                        [1] Amazon elasticache pricing. https://aws.amazon
+characteristics in improving the locality-based server’s selec-
+                                                                            .com/elasticache/pricing/?nc=sn&loc=5. Ac-
+tion and launching locality-driven inference.
+                                                                            cessed: 2024-05-31.
+LLM serving systems. Recent advancements in LLM serving
+have improved inference latency and throughput. Orca [85]               [2] Custom LLMs. https://deepinfra.com/docs/adv
+uses continuous batching for better GPU utilization during                  anced/custom_llms, 2024. Accessed on 2024-06-02.
+
+
+                                                                  14
+ [3] Generative AI tailored to you. https://fireworks.                       Rasley, and Yuxiong He. Deepspeed-inference: enabling
+     ai/, 2024. Accessed on 2024-06-02.                                      efficient inference of transformer models at unprece-
+                                                                             dented scale. In Proceedings of the International Con-
+ [4] The leading enterprise AI platform. https://cohere                      ference on High Performance Computing, Networking,
+     .com/, 2024. Accessed on 2024-06-02.                                    Storage and Analysis, SC ’22. IEEE Press, 2022.
+ [5] Run AI with an API. https://replicate.com/, 2024.
+                                                                        [15] Lixiang Ao, George Porter, and Geoffrey M. Voelker.
+     Accessed on 2024-06-02.
+                                                                             Faasnap: Faas made fast using snapshot-based vms. In
+ [6] Serverless endpoints for leading open-source models.                    Proceedings of the Seventeenth European Conference
+     https://www.together.ai/products#inference,                             on Computer Systems, EuroSys ’22, page 730–746, New
+     2024. Accessed on 2024-06-02.                                           York, NY, USA, 2022. Association for Computing Ma-
+                                                                             chinery.
+ [7] Your data. your AI. your future. https://www.databr
+     icks.com/, 2024. Accessed on 2024-06-02.                           [16] The KServe Authors. Kserve. https://github.com
+                                                                             /kserve/kserve, 2023. Accessed on 2024-01-22.
+ [8] Mania Abdi, Samuel Ginzburg, Xiayue Charles Lin,
+     Jose Faleiro, Gohar Irfan Chaudhry, Inigo Goiri, Ri-               [17] Jens Axboe. Flexible I/O Tester, 2022. Accessed on
+     cardo Bianchini, Daniel S Berger, and Rodrigo Fon-                      2024-01-22.
+     seca. Palette load balancing: Locality hints for serverless
+     functions. In Proceedings of the Eighteenth European               [18] Wei Bai, Shanim Sainul Abdeen, Ankit Agrawal, Kris-
+     Conference on Computer Systems, EuroSys ’23, page                       han Kumar Attre, Paramvir Bahl, Ameya Bhagat, Gowri
+     365–380, New York, NY, USA, 2023. Association for                       Bhaskara, Tanya Brokhman, Lei Cao, Ahmad Cheema,
+     Computing Machinery.                                                    Rebecca Chow, Jeff Cohen, Mahmoud Elhaddad, Vivek
+                                                                             Ette, Igal Figlin, Daniel Firestone, Mathew George, Ilya
+ [9] Istemi Ekin Akkus, Ruichuan Chen, Ivica Rimac,                          German, Lakhmeet Ghai, Eric Green, Albert Greenberg,
+     Manuel Stein, Klaus Satzke, Andre Beck, Paarijaat                       Manish Gupta, Randy Haagens, Matthew Hendel, Rid-
+     Aditya, and Volker Hilt.    SAND: Towards High-                         wan Howlader, Neetha John, Julia Johnstone, Tom Jolly,
+     Performance serverless computing. In 2018 USENIX                        Greg Kramer, David Kruse, Ankit Kumar, Erica Lan,
+     Annual Technical Conference (USENIX ATC 18), pages                      Ivan Lee, Avi Levy, Marina Lipshteyn, Xin Liu, Chen
+     923–935, Boston, MA, July 2018. USENIX Association.                     Liu, Guohan Lu, Yuemin Lu, Xiakun Lu, Vadim Makher-
+                                                                             vaks, Ulad Malashanka, David A. Maltz, Ilias Mari-
+[10] Ahsan Ali, Riccardo Pinciroli, Feng Yan, and Evgenia                    nos, Rohan Mehta, Sharda Murthi, Anup Namdhari,
+     Smirni. Batch: machine learning inference serving on                    Aaron Ogus, Jitendra Padhye, Madhav Pandya, Douglas
+     serverless platforms with adaptive batching. In SC20:                   Phillips, Adrian Power, Suraj Puri, Shachar Raindel, Jor-
+     International Conference for High Performance Com-                      dan Rhee, Anthony Russo, Maneesh Sah, Ali Sheriff,
+     puting, Networking, Storage and Analysis, pages 1–15.                   Chris Sparacino, Ashutosh Srivastava, Weixiang Sun,
+     IEEE, 2020.                                                             Nick Swanson, Fuhou Tian, Lukasz Tomczyk, Vamsi
+[11] Ebtesam Almazrouei, Hamza Alobeidli, Abdulaziz Al-                      Vadlamuri, Alec Wolman, Ying Xie, Joyce Yom, Lihua
+     shamsi, Alessandro Cappelli, Ruxandra Cojocaru, Mer-                    Yuan, Yanzhao Zhang, and Brian Zill. Empowering
+     ouane Debbah, Etienne Goffinet, Daniel Heslow, Julien                   azure storage with RDMA. In 20th USENIX Sympo-
+     Launay, Quentin Malartic, Badreddine Noune, Baptiste                    sium on Networked Systems Design and Implementa-
+     Pannier, and Guilherme Penedo. Falcon-40B: an open                      tion (NSDI 23), pages 49–67, Boston, MA, April 2023.
+     large language model with state-of-the-art performance.                 USENIX Association.
+     2023.
+                                                                        [19] Anyscale Technical Blog. https://www.anyscale
+[12] Amazon. AWS S3. https://aws.amazon.com/s3/,                             .com/blog/loading-llama-2-70b-20x-faste
+     2023. Accessed on 2024-01-22.                                           r-with-anyscale-endpoints, 2023. Accessed on
+                                                                             2024-01-22.
+[13] Amazon. Serverless inference - minimizing cold starts.
+     https://docs.aws.amazon.com/sagemaker/late                         [20] Banana.dev Technical Blog. https://www.banana.d
+     st/dg/serverless-endpoints.html, 2023. Ac-                              ev/blog/turboboot, 2023. Accessed on 2024-01-22.
+     cessed on 2024-01-22.
+                                                                        [21] Microsoft Official Blog. Reinventing search with a new
+[14] Reza Yazdani Aminabadi, Samyam Rajbhandari, Am-                         AI-powered Microsoft Bing and Edge, your copilot for
+     mar Ahmad Awan, Cheng Li, Du Li, Elton Zheng,                           the web. https://blogs.microsoft.com/blog/2
+     Olatunji Ruwase, Shaden Smith, Minjia Zhang, Jeff                       023/02/07/reinventing-search-with-a-new-a
+
+
+                                                                   15
+     i-powered-microsoft-bing-and-edge-your-cop                              {rdma}. In 18th USENIX Symposium on Networked
+     ilot-for-the-web/, 2023. Accessed on 2024-01-22.                        Systems Design and Implementation (NSDI 21), pages
+                                                                             519–533, 2021.
+[22] James Cadden, Thomas Unger, Yara Awad, Han Dong,
+     Orran Krieger, and Jonathan Appavoo. Seuss: skip re-               [32] Sylvain Gugger, Lysandre Debut, Thomas Wolf, Philipp
+     dundant paths to make serverless fast. In Proceedings                   Schmid, Zachary Mueller, Sourab Mangrulkar, Marc
+     of the Fifteenth European Conference on Computer Sys-                   Sun, and Benjamin Bossan. Accelerate: Training and
+     tems, EuroSys ’20, New York, NY, USA, 2020. Associ-                     inference at scale made simple, efficient and adaptable.
+     ation for Computing Machinery.                                          https://github.com/huggingface/accelerate,
+                                                                             2022.
+[23] Andrew A. Chien, Liuzixuan Lin, Hai Nguyen, Varsha
+     Rao, Tristan Sharma, and Rajini Wijayawardana. Reduc-              [33] Arpan Gujarati, Reza Karimi, Safya Alzayat, Wei Hao,
+     ing the carbon impact of generative AI inference (today                 Antoine Kaufmann, Ymir Vigfusson, and Jonathan
+     and in 2035). In HotCarbon, pages 11:1–11:7. ACM,                       Mace. Serving DNNs like Clockwork: Performance
+     2023.                                                                   Predictability from the Bottom Up. In OSDI, pages
+[24] Seungbeom Choi, Sunho Lee, Yeonjae Kim, Jongse                          443–462. USENIX Association, 2020.
+     Park, Youngjin Kwon, and Jaehyuk Huh. Serving Het-
+     erogeneous Machine Learning Models on Multi-GPU                    [34] Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-
+     Servers with Spatio-Temporal Sharing. In 2022 USENIX                    Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu
+     Annual Technical Conference (USENIX ATC 22), pages                      Chen. Lora: Low-rank adaptation of large language
+     199–216, Carlsbad, CA, July 2022. USENIX Associa-                       models. arXiv preprint arXiv:2106.09685, 2021.
+     tion.
+                                                                        [35] HuggingFace. https://huggingface.co, 2023. Ac-
+[25] Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian,                         cessed on 2024-01-22.
+     Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plap-
+     pert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano,                [36] HuggingFace. Safetensors: ML Safer for All. https:
+     Christopher Hesse, and John Schulman. Training                          //github.com/huggingface/safetensors, 2023.
+     verifiers to solve math word problems.       CoRR,                      Accessed on 2024-01-22.
+     abs/2110.14168, 2021.
+                                                                        [37] HuggingFace. Speed Comparison. https://huggin
+[26] GitHub Copilot. https://github.com/features/                            gface.co/docs/safetensors/speed, 2023. Ac-
+     copilot, 2023. Accessed on 2024-01-22.                                  cessed on 2024-01-22.
+
+[27] DataBricks. LLM Inference Performance Engineering:                 [38] Patrick Hunt, Mahadev Konar, Flavio P. Junqueira, and
+     Best Practices. https://www.databricks.com/blo                          Benjamin Reed. Zookeeper: Wait-free coordination
+     g/llm-inference-performance-engineering-b                               for internet-scale systems. In Proceedings of the
+     est-practices, 2023. Accessed on 2024-01-22.                            2010 USENIX Conference on USENIX Annual Techni-
+                                                                             cal Conference, USENIXATC’10, page 11, USA, 2010.
+[28] Dong Du, Tianyi Yu, Yubin Xia, Binyu Zang, Guanglu                      USENIX Association.
+     Yan, Chenggang Qin, Qixuan Wu, and Haibo Chen. Cat-
+     alyzer: Sub-millisecond startup for serverless computing           [39] Jinwoo Jeong, Seungsu Baek, and Jeongseob Ahn. Fast
+     with initialization-less booting. In Proceedings of the                 and efficient model serving using multi-gpus with direct-
+     Twenty-Fifth International Conference on Architectural                  host-access. In EuroSys, pages 249–265. ACM, 2023.
+     Support for Programming Languages and Operating
+     Systems, pages 467–481, 2020.                                      [40] Zhipeng Jia and Emmett Witchel. Boki: Stateful server-
+                                                                             less computing with shared logs. In Proceedings of the
+[29] William Fedus, Barret Zoph, and Noam Shazeer. Switch
+                                                                             ACM SIGOPS 28th Symposium on Operating Systems
+     transformers: Scaling to trillion parameter models with
+                                                                             Principles, SOSP ’21, page 691–707, New York, NY,
+     simple and efficient sparsity. J. Mach. Learn. Res., 23(1),
+                                                                             USA, 2021. Association for Computing Machinery.
+     jan 2022.
+[30] Cloud Native Computing Foundation. etcd. https:                    [41] Ana Klimovic, Yawen Wang, Patrick Stuedi, Animesh
+     //etcd.io, 2023. Accessed on 2024-01-22.                                Trivedi, Jonas Pfefferle, and Christos Kozyrakis. Pocket:
+                                                                             Elastic ephemeral storage for serverless analytics. In
+[31] Yixiao Gao, Qiang Li, Lingbo Tang, Yongqing Xi,                         13th USENIX Symposium on Operating Systems Design
+     Pengcheng Zhang, Wenwen Peng, Bo Li, Yaohui Wu,                         and Implementation (OSDI 18), pages 427–444, Carls-
+     Shaozong Liu, Lei Yan, et al. When cloud storage meets                  bad, CA, October 2018. USENIX Association.
+
+
+                                                                   16
+[42] Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying                    [51] MinIO. MinIO. https://min.io, 2023. Accessed on
+     Sheng, Lianmin Zheng, Cody Hao Yu, Joseph Gonzalez,                  2024-01-22.
+     Hao Zhang, and Ion Stoica. Efficient Memory Manage-
+     ment for Large Language Model Serving with PagedAt-             [52] NVIDIA. NVIDIA DGX H100. https://resources.
+     tention. In SOSP, pages 611–626. ACM, 2023.                          nvidia.com/en-us-dgx-systems/ai-enterpris
+                                                                          e-dgx, 2023. Accessed on 2024-01-22.
+[43] Jie Li, Laiping Zhao, Yanan Yang, Kunlin Zhan, and
+     Keqiu Li. Tetris: Memory-efficient serverless inference         [53] Edward Oakes, Leon Yang, Dennis Zhou, Kevin Houck,
+     through tensor sharing. In 2022 USENIX Annual Tech-                  Tyler Harter, Andrea Arpaci-Dusseau, and Remzi
+     nical Conference (USENIX ATC 22), 2022.                              Arpaci-Dusseau. SOCK: Rapid task provisioning with
+                                                                          Serverless-Optimized containers. In 2018 USENIX An-
+[44] Zhuohan Li, Lianmin Zheng, Yinmin Zhong, Vincent                     nual Technical Conference (USENIX ATC 18), pages
+     Liu, Ying Sheng, Xin Jin, Yanping Huang, Zhifeng Chen,               57–70, Boston, MA, July 2018. USENIX Association.
+     Hao Zhang, Joseph E. Gonzalez, and Ion Stoica. Al-
+                                                                     [54] OpenAI. ChatGPT: Optimizing Language Models for
+     paServe: Statistical multiplexing with model parallelism
+                                                                          Dialogue. https://openai.com/blog/chatgpt/,
+     for deep learning serving. In OSDI, pages 663–679.
+                                                                          2022. Accessed on 2024-01-22.
+     USENIX Association, 2023.
+                                                                     [55] Pratyush Patel, Esha Choukse, Chaojie Zhang, Íñigo
+[45] Zijun Li, Jiagan Cheng, Quan Chen, Eryu Guan, Zizheng
+                                                                          Goiri, Aashaka Shah, Saeed Maleki, and Ricardo Bian-
+     Bian, Yi Tao, Bin Zha, Qiang Wang, Weidong Han, and
+                                                                          chini. Splitwise: Efficient generative LLM inference
+     Minyi Guo. Rund: A lightweight secure container run-
+                                                                          using phase splitting, 2023.
+     time for high-density deployment and high-concurrency
+     startup in serverless computing. In USENIX Annual               [56] Reiner Pope, Sholto Douglas, Aakanksha Chowdhery,
+     Technical Conference, pages 53–68. USENIX Associa-                   Jacob Devlin, James Bradbury, Jonathan Heek, Kefan
+     tion, 2022.                                                          Xiao, Shivani Agrawal, and Jeff Dean. Efficiently scal-
+                                                                          ing transformer inference. Proceedings of Machine
+[46] Ashraf Mahgoub, Karthick Shankar, Subrata Mitra,
+                                                                          Learning and Systems, 5, 2023.
+     Ana Klimovic, Somali Chaterji, and Saurabh Bagchi.
+     SONIC: Application-aware data passing for chained               [57] PyTorch. PyTorch Documentation: Saving and Loading
+     serverless applications. In 2021 USENIX Annual Tech-                 Models. https://pytorch.org/tutorials/beginn
+     nical Conference (USENIX ATC 21), pages 285–301.                     er/saving_loading_models.html, 2023. Accessed
+     USENIX Association, July 2021.                                       on 2024-01-22.
+[47] Ashraf Mahgoub, Edgardo Barsallo Yi, Karthick                   [58] PyTorch. torch.load. https://pytorch.org/do
+     Shankar, Sameh Elnikety, Somali Chaterji, and Saurabh                cs/stable/generated/torch.load.html, 2023.
+     Bagchi. ORION and the three rights: Sizing, bundling,                Accessed on 2024-01-22.
+     and prewarming for serverless DAGs. In 16th USENIX
+     Symposium on Operating Systems Design and Imple-                [59] Francisco Romero, Gohar Irfan Chaudhry, Íñigo Goiri,
+     mentation (OSDI 22), pages 303–320, Carlsbad, CA,                    Pragna Gopa, Paul Batum, Neeraja J. Yadwadkar, Ro-
+     July 2022. USENIX Association.                                       drigo Fonseca, Christos Kozyrakis, and Ricardo Bian-
+                                                                          chini. Faa$t: A transparent auto-scaling cache for server-
+[48] Luo Mai, Guo Li, Marcel Wagenländer, Konstantinos                    less applications. In Proceedings of the ACM Sympo-
+     Fertakis, Andrei-Octavian Brabete, and Peter Pietzuch.               sium on Cloud Computing, SoCC ’21, page 122–137,
+     {KungFu}: Making training in distributed machine                     New York, NY, USA, 2021. Association for Computing
+     learning adaptive. In 14th USENIX Symposium on Op-                   Machinery.
+     erating Systems Design and Implementation (OSDI 20),
+     pages 937–954, 2020.                                            [60] Francisco Romero, Qian Li, Neeraja J Yadwadkar, and
+                                                                          Christos Kozyrakis. INFaaS: Automated model-less
+[49] Sourab Mangrulkar, Sylvain Gugger, Lysandre Debut,                   inference serving. In 2021 USENIX Annual Technical
+     Younes Belkada, Sayak Paul, and Benjamin Bossan.                     Conference (USENIX ATC 21), pages 397–411, 2021.
+     Peft: State-of-the-art parameter-efficient fine-tuning
+     methods. https://github.com/huggingface/peft,                   [61] Rohan Basu Roy, Tirthak Patel, and Devesh Tiwari. Ice-
+     2022.                                                                breaker: Warming serverless functions better with het-
+                                                                          erogeneity. In Proceedings of the 27th ACM Interna-
+[50] Microsoft. Azure ML. https://learn.microsoft.                        tional Conference on Architectural Support for Program-
+     com/en-us/azure/machine-learning, 2023. Ac-                          ming Languages and Operating Systems, pages 753–
+     cessed on 2024-01-22.                                                767, 2022.
+
+
+                                                                17
+[62] ONNX Runtime.           API Reference, onnxrun-                       Hellerstein, and Alexey Tumanov. Cloudburst: state-
+     time.backend.prepare. https://onnxruntime.                            ful functions-as-a-service.  Proc. VLDB Endow.,
+     ai/docs/api/python/api_summary.html, 2023.                            13(12):2438–2452, jul 2020.
+     Accessed on 2024-01-22.
+                                                                      [70] Foteini Strati, Sara Mcallister, Amar Phanishayee, Jakub
+[63] AWS SageMaker. Machine Learning Service - Amazon                      Tarnawski, and Ana Klimovic. Déjàvu: Kv-cache
+     SageMaker. https://aws.amazon.com/pm/sagema                           streaming for fast, fault-tolerant generative LLM serv-
+     ker/, 2023.                                                           ing, 2024.
+
+                                                                      [71] Mistral AI Team. Better, faster, stronger. Mistral AI
+[64] Mohammad Shahrad, Rodrigo Fonseca, Inigo Goiri, Go-
+                                                                           News, April 2024. Accessed: 2024-05-31.
+     har Chaudhry, Paul Batum, Jason Cooke, Eduardo Lau-
+     reano, Colby Tresness, Mark Russinovich, and Ricardo             [72] The Mosaic Research Team. Introducing DBRX: A new
+     Bianchini. Serverless in the wild: Characterizing and                 state-of-the-art open LLM. Mosaic AI Research, March
+     optimizing the serverless workload at a large cloud                   2024. Accessed: 2024-05-31.
+     provider. In 2020 USENIX Annual Technical Conference
+     (USENIX ATC 20), pages 205–218. USENIX Associa-                  [73] The Ray Team. Ray serve. https://docs.ray.io/
+     tion, July 2020.                                                      en/latest/serve/index.html, 2023. Accessed on
+                                                                           2024-01-22.
+[65] Ying Sheng, Shiyi Cao, Dacheng Li, Coleman Hooper,
+     Nicholas Lee, Shuo Yang, Christopher Chou, Banghua               [74] TensorFlow. TensorFlow Documentation: Using the
+     Zhu, Lianmin Zheng, Kurt Keutzer, et al. S-lora: Serving              Saved Model Format. https://www.tensorflow.o
+     thousands of concurrent lora adapters. arXiv preprint                 rg/guide/saved_model, 2023. Accessed on 2024-01-
+     arXiv:2311.03285, 2023.                                               22.
+
+                                                                      [75] TensorFlow. tf.saved_model.load. https://www.tens
+[66] Ying Sheng, Lianmin Zheng, Binhang Yuan, Zhuohan                      orflow.org/api_docs/python/tf/saved_model/
+     Li, Max Ryabinin, Beidi Chen, Percy Liang, Christo-                   load, 2023. Accessed on 2024-01-22.
+     pher Re, Ion Stoica, and Ce Zhang. FlexGen: High-
+     throughput generative inference of large language mod-           [76] Hugo Touvron, Louis Martin, Kevin Stone, Peter Al-
+     els with a single GPU. In Andreas Krause, Emma                        bert, Amjad Almahairi, Yasmine Babaei, Nikolay Bash-
+     Brunskill, Kyunghyun Cho, Barbara Engelhardt, Sivan                   lykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale,
+     Sabato, and Jonathan Scarlett, editors, Proceedings of                Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya
+     the 40th International Conference on Machine Learn-                   Chen, Guillem Cucurull, David Esiobu, Jude Fernan-
+     ing, volume 202 of Proceedings of Machine Learning                    des, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao,
+     Research, pages 31094–31116. PMLR, 23–29 Jul 2023.                    Vedanuj Goswami, Naman Goyal, Anthony Hartshorn,
+                                                                           Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas,
+[67] Simon Shillaker and Peter Pietzuch. Faasm: Lightweight                Viktor Kerkez, Madian Khabsa, Isabel Kloumann, Artem
+     isolation for efficient stateful serverless computing. In             Korenev, Punit Singh Koura, Marie-Anne Lachaux,
+     2020 USENIX Annual Technical Conference (USENIX                       Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu,
+     ATC 20), pages 419–433. USENIX Association, July                      Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushkar
+     2020.                                                                 Mishra, Igor Molybog, Yixin Nie, Andrew Poulton,
+                                                                           Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan
+[68] Dharma Shukla, Muthian Sivathanu, Srinidhi                            Schelten, Ruan Silva, Eric Michael Smith, Ranjan Sub-
+     Viswanatha, Bhargav Gulavani, Rimma Nehme,                            ramanian, Xiaoqing Ellen Tan, Binh Tang, Ross Taylor,
+     Amey Agrawal, Chen Chen, Nipun Kwatra, Ramachan-                      Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng
+     dran Ramjee, Pankaj Sharma, Atul Katiyar, Vipul                       Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie
+     Modi, Vaibhav Sharma, Abhishek Singh, Shreshth                        Kambadur, Sharan Narang, Aurelien Rodriguez, Robert
+     Singhal, Kaustubh Welankar, Lu Xun, Ravi Anupindi,                    Stojnic, Sergey Edunov, and Thomas Scialom. Llama 2:
+     Karthik Elangovan, Hasibur Rahman, Zhou Lin, Rahul                    Open foundation and fine-tuned chat models, 2023.
+     Seetharaman, Cheng Xu, Eddie Ailijiang, Suresh
+     Krishnappa, and Mark Russinovich.         Singularity:           [77] Dmitrii Ustiugov, Plamen Petrov, Marios Kogias,
+     Planet-scale, preemptive and elastic scheduling of AI                 Edouard Bugnion, and Boris Grot. Benchmarking, analy-
+     workloads, 2022.                                                      sis, and optimization of serverless function snapshots. In
+                                                                           Proceedings of the 26th ACM International Conference
+[69] Vikram Sreekanti, Chenggang Wu, Xiayue Charles Lin,                   on Architectural Support for Programming Languages
+     Johann Schleier-Smith, Joseph E. Gonzalez, Joseph M.                  and Operating Systems, ASPLOS ’21, page 559–572,
+
+
+                                                                 18
+     New York, NY, USA, 2021. Association for Computing                [87] Minchen Yu, Zhifeng Jiang, Hok Chun Ng, Wei Wang,
+     Machinery.                                                             Ruichuan Chen, and Bo Li. Gillis: Serving large neural
+                                                                            networks in serverless functions with automatic model
+[78] Marcel Wagenländer, Luo Mai, Guo Li, and Peter Piet-                   partitioning. In 2021 IEEE 41st International Confer-
+     zuch. Spotnik: Designing distributed machine learning                  ence on Distributed Computing Systems (ICDCS), pages
+     for transient cloud resources. In 12th USENIX Work-                    138–148. IEEE, 2021.
+     shop on Hot Topics in Cloud Computing (HotCloud 20),
+     2020.                                                             [88] Minchen Yu, Ao Wang, Dong Chen, Haoxuan Yu, Xi-
+                                                                            aonan Luo, Zhuohao Li, Wei Wang, Ruichuan Chen,
+[79] Ao Wang, Shuai Chang, Huangshi Tian, Hongqi Wang,                      Dapeng Nie, and Haoran Yang. FaaSwap: SLO-Aware,
+     Haoran Yang, Huiba Li, Rui Du, and Yue Cheng. FaaS-                    GPU-Efficient Serverless Inference via Model Swap-
+     Net: Scalable and fast provisioning of custom serverless               ping. CoRR, abs/2306.03622, 2023.
+     container runtimes at alibaba cloud function compute. In
+     2021 USENIX Annual Technical Conference (USENIX                   [89] Chengliang Zhang, Minchen Yu, Wei Wang, and Feng
+     ATC 21), pages 443–457. USENIX Association, July                       Yan. MArk: Exploiting cloud services for Cost-
+     2021.                                                                  Effective, SLO-Aware machine learning inference serv-
+                                                                            ing. In 2019 USENIX Annual Technical Conference
+[80] Xingda Wei, Fangming Lu, Tianxia Wang, Jinyu Gu,                       (USENIX ATC 19), pages 1049–1062, Renton, WA, July
+     Yuhan Yang, Rong Chen, and Haibo Chen. No pro-                         2019. USENIX Association.
+     visioned concurrency: Fast RDMA-codesigned remote
+                                                                       [90] Hong Zhang, Yupeng Tang, Anurag Khandelwal, and
+     fork for serverless computing. In 17th USENIX Sym-
+                                                                            Ion Stoica. SHEPHERD: Serving DNNs in the Wild. In
+     posium on Operating Systems Design and Implementa-
+                                                                            NSDI, pages 787–808. USENIX Association, 2023.
+     tion (OSDI 23), pages 497–517, Boston, MA, July 2023.
+     USENIX Association.                                               [91] Susan Zhang, Stephen Roller, Naman Goyal, Mikel
+                                                                            Artetxe, Moya Chen, Shuohui Chen, Christopher De-
+[81] Bingyang Wu, Yinmin Zhong, Zili Zhang, Gang Huang,                     wan, Mona T. Diab, Xian Li, Xi Victoria Lin, Todor
+     Xuanzhe Liu, and Xin Jin. Fast distributed inference                   Mihaylov, Myle Ott, Sam Shleifer, Kurt Shuster, Daniel
+     serving for large language models, 2023.                               Simig, Punit Singh Koura, Anjali Sridhar, Tianlu Wang,
+                                                                            and Luke Zettlemoyer. OPT: Open Pre-trained Trans-
+[82] xAI. Grok-1, 2024. Accessed: 2024-05-31.
+                                                                            former Language Models. CoRR, abs/2205.01068, 2022.
+[83] Ming Xu. https://huggingface.co/datasets/sh
+                                                                       [92] Yanqi Zhang, Íñigo Goiri, Gohar Irfan Chaudhry, Ro-
+     ibing624/sharegpt_gpt4, 2023.
+                                                                            drigo Fonseca, Sameh Elnikety, Christina Delimitrou,
+[84] Yanan Yang, Laiping Zhao, Yiming Li, Huanyu Zhang,                     and Ricardo Bianchini. Faster and cheaper serverless
+     Jie Li, Mingyang Zhao, Xingzhen Chen, and Keqiu Li.                    computing on harvested resources. In Proceedings of
+     Infless: a native serverless system for low-latency, high-             the ACM SIGOPS 28th Symposium on Operating Sys-
+     throughput inference. In Proceedings of the 27th ACM                   tems Principles, SOSP ’21, page 724–739, New York,
+     International Conference on Architectural Support for                  NY, USA, 2021. Association for Computing Machinery.
+     Programming Languages and Operating Systems, AS-
+     PLOS ’22, page 768–781, New York, NY, USA, 2022.
+     Association for Computing Machinery.
+
+[85] Gyeong-In Yu, Joo Seong Jeong, Geon-Woo Kim, Soo-
+     jeong Kim, and Byung-Gon Chun. Orca: A distributed
+     serving system for Transformer-Based generative mod-
+     els. In 16th USENIX Symposium on Operating Systems
+     Design and Implementation (OSDI 22), pages 521–538,
+     Carlsbad, CA, July 2022. USENIX Association.
+
+[86] Minchen Yu, Tingjia Cao, Wei Wang, and Ruichuan
+     Chen. Following the data, not the function: Rethinking
+     function orchestration in serverless computing. In 20th
+     USENIX Symposium on Networked Systems Design and
+     Implementation (NSDI 23), pages 1489–1504, Boston,
+     MA, April 2023. USENIX Association.
+
+
+                                                                  19
+

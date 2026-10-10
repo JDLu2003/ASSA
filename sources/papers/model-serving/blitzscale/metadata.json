@@ -1,0 +1,71 @@
+{
+  "item": {
+    "topic": "model-serving",
+    "id": "blitzscale",
+    "arxiv": "2412.17246v2",
+    "kind": "arxiv-paper",
+    "title": "BLITZSCALE: Fast and Live Large Model Autoscaling with O(1) Host Caching",
+    "discovered_by": "all:BlitzScale",
+    "landing_url": "https://arxiv.org/abs/2412.17246v2"
+  },
+  "capture_started_at": "2026-10-09T12:04:23.700670+00:00",
+  "path": "sources/papers/model-serving/blitzscale",
+  "requested_url": "https://arxiv.org/abs/2412.17246v2",
+  "pdf_url": "https://arxiv.org/pdf/2412.17246v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "d868ff925923a89b64c87260ce688b6de454213c757c3c4e5d23297218711736",
+      "bytes": 4599479
+    },
+    "paper.txt": {
+      "sha256": "0159ad2d0f30d9b48695012c5afac047a83ddf4ccca1a0d77fb15114a972fec0",
+      "bytes": 189227
+    },
+    "paper.pdf": {
+      "sha256": "c8ee0fb54bc5b374789d9803ba1bf9842d7d81c57ff0d5a91119fb7f8c7f08da",
+      "bytes": 5418392
+    },
+    "landing.html": {
+      "sha256": "2cdcec387e63b902b3d39051c413e53a5a93ca9e46d2c5d2104a37e5a000ea9f",
+      "bytes": 42625
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2412.17246v2",
+    "retrieved_at": "2026-10-09T12:06:39.155055+00:00",
+    "fields": {
+      "citation_title": [
+        "BLITZSCALE: Fast and Live Large Model Autoscaling with O(1) Host Caching"
+      ],
+      "citation_author": [
+        "Zhang, Dingyan",
+        "Wang, Haotian",
+        "Liu, Yang",
+        "Wei, Xingda",
+        "Shan, Yizhou",
+        "Chen, Rong",
+        "Chen, Haibo"
+      ],
+      "citation_date": [
+        "2024/12/23"
+      ],
+      "citation_online_date": [
+        "2025/06/15"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2412.17246"
+      ],
+      "citation_arxiv_id": [
+        "2412.17246"
+      ],
+      "citation_abstract": [
+        "Model autoscaling is the key mechanism to achieve serverless model-as-a-service, but it faces a fundamental trade-off between scaling speed and storage/memory usage to cache parameters, and cannot meet frequent scaling requirements across multiple hosts. The key problem is that data plane performance is slow, and scaled instances remain stopped while parameters are loading. In this paper, we first show that the data plane can be made fast with no or O(1) caching by loading parameters through the compute network between GPUs because: (1) its speed is comparable to host cache and is underutilized, and (2) scaling multiple instances requires no or O(1) caching with network-optimized multicast. Second, autoscaling can be made live by breaking the scaling abstraction for inference from a coarse-grained instance-level to a fine-grained layer-level. This allows us to offload the layer computation from the overloaded serving instances to the scaled ones without waiting for the parameters to be fully loaded. Under real-world workloads, our system BLITZSCALE achieves up to 94 % lower tail latency reductions compared to state-of-the-art autoscaling system (ServerlessLLM), and it reduces the GPU time used for serving by 49 % when compared with serving systems that do not support autoscaling like DistServe and vLLM with the same service-level-agreement."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

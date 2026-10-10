@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "api",
+    "id": "pricing",
+    "url": "https://developers.openai.com/api/docs/pricing",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:19.664399+00:00",
+  "path": "sources/official/openai/api/pricing",
+  "requested_url": "https://developers.openai.com/api/docs/pricing",
+  "final_url": "https://developers.openai.com/api/docs/pricing",
+  "http_status": 200,
+  "title": "Pricing | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "cb42f3dc7bcf92fc735101ac51013eae62c2bb8f27161f868936a41d65874d47",
+      "bytes": 1918
+    },
+    "page.txt": {
+      "sha256": "21c16202c805825c5c5c788233922398b08746147898e925465143a7407b8820",
+      "bytes": 6619
+    },
+    "page.pdf": {
+      "sha256": "d3c4e67b5897c31072411c63011b89fa87687cb6bbe27f16b3cf1cca042cae4c",
+      "bytes": 56116
+    },
+    "page.html": {
+      "sha256": "5707ca49a78ed668fe124ff8b65ecf43d927c8df692d5e05538de3bb78dbf92a",
+      "bytes": 590766
+    },
+    "page.complete.pdf": {
+      "sha256": "da9bb9654e25fb34778b0009884d534e2d43c1fb7f716f0e78d46fb050a5d6cf",
+      "bytes": 121455
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "1141eb3fd14bc081d0f20a41e04e567ec07d63bdab2bc10c9e4fa5e099fab1f5",
+      "bytes": 10980
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

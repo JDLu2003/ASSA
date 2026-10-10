@@ -1,0 +1,91 @@
+{
+  "item": {
+    "topic": "agent-surveys",
+    "id": "rise-and-potential-survey",
+    "arxiv": "2309.07864",
+    "title": "The Rise and Potential of Large Language Model Based Agents: A Survey",
+    "kind": "arxiv-paper"
+  },
+  "capture_started_at": "2026-10-09T12:58:18.027266+00:00",
+  "path": "sources/papers/agent-surveys/rise-and-potential-survey",
+  "requested_url": "https://arxiv.org/abs/2309.07864",
+  "pdf_url": "https://arxiv.org/pdf/2309.07864",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "8b2811e4c2bdf3b873c390aee0ab52611730d4a987985f2412a54c9f4ad4d31f",
+      "bytes": 23664872
+    },
+    "paper.txt": {
+      "sha256": "9428271df34cba34480ee5c50e8505a869d2f1a753d0075b1b9c1fc918d1feaf",
+      "bytes": 382000
+    },
+    "paper.pdf": {
+      "sha256": "5e3b2357ff942e1a0e084ae4af3327011a651cf1f155d108065c70af369e24ac",
+      "bytes": 6832174
+    },
+    "landing.html": {
+      "sha256": "bccdcb8dbc3e3c26c9cfe80bfdaa917f676db61dcd9690eb12b144f671334138",
+      "bytes": 47916
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2309.07864",
+    "retrieved_at": "2026-10-09T13:06:17.622246+00:00",
+    "fields": {
+      "citation_title": [
+        "The Rise and Potential of Large Language Model Based Agents: A Survey"
+      ],
+      "citation_author": [
+        "Xi, Zhiheng",
+        "Chen, Wenxiang",
+        "Guo, Xin",
+        "He, Wei",
+        "Ding, Yiwen",
+        "Hong, Boyang",
+        "Zhang, Ming",
+        "Wang, Junzhe",
+        "Jin, Senjie",
+        "Zhou, Enyu",
+        "Zheng, Rui",
+        "Fan, Xiaoran",
+        "Wang, Xiao",
+        "Xiong, Limao",
+        "Zhou, Yuhao",
+        "Wang, Weiran",
+        "Jiang, Changhao",
+        "Zou, Yicheng",
+        "Liu, Xiangyang",
+        "Yin, Zhangyue",
+        "Dou, Shihan",
+        "Weng, Rongxiang",
+        "Cheng, Wensen",
+        "Zhang, Qi",
+        "Qin, Wenjuan",
+        "Zheng, Yongyan",
+        "Qiu, Xipeng",
+        "Huang, Xuanjing",
+        "Gui, Tao"
+      ],
+      "citation_date": [
+        "2023/09/14"
+      ],
+      "citation_online_date": [
+        "2023/09/19"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2309.07864"
+      ],
+      "citation_arxiv_id": [
+        "2309.07864"
+      ],
+      "citation_abstract": [
+        "For a long time, humanity has pursued artificial intelligence (AI) equivalent to or surpassing the human level, with AI agents considered a promising vehicle for this pursuit. AI agents are artificial entities that sense their environment, make decisions, and take actions. Many efforts have been made to develop intelligent agents, but they mainly focus on advancement in algorithms or training strategies to enhance specific capabilities or performance on particular tasks. Actually, what the community lacks is a general and powerful model to serve as a starting point for designing AI agents that can adapt to diverse scenarios. Due to the versatile capabilities they demonstrate, large language models (LLMs) are regarded as potential sparks for Artificial General Intelligence (AGI), offering hope for building general AI agents. Many researchers have leveraged LLMs as the foundation to build AI agents and have achieved significant progress. In this paper, we perform a comprehensive survey on LLM-based agents. We start by tracing the concept of agents from its philosophical origins to its development in AI, and explain why LLMs are suitable foundations for agents. Building upon this, we present a general framework for LLM-based agents, comprising three main components: brain, perception, and action, and the framework can be tailored for different applications. Subsequently, we explore the extensive applications of LLM-based agents in three aspects: single-agent scenarios, multi-agent scenarios, and human-agent cooperation. Following this, we delve into agent societies, exploring the behavior and personality of LLM-based agents, the social phenomena that emerge from an agent society, and the insights they offer for human society. Finally, we discuss several key topics and open problems within the field. A repository for the related papers at https://github.com/WooooDyy/LLM-Agent-Paper-List."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

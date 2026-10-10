@@ -1,0 +1,81 @@
+{
+  "item": {
+    "topic": "agent-filesystems",
+    "id": "fs-researcher",
+    "arxiv": "2602.01566v2",
+    "kind": "arxiv-paper",
+    "title": "FS-Researcher: Test-Time Scaling for Long-Horizon Research Tasks with File-System-Based Agents",
+    "landing_url": "https://arxiv.org/abs/2602.01566v2",
+    "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+    "published": "2026-02-02T03:00:19Z",
+    "authors": [
+      "Chiwei Zhu",
+      "Benfeng Xu",
+      "Mingxuan Du",
+      "Shaohan Wang",
+      "Xiaorui Wang",
+      "Zhendong Mao",
+      "Yongdong Zhang"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:08.742051+00:00",
+  "path": "sources/papers/agent-filesystems/fs-researcher",
+  "requested_url": "https://arxiv.org/abs/2602.01566v2",
+  "pdf_url": "https://arxiv.org/pdf/2602.01566v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "16fc2daf85a303dbf9f3f82128380f65228f45534021764a7cd6326572561a0d",
+      "bytes": 1491032
+    },
+    "paper.txt": {
+      "sha256": "dc81c556f3e27cef8b65c895b6486f84250bd1a4b090c28d16959035c552c87b",
+      "bytes": 75052
+    },
+    "paper.pdf": {
+      "sha256": "d6ba43ae729a00a93cecaa72ac34a414b441c6bd81a5ef65b80f5fe23c27a1f8",
+      "bytes": 1860416
+    },
+    "landing.html": {
+      "sha256": "a54d0b5ffddfccd88702457486bda5be271c3ca57dac48103ab83aec7d0ee8b9",
+      "bytes": 43159
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2602.01566v2",
+    "retrieved_at": "2026-10-09T13:06:18.908435+00:00",
+    "fields": {
+      "citation_title": [
+        "FS-Researcher: Test-Time Scaling for Long-Horizon Research Tasks with File-System-Based Agents"
+      ],
+      "citation_author": [
+        "Zhu, Chiwei",
+        "Xu, Benfeng",
+        "Du, Mingxuan",
+        "Wang, Shaohan",
+        "Wang, Xiaorui",
+        "Mao, Zhendong",
+        "Zhang, Yongdong"
+      ],
+      "citation_date": [
+        "2026/02/02"
+      ],
+      "citation_online_date": [
+        "2026/04/17"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2602.01566"
+      ],
+      "citation_arxiv_id": [
+        "2602.01566"
+      ],
+      "citation_abstract": [
+        "Deep research is emerging as a representative long-horizon task for large language model (LLM) agents. However, long trajectories in deep research often exceed model context limits, compressing token budgets for both evidence collection and report writing, and preventing effective test-time scaling. We introduce FS-Researcher, a file-system-based, dual-agent framework that scales deep research beyond the context window via a persistent workspace. Specifically, a Context Builder agent acts as a librarian which browses the internet, writes structured notes, and archives raw sources into a hierarchical knowledge base that can grow far beyond context length. A Report Writer agent then composes the final report section by section, treating the knowledge base as the source of facts. In this framework, the file system serves as a durable external memory and a shared coordination medium across agents and sessions, enabling iterative refinement beyond the context window. Experiments on two open-ended benchmarks (DeepResearch Bench and DeepConsult) show that FS-Researcher achieves state-of-the-art report quality across different backbone models. Further analyses demonstrate a positive correlation between final report quality and the computation allocated to the Context Builder, validating effective test-time scaling under the file-system paradigm. The code and data are open-sourced at https://github.com/Ignoramus0817/FS-Researcher."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

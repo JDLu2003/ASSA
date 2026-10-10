@@ -1,0 +1,211 @@
+azon.com/contact-us/?cmpid=docs_headercta_contactus)
+
+html?hidden_service_name=bedrock-agentcore&topic_url=https%3A%2F%2Fdocs.aws.amazon.com%2Fbedrock-agentcore%2Flatest%2Fdevguide%2Fgateway.html)
+                                                         Get started          Service guides        Developer tools          AI resources
+                                                         (#)                  (#)                   (#)                      (#)
+   (https://docs.aws.amazon.com)
+
+
+
+     Amazon Bedrock                                      Documentation
+                                                                                                          Amazon Bedrock AgentCore
+                                                                                                          (https://docs.aws.amazon.com/bedrock-   Developer Guid
+     AgentCore                                           (https://docs.aws.amazon.com/index.html)
+                                                                                                          agentcore/index.html)
+     Developer Guide
+
+
+
+
+    Overvie (what-is-bedrock-
+                                                         Amazon Bedrock AgentCore
+    w       agentcore.html)
+                                                         Gateway: A secure AI gateway
+                                                         for agents, tools, and models
+    Supported AWS           (agentcore-
+    Regions                 regions.html)
+
+    Get started with      (agentcore-get-
+    AgentCore             started-cli.html)                       PDF (/pdfs/bedrock-agentcore/latest/devguide/bedrock-agentcore-dg.pdf#gateway)
+    AgentCore harness(harness.html)
+                                                                  RSS (bedrock-agentcore-dg.rss)              Markdown (gateway.md)
+    Understand the available            (develop-
+    interfaces for using                agents.htm
+                                                                  Agent Setup             Focus mode
+    AgentCore                           l)
+
+    AgentCore Runtime:          (agents-tools-
+    Host agent or tools         runtime.html)
+
+    AgentCore Memory: Add                    (memory.
+    memory to your agent                     html)
+                                                         On this page
+                                                               Key benefits(#gateway-benefits-using)
+    AgentCore Gateway(gateway.html)
+                                                               Key capabilities(#gateway-core-concepts-connectivity-layer)
+        Get started with  (gateway-
+        AgentCore Gateway quick-
+                                start.html)
+
+        Core           (gateway-core-                    Did this page help you?
+        concepts       concepts.html)
+
+        AgentCore        (gateway-                                Yes               No
+        Gateway features features.html)
+                                                         Provide feedback (https://docs.aws.amazon.com/feedback/doc-feedback.html?
+        Supported       (gateway-                        hidden_service_name=bedrock-agentcore&topic_url=https%3A%2F%2Fdocs.aws.amazon.com%2Fbedrock-
+        gateway targets supported-                       agentcore%2Flatest%2Fdevguide%2Fgateway.html)
+                           targets.html)
+
+        Prerequisit (gateway-
+        es          prerequisites.html)
+
+        Set up a          (gateway-
+        gateway           building.html)                 Amazon Bedrock AgentCore Gateway is a fully managed AI gateway that provides a
+                                                         single, secure entry point for agentic traffic—connecting agents to tools, to other
+        Use a gateway(gateway-using.html)
+                                                         agents, and to large language models (LLMs). Rather than serving only as an MCP tool
+        Gateway rules(gateway-rules.html)
+                                                         gateway, Gateway routes and secures any agentic traffic through one endpoint: it
+        Fine-grained (gateway-fine-
+                                                         converts APIs, Lambda functions, and existing services into Model Context Protocol
+        access control grained-access-
+                         control.html)
+                                                         (MCP)-compatible tools; fronts other agents and HTTP services through passthrough
+                                                         targets (including Agent-to-Agent (A2A) traffic); and routes inference requests across
+        Debug and assess (gateway-
+                                                         multiple model providers through a unified, model-based routing endpoint. Gateway
+        your gateway     building-
+                             debug.html)                 supports OpenAPI, Smithy, and Lambda as tool input types, and is the only solution
+                                                         that provides both comprehensive ingress authentication and egress authentication in
+        Advanced         (gateway-
+        topics           advanced.html)                  a fully managed service. Gateway also provides 1-click integration with several
+                                                         popular tools such as Salesforce, Slack, Jira, Asana, and Zendesk. Gateway eliminates
+    AgentCore Identity: Provide                (identi
+    identity management for agent              ty.htm    weeks of custom code development, infrastructure provisioning, and security
+    applications                               l)        implementation so developers can focus on building innovative agent applications.
+
+                                                         Topics
+AgentCore payments: Enable             (paym         Key benefits (#gateway-benefits-using)
+secure microtransaction                ents.ht
+                                                     Key capabilities (#gateway-core-concepts-connectivity-layer)
+payments for AI agents                 ml)
+                                                     Get started with AgentCore Gateway (./gateway-quick-start.html)
+AgentCore Code                 (code-
+Interpreter: Execute code      interpreter-          Core concepts for Amazon Bedrock AgentCore Gateway (./gateway-core-
+and analyze data               tool.html)            concepts.html)
+AgentCore Browser: interact (browser-                Amazon Bedrock AgentCore Gateway features (./gateway-features.html)
+with web applications       tool.html)
+                                                     Supported targets for Amazon Bedrock AgentCore gateways (./gateway-supported-
+AgentCore Observability:            (observab
+Observe your agents and             ility.html)      targets.html)
+resources                                            Prerequisites for using the Amazon Bedrock AgentCore gateway service (./gateway-
+AgentCore MCP Server:          (mcp-                 prerequisites.html)
+Vibe coding with your          getting-
+                                                     Set up an Amazon Bedrock AgentCore gateway (./gateway-building.html)
+coding assistant               started.htm
+                               l)                    Use an AgentCore gateway (./gateway-using.html)
+Policy in AgentCore: Control          (policy.h      Add rules to a gateway (./gateway-rules.html)
+Agent Interactions                    tml)
+                                                     Fine-grained access control for Amazon Bedrock AgentCore Gateway (./gateway-
+AgentCore Evaluations:     (evaluatio
+                                                     fine-grained-access-control.html)
+Evaluate agent performance ns.html)
+                                                     Debug and assess your gateway (./gateway-building-debug.html)
+AgentCore                 (optimization.htm
+optimization              l)                         Advanced features and topics for Amazon Bedrock AgentCore Gateway (./gateway-
+AWS Agent Registry: Centrally          (registr      advanced.html)
+catalog and discover AI                y.html)
+Resources
+AgentCore CLI       (agentcore-cli-
+reference           reference.html)               Key benefits
+AgentCore Python (agentcore-python-
+                                                  Simplify tool development and integration
+SDK reference    sdk-reference.html)
+                                                    Transform existing enterprise resources into agent-ready tools in just a few lines
+AgentCore            (agentcore-
+TypeScript SDK       typescript-sdk-                of code. Instead of spending months writing custom integration code and
+reference            reference.html)                managing infrastructure, developers can focus on building differentiated agent
+Security(security.html)                             capabilities while Gateway handles the undifferentiated heavy lifting of tool
+                                                    management and security at enterprise scale. Gateway also provides 1-click
+Tagging resources(tagging.html)
+                                                    integration with several popular tools such as Salesforce, Slack, Jira, Asana, and
+Quotas(bedrock-agentcore-limits.html)
+                                                    Zendesk.
+Release notes(release-notes.html)
+                                                  Accelerate agent development through unified access
+                                                    Enable your agents to discover and reach tools, other agents, and models
+                                                    through a single, secure endpoint. By combining multiple sources—from APIs and
+                                                    Lambda functions to other agents and model providers—into one unified
+                                                    interface, developers can build and scale agent workflows faster without
+                                                    managing multiple connections or reimplementing integrations.
+
+                                                  Scale with confidence through intelligent tool discovery
+                                                    As your tool collection grows, help your agents find and use the right tools
+                                                    through contextual search. Built-in semantic search capabilities help agents
+                                                    effectively use available tools based on their task context, improving agent
+                                                    performance and reducing development complexity at scale.
+
+                                                  Comprehensive authentication
+                                                    Manage both inbound authentication (verifying agent identity) and outbound
+                                                    authentication (connecting to tools) in a single service. Handle OAuth flows,
+                                                    token refresh, and secure credential storage for third-party services.
+
+                                                  Framework compatibility
+                                                    Work with popular open-source frameworks including CrewAI, LangGraph,
+                                                    LlamaIndex, and Strands Agents. Integrate with any model while maintaining
+                                                    enterprise-grade security and reliability.
+                                                               Serverless infrastructure
+                                                                 Eliminate infrastructure management with a fully managed service that
+                                                                 automatically scales based on demand. Built-in observability and auditing
+                                                                 capabilities simplify monitoring and troubleshooting.
+
+
+
+
+                                                               Key capabilities
+                                                               Gateway provides the following key capabilities:
+
+                                                                   Security Guard - Manages OAuth authorization to ensure only valid users and
+                                                                   agents can access tools and resources.
+                                                                   Translation - Converts agent requests using protocols like Model Context
+                                                                   Protocol (MCP) into API requests and Lambda invocations, eliminating the need to
+                                                                   manage protocol integration or version support.
+                                                                   Composition - Combines multiple APIs, functions, tools, agents, and model
+                                                                   providers behind a single endpoint for streamlined agent access, including model-
+                                                                   based routing of inference traffic across providers.
+                                                                   Secure Credential Exchange - Handles credential injection for each tool, enabling
+                                                                   agents to use tools with different authentication requirements seamlessly.
+                                                                   Semantic Tool Selection - Enables agents to search across available tools to find
+                                                                   the most appropriate ones for specific contexts, allowing agents to use thousands
+                                                                   of tools while minimizing prompt size and reducing latency.
+                                                                   Infrastructure Manager - Provides a serverless solution with built-in observability
+                                                                   and auditing, eliminating infrastructure management overhead.
+
+
+
+Get Started                                    Service Guides                          Developer Tools                            Helpful Links
+                                                                                                                                                                       Top
+AWS Hands-On Tutorials                         Choosing a generative AI                AWS Code Example Library          Download the AWS Docs MCP
+(https://aws.amazon.com/getting-               service                                 (https://docs.aws.amazon.com/code-Server
+started/hands-on/)                             (https://docs.aws.amazon.com/decision-
+                                                                                  library/latest/ug/what-is-code-                 (https://github.com/awslabs/mcp/tree/main/src/aws
+
+AWS Solutions Library                          guides/latest/decision-                 library.html)                              documentation-mcp-server)
+
+(https://aws.amazon.com/solutions/)guides/genai-guide.html)                            AWS CLI                                    Sign into the AWS Console
+AWS Decision Guides                            AWS service guides                      (https://docs.aws.amazon.com/cli/) (https://console.aws.amazon.com/)
+                                   (https://docs.aws.amazon.com/#products)
+(https://docs.aws.amazon.com/decision-                               AWS Builder Center                                           AWS re:Post
+guides/)                                       AWS CLI Tutorials on                    (https://builder.aws.com/)                 (https://repost.aws/)
+                                               GitHub                                  AWS Developer Tools Blog
+                                               (https://github.com/aws-                (https://aws.amazon.com/blogs/developer/)
+                                               samples/sample-developer-
+                                               tutorials)
+
+
+
+Privacy (https://aws.amazon.com/privacy)         |   Site terms (https://aws.amazon.com/terms)   |   Cookie preferences (#)   |    © 2026, Amazon Web Services,
+
+Inc. or its affiliates. All rights reserved.         English
+

@@ -1,0 +1,209 @@
+Skip to main content
+Documentation
+/
+Console
+Sign in
+Gemini Enterprise Agent Platform
+Start free
+Overview
+Studio
+Agents
+Models
+Notebooks
+API reference
+Pricing
+Engineering Blog
+Overview
+Get an API key
+Get started
+Build an agent with ADK and Agents CLI
+Build
+Overview
+Create agents
+Skill Registry
+Authentication
+RAG Engine
+Tokenizer
+Multimodal datasets
+Use Agent Search
+Perform vector similarity searches
+Agent Retrieval (formerly Vector Search 2.0) - Intelligent Retrieval for AI Applications
+Scale
+Overview
+Agent Runtime
+Sessions
+Feedback service
+Memory Bank
+Sandbox
+Autonomous agent scheduling
+Govern
+Overview
+Safety (Responsible AI)
+Share an agent
+Agent Identity
+Agent Registry
+Topology graphs
+Policies
+Agent Gateway
+Guides
+Security
+Agent Audit
+Optimize
+Overview
+Observability
+Evaluation
+Agent evaluation
+Evaluate your agents
+Run Offline Evaluations
+Simulate agent behavior
+Continuous evaluation with Online Monitors
+Manage evaluation metrics
+Analyze evaluation results and failure clusters
+Configure quality alerts
+Optimize agent prompts
+Example Store
+Troubleshooting
+Overview
+Agent Platform Runtime environment setup
+Create an agent
+Agent deployment
+Agent Gateway connectivity
+IAM access policies
+Manage deployed agents
+Code Execution
+Memory Bank
+On this page
+Procedure summary
+Evaluation process
+Evaluation workflow
+Core capabilities
+Evaluate with AI coding assistants
+Agents CLI eval skill
+Agent Platform GenAI Evaluation Service flywheel skill
+What's next
+Home
+Documentation
+AI and ML
+Gemini Enterprise Agent Platform
+Agents
+Was this helpful?
+Send feedback
+Agent evaluation
+
+To see an example of End-to-end agent evaluation, run the "Multi-Turn Agent Evaluation with User Simulation, Metric Registration, and Auto Loss Analysis" notebook in one of the following environments:
+
+Open in Colab | Open in Colab Enterprise | Open in Agent Platform Workbench | View on GitHub
+
+This document describes how to use agent evaluation to measure and improve the performance, safety, and quality of your agents.
+
+To learn more about model evaluation, see Gen AI evaluation service overview.
+
+Procedure summary
+Phase	Activity	Goal
+Design	Define eval cases	Specify agent tasks and expected outcomes.
+Execution	Run inferences	Generate real-world or simulated conversation traces.
+Scoring	Compute metrics	Grade traces using automated raters (Task Success, Safety).
+Refinement	Optimize agent	Propose and verify improvements to instructions or tools.
+Evaluation process
+
+Evaluation follows a structured, iterative workflow:
+
+Define eval cases: An eval case is a specification that defines an agent's task. An eval case can include one or multiple conversation steps, the conversation context (the agent's state), and a specification for simulating user responses during inference.
+Run inferences: Inference is the execution of an eval case. If an eval case contains a conversation plan, user responses are simulated during inference.
+Generate traces: Each inference run captures the agent's behavior in a trace. A trace is a factual, immutable record of the agent's behavior, including model inputs, responses, and tool calls.
+Compute metrics: Metrics are scores computed for each trace using prebuilt or custom raters. Some metrics, like Exact Match, are reference-based and require an eval case with a reference answer. Others, like Helpfulness, are reference-free and evaluate the trace on its own. This automated evaluation lets you score traces captured from production traffic or external logs, independent of a managed test environment.
+Conduct analysis: Analyze metrics, rubrics, and verdicts to identify key agent issues, link the agent issues back to test cases, and generate insights for improvement.
+Optimize the agent: Use optimization to manage the entire evaluation cycle. This automated process analyzes results, proposes improvements to the agent, and iteratively reruns the process to verify performance gains.
+Evaluation workflow
+
+You can integrate evaluation into two main stages of your workflow:
+
+Local development iteration: Evaluate an Agent Development Kit (ADK)-based agent locally to rapidly iterate on prompt engineering and tool configurations.
+Deployed agent assessment: Measure the quality of deployed agents by analyzing historical traces or running synthetic benchmarks against agent endpoints.
+Core capabilities
+
+Agent evaluation helps you build an initial evaluation suite, even without existing test data. The following features help automate the process of generating test cases and refining your agentic systems:
+
+Scenario generation and user simulation: Automatically generate diverse, multi-turn synthetic test scenarios based on your agent's instructions and tool definitions. This automation allows you to start testing immediately by eliminating the need to manually author initial test cases.
+
+Environment simulation: Intercept specific tool calls to inject custom behaviors, mocked data, or simulated errors (such as HTTP 503 errors or latency spikes). This simulation lets you validate agent resilience without impacting production backends.
+
+Multi-turn evaluation: Automatically evaluate entire conversation histories using multi-turn autoraters. These raters analyze intent extraction, dynamically generate rubrics, and provide objective validation verdicts to help ensure instruction adherence.
+
+Prompt optimization: Programmatically generate and validate refined system instructions by using prompt optimization. The optimization framework identifies points of failure and iteratively proposes targeted updates.
+
+Evaluate with AI coding assistants
+
+If you use Gemini CLI or another AI coding assistant, you can install Agent skills that teach your assistant the agent evaluation methodology described on this page. Each skill provides the eval workflow, dataset schema, metric selection guidance, and failure analysis steps directly in your coding session, so your assistant can build, grade, and improve evaluations without leaving your editor.
+
+Installation instructions follow each skill.
+
+Agents CLI eval skill
+
+A CLI-driven workflow to evaluate and optimize Agent Development Kit (ADK) agents using the agents-cli eval commands. This skill covers:
+
+Preparing eval datasets and synthesizing multi-turn scenarios with user simulation
+Running inference, grading traces, and analyzing failure clusters
+Iterating on prompts and tools with the eval-fix loop
+
+To install, run the following command:
+
+npx skills add https://github.com/google/agents-cli --skill google-agents-cli-eval
+
+Agent Platform GenAI Evaluation Service flywheel skill
+
+An SDK-driven playbook to evaluate and improve models and agents through the Agent Platform GenAI Evaluation Service, using the Agent Platform GenAI Evaluation SDK (client.evals.evaluate()). This skill covers:
+
+Building eval datasets from session traces, DataFrames, or synthetic generation
+Selecting, configuring, and writing custom metrics with LLM-as-judge scoring
+Analyzing rubric verdicts and loss patterns to drive concrete improvements
+
+To install, run the following command:
+
+npx skills add https://github.com/google/skills --skill agent-platform-eval-flywheel
+
+What's next
+Simulate agent behavior
+Run evaluation
+Manage evaluation metrics
+View evaluation results
+Was this helpful?
+Send feedback
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+
+Products and pricing
+See all products
+Google Cloud pricing
+Google Cloud Marketplace
+Contact sales
+Support
+Community forums
+Support
+Release Notes
+System status
+Resources
+GitHub
+Getting Started with Google Cloud
+Code samples
+Cloud Architecture Center
+Training and Certification
+Engage
+Blog
+Events
+X (Twitter)
+Google Cloud on YouTube
+Google Cloud Tech on YouTube
+Android
+Chrome
+Firebase
+Google AI
+About Google
+Privacy
+Site terms
+Google Cloud terms
+Our third decade of climate action: join us
+Sign up for the Google Cloud newsletter
+Subscribe

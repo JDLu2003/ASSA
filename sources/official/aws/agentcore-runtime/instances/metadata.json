@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore-runtime",
+    "id": "instances",
+    "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:19.151951+00:00",
+  "path": "sources/official/aws/agentcore-runtime/instances",
+  "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+  "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+  "http_status": 200,
+  "title": "Instances - Amazon Bedrock AgentCore",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "158b326254f47d5c41f675ffe7f180c2ec72f4227b43fded31e79ecd7929253b",
+      "bytes": 24378
+    },
+    "page.txt": {
+      "sha256": "558166f669ebcb51272284e20508a3fd38b44c0752f26506f697b666bb5ede8c",
+      "bytes": 14992
+    },
+    "page.pdf": {
+      "sha256": "eaa55d40efa128382485fae87fd1e28783152f9c3d575573ec326bb4a39de667",
+      "bytes": 265058
+    }
+  }
+}

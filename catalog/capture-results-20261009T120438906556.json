@@ -1,0 +1,209 @@
+{
+  "run_at": "2026-10-09T12:04:38.906602+00:00",
+  "results": [
+    {
+      "item": {
+        "topic": "agent-environments",
+        "id": "deltabox",
+        "arxiv": "2605.22781v2",
+        "kind": "arxiv-paper",
+        "title": "DeltaBox: Scaling Stateful AI Agents with Millisecond-Level Sandbox Checkpoint/Rollback",
+        "discovered_by": "all:DeltaBox",
+        "landing_url": "https://arxiv.org/abs/2605.22781v2"
+      },
+      "capture_started_at": "2026-10-09T12:04:22.963764+00:00",
+      "path": "sources/papers/agent-environments/deltabox",
+      "requested_url": "https://arxiv.org/abs/2605.22781v2",
+      "pdf_url": "https://arxiv.org/pdf/2605.22781v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "7236f6acda657cdc1d476938c8dfcb9013137971b638c320665fc911b8b95407",
+          "bytes": 401922
+        },
+        "paper.txt": {
+          "sha256": "a787e3589602155f9a958d2338b7e6cf6c7245eb2e4335219a3509fbafef867c",
+          "bytes": 121425
+        },
+        "paper.pdf": {
+          "sha256": "74c96242a33cb0aa72a614520e886fcb8c4bec58bed381841936cd742762ef41",
+          "bytes": 1053046
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:23.700449+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "blitzscale",
+        "arxiv": "2412.17246v2",
+        "kind": "arxiv-paper",
+        "title": "BLITZSCALE: Fast and Live Large Model Autoscaling with O(1) Host Caching",
+        "discovered_by": "all:BlitzScale",
+        "landing_url": "https://arxiv.org/abs/2412.17246v2"
+      },
+      "capture_started_at": "2026-10-09T12:04:23.700670+00:00",
+      "path": "sources/papers/model-serving/blitzscale",
+      "requested_url": "https://arxiv.org/abs/2412.17246v2",
+      "pdf_url": "https://arxiv.org/pdf/2412.17246v2",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "d868ff925923a89b64c87260ce688b6de454213c757c3c4e5d23297218711736",
+          "bytes": 4599479
+        },
+        "paper.txt": {
+          "sha256": "0159ad2d0f30d9b48695012c5afac047a83ddf4ccca1a0d77fb15114a972fec0",
+          "bytes": 189227
+        },
+        "paper.pdf": {
+          "sha256": "c8ee0fb54bc5b374789d9803ba1bf9842d7d81c57ff0d5a91119fb7f8c7f08da",
+          "bytes": 5418392
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:27.100593+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-services",
+        "id": "aaas-agent-network",
+        "arxiv": "2505.08446v1",
+        "kind": "arxiv-paper",
+        "title": "Agent-as-a-Service based on Agent Network",
+        "discovered_by": "all:\"agent as a service\"",
+        "landing_url": "https://arxiv.org/abs/2505.08446v1"
+      },
+      "capture_started_at": "2026-10-09T12:04:27.100723+00:00",
+      "path": "sources/papers/agent-services/aaas-agent-network",
+      "requested_url": "https://arxiv.org/abs/2505.08446v1",
+      "pdf_url": "https://arxiv.org/pdf/2505.08446v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "2068eb88b30fbbb3fa226658db285db5b294d1ead658c458ea9b0684b0841728",
+          "bytes": 502593
+        },
+        "paper.txt": {
+          "sha256": "b8dcd539fe462e18a4547c9fb3a6941da126bb475dd63423055a1cd146d1ecfe",
+          "bytes": 51611
+        },
+        "paper.pdf": {
+          "sha256": "f3e5314a40950a0a2828851aa48a556541e9430fccc3a4f879a62b032f681037",
+          "bytes": 693146
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:28.240179+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-services",
+        "id": "openaaas",
+        "arxiv": "2605.13618v1",
+        "kind": "arxiv-paper",
+        "title": "OpenAaaS: An Open Agent-as-a-Service Framework for Distributed Materials-Informatics Research",
+        "discovered_by": "all:\"agent as a service\"",
+        "landing_url": "https://arxiv.org/abs/2605.13618v1"
+      },
+      "capture_started_at": "2026-10-09T12:04:28.240229+00:00",
+      "path": "sources/papers/agent-services/openaaas",
+      "requested_url": "https://arxiv.org/abs/2605.13618v1",
+      "pdf_url": "https://arxiv.org/pdf/2605.13618v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "483c3411ebcf01d2d82c1f8fea4a585006f51e717e3c53ed4ef633db69fb2aa3",
+          "bytes": 3309192
+        },
+        "paper.txt": {
+          "sha256": "53835cfe7f9689c723b5dff9237700e360c5efe5199c2bc642170288a4e476ad",
+          "bytes": 90731
+        },
+        "paper.pdf": {
+          "sha256": "2d5737ebaaa25f5151ed7471aa8aec55b0f3230f2b13c7a83362d1f21ba11dfb",
+          "bytes": 3580091
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:30.643238+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-services",
+        "id": "conversational-interoperability",
+        "arxiv": "2407.19438v1",
+        "kind": "arxiv-paper",
+        "title": "Conversational AI Multi-Agent Interoperability, Universal Open APIs for Agentic Natural Language Multimodal Communications",
+        "discovered_by": "all:\"agent as a service\"",
+        "landing_url": "https://arxiv.org/abs/2407.19438v1"
+      },
+      "capture_started_at": "2026-10-09T12:04:30.643314+00:00",
+      "path": "sources/papers/agent-services/conversational-interoperability",
+      "requested_url": "https://arxiv.org/abs/2407.19438v1",
+      "pdf_url": "https://arxiv.org/pdf/2407.19438v1",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "5375af4f028b60f733b0e7a587c8a826e10870b21085d6ba75579b16135431b9",
+          "bytes": 7340990
+        },
+        "paper.txt": {
+          "sha256": "362b09e5f52cca5cf1d553b2b3a01becd77ab3b86e3962c93694ed3e9e73ed37",
+          "bytes": 65336
+        },
+        "paper.pdf": {
+          "sha256": "7704a5206476e81cdd2982676ff18af44550273299f08e6f57e858d10b393dcf",
+          "bytes": 6974151
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:36.346425+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-services",
+        "id": "agentic-services-computing",
+        "arxiv": "2509.24380v3",
+        "kind": "arxiv-paper",
+        "title": "Agentic Services Computing",
+        "discovered_by": "all:\"agent as a service\"",
+        "landing_url": "https://arxiv.org/abs/2509.24380v3"
+      },
+      "capture_started_at": "2026-10-09T12:04:36.346490+00:00",
+      "path": "sources/papers/agent-services/agentic-services-computing",
+      "requested_url": "https://arxiv.org/abs/2509.24380v3",
+      "pdf_url": "https://arxiv.org/pdf/2509.24380v3",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "21e9713c40ba41373d954d45ea14c7715e22eef3b12a2b80e685e5f90b9a5764",
+          "bytes": 2610051
+        },
+        "paper.txt": {
+          "sha256": "030d6ab3b63b0605699a071bfa1f14303056809cc214e014d57c7ee8ed7bf1fa",
+          "bytes": 290104
+        },
+        "paper.pdf": {
+          "sha256": "7bf84129fea936e64f0894802ac11570fd6608a90165775788d3072212ef9db1",
+          "bytes": 3354994
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:04:38.801051+00:00"
+    }
+  ]
+}

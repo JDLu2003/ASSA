@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "managed-agents",
+    "id": "sandbox-environment",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:20:17.365453+00:00",
+  "path": "sources/official/google/managed-agents/sandbox-environment",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+  "http_status": 200,
+  "title": "Managed Agents API on Agent Platform sandbox environment  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "7b6a1b3ccd4155a08348fd66a67087f1a6c89e59fc4b3aa35e81876c58dce2ac",
+      "bytes": 9893
+    },
+    "page.txt": {
+      "sha256": "b4352f56079823f26a38d490ba250d6dd1bccafac19cb0d9e192b4ce8ee19f0f",
+      "bytes": 9313
+    },
+    "page.pdf": {
+      "sha256": "14671fbe5b0bf410b399c2437aeeca8b4451aaf90383c0ab98e04732bcdbde83",
+      "bytes": 258851
+    },
+    "page.html": {
+      "sha256": "953eeadec471bb00666638bf428c0544400f24f90ab2641799bcd8e7337614ee",
+      "bytes": 252037
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore-runtime",
+    "id": "shell-commands",
+    "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:17.119887+00:00",
+  "path": "sources/official/aws/agentcore-runtime/shell-commands",
+  "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+  "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+  "http_status": 200,
+  "title": "Execute shell commands in AgentCore Runtime sessions - Amazon Bedrock AgentCore",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "2c6d19bfdc65544b60d17e831adab90728de5211727a21a553194acb5d9eb35d",
+      "bytes": 26678
+    },
+    "page.txt": {
+      "sha256": "b3607da1bc21e2e09bb2cde16407114414a8825ba4013b59a0669d1396120ca0",
+      "bytes": 15454
+    },
+    "page.pdf": {
+      "sha256": "f00c4dd22499de6ab35c9a1883dd23ebddd72ade64430e02965caca71eeb789b",
+      "bytes": 346050
+    }
+  }
+}

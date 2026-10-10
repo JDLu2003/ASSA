@@ -1,0 +1,82 @@
+{
+  "item": {
+    "topic": "agent-filesystems",
+    "id": "agent-native-filesystems",
+    "arxiv": "2604.13536v5",
+    "kind": "arxiv-paper",
+    "title": "Don't Let AI Agents YOLO Your Files: Information and Control in Agent-Native Filesystems",
+    "landing_url": "https://arxiv.org/abs/2604.13536v5",
+    "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+    "published": "2026-04-15T06:32:07Z",
+    "authors": [
+      "Shawn Wanxiang Zhong",
+      "Junxuan Liao",
+      "Jing Liu",
+      "Mai Zheng",
+      "Andrea C. Arpaci-Dusseau",
+      "Remzi H. Arpaci-Dusseau"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:06.181883+00:00",
+  "path": "sources/papers/agent-filesystems/agent-native-filesystems",
+  "requested_url": "https://arxiv.org/abs/2604.13536v5",
+  "pdf_url": "https://arxiv.org/pdf/2604.13536v5",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "a00785d462b4c20106a3687b1af39b642c7a1599a4f7a31053ec8e29e5bbbeff",
+      "bytes": 310251
+    },
+    "paper.txt": {
+      "sha256": "18e71f1b7a7aa8d171971e6a63e8d9c3f1dfe97b274e061f5f76fbe25b428e44",
+      "bytes": 215256
+    },
+    "paper.pdf": {
+      "sha256": "e5d55c3faa7219b2f841f95f519266054b6c27d02b46cee07c5a46ca7aebf653",
+      "bytes": 923855
+    },
+    "landing.html": {
+      "sha256": "4a22bbd245c73a08e966fae25798ff3efcac4fe21e2d22612201d45b29e39d5e",
+      "bytes": 44488
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2604.13536v5",
+    "retrieved_at": "2026-10-09T13:06:18.722558+00:00",
+    "fields": {
+      "citation_title": [
+        "Don't Let AI Agents YOLO Your Files: Information and Control in Agent-Native Filesystems"
+      ],
+      "citation_author": [
+        "Zhong, Shawn Wanxiang",
+        "Liao, Junxuan",
+        "Liu, Jing",
+        "Zheng, Mai",
+        "Arpaci-Dusseau, Andrea C.",
+        "Arpaci-Dusseau, Remzi H."
+      ],
+      "citation_doi": [
+        "10.1145/3830418.3843858"
+      ],
+      "citation_date": [
+        "2026/04/15"
+      ],
+      "citation_online_date": [
+        "2026/09/16"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2604.13536"
+      ],
+      "citation_arxiv_id": [
+        "2604.13536"
+      ],
+      "citation_abstract": [
+        "AI coding agents regularly misuse their filesystem access, causing data corruption, loss, and leakage. We conduct the first systematic study of this problem through an analysis of 290 public reports. Our study reveals two fundamental gaps: users and agents have limited information about filesystem effects and insufficient control over them. To close these gaps, we propose to shift information and control from agents to filesystems. We introduce agent-native filesystems and identify three primitives they should provide: introspect effects, undo mutations, and gate accesses. These primitives let agents operate autonomously while reserving user interaction for sensitive accesses and final review. We build YoloFS, an agent-native filesystem. YoloFS stages mutations until the user commits them, snapshots intermediate states for agent self-correction, and uses progressive permission to let users adapt access rules during execution. We evaluate YoloFS with a new methodology that captures interactions among the user, agent, and filesystem. On 11 tasks with hidden side effects, YoloFS enables agents to self-correct in 8 and stages all mutations for user review. On 112 routine tasks, YoloFS reduces user interaction while matching the baseline success rate. YoloFS is open-sourced at https://github.com/YoloFS/YoloFS."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-sdk",
+    "id": "overview",
+    "url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:01:59.631094+00:00",
+  "path": "sources/official/openai/agents-sdk/overview",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents",
+  "http_status": 200,
+  "title": "Agents | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "3c750ddab0ed551b6828629a0f0cbaf3d0c0ec7a8c3c5bf032ebcfffde214fdd",
+      "bytes": 2391
+    },
+    "page.txt": {
+      "sha256": "a4fbf80da953a95c1b3eada5b5ad6e8aebb69e614bffd113a22eb8aa7f750bbd",
+      "bytes": 3730
+    },
+    "page.pdf": {
+      "sha256": "df3525af3489c64b4ea59b6301834f50948f5557d0928e5754c8bc438ed7d222",
+      "bytes": 44407
+    },
+    "page.html": {
+      "sha256": "b7afff570bc341be790ebb5a3e323bb65a632576b4c2f6df03157065af5956db",
+      "bytes": 358785
+    },
+    "page.complete.pdf": {
+      "sha256": "ca9cb351dd0e31c7dfc5296bf647c7793b4aec9c899508baceb0fa23f120f1d3",
+      "bytes": 61745
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "22347c6c86fc454df3f47aa419817b7226dafad7933c99ac840950ebc93b0680",
+      "bytes": 4059
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

@@ -1,0 +1,1274 @@
+                                                HydraServe: Minimizing Cold Start Latency for Serverless LLM Serving
+                                                                         in Public Clouds
+
+                                                      Chiheng Lou1 Sheng Qi1 Chao Jin1 Dapeng Nie2 Haoran Yang2 Yu Ding2
+                                                                             Xuanzhe Liu1 Xin Jin1
+                                                               1 School of Computer Science, Peking University                    2 Alibaba Group
+arXiv:2502.15524v2 [cs.DC] 25 Sep 2025
+
+
+
+
+                                                                  Abstract                                    are only charged for the resource consumption during request
+                                                                                                              processing. This approach offers significant cost savings for
+                                            With the proliferation of large language model (LLM) vari-
+                                                                                                              long-tail models with infrequent usage.
+                                         ants, developers are turning to serverless computing for cost-
+                                                                                                                 However, for cloud providers, delivering performance guar-
+                                         efficient LLM deployment. However, public cloud providers
+                                                                                                              antees for serverless LLM users is challenging, primarily
+                                         often struggle to provide performance guarantees for server-
+                                                                                                              due to the long latency of cold starts, i.e., provisioning new
+                                         less LLM serving due to significant cold start latency caused
+                                                                                                              workers to meet the current load. Production traces reveal
+                                         by substantial model sizes and complex runtime dependencies.
+                                                                                                              that bursty traffic patterns are prevalent in both LLM serving
+                                         To address this problem, we present HydraServe, a serverless
+                                                                                                              workloads [34] and serverless workloads [35], making cold
+                                         LLM serving system designed to minimize cold start latency
+                                                                                                              starts inevitable in serverless LLM serving [30–33]. Cold
+                                         in public clouds. HydraServe proactively distributes models
+                                                                                                              starts can directly impact service level objectives (SLOs) for
+                                         across servers to quickly fetch them, and overlaps cold-start
+                                                                                                              LLM inference. For instance, in our production environment,
+                                         stages within workers to reduce startup latency. Additionally,
+                                                                                                              a cold-start instance produces the first token after more than
+                                         HydraServe strategically places workers across GPUs to avoid
+                                                                                                              40 seconds, whereas subsequent generation takes only ∼30ms
+                                         network contention among cold-start instances. To minimize
+                                                                                                              per token. This contrast stresses the need for faster cold starts.
+                                         resource consumption during cold starts, HydraServe further
+                                         introduces pipeline consolidation that can merge groups of              Addressing this problem is non-trivial, as LLM cold starts
+                                         workers into individual serving endpoints. Our comprehen-            introduce two unique challenges compared to traditional
+                                         sive evaluations under diverse settings demonstrate that Hy-         serverless workloads. First, LLM applications require massive
+                                         draServe reduces the cold start latency by 1.7×– 4.7× and            external state, with model weights fetched on demand from
+                                         improves service level objective attainment by 1.43×–1.74×           remote registries during cold starts. Since serverless instances
+                                         compared to baselines.                                               typically operate with constrained network bandwidth, model
+                                                                                                              fetching becomes the primary bottleneck in cold start latency.
+                                                                                                              Second, the LLM runtime is highly complex, involving mul-
+                                         1   Introduction                                                     tiple specialized libraries including CUDA runtime [36], AI
+                                                                                                              frameworks [37,38], and inference engines [39–41]. The com-
+                                         Large language models (LLMs) have become an essential                plex dependencies of these libraries lead to substantial con-
+                                         part of daily work and life, powering a wide range of applica-       tainer creation and library loading overhead [42]. In public
+                                         tions such as chatbots [1–3], programming assistants [4–6],          clouds, applications run in isolated containers with varying
+                                         and AI-enhanced search engines [7, 8]. While the industry is         library versions, making it impractical to prepare runtimes in
+                                         releasing numerous LLMs with varying structures, sizes, or           advance for every user.
+                                         training corpora for diverse scenarios [1–3, 9–20], businesses          Prior works focus on reducing the model fetching latency
+                                         of different scales are also seeking to develop custom LLMs          and propose two approaches: (1) caching LLMs in memory
+                                         tailored to their unique needs [21–24]. As a result, a global        or SSDs [30, 33, 43] and (2) retrieving model weights from
+                                         ecosystem comprising over one million models has emerged,            active workers holding the same model [31–33]. While effec-
+                                         as documented by Hugging Face [25].                                  tive for frequently accessed models, these optimizations fall
+                                            To efficiently deploy these models, serverless LLM serving        short for long-tail customers, who benefit the most from the
+                                         has emerged as a compelling choice [25–33]. In serverless            serverless paradigm [44]. Additionally, retrieving data from
+                                         inference, the cloud platform automatically provisions GPUs          peer workers requires high-bandwidth networking, which is
+                                         for models based on the actual request load, and model owners        not cost-efficient for serverless inference clusters.
+
+
+                                                                                                          1
+    To this end, we present HydraServe, a serverless LLM serv-                HydraServe reduces the cold start latency by 1.7×– 4.7×
+ing system designed to minimize cold start latency in public                  and improves SLO attainment by 1.43×–1.74× compared
+clouds. HydraServe incorporates two key insights to mitigate                  to baselines. The brownfield evaluation further confirms
+the overhead of model fetching and runtime preparation. First,                these gains, yielding an average latency reduction of 2.6×.
+while a single server has limited bandwidth for model fetching,
+distributing workers across multiple servers enables efficient
+bandwidth aggregation. Second, since model fetching and run-
+                                                                          2     Background and Motivation
+time preparation exhibit weak execution dependencies, these               This section provides an overview of large language models
+stages can be parallelized rather than executed sequentially,             (LLMs) and serverless LLM serving. We highlight the critical
+thereby overlapping their latencies.                                      issue of limited network bandwidth for LLM serving in public
+    Specifically, to distribute models across servers, we take            clouds, which can substantially increase cold start latency. We
+advantage of the layered structure of LLMs. HydraServe par-               then identify opportunities for mitigating this performance
+titions LLM layers across servers and exchanges intermediate              bottleneck in a cost-effective manner.
+results during inference. This design, known as pipeline par-
+allelism, has been well studied in distributed model training
+and inference [45–54]. Pipeline parallelism is also used to               2.1     LLM Inference
+quickly start inference when scaling up multiple workers [32].            An LLM takes as input a sequence of tokens, called prompt,
+HydraServe further adopts pipeline parallelism to reduce the              and generates an output sequence in an autoregressive man-
+blocking effect of model fetching—we proactively create a                 ner, producing one token at a time based on both the prompt
+group of workers in parallel even if the model only needs one.            and previously generated outputs. The core component of an
+    Although pipeline parallelism can effectively reduce the              LLM is the self-attention layer, which needs to compute the
+cold start latency for the initial inference, it may impact perfor-       key, value, and query vectors of tokens in the input sequence.
+mance in subsequent rounds due to GPU sharing. To address                 Since the key and value vectors of previous tokens remain
+this, we propose pipeline consolidation. Specifically, we al-             unchanged during iterations, LLM serving systems usually
+low workers to fetch and load the layers previously assigned              cache these vectors to avoid redundant computation, known
+to other workers in the background, eventually transitioning              as KV cache. The stage that generates the first token is called
+back to local inference with a fully-loaded model. Depending              prefill, during which the key and value vectors of all tokens
+on the load, each worker can independently decide whether                 in the prompt are calculated and stored in GPU memory. Sub-
+to release its resources or load the full model after cold starts.        sequent tokens are generated in the decoding phase, which
+Therefore, with a single cold start, HydraServe can choose                reuses the key-value cache and generates one token at a time.
+to only create a single worker in the end or scale up as many                In LLM serving, users often specify service level objectives
+workers as the pipeline size, allowing for high elasticity.               (SLOs) that represent performance expectations [51, 55–57].
+    HydraServe takes a three-level hierarchical approach to               These SLOs typically focus on two metrics: time to first token
+realize the above optimizations. At the cluster level, we de-             (TTFT) and time per output token (TPOT). TTFT measures
+sign an algorithm to allocate resources for cold-start models             the latency from request submission to the generation of the
+based on the model size, cluster resource usage, and user                 first token, while TPOT represents the average time taken to
+SLOs. A network-contention-aware worker placement pol-                    generate each subsequent token. The relative importance of
+icy is adopted to avoid potential network contention. At the              these metrics varies across different applications. For exam-
+worker level, we overlap remote-to-host model fetching, host-             ple, real-time chatbots emphasize low TTFT, whereas article
+to-GPU model loading, and the initialization of container and             writing prefers lower TPOT [55].
+GPU runtime to further reduce the cold start latency. Finally,               Pipeline parallelism is a model parallelism strategy that
+at the inference level, we consolidate workers that are previ-            is commonly used in LLM training to scale up involved
+ously created in pipeline groups and migrate their runtime                GPUs [45–50, 58]. This approach distributes a model’s layers
+states to ensure peak performance with all weights loaded.                across multiple workers, with intermediate results transmitted
+    In summary, we make the following contributions:                      sequentially between workers during computation.
+• We articulate the main bottleneck of LLM cold starts in
+   public clouds and identify opportunities to mitigate the
+                                                                          2.2     Serverless LLM Serving in Public Clouds
+   overhead.
+• We propose a hierarchical approach that combines cluster-               Recently, serverless inference has gained widespread adop-
+   level, worker-level, and inference-level optimizations to              tion among cloud providers, including Aliyun [27], AWS [26],
+   reduce cold start latency for serverless LLM serving in                and Azure [59]. In serverless LLM serving, users upload
+   public clouds.                                                         (1) model weights and (2) an image containing the serving
+• We implement HydraServe in both testbed and production                  framework and runtime dependencies to a cloud storage. This
+   environment. Experiments on real-world datasets show that              serving framework is responsible for fetching model weights
+
+
+                                                                      2
+  Instance      Mem.(GB)   Band.(Gbps)   #GPU   Cost($/h)   Cost/GPU($/h)                 Create         Load           Initialize        Fetch     Load
+                                                                                Start                                                                         Inference      First Token
+                                                                                         Container      Library       CUDA Context        Model     Model
+   g6e.xlarge       32       up to 20     1       1.861         1.861
+  g6e.2xlarge       64       up to 20     1      2.24208       2.24208                     8.52 s        2.65 s           1.56 s          24.5 s    6.87 s      0.6 s
+  g6e.4xlarge      128          20        1      3.00424       3.00424
+  g6e.8xlarge      256          25        1      4.52856       4.52856                                Figure 1: Cold start latency breakdown.
+ g6e.16xlarge      512          35        1      7.57719       7.57719
+ g6e.12xlarge      384         100        4     10.49264       2.62316                                                         Pipeline       Workers
+                                                                                                                  Fetch
+ g6e.24xlarge      768         200        4     15.06559       3.76640                                            Model
+ g6e.48xlarge     1536         400        8     30.13118       3.76640                                                                     Load
+                                                                                                                                           Model
+Table 1: Configurations and costs of L40S instances on AWS EC2.                                      Create           Initialize
+                                                                                        Start                                                            Inference      First Token
+The number of vCPU is proportional to memory capacity.                                              Container       CUDA Context
+                                                                                                                                           Load
+                                                                                                                                          Library
+from remote storage, loading them into GPU memory, and
+running inference upon user requests. The serverless plat-                                           Figure 2: Optimized cold-start workflow.
+form automatically scales model workers to accommodate
+                                                                                public serverless inference platform [27], using vLLM [40] to
+fluctuating loads, including the ability to scale down to zero
+                                                                                run a Llama2-7B model on NVIDIA A10 GPUs. In general,
+workers when idle. One of the most attractive offerings of
+                                                                                a cold start involves the following stages:
+serverless LLM serving is its pay-per-use billing, where users
+                                                                                • Container Creation. The cluster controller allocates re-
+are charged only for the running periods of each worker. In
+                                                                                  sources and creates a container on a GPU server.
+production environments, long-tail models typically exhibit
+                                                                                • Library Loading. The container starts the Python run-
+sporadic and unpredictable workload patterns [60], making
+                                                                                  time and imports libraries like PyTorch [37] and Tensor-
+them ideal candidates for serverless serving [30].
+                                                                                  Flow [62], along with LLM serving frameworks such as
+Network bandwidth constraints. Contrary to conventional                           vLLM [40], SGLang [41], and TensorRT-LLM [39].
+wisdom, serverless LLM inference may operate with sub-                          • CUDA Context Initialization. The runtime initializes the
+stantially lower network capacity than commonly anticipated.                      CUDA context to prepare for GPU tasks.
+This constraint arises partly from multiple instances sharing                   • Model Fetching. The serving framework retrieves the
+a single server, but the primary driver is the cost-efficiency                    model from remote storage to local memory.
+requirement of serverless computing. LLM inference per-                         • Model Loading. The fetched model is loaded into GPU
+formance mainly depends on the GPU capabilities. Since                            memory and model states including CUDA graph and KV
+serverless customers prioritize cost savings, cloud providers                     cache are initialized.
+aim to minimize cost per GPU when configuring their infras-                     • Inference. Run the model and generate the first token.
+tructure. This cost-optimization strategy favors servers with                      As shown in Figure 1, a cold start requires more than 40
+reduced CPU, memory, and network resources.                                     seconds to produce the first token. Model fetching dominates
+   Table 1 illustrates this economic principle by comparing                     this latency due to limited network bandwidth and contention
+configurations and costs of AWS EC2 instance types equipped                     among colocated containers. Additionally, container creation
+with NVIDIA L40S GPUs [61]. As Table 1 reveals, resources                       incurs substantial overhead due to the large image sizes of
+other than GPUs constitute a significant portion of server                      LLM workloads (8.31 GB in our setup). For model loading,
+costs. Using single-GPU instances as an example, compared                       prior work has largely eliminated CUDA graph and KV cache
+to the instance type with the lowest cost per GPU (g6e.xlarge),                 initialization overhead through state materialization [63]. The
+adding extra resources can increase costs by 20% to 300%.                       remaining bottleneck lies in transferring model weights to the
+Consequently, servers with constrained non-GPU resources                        GPU, which takes approximately 2 seconds in our setup.
+deliver substantial cost savings, making them the preferred
+choice for serverless providers. However, these economical
+instances impose network bandwidth limitations that signifi-                    2.3        Opportunities
+cantly increase cold start latency. While a network-only up-
+                                                                                This paper achieves maximum overlapping to reduce cold
+grade is less expensive, the additional network bandwidth
+                                                                                start latencies. At the cluster level, we leverage pipeline par-
+would be severely underutilized, as it is only used during cold
+                                                                                allelism for coarse-grained overlapping of model fetching
+starts for model fetching. This paper aims to address this
+                                                                                across workers. Upon a cold start, we create a pipeline par-
+trade-off by minimizing cold start latency while preserving
+                                                                                allelism group across GPU servers, with each worker only
+the cost benefits of resource-constrained servers.
+                                                                                hosting a part of the model. This approach can significantly
+Breakdown of LLM cold starts. Despite the potential bene-                       reduce the single-worker startup latency. At the worker level,
+fits of serverless LLM serving, existing systems suffer from                    we perform fine-grained overlapping by carefully reorganiz-
+significant cold start latency. A cold start occurs when an                     ing the intra-worker workflow in Figure 1. We offload model
+incoming request finds no available worker hosting the target                   fetching to a system-level service, allowing fetching to begin
+model, necessitating the creation of a new worker. Figure 1                     before container creation. Furthermore, we observe that model
+provides a detailed breakdown of cold start latency in our                      loading (GPU-bound) and library loading (CPU-bound) use
+
+
+                                                                            3
+                          Cluster Level
+                                                                                     Create Container           Load Library
+       Resource Allocation         Network-Contention-Aware                          Init. CUDA Context         Fetch Model
+        Algorithm (§4.1)            Worker Placement (§4.2)                          Load Model                 Inference                                    Part 1
+                                                                                                                                                                               PP Size: 2
+
+
+
+
+                                                                        Stages
+
+
+
+
+                                                                                                                                      Stages
+                                                                                                                                               Worker 0
+
+          Partition                Worker 0            Node 0
+                                                                                                                                                                   Communication
+
+                                   Worker 1            Node 1                                                                                                Part 2
+                                                                                                                               Time            Worker 1                        PP Size: 2
+
+
+        Inference Level                   Worker Level                                (a) Normal cold start.                                   (b) Cold start with 2 workers.
+    Pipeline Consolidation (§6)       Model Prefetcher (§5)
+                                                                                                                KV Cache Migration
+
+
+    Worker 0      New Worker       Parameter      Parameter                                 Part 1    Part 2                                              Part 1    Part 2
+                                                                                                     PP S: 2                                                       PP S: 2
+                                  Manager (§5)   Manager (§5)                                                  PP Size: 1                                                    PP Size: 1
+
+
+
+
+                                                                        Stages
+
+
+
+
+                                                                                                                                      Stages
+                                                                                 Worker 0                                                      Worker 0
+        KV Cache Migration                                                                  Comm.
+                                                                                                        Migrate KV cache
+                                                                                                                                                          Comm.
+                                                                                                                                                                      Migrate KV cache
+                                     GPU 0             GPU 1                                Part 2                                                        Part 2    Part 1
+    Worker 1      Terminate                                                                          PP S: 2                                                       PP S: 2
+                                    Worker 0       Worker 1                      Worker 1                  Terminate           Time            Worker 1                      PP Size: 1     Time
+
+
+               Figure 3: HydraServe system overview.                       (c) Cold start with scaling down.                                   (d) Cold start with scaling up.
+                                                                       Figure 4: Comparison of cold-start workflows for different methods.
+different resources, allowing parallel execution. We reorder
+operations to initialize CUDA context first, and then simulta-         whether to evolve or terminate after completing the cold start
+neously start to load model and library. Finally, we pipeline          process. Ongoing requests in the pipeline parallelism group
+the fetching and loading at tensor granularity to hide the load-       are then migrated to the standalone workers.
+ing overhead. Figure 2 shows this optimized workflow.                     HydraServe ensures that cold starts incur no higher first-
+                                                                       token latencies or request completion times than standard
+                                                                       cold-start processes. This guarantee in request completion
+3   HydraServe Overview                                                time is achieved through HydraServe’s request migration
+                                                                       mechanism, which ensures peak inference speed after all
+HydraServe is a serverless LLM serving system designed to              model weights have been prepared.
+minimize the cold start latency. As shown in Figure 3, Hy-
+draServe adopts a three-level hierarchical architecture. At the
+cluster level, the central controller employs a resource alloca-       4           Cluster-Level Controller
+tion algorithm (§4.1) and a network-contention-aware worker
+placement strategy (§4.2) for parallel model fetching. The             In this section, we present the design of the cluster-level
+algorithm allocates resources for each cold-start model based          central controller in HydraServe. Figure 4(a) illustrates the
+on user SLOs, while the placement strategy identifies poten-           normal cold-start workflow, which goes through six stages
+tial network contentions on GPU servers and ensures that such          sequentially. HydraServe leverages pipeline parallelism to
+contention does not cause SLO violations. HydraServe also              optimize model fetching, the most time-consuming stage. As
+strives to distribute pipeline workers across GPUs to mitigate         shown in Figure 4(b), upon a cold start, we launch multi-
+performance degradation caused by GPU sharing.                         ple workers on different servers, each fetching a part of the
+   At the worker level, HydraServe applies fine-grained over-          model. During inference, workers exchange intermediate re-
+lapping across cold-start stages to accelerate worker startup          sults but the sizes of these messages are relatively small.
+(§5). First, a node-level model prefetcher is used to proac-           By reducing the portion of the model each worker needs
+tively fetch model weights for cold-start workers, overlapping         to fetch, pipeline parallelism significantly reduces cold start
+model fetching with container creation and runtime initializa-         latency. HydraServe finds the optimal resource allocation
+tion times. Second, HydraServe prioritizes the CUDA context            scheme for each cold-start model based on the model size and
+initialization and introduces a parameter manager that loads           user SLOs (§4.1), and employs a network-contention-aware
+parameters to the GPU in parallel with library loading. Addi-          worker placement strategy to prevent SLO violations (§4.2).
+tionally, model fetching and loading are pipelined to hide the
+model loading overhead. These overlapping strategies reduce            4.1             Resource Allocation
+the overhead of cold start stages other than model fetching,
+                                                                       To design an efficient resource allocation algorithm for
+thereby highlighting the value of pipeline parallelism.
+                                                                       pipeline workers, we begin by quantifying the tradeoffs in-
+   Finally, at the inference level, HydraServe consolidates
+                                                                       volved in pipeline parallelism. Based on this analysis, we
+pipeline workers into standalone workers that host all parame-
+                                                                       propose a TTFT and worst-case TPOT prediction method.
+ters (§6). Specifically, HydraServe allows a cold-start worker
+to continue loading the remaining model parts while serving            Tradeoff analysis. The benefits of pipeline parallelism come
+requests, eventually evolving into an individual worker that           with performance and resource overhead. To better under-
+hosts the entire model. Each worker can independently decide           stand these tradeoffs, we conduct experiments using four GPU
+
+
+                                                                   4
+            12                                                          40
+                                                                                                                                       140
+                                                                        35
+            10                                                                                                                         120
+                                                                        30
+            8                                                                                                                          100
+
+
+
+
+                                                            TPOT (ms)
+
+
+
+
+                                                                                                                           TPOT (ms)
+                                                                        25
+ TTFT (s)
+
+
+
+
+                                                                                                                                       80
+            6                                                           20
+                                                                        15                                                             60
+            4
+                                                                        10                                                             40
+            2        OPT-6.7B         Falcon-7B                                  OPT-6.7B         Falcon-7B                                                     OPT-6.7B         Falcon-7B
+                     Llama2-7B                                          5        Llama2-7B                                             20
+                                                                                                                                                                Llama2-7B
+            0                                                           0                                                               0
+                 1           2            3         4                        1           2            3           4                          64            48               32          24
+                        Pipeline Parallelism Size                                   Pipeline Parallelism Size                                                   Cost (GB)
+
+ (a) TTFT of different pipeline parallelism sizes.         (b) Impact of pipeline parallelism size on TPOT.                                       (c) Impact of cost on TPOT.
+                                                        Figure 5: Tradeoff analysis of pipeline parallelism.
+
+servers, each equipped with a NVIDIA A10 GPU and 188 GB                                          lelism size, the algorithm should decide how to place pipeline
+memory. The network bandwidth of each server is 16 Gbps.                                         workers and allocate how much GPU memory to each worker.
+   Figure 5(a) demonstrates the TTFT of models under differ-                                        To narrow down the search space, we limit the GPU mem-
+ent pipeline parallelism sizes. Larger parallelism sizes reduce                                  ory allocation choices for each worker to two cases: (a) the
+model fetching time, resulting in shorter TTFT. Note that the                                    same as the non-parallelized setup, and (b) the minimal mem-
+marginal improvement in TTFT diminishes as other cold-start                                      ory required to perform inference (proportional to the inverse
+stages also consume non-negligible time. This limitation is                                      of pipeline parallelism size). We call them full-memory work-
+further addressed by worker-level optimizations in §5.                                           ers and low-memory workers, respectively.
+   Pipeline parallelism has a modest impact on TPOT, as                                             Our algorithm has two stages. First, we enumerate all de-
+shown in Figure 5(b). This is because the messages trans-                                        ployment choices with different pipeline parallelism sizes or
+mitted between workers are relatively small. For example,                                        GPU memory usage and predict the TTFT and worst-case
+Llama2-7B incurs only 8 KB of inter-layer results per token.                                     TPOT for each choice. Second, we select the optimal choice
+   However, pipeline parallelism may lead to worker coloca-                                      that satisfies user SLOs with minimum resource usage. The
+tions across different models. For a model initially requiring                                   maximum pipeline parallelism size is limited to 4 as larger
+M GPU memory, distributing it across S GPUs reduces per-                                         parallelism sizes yield little improvement.
+GPU memory consumption to M/S. Under heavy load, the                                                The TTFT and TPOT prediction takes historical informa-
+cluster must co-place workers whose combined memory re-                                          tion as the input. Formally, it includes the time cost of con-
+quirements fit within a single GPU’s capacity to maximize                                        tainer creation and runtime initialization (tc ), data transmis-
+resource utilization. This colocation of workers from different                                  sion (tn ), prefill (t p ), and decoding (td ). The data transmission
+models can degrade performance.                                                                  time is the latency of the TCP network between GPU servers.
+                                                                                                 The prefill and decoding time costs are model-specific metrics
+   Figure 5(c) illustrates this issue by changing the GPU mem-
+                                                                                                 obtained from the model’s previous executions. Assume the
+ory allocated to each model, with pipeline parallelism size
+                                                                                                 pipeline parallelism size for the current deployment choice
+fixed at 4. Allocated GPU memory represents the cost of a
+                                                                                                 is s and there are w full-memory workers (0 ≤ w ≤ s), while
+model, and lower memory usage per model leads to worker
+                                                                                                 the network and PCIe bandwidth of servers on which workers
+colocation. For example, allocating 32GB GPU memory to
+                                                                                                 reside are {bq1 , bq2 , · · · , bqs } and {pq1 , pq2 , · · · , pqs }. Finally,
+each model makes three models share four GPUs. As the cost
+                                                                                                 we predict the TTFT using the following equation.
+decreases, each GPU hosts multiple concurrently running
+workers. Consequently, the GPU’s computational resources                                                                         M           1    1
+are allocated proportionally to each worker’s reserved mem-                                                      TTFT = tc +         × max{    +      }
+                                                                                                                                  s     i   bqi pqi                                      (1)
+ory, resulting in longer TPOT.                                                                                                            w
+   In conclusion, while increasing pipeline parallelism size                                                             + t p × (s − w + ) + tn × s,
+                                                                                                                                          s
+reduces the cold start latency, it may impact inference per-
+formance due to GPU sharing. Allocating additional GPU                                           where M is the model size. Eq. 1 is made up of four parts:
+memory to workers can mitigate this performance loss, but at                                     runtime initialization, model fetching, model loading, and
+the expense of higher resource consumption. HydraServe’s                                         prefilling. The model fetching and loading time is determined
+resource allocation algorithm systematically balances these                                      by the partitioned model size and speed of the slowest worker.
+tradeoffs to optimize system performance.                                                        During prefilling, a full-memory worker costs t p /s + tn units
+                                                                                                 of time, while a low-memory worker costs t p + tn units.
+Algorithm design. The resource allocation algorithm finds                                           To satisfy TTFT requirement, we select GPU servers to
+an appropriate resource allocation strategy for each cold-start                                  minimize the model fetching and loading time for a given
+model according to user SLOs. Apart from pipeline paral-                                         pipeline parallelism size s and number of full-memory work-
+
+
+                                                                                             5
+Algorithm 1 Resource Allocation Algorithm                                                     Because the intermediate results are small, simply prioritizing
+Input: time cost of container creation and runtime initializa-                                inference packets solves the contention.
+tion tc , data transmission tn , prefill t p , and decoding td ; model                           The second type of contention is the interference among
+size M; GPU server network bandwidth bi and PCIe band-                                        cold-start workers on the same GPU server, which leads to
+width pi ; user specified requirements SLOTTFT and SLOTPOT .                                  unpredictable cold start performance. To solve this problem,
+Output: pipeline parallelism size s, #full-memory workers w,                                  we propose a network-contention-aware worker placement
+and selected GPU servers g.                                                                   policy that places cold-start workers based on user SLOs.
+   S ← 0/                                                                                     Policy design. Initially, colocated workers share the network
+   for s ∈ {1, 2, · · · , 4} do                                                               bandwidth with equal credits. Once we assign a worker to a
+        for w ∈ {0, 1, · · · , s} do                                                          GPU server, we record the model size it needs to fetch and
+             i1 , i2 , · · · , ik ← Servers that fit a model of size M.                       the user-specified maximum TTFT. To place a new worker,
+              j1 , j2 , · · · , jl ← Servers that fit a model of size M/s.                    we inspect each GPU server to check whether adding a cold-
+              j1′ , · · · , jl′′ ← MergeSort(( j1 , · · · , jl ), (iw+1 , · · · , ik ))       start worker to this server would lead to SLO violations for
+             g ← (i1 , i2 · · · , iw , j1′ , ·· · , js−w
+                                                      ′   )                                  existing workers. If the check passes, we estimate and record
+                                               1    1                                         the network bandwidth that the new worker can obtain. Note
+              max_ratio ← maxx∈g               bx + px
+                                                                                              that PCIe bandwidth is much higher than network and PCIe
+              TTFT ← tc + Ms × max_ratio + t p × (s − w + ws ) +
+                                                                                              switch is able to further isolate PCIe usage across tasks, so
+   tn × s
+                                                                                              we do not take PCIe contention into account.
+             TPOT ← td × (s − w + ws ) + tn × s
+                                                                                                  Specifically, we denote the bandwidth of a GPU server as
+             if TTFT ≤ SLOTTFT and TPOT ≤ SLOTPOT then
+                                                                                              B. For each cold-start worker i on the GPU server, we record
+                 S ← S ∪ {(s, w, g)}
+                                                                                              the fetching deadline Di and estimate its pending model size
+   if S is 0/ then                                                                            Si . The fetching deadline comes from the prediction of TTFT
+        return (1, 1, (i1 )) ▷ Use single worker if no solution                               (Eq. 1). When a new cold-start worker comes, the network
+   else                                                                                       bandwidth per work decreases, and we check whether all cold-
+        c ← Scheme that incurs minimal GPU sharing from S                                     start workers on the server are able to finish timely under the
+        return c                                                                              new bandwidth. Formally, we check whether the following
+                                                                                              condition is true for all workers.
+ers w. Assume the GPU servers that can accommodate full-                                                                  B
+memory workers are {i1 , i2 , · · · , ik }. Apart from them, there                                               Si ≤        × (Di − T ),                (3)
+                                                                                                                        N +1
+are also servers that can accommodate low-memory workers,
+                                                                                              where N represents the number of existing workers on the
+denoted as { j1 , j2 , · · · , jl }. Our selection strategy is to first
+                                                                                              server and T represents the current time. This server accepts
+allocate the top w servers with minimum model fetching and
+                                                                                              the new worker if all workers passed the check.
+loading time (i.e., the smallest b1i + p1i ) from {ix } to full-
+                                          x      x                                               To estimate the pending model size, we record the time of
+memory workers, and then merge the remaining servers into
+                                                                                              last network bandwidth change T ’. The start and completion
+the set { jx }. After that, we select the top s − w servers from
+                                                                                              of a cold start change the network bandwidth, informing the
+the merged set by the same strategy and allocate them to all
+                                                                                              controller to adjust the pending model size. Here, we assume
+low-memory workers.
+                                                                                              the current time is T and the number of cold-start workers be-
+   Similar to the calculation of prefilling latency, we can pre-
+                                                                                              fore change is N. Then we adjust the pending model size upon
+dict the TPOT as follows.
+                                                                                              each bandwidth change according to the following equation.
+                                            w
+                TPOT = td × (s − w + ) + tn × s.                    (2)                                                      B
+                                             s                                                                  Si′ = Si −     × (T − T ′ ).             (4)
+                                                                                                                             N
+  Among all choices that satisfy both TTFT and TPOT SLOs,
+HydraServe prioritizes free GPUs during worker placement.                                       Si′ < 0 means that the worker has fetched the model ideally,
+When the cluster is not under heavy load, this approach im-                                   thus we delete it from the cold-start worker list.
+proves the inference performance of models. Algorithm 1
+outlines the resource allocation algorithm.                                                   5   Worker-Level Overlapping
+
+4.2 Network-Contention-Aware Worker Place-                                                    As described in §4.1, the TTFT of pipeline parallelism
+                                                                                              has diminishing marginal returns due to container initializa-
+    ment
+                                                                                              tion stages, including container creation, library loading and
+There are two types of network contentions in the cluster. The                                CUDA context initialization. In this section, we present the
+first one is the contention between model fetching and infer-                                 worker-level overlapping in HydraServe that carefully reor-
+ence, i.e., the sending of intermediate results across workers.                               ganizes the startup workflow to reduce worker initialization
+
+
+                                                                                          6
+                                                                                                KV Cache Migration
+                                                                                                                           metadata, reading weights from the shared memory, and fi-
+            Create Container        Load Library
+            Init. CUDA Context      Fetch Model                      Part 1   Part 2                                       nally loading weights into the GPU. The whole procedure is
+                                                                        Fetch     Fetch             Model Prefetcher
+            Load Model              Inference
+                                                                                                           Worker 0
+                                                                                                                           zero-copy and pipelined. The parameter manager also takes
+ Stages
+
+
+
+
+                                                            Stages
+                                      Model Prefetcher
+                                                   Worker
+                                                                                                                           advantage of the high parallelism of GPU cores and uses mul-
+                      Fetch Model in Pipeline
+                                                                     PP Size: 2
+                                                                                                                           tiple CUDA streams to load models. The priorities of CUDA
+                                                     Time
+                                                                                       PP Size: 1
+                                                                                                               Time
+                                                                                                                           streams are determined according to whether the loading pro-
+          (a) Prefetching whole model.                               (b) Prefetching in two stages.
+                                                                                                                           cess is on the critical path or in the background.
+                                                                                                                              During cold starts, the entry program in container will first
+    Figure 6: Cold-start workflows with worker-level overlapping.
+                                                                                                                           initialize the parameter manager to start loading model param-
+time. Basically, HydraServe leverages two optimizations to                                                                 eters, and then import other AI libraries. The serving frame-
+overlap initialization stages. First, we prefetch model weights                                                            work later queries the parameter manager through a specified
+on local GPU server as soon as container creation starts so                                                                API to obtain tensors in a streaming manner with zero copy.
+that the container initialization stages are overlapped with                                                                  Figure 6(a) shows the optimized cold-start workflow after
+model fetching. Second, we prioritize CUDA context initial-                                                                adopting model prefetching and parameter manager. Model
+ization and develop a parameter manager to load model while                                                                fetching and runtime preparation runs in parallel, while library
+initializing Python libraries so that the library loading stage                                                            loading is overlapped with model loading. In this way, the
+is overlapped with model loading.                                                                                          overhead of other cold start stages is concealed behind model
+                                                                                                                           fetching, reinforcing the effectiveness of pipeline parallelism.
+                                                                                                                              As HydraServe may launch workers in pipeline parallelism
+5.1           Model Prefetching                                                                                            groups and later load the remaining part of model in back-
+                                                                                                                           ground, Figure 6(b) also shows the cold-start workflow in this
+HydraServe launches a model prefetcher on each GPU server,                                                                 scenario. The model prefetcher downloads two parts of model
+which is responsible for proactively fetching models from                                                                  sequentially. After the first part of model has been loaded, the
+remote storage. When a worker has been allocated to the                                                                    worker starts to perform inference with other workers in the
+server, the central controller informs the model prefetcher                                                                pipeline parallelism group. Meanwhile, the parameter man-
+about model metadata. After that, the prefetcher starts to load                                                            ager loads the second part of model in background and finally
+the model weights from remote storage to a shared memory re-                                                               transforms itself into a standalone worker.
+gion. The cold-start worker will fetch parameters from shared
+memory in a streaming manner after runtime has initialized.                                                                TTFT prediction with worker-level overlapping. After ap-
+   Model prefetching starts before container creation, so that                                                             plying worker-level optimizations, the TTFT is reduced by
+the container creation and runtime initialization stages are                                                               fine-grained overlapping. Based on additional historical infor-
+overlapped. The worker performs model prefetching and load-                                                                mation including the time cost of container creation (tcc ),
+ing in a pipelined fashion. In the shared memory region of a                                                               CUDA context initialization (tcu ) and library loading (tl ),
+model, we use the first eight bytes to store the address that                                                              we change the TTFT prediction used in resource allocation
+represents the end of currently fetched model weights. Model                                                               (Eq. 1) into the following formula.
+weights are represented using the SafeTensors format [64].                                                                                                                    
+                                                                                                                                                                  M/s        M/s
+This format contains the metadata of all parameters at the                                                                       TTFT = max tcc + tcu + max            ,tl ,
+beginning of the file, so that it is convenient for the worker to                                                                             i                    pqi       bqi       (5)
+                                                                                                                                                        w
+check whether a tensor has been fetched.                                                                                                + t p × (s − w + ) + tn × s.
+   As allocating shared memory is time-consuming, the model                                                                                             s
+prefetcher allocates a shared memory region for all models
+in advance. During startup, it accesses each virtual page in                                                               6   Inference-Level Consolidation
+the region to allocate corresponding physical pages. When
+                                                                                                                           As HydraServe creates a group of workers in parallel when
+a fetching request arrives, the model prefetcher calculates
+                                                                                                                           the model only needs one, we propose pipeline consolida-
+the size of all model files and allocates space from the shared
+                                                                                                                           tion that merges pipeline parallelism groups into individual
+memory region. A standalone process is then triggered to read
+                                                                                                                           workers to obtain optimal performance. Specifically, after the
+the model weights from remote storage and write contents
+                                                                                                                           parameter manager has loaded the requested model parame-
+into shared memory.
+                                                                                                                           ters in pipeline-parallel inference, we inform it to continue
+                                                                                                                           loading the remaining part of model in background. Once
+5.2           Parameter Manager                                                                                            loading completes, the worker returns to the non-parallelized
+                                                                                                                           setup and serves subsequent requests with the whole model
+HydraServe leverages a parameter manager to load model                                                                     in local GPU, thereby achieving optimal performance. The
+parameters in the background. The parameter manager runs                                                                   second part of model is loaded in low-priority CUDA streams,
+in an individual thread and is responsible for resolving tensor                                                            so that the performance of inference task will not be affected.
+
+
+                                                                                                                       7
+6.1    Worker Scaling                                                  in an individual thread and uses low-priority CUDA streams
+                                                                       so that the inference tasks will not be affected. Second, we
+HydraServe provides two scaling choices. First, after workers          create multiple CUDA streams when moving data from or
+have loaded corresponding parts of models, we can perform              to GPUs to utilize the GPUs’ high parallelism. Furthermore,
+scaling down by allowing only one of them to fetch the un-             the data transmission is performed in a streaming manner.
+loaded model parts in background. Once all parameters are              On the target worker, once a chunk of tensors arrives, it is
+loaded, we migrate all existing requests to that worker along          instantly loaded to GPU in a separate CUDA stream. On other
+with their key-value cache. Finally, the worker continues to           workers, once a chunk of tensors is loaded from GPU to host,
+generate tokens with whole model while other workers are               we immediately send them to the network.
+terminated. Figure 4(c) demonstrates the process of scaling
+down. In this way, we produce the first token earlier by paral-
+lelized model fetching and finally obtain a worker with whole          7   Implementation
+model, similar to standard cold starts.
+                                                                       We implement HydraServe in both testbed environments and
+   The second scaling choice is scaling up, converting all cold-
+                                                                       our public serverless inference platform. Our implementation
+start workers into individual serving endpoints, as illustrated
+                                                                       is based on vLLM [40], with a modification of around 3200
+in Figure 4(d). This approach tackles load spikes, where the
+                                                                       lines of code in C++ and Python. For testbed deployment,
+autoscaler aims to deploy multiple workers for the model
+                                                                       we develop a custom serverless LLM serving framework
+simultaneously. By enabling the rapid creation of workers
+                                                                       with around 3000 lines of code in Python. This framework
+within pipeline parallelism groups, this design allows the
+                                                                       makes scheduling decisions and automatically scales number
+system to achieve maximum throughput more quickly.
+                                                                       of vLLM workers for each model to match current loads. The
+   By default, HydraServe adopts the scaling down mecha-
+                                                                       code of HydraServe is open-source and is publicly available
+nism to reduce model fetching latency with minimal overhead.
+                                                                       at https://github.com/LLMServe/hydraserve.
+To promptly react to bursty loads and transition to the scaling
+up mechanism, we manage worker lifecycles with a sliding               Instance startup optimizations. We perform several opti-
+window strategy. For each model, the number of requests re-            mizations to the initialization process of vLLM. First, we
+ceived in the previous window is recorded and used to predict          postpone the allocation of key-value cache swapping space
+the maximum number of requests likely to arrive in the next            on CPU to reduce cold start latency. Second, vLLM runs a
+window. The required number of workers is then determined              profiling forward to obtain the amount of free memory during
+based on the current waiting queue length combined with the            inference. Unlike prior work that profiles this information
+predicted maximum number of requests expected to arrive                offline [63], we directly calculate the available free memory
+in the next window. In cold start, we create a pipeline paral-         based on sizes of intermediate results to skip the online profil-
+lelism group that is no smaller than required number of new            ing phase. Third, as vLLM first initializes the model on CPU,
+workers and later transform the group into desired number of           we allow the instance to directly use GPU tensors provided by
+individual workers. To handle sudden request surges, multiple          the parameter manager through overriding tensor metadata.
+pipeline parallelism groups can be created as needed.                  Support for large models. HydraServe is applicable to both
+                                                                       models that reside in a single GPU as well as those deployed
+                                                                       in multiple servers with tensor and pipeline parallelism. Sim-
+6.2    Key-Value Cache Migration
+                                                                       ilarly, to improve the cold-start performance of models that
+After reducing the pipeline parallelism size, we migrate all           are distributed across GPUs, we can increase their pipeline
+uncompleted requests, allowing for earlier release of resources        parallelism size and implement worker-level overlapping.
+occupied by other workers. Since model layers are assigned to
+different workers, the KV cache of these requests is distributed       8   Evaluation
+across workers, necessitating the KV cache migration.
+   HydraServe performs KV cache migration inside a pipeline            In this section, we present experimental results to validate
+parallelism group, where layers are distributed across work-           the efficiency and effectiveness of HydraServe. Our evalua-
+ers. Before migration, we first stop scheduling of existing            tion shows that HydraServe achieves a substantial reduction
+requests and wait for all on-the-fly batches return. Next, we          in TTFT, outperforming baselines by 1.7×– 4.7× (§8.2). In
+query the cache block manager to obtain the blocks that are            end-to-end experiments, HydraServe improves TTFT SLO
+used by existing requests, and then collect these blocks from          attainment by 1.43×–1.74× across various loads and con-
+all workers with a gather operation. Blocks are gathered to            straints while maintaining minimal TPOT and cost penalties
+the worker with whole model and placed at different layers,            (§8.3). Our analysis of pipeline consolidation reveals that scal-
+according to which worker it comes from.                               ing down reduces end-to-end generation time by up to 2.67×,
+   The KV cache migration process in HydraServe is highly              while scaling up shortens the average TTFT under bursty re-
+optimized. First, the whole migration workflow is performed            quests by 1.87× (§8.4). Lastly, we wrap up with brownfield
+
+
+                                                                   8
+                                                                      Serverless vLLM                                         ServerlessLLM                                        ServerlessLLM with cached model                          HydraServe with single worker                                                 HydraServe
+
+                                                                           40.3                                                                                                                                         20.0                                                                                                19.3
+              40                                                                                                               38.6
+
+
+                                                                                                                                                                                                                        17.5                                17
+                                                                                                                                                                                                                                                                                          16.6
+                                                                                                                                                                                                                                                                                                                                   17.1
+              35                                                                                                                                                                                                                                                                                                                                               16.2
+
+
+                                                                                                                                                                                                                        15.0
+              30                                                                                                                                          29.2                                                                                                   14.1                            14.1                                                                 14.1
+
+
+                                                                              26.1                                                  26.2
+                                                                                                                                                                                   25.4
+                                                                                                                                                                                                                        12.5
+              25
+   TTFT (s)
+
+
+
+
+                                                                                                                                                                                                             TTFT (s)
+                                                 23.6                                                23.2
+                                                                                                                                                                21.2                                                            10.1 10                                                                                                         10.3
+
+              20                                                                                        19.1                                                                          19.1                              10.0                                                                                                              9.1                                      9
+                                                      17.1                                                                                   17.4                                                                                                                             8.3                             8.4
+                          16.8                                                           17                                                                                                                                                                                                             8.1                                                                  8.1
+                                                                                                                                                                                                                                                                        7.7
+
+              15
+                                                                                  14.8                                                    15.1
+                                                                                                                                                                                                                         7.5              7.1
+                             13.1                                                                                                                                  13.1                                                                                                                                                                                6.3                             6.2
+                                                         11.8                                               12.1                                                                           12.1                                                                                     5.9
+                                                                                                                                                                      11.7                                                                                                                                          5.6
+                                  11.1
+                                                                                                                                                                                               10.2
+              10
+                                                              9.7
+                                                                    8.2                       8.5
+                                                                                                                9.9
+                                                                                                                                                  8.7                       8.6                    8.3
+                                                                                                                                                                                                                         5.0                    4.7   4.7
+                                     7.9 7.9                                                                          7.7
+
+
+               5                                                                                                                                                                                                         2.5
+
+               0                                                                                                                                                                                                         0.0
+                      OPT-2.7B                  OPT-6.7B                   OPT-13B                  Llama2-7B Llama2-13B Llama3-8B Falcon-7B                                                                                     OPT-2.7B                   OPT-6.7B                      Llama2-7B                         Llama3-8B                          Falcon-7B
+                                                                                       (a) Models on V100                                                                                                                                                                             (b) Models on A10
+
+                                                                                                                              Figure 7: Cold start latency of systems for different models.
+
+                      vLLM                            +Prefetch                                 +Stream                               +Overlap                                    +Parallel
+            45                                                                                        18                                                               17
+                                                                                                                                                                                                                               Model                        Model Size                                  GPU Card                                       TTFT                        TPOT
+                                                                                                                            16.6
+                                                             40.3
+            40     38.6                                                                                        16
+            35                                                      31.7
+                                                                                                               14                  13.3
+                                                                                                                                                                              14.3
+                                                                                                                                                                                                                         Llama2-7B                               12.5GB                                         A10                                      1.5s                      42ms
+                           30.3
+            30                                                                                                 12
+                                                                                                                                                                                                                         Llama2-13B                              24.2GB                                         V100                                     2.4s                      58ms
+ TTFT (s)
+
+
+
+
+            25                    22.9                                                                         10                           8.9                                      8.6
+                                                                                                                                                    8.4                                      8.3
+                                                                           19.4
+            20                           17.4                                     17
+                                                                                                                8
+            15                                                                                                  6                                         5.6                                      5.9                         Table 2: Measured TTFT and TPOT of warm requests.
+            10                                  8.7                                       8.5                   4
+              5                                                                                                 2
+              0                                                                                                 0
+                                                                                                                                                                                                                                      Application                                                  TTFT                      TPOT                                     Dataset
+                      Llama2-13B          OPT-13B                                                                                  Llama2-7B          OPT-6.7B
+                           (a) Models on V100                                                                                           (b) Models on A10                                                                    Chatbot Llama2-7B                                                          7.5s                 200ms                           ShareGPT [67]
+  Figure 8: Performance breakdown of techniques in HydraServe.                                                                                                                                                               Chatbot Llama2-13B                                                         12s                  200ms                           ShareGPT [67]
+                                                                                                                                                                                                                         Code Completion Llama2-7B                                                      7.5s                  84ms                           HumanEval [68]
+results and show that HydraServe achieves an average TTFT                                                                                                                                                                Code Completion Llama2-13B                                                     12s                  116ms                           HumanEval [68]
+reduction of 2.6× in production environment (§8.5).                                                                                                                                                                       Summarization Llama2-7B                                                       15s                   84ms                           LongBench [69]
+                                                                                                                                                                                                                          Summarization Llama2-13B                                                      24s                  116ms                           LongBench [69]
+
+                                                                                                                                                                                                                          Table 3: Summary of applications in end-to-end experiments.
+8.1                Experiments Setup
+                                                                                                                                                                                                                  ers to eliminate container creation overhead during serving.
+Testbed. We have two testbeds. (i) A GPU cluster that con-                                                                                                                                                        The system also uses vLLM [40] as the backend.
+tains 4 A10 servers and 4 V100 servers. Each A10 server has                                                                                                                                                          We exclude systems that accelerate scaling up via worker
+a single NVIDIA A10 GPU and 188 GB memory, while each                                                                                                                                                             cooperation [31, 32] from baselines because (1) they are
+V100 server has four NVIDIA V100 GPUs and 368 GB mem-                                                                                                                                                             closed-source and (2) peer fetching offers no benefit over
+ory. The network bandwidth per server is 16 Gbps. (ii) A GPU                                                                                                                                                      remote storage in our environment.
+cluster consisting of 2 servers, each having four NVIDIA A10
+GPUs, and another 4 servers, each having four NVIDIA V100
+                                                                                                                                                                                                                  8.2           Cold Start Latency
+GPUs. Each A10 server has 752 GB memory and a network
+bandwidth of 64 Gbps, while each V100 server has 368 GB                                                                                                                                                          We evaluate the cold start latency for systems on testbed (i),
+memory and 16 Gbps bandwidth. Both testbeds are connected                                                                                                                                                        while HydraServe is configured at a parallelism size of 4. For
+to a remote model storage that has sufficient network capacity.                                                                                                                                                  ServerlessLLM, we measure its performance with and with-
+Due to the lack of NVLink [65], all evaluated models can                                                                                                                                                         out model caching. Figure 7 illustrates the TTFT of systems
+reside in a single GPU to avoid performance degradation.                                                                                                                                                         for different models, showing that HydraServe achieves the
+                                                                                                                                                                                                                 shortest cold start latency across all models. Specifically, Hy-
+Baselines. We compare HydraServe against two baselines.
+                                                                                                                                                                                                                 draServe reduces cold start latency by 2.1×– 4.7× compared
+   • Serverless vLLM. vLLM [40] is a LLM serving engine
+                                                                                                                                                                                                                 to serverless vLLM and 1.7×–3.1× compared to Serverless-
+that can serve single model. To serve multiple models, we
+                                                                                                                                                                                                                 LLM. This improvement is attributed to parallelized model
+equip it with the serverless LLM serving framework of Hy-
+                                                                                                                                                                                                                 fetching and our worker-level optimizations.
+draServe. During cold starts, the scheduler iterates through
+                                                                                                                                                                                                                    Even with a single worker, HydraServe also performs better
+all GPU servers and selects the one with sufficient GPU re-
+                                                                                                                                                                                                                 than ServerlessLLM. For smaller models like OPT-6.7B, Hy-
+sources to create a new vLLM serving endpoint.
+                                                                                                                                                                                                                 draServe with single worker even achieves shorter cold start
+   • ServerlessLLM. ServerlessLLM [30] is the state-of-the-
+                                                                                                                                                                                                                 latency than ServerlessLLM with cached models. This ad-
+art serverless LLM serving system that reduces the cold start
+                                                                                                                                                                                                                 vantage comes from HydraServe’s worker-level overlapping
+latency by loading-optimized checkpoint and caching. Due
+                                                                                                                                                                                                                 strategies and optimizations to vLLM’s cold-start process.
+to the lack of high-speed SSDs in our testbeds, we allocate
+all available server memory for model caching. We deploy                                                                                                                                                          Performance breakdown. To better comprehend the perfor-
+ServerlessLLM on Kubernetes [66] and pre-create its contain-                                                                                                                                                      mance of HydraServe, we conduct a detailed breakdown of
+
+
+                                                                                                                                                                                                         9
+                                                                        Serverless vLLM                  ServerlessLLM               HydraServe     HydraServe with Cache
+                            100                                                                    100                                                   100
+       SLO Attainment (%)
+
+
+
+                             90                                                                     90                                                    90
+
+                             80                                                                     80                                                    80
+
+                             70                                                                     70                                                    70
+
+                             60                                                                     60                                                    60
+
+                             50                                                                     50                                                    50
+
+                             40                                                                     40                                                    40
+                                   0.6                     0.7                         0.8               0.6                      0.7             0.8          0.6              0.7            0.8
+                                                   Request Rate (req/s)                                                   Request Rate (req/s)                          Request Rate (req/s)
+                                                        (a) CV=2                                                               (b) CV=4                                      (c) CV=8
+                                                                                Figure 9: TTFT SLO attainment of systems under different CVs.
+
+                     100
+                        Serverless vLLM                ServerlessLLM
+                                                                        100
+                                                                              HydraServe          HydraServe with Cache
+                                                                                                                                    are doubled. Additionally, for chatbot tasks, the TPOT SLO is
+SLO Attainment (%)
+
+
+
+
+                      90                                                 90                                                         aligned with standard human reading speeds (i.e., 300 words
+                      80                                                 80
+                                                                                                                                    per minute). Finally, we generate 64 instances for each ap-
+                      70                                                 70
+                      60                                                 60
+                                                                                                                                    plication to represent various user models, similar to prior
+                      50                                                 50                                                         work [30, 51]. Table 3 shows the summary of applications.
+                      40                                                 40
+                             0.6                 0.7              0.8         0.6              0.7               0.8                   Following prior work [30,51], we leverage Microsoft Azure
+                                         Request Rate (req/s)                          Request Rate (req/s)
+                                          (a) SLO Scale=0.5                                (b) SLO Scale=2                          Function Trace [35] to generate workloads. Models are
+Figure 10: TTFT SLO attainment of systems under different SLOs.                                                                     mapped to functions in the trace using a round-robin approach,
+                                                                                                                                    and requests are sampled from the trace with Gamma distribu-
+techniques employed in HydraServe. Figure 8 shows the in-                                                                           tion. We control the sampling process by changing coefficient
+cremental improvement achieved by applying each proposed                                                                            of variance (CV) and requests per second (RPS).
+technique. Starting with the original vLLM system, we ap-
+ply the following techniques step-by-step: model prefetch-                                                                          Effectiveness under different CVs. Figure 9 demonstrates
+ing (+Prefetch), streaming loading and implementation opti-                                                                         the TTFT SLO attainment of systems under different CVs.
+mizations (+Stream), overlapped model and library loading                                                                           To assess the effectiveness of cache, we also evaluate Hy-
+(+Overlap), and parallelized model fetching (+Parallel). The                                                                        draServe with caching enabled. The results indicate that as
+results show that each technique contributes to a reduction in                                                                      RPS increases, TTFT SLO attainment decreases due to a lack
+cold start latency and the cumulative effect of all techniques                                                                      of resources during bursty requests. Nevertheless, HydraServe
+results in a substantial overall improvement.                                                                                       consistently satisfies most of TTFT SLO requirements under
+                                                                                                                                    different loads, achieving 1.43×–1.74× higher TTFT SLO
+                                                                                                                                    attainment compared to baselines in all scenarios. This is
+8.3                            End-to-End Experiments                                                                               because HydraServe selects appropriate pipeline parallelism
+                                                                                                                                    size based on user SLOs and distributes cold-start workers to
+We further evaluate the effectiveness of HydraServe through                                                                         mitigate network contention. Although some workers are allo-
+comprehensive end-to-end experiments.                                                                                               cated with additional resources to reduce TPOT, HydraServe
+                                                                                                                                    promptly reclaims these resources after pipeline consolida-
+Workloads. We choose the Llama2 model series [16] with
+                                                                                                                                    tion to maintain performance under heavy loads. In contrast,
+FP16 precision in the end-to-end experiments. Following
+                                                                                                                                    ServerlessLLM exhibits high SLO violations due to limited ef-
+prior work [55], we use three typical LLM applications in
+                                                                                                                                    fectiveness of caching for long-tail models. Enabling caching
+experiments: chatbot, code completion, and summarization.
+                                                                                                                                    in HydraServe further improves the TTFT SLO attainment by
+Requests for these applications are from ShareGPT [67], Hu-
+                                                                                                                                    up to 1.11× due to benefits for hot models.
+manEval [68] and Longbench [69], respectively. Since there
+                                                                                                                                       For TPOT SLO attainment, both HydraServe and baselines
+is no available SLO settings for these applications, we derive
+                                                                                                                                    achieve over 95% attainment in most scenarios, and more than
+SLOs based on the performance of warm requests. Specifi-
+                                                                                                                                    90% attainment under all CVs and RPS configurations. This
+cally, we first measure the TTFT and TPOT for warm requests,
+                                                                                                                                    level of performance is sufficient for most use cases. Detailed
+with each request containing 1024 input tokens and a batch
+                                                                                                                                    results are provided in the appendix due to space limitations.
+size of 8. The results are shown in Table 2. We then set the
+global TTFT SLO to five times the TTFT of warm requests,                                                                            Effectiveness under different SLO scales. We evaluate the
+while applying a stricter TPOT SLO at twice the TPOT of                                                                             systems under different TTFT and TPOT SLOs by adjust-
+warm requests. This TTFT SLO is already quite stringent for                                                                         ing a global SLO scaling parameter, with CV fixed at 8. Fig-
+serverless LLM serving, considering industrial LLM serving                                                                          ure 10(a) shows that, under tight SLOs, all systems experience
+platforms operate with TTFT SLOs as high as 30s [70].                                                                               significant SLO violations since the time granted for prepar-
+   Given the nature of summarization tasks, which typically                                                                         ing a cold-start worker is exceedingly limited. In such cases,
+allow more relaxed latency requirements, their TTFT SLOs                                                                            the TTFT SLO attainment of all systems is capped at 63%.
+
+
+                                                                                                                              10
+                               Serverless vLLM               HydraServe                                                w/o S. D.                w/ S. D.                                                                                                     70
+                               ServerlessLLM                 HydraServe w/ Cache                                       w/o S. D. (BS=2)         w/ S. D. (BS=2)
+
+
+
+
+                                                                                                                                                                                                                                         Average TPOT (ms)
+                                                                                                                                                                                               20
+
+
+
+
+                                                                                                                                                                            Average TTFT (s)
+                                                                                                                       w/o S. D. (BS=4)         w/ S. D. (BS=4)                                                                                              60
+                     100
+                                                                                                                                                                                                                                                             50
+SLO Attainment (%)
+
+
+
+
+                                                                                                       500
+
+
+
+
+                                                                                   #Generated Tokens
+                                                                                                                                                                                               15
+                      80
+                                                                                                       400                                                                                                                                                   40
+
+                      60                                                                                                                                                                       10                                                            30
+                                                                                                       300
+                      40                                                                                                                                                                                 Group Size=1                                        20
+                                                                                                       200                                                                                      5
+                                                                                                                                                                                                         Group Size=2
+                                                                                                                                                                                                                                                             10
+                      20                                                                               100                                                                                               Group Size=4
+                                                                                                                                                                                                0                                                             0
+                                                                                                                                                                                                    8       16          32   64   128                             8   16      32      64   128
+                       0                                                                                     0
+                                 Chatbot              Code        Summarization                                    0       50       100        150        200                                                    #Request                                                  #Request
+                                              Applications                                                                         Time (s)
+
+Figure 11: TTFT SLO attainment Figure 12: Total tokens generated                                                                                                           (a) Average TTFT of different loads.                         (b) Average TPOT of different loads.
+for different applications.    over time for different inputs.                                                                                                             Figure 14: Performance comparison for handling bursty loads with
+                               Chatbot           Code             Summarization                                                                                            different parallel group sizes.
+                     1.6                                                                                     1.6
+                                                                                                             1.4
+                     1.4
+                     1.2                                                                                     1.2
+                                                                                                                                                                           iting performance degradation to only the first few tokens.
+     TPOT Ratio
+
+
+
+
+                                                                                                Cost Ratio
+
+
+
+
+                     1.0                                                                                     1.0                                                           For some models, HydraServe achieves shorter TPOT due to
+                     0.8                                                                                     0.8
+                     0.6                                                                                     0.6                                                           GPU performance fluctuations.
+                     0.4                                                                                     0.4
+                     0.2                                                                                     0.2                                                              Figure 13(b) reveals that, surprisingly, HydraServe con-
+                     0.0                                                                                     0.0
+                           0             20      40
+
+                                                 Model ID
+                                                             60      80      100                                   0       20      40     60
+
+                                                                                                                                   Model ID
+                                                                                                                                                     80         100
+                                                                                                                                                                           sumes lower cost for most models. This is because (1) for
+                                                                                                                                                                           models with additional resource consumption, HydraServe
+(a) TPOT ratios for different models.                                                  (b) Cost ratios for different models.
+                                                                                                                                                                           can quickly merge pipeline groups, and (2) HydraServe en-
+Figure 13: Relative TPOT and cost ratios (HydraServe vs. serverless                                                                                                        ables faster worker startup, thereby reducing GPU usage dur-
+vLLM) for different models.
+                                                                                                                                                                           ing cold starts. On average, HydraServe reduces costs by
+However, HydraServe still outperforms baselines, as its faster                                                                                                             1.12× compared to serverless vLLM.
+worker initialization reduces the waiting time for subsequent
+requests, even if the first request violates SLO. Figure 10(b)
+demonstrates the performance under looser SLO conditions.                                                                                                                  8.4                          Pipeline Consolidation
+HydraServe achieves 1.38×–1.52× improvement in TTFT
+SLO attainment compared to baselines, with caching further                                                                                                                 To evaluate the effectiveness of pipeline consolidation, we
+enhancing this improvement to 1.49×–1.58×.                                                                                                                                 measure HydraServe’s performance with two scaling methods.
+                                                                                                                                                                           We deploy Llama2-13B on V100 servers in testbed (i) and set
+Application analysis. Figure 11 illustrates the TTFT SLO                                                                                                                   the input and output length of each request to 512 tokens.
+attainment of chatbot, code completion, and summarization
+applications under CV=8 and RPS=0.6. First, the results show                                                                                                               Scaling down. We demonstrate the benefits of scaling down
+that HydraServe significantly enhances the TTFT SLO at-                                                                                                                    by presenting the generation time of each token. We use differ-
+tainment for chatbot and code applications, with up to 1.61×                                                                                                               ent batch sizes and set pipeline parallelism size to 4. As shown
+and 1.70× improvement, respectively. The code application                                                                                                                  in Figure 12, with scaling down, the system loads the remain-
+has lower SLO attainment compared to others because code                                                                                                                   ing parts of the model in parallel with inference, and migrates
+completion tasks (i.e., requests in HumanEval dataset [68])                                                                                                                the key-value cache of the ongoing request once loading has
+have shorter average output length than chat tasks (i.e., re-                                                                                                              completed. This allows subsequent tokens to be generated at a
+quests in ShareGPT dataset [67]) [55]. Therefore, workers for                                                                                                              faster speed. As a result, scaling down reduces the end-to-end
+code completion models keep alive for shorter time, leading                                                                                                                generation time by 1.90×–2.67×, while maintaining almost
+to more cold starts. Since the summarization application has                                                                                                               same inference speeds during the early cold-start period.
+loose SLOs, it has few SLO violations for all systems.
+                                                                                                                                                                           Scaling up. We evaluate scaling up by measuring Hy-
+TPOT and resource usage penalties. As discussed in §4.1,                                                                                                                   draServe’s performance under bursty workloads. We set the
+pipeline parallelism increases the worst-case TPOTs, whereas                                                                                                               maximum batch size for each worker to 8 and vary the num-
+allocating additional resources helps to reduce them. We                                                                                                                   ber of incoming requests. Figure 14(a) illustrates the average
+evaluate HydraServe’s TPOT and resource usage of differ-                                                                                                                   TTFT across different loads. The results show that larger
+ent models to examine these trade-offs. Figure 13 illustrates                                                                                                              pipeline parallelism sizes significantly reduce TTFT, enabling
+the relative TPOT and cost ratios of HydraServe compared                                                                                                                   the system to increase throughput earlier. For example, when
+to serverless vLLM under CV=8 and RPS=0.6. The cost is                                                                                                                     handling 128 concurrent requests (the maximum load for 16
+proportional to the GPU memory-time product. Regarding                                                                                                                     V100 GPUs), using four workers in a pipeline parallelism
+TPOT, HydraServe exhibits only a 1.06× average increase                                                                                                                    group reduces the average TTFT by 1.87×. Furthermore,
+compared to serverless vLLM, with most increases occurring                                                                                                                 Figure 14(b) indicates that scaling up incurs little inference
+in chatbot and code models that have stringent TTFT require-                                                                                                               performance overhead, with the average TPOT increasing by
+ments. The TPOT penalty is modest because HydraServe                                                                                                                       1.08×–1.19×. This increase is attributed to the transmission
+can quickly merge pipeline groups into single workers, lim-                                                                                                                overhead of intermediate results.
+
+
+                                                                                                                                                                      11
+                                       Serverless vLLM      HydraServe                     ory in operating systems and InfiniGen [76] optimizes KV
+            50
+                                                                                           block placement to improve inference efficiency. Additionally,
+            40                                                                             DistServe [55] disaggregates prefill and decoding phases to
+                                                                                           mitigate their performance interference. HydraServe specifi-
+ TTFT (s)
+
+
+
+
+            30
+                                                                                           cally focuses on reducing cold start latency in serverless LLM
+            20
+                                                                                           serving and can easily integrate these optimizations.
+            10
+                                                                                           Pipeline parallelism. Pipeline parallelism has been widely
+             0
+                 0        100    200    300       400      500      600   700   800        used to scale GPU resources for training large models [45–50,
+                                                Requests
+                                                                                           58]. Recently, researchers have also explored its usage during
+                     Figure 15: TTFT of requests in brownfield evaluation.
+                                                                                           inference [31, 32, 51–54]. While AlpaServe [51] observes
+8.5                  Brownfield Evaluation                                                 that model parallelism improves GPU utilization under load
+                                                                                           spikes and develops a model placement policy, HPipe [52]
+We evaluate the prototype of HydraServe in our production                                  and PipeEdge [54] apply pipeline parallelism to improve the
+environment. In this environment, functions cannot establish                               inference performance for LLMs on edge devices. λScale [32]
+direct TCP connections with one another due to security con-                               also adopts pipeline parallelism to allow scaled-up workers
+straints, so we leverage a shared object in remote storage to                              to start inference earlier. HydraServe utilizes pipeline paral-
+enable inter-worker communication. In evaluation, we use                                   lelism in a proactive manner that creates multiple workers
+vLLM to run Llama2-7B on NVIDIA A10 GPUs with 24 GB                                        even if the model only needs one. It further introduces pipeline
+GPU memory, with requests generated following Microsoft                                    consolidation to merge pipeline workers during inference.
+Azure Function Trace [35]. Figure 15 compares the cold
+start latency of HydraServe to serverless vLLM. The results
+demonstrate that HydraServe significantly reduces cold start                               10    Conclusion
+latency versus the original vLLM system, achieving an av-
+erage 2.6× reduction in cold-start TTFT. This substantial                                  This paper presents HydraServe, a serverless LLM serving
+improvement stems from HydraServe’s parallelized model                                     system designed to reduce cold start latency in public clouds.
+fetching and optimized worker initialization processes.                                    HydraServe targets the most time-consuming stages of a cold
+                                                                                           start: model fetching and runtime preparation. To optimize
+                                                                                           model fetching, HydraServe proactively distributes models
+9            Related Work                                                                  across multiple servers, alleviating the burden on any single
+                                                                                           server. Furthermore, HydraServe incorporates pipeline con-
+Cold-start optimizations in serverless model serving. There                                solidation that merges workers back into individual endpoints
+have been plenty of works on reducing the cold start latency                               to ensure efficient resource usage and high performance for
+in serverless model serving [30, 31, 33, 43, 63, 71–73]. For in-                           warm requests. For runtime preparation, HydraServe accel-
+stance, FaaSwap [43] and ServerlessLLM [30] cache models                                   erates the local worker startup by overlapping distinct stages.
+in local memory or SSDs, while INFless [72] and InstaIn-                                   Evaluation results show that HydraServe reduces cold start
+fer [42] prewarm instances according to historical request                                 latency by 1.7×– 4.7× compared to baselines and improves
+patterns. DeepFlow [33] combines model caching and NPU                                     TTFT SLO attainment by 1.43×–1.74× under various con-
+forking to optimize cold start latencies. BlitzScale [31] and                              straints. By integrating these optimizations, HydraServe offers
+λScale [32] achieve fast autoscaling using high-capacity net-                              a robust and efficient solution to meet user-defined SLOs in
+works, while Medusa [63] speeds up CUDA graph and KV                                       serverless LLM serving, especially for long-tail models.
+cache construction through state materialization.
+                                                                                           Acknowledgments. We sincerely thank our shepherd Arvind
+   HydraServe addresses the cold-start problem in public
+                                                                                           Krishnamurthy and the anonymous reviewers for their valu-
+clouds. Its advantages are twofold. First, it imposes no re-
+                                                                                           able feedback on this paper. This work was supported in part
+quirement on the hotness of models and effectively tackles
+                                                                                           by the National Key Research and Development Program of
+the cold-start problem without relying on caching or worker
+                                                                                           China under Grant 2022YFB4500700, the Scientific Research
+cooperation. Second, it reduces the end-to-end runtime prepa-
+                                                                                           Innovation Capability Support Project for Young Faculty un-
+ration overhead without any offline profiling.
+                                                                                           der Grant ZYGXQNJSKYCXNLZCXM-I1, the Fundamental
+LLM serving optimizations. Many LLM serving opti-                                          Research Funds for the Central Universities, Peking Univer-
+mizations have been proposed to improve serving perfor-                                    sity, and the National Natural Science Foundation of China
+mance [40, 51, 55–57, 74–77]. In the area of request schedul-                              under Grant 62172008 and 62325201. Xin Jin is the corre-
+ing, Orca [75] introduces iteration-level scheduling to run                                sponding author. Chiheng Lou, Sheng Qi, Chao Jin, Xuanzhe
+more requests in parallel, while Llumnix [56] employs run-                                 Liu, and Xin Jin are also with the Key Laboratory of High
+time scheduling to meet user SLOs. For key-value cache man-                                Confidence Software Technologies (Peking University), Min-
+agement, vLLM [40] leverages the concept of virtual mem-                                   istry of Education.
+
+
+                                                                                      12
+References                                                          [16] “Llama 2: Open Foundation and Fine-Tuned Chat Mod-
+                                                                         els | Research - AI at Meta,” 2023. https://ai.meta.
+ [1] OpenAI, “Gpt-4 technical report,” arXiv preprint                    com/research/publications/llama-2-open-fou
+     arXiv:2303.08774, 2023.                                             ndation-and-fine-tuned-chat-models.
+
+ [2] “Introducing Claude,” 2024. https://www.anthropi               [17] “Gemini,” 2025. https://deepmind.google/tech
+     c.com/index/introducing-claude.                                     nologies/gemini/.
+
+ [3] “Introducing claude 2,” 2024. https://www.anthro               [18] “Mistral,” 2025. https://mistral.ai/.
+     pic.com/index/claude-2.
+                                                                    [19] “Introducing Phi-3: Redefining what’s possible with
+ [4] “GitHub Copilot,” 2024. https://github.com/fea                      SLMs,” 2025. https://azure.microsoft.com/en
+     tures/copilot.                                                     -us/blog/introducing-phi-3-redefining-whats
+                                                                        -possible-with-slms/.
+ [5] “Cursor - The AI Code Editor,” 2024. https://www.
+     cursor.com.                                                    [20] DeepSeek-AI, “Deepseek-v3 technical report,” arXiv
+                                                                         preprint arXiv:2412.19437, 2025.
+ [6] “Amazon Q Developer,” 2024. https://aws.amazon
+     .com/q/developer/.                                             [21] J. E. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang,
+                                                                         and W. Chen, “Lora: Low-rank adaptation of large lan-
+ [7] “Introducing microsoft new bing,” 2024. https://ne                  guage models,” in International Conference on Learning
+     ws.microsoft.com/the-new-Bing/.                                     Representations (ICLR), 2022.
+ [8] “Chatgpt plugin: Browsing,” 2024. https://openai               [22] “Understanding custom llm models: A 2024 guide,”
+     .com/blog/chatgpt-plugins#browsing.                                 2024. https://botpenguin.com/blogs/under
+                                                                         standing-custom-llm-models.
+ [9] S. Zhang, S. Roller, N. Goyal, M. Artetxe, M. Chen,
+     S. Chen, C. Dewan, M. Diab, X. Li, X. V. Lin, et al.,          [23] “Building domain-specific llms: Examples and tech-
+     “Opt: Open pre-trained transformer language models,”                niques,” 2025. https://kili-technology.com/
+     arXiv preprint arXiv:2205.01068, 2022.                              large-language-models-llms/building-domai
+                                                                         n-specific-llms-examples-and-techniques.
+[10] T. Brown, B. Mann, N. Ryder, M. Subbiah, J. D. Ka-
+     plan, P. Dhariwal, A. Neelakantan, P. Shyam, G. Sastry,        [24] “Getting started with customizing a large language
+     A. Askell, et al., “Language models are few-shot learn-             model (llm),” 2025. https://learn.microsoft.
+     ers,” Neural Information Processing Systems, 2020.                  com/en-us/azure/ai-services/openai/concept
+                                                                         s/customizing-llms.
+[11] E. Almazrouei, H. Alobeidli, A. Alshamsi, A. Cap-
+     pelli, R. Cojocaru, M. Alhammadi, M. Daniele, D. Hes-          [25] “Huggingface,” 2025. https://huggingface.co.
+     low, J. Launay, Q. Malartic, B. Noune, B. Pannier, and
+     G. Penedo, “The falcon series of language models: To-          [26] “Aws sagemaker,” 2025. https://docs.aws.amazon.
+     wards open frontier models,” 2023.                                  com/sagemaker/.
+
+[12] “Gemma,” 2025. https://blog.google/technolo                    [27] “Introduction to serverless GPUs ,” 2025. https://ww
+     gy/developers/gemma-open-models/.                                   w.alibabacloud.com/help/en/functioncompute
+                                                                         /fc-2-0/use-cases/introduction-to-serverl
+[13] “Gemma 2,” 2025. https://blog.google/technolo                       ess-gpus.
+     gy/developers/google-gemma-2/.
+                                                                    [28] “Kserve,” 2025. https://github.com/kserve/kser
+[14] A. Chowdhery, S. Narang, J. Devlin, M. Bosma,                       ve.
+     G. Mishra, A. Roberts, P. Barham, H. W. Chung, C. Sut-
+     ton, S. Gehrmann, et al., “Palm: Scaling language mod-         [29] “Nuclio: Automate the Data Science Pipeline with
+     eling with pathways,” arXiv preprint arXiv:2204.02311,              Serverless Functions ,” 2025. https://nuclio.io/.
+     2022.
+                                                                    [30] Y. Fu, L. Xue, Y. Huang, A.-O. Brabete, D. Ustiugov,
+[15] “Introducing Llama,” 2023. https://research.fac                     Y. Patel, and L. Mai, “Serverlessllm: Low-latency server-
+     ebook.com/publications/llama-open-and-eff                           less inference for large language models,” in USENIX
+     icient-foundation-language-models.                                  OSDI, 2024.
+
+
+                                                               13
+[31] D. Zhang, H. Wang, Y. Liu, X. Wei, Y. Shan, R. Chen,             [44] G. McGrath and P. R. Brenner, “Serverless computing:
+     and H. Chen, “Fast and live model auto scaling with o(1)              Design, implementation, and performance,” in IEEE In-
+     host caching,” arXiv preprint arXiv:2412.17246, 2024.                 ternational Conference on Distributed Computing Sys-
+                                                                           tems Workshops, 2017.
+[32] M. Yu, R. Yang, C. Jia, Z. Su, S. Yao, T. Lan, Y. Yang,
+     Y. Cheng, W. Wang, A. Wang, and R. Chen, “Lambdas-               [45] Y. Huang, Y. Cheng, A. Bapna, O. Firat, D. Chen,
+     cale: Enabling fast scaling for serverless large language             M. Chen, H. Lee, J. Ngiam, Q. V. Le, Y. Wu, et al.,
+     model inference,” arXiv preprint arXiv:2502.09922,                    “Gpipe: Efficient training of giant neural networks using
+     2025.                                                                 pipeline parallelism,” in Neural Information Processing
+                                                                           Systems, 2019.
+[33] J. Hu, J. Xu, Z. Liu, Y. He, Y. Chen, H. Xu, J. Liu,
+     B. Zhang, S. Wan, G. Dan, Z. Dong, Z. Ren, J. Meng,              [46] Z. Li, S. Zhuang, S. Guo, D. Zhuo, H. Zhang, D. X.
+     C. He, C. Liu, T. Xie, D. Lin, Q. Zhang, Y. Yu,                       Song, and I. Stoica, “Terapipe: Token-level pipeline par-
+     H. Feng, X. Chen, and Y. Shan, “Deepflow: Serverless                  allelism for training large-scale language models,” in
+     large language model serving at scale,” arXiv preprint                International Conference on Machine Learning (ICML),
+     arXiv:2501.14417, 2025.                                               2021.
+
+[34] Y. Wang, Y. Chen, Z. Li, X. Kang, Z. Tang, X. He,                [47] D. Narayanan, A. Harlap, A. Phanishayee, V. Seshadri,
+     R. Guo, X. Wang, Q. Wang, A. C. Zhou, and X. Chu,                     N. R. Devanur, G. R. Ganger, P. B. Gibbons, and M. Za-
+     “Burstgpt: A real-world workload dataset to optimize                  haria, “PipeDream: generalized pipeline parallelism for
+     llm serving systems,” arXiv preprint arXiv:2401.17644,                DNN training,” in ACM SOSP, 2019.
+     2024.
+                                                                      [48] Y. Li, M. Yu, S. Li, S. Avestimehr, N. S. Kim, and
+[35] M. Shahrad, R. Fonseca, I. Goiri, G. Chaudhry, P. Batum,              A. Schwing, “Pipe-sgd: a decentralized pipelined sgd
+     J. Cooke, E. Laureano, C. Tresness, M. Russinovich, and               framework for distributed deep net training,” in Neural
+     R. Bianchini, “Serverless in the wild: Characterizing                 Information Processing Systems, 2018.
+     and optimizing the serverless workload at a large cloud          [49] Y. Chen, C. Xie, M. Ma, J. Gu, Y. Peng, H. Lin, C. Wu,
+     provider,” in USENIX ATC, 2020.                                       and Y. Zhu, “Sapipe: staleness-aware pipeline for data-
+[36] “cuDNN.” https://developer.nvidia.com/cudnn.                          parallel dnn training,” in Neural Information Processing
+                                                                           Systems, 2024.
+[37] “PyTorch.” https://pytorch.org/.
+                                                                      [50] Z. Jiang, H. Lin, Y. Zhong, Q. Huang, Y. Chen, Z. Zhang,
+[38] C. Olston, N. Fiedel, K. Gorovoy, J. Harmsen, L. Lao,                 Y. Peng, X. Li, C. Xie, S. Nong, Y. Jia, S. He, H. Chen,
+     F. Li, V. Rajashekhar, S. Ramesh, and J. Soyke,                       Z. Bai, Q. Hou, S. Yan, D. Zhou, Y. Sheng, Z. Jiang,
+     “Tensorflow-serving: Flexible, high-performance ml                    H. Xu, H. Wei, Z. Zhang, P. Nie, L. Zou, S. Zhao, L. Xi-
+     serving,” arXiv preprint arXiv:1712.06139, 2017.                      ang, Z. Liu, Z. Li, X. Jia, J. Ye, X. Jin, and X. Liu,
+                                                                           “MegaScale: Scaling large language model training to
+[39] “TensorRT-LLM,” 2023. https://github.com/NVI                          more than 10,000 GPUs,” in USENIX NSDI, 2024.
+     DIA/TensorRT-LLM.
+                                                                      [51] Z. Li, L. Zheng, Y. Zhong, V. Liu, Y. Sheng, X. Jin,
+[40] W. Kwon, Z. Li, S. Zhuang, Y. Sheng, L. Zheng, C. H.                  Y. Huang, Z. Chen, H. Zhang, J. E. Gonzalez, et al.,
+     Yu, J. Gonzalez, H. Zhang, and I. Stoica, “Efficient mem-             “{AlpaServe}: Statistical multiplexing with model par-
+     ory management for large language model serving with                  allelism for deep learning serving,” in USENIX OSDI,
+     pagedattention,” in ACM SOSP, 2023.                                   2023.
+
+[41] “SGLang.” https://docs.sglang.ai/.                               [52] R. Ma, X. Yang, J. Wang, Q. Qi, H. Sun, J. Wang,
+                                                                           Z. Zhuang, and J. Liao, “Hpipe: Large language model
+[42] Y. Sui, H. Yu, Y. Hu, J. Li, and H. Wang, “Pre-warming                pipeline parallelism for long context on heterogeneous
+     is not enough: Accelerating serverless inference with op-             cost-effective devices,” in Annual Meeting of the Asso-
+     portunistic pre-loading,” in ACM Symposium on Cloud                   ciation for Computational Linguistics, 2024.
+     Computing, 2024.
+                                                                      [53] B. Butler, S. Yu, A. Mazaheri, and A. Jannesari, “Pipein-
+[43] M. Yu, A. Wang, D. Chen, H. Yu, X. Luo, Z. Li,                        fer: Accelerating llm inference using asynchronous
+     W. Wang, R. Chen, D. Nie, and H. Yang, “Faaswap:                      pipelined speculation,” in Proceedings of the Interna-
+     Slo-aware, gpu-efficient serverless inference via model               tional Conference for High Performance Computing,
+     swapping,” arXiv preprint arXiv:2306.03622, 2024.                     Networking, Storage, and Analysis, 2024.
+
+
+                                                                 14
+[54] Y. Hu, C. Imes, X. Zhao, S. Kundu, P. A. Beerel, S. P.           [68] M. Chen, J. Tworek, H. Jun, Q. Yuan, H. P.
+     Crago, and J. P. Walters, “Pipeedge: Pipeline parallelism             de Oliveira Pinto, J. Kaplan, H. Edwards, Y. Burda,
+     for large-scale model inference on heterogeneous edge                 N. Joseph, G. Brockman, A. Ray, R. Puri, G. Krueger,
+     devices,” in 25th Euromicro Conference on Digital Sys-                M. Petrov, H. Khlaaf, G. Sastry, P. Mishkin, B. Chan,
+     tem Design (DSD), 2022.                                               S. Gray, N. Ryder, M. Pavlov, A. Power, L. Kaiser,
+                                                                           M. Bavarian, C. Winter, P. Tillet, F. P. Such, D. Cum-
+[55] Y. Zhong, S. Liu, J. Chen, J. Hu, Y. Zhu, X. Liu, X. Jin,             mings, M. Plappert, F. Chantzis, E. Barnes, A. Herbert-
+     and H. Zhang, “Distserve: Disaggregating prefill and                  Voss, W. H. Guss, A. Nichol, A. Paino, N. Tezak, J. Tang,
+     decoding for goodput-optimized large language model                   I. Babuschkin, S. Balaji, S. Jain, W. Saunders, C. Hesse,
+     serving,” in USENIX OSDI, 2024.                                       A. N. Carr, J. Leike, J. Achiam, V. Misra, E. Morikawa,
+                                                                           A. Radford, M. Knight, M. Brundage, M. Murati,
+[56] B. Sun, Z. Huang, H. Zhao, W. Xiao, X. Zhang, Y. Li,                  K. Mayer, P. Welinder, B. McGrew, D. Amodei, S. Mc-
+     and W. Lin, “Llumnix: Dynamic scheduling for large                    Candlish, I. Sutskever, and W. Zaremba, “Evaluating
+     language model serving,” in USENIX OSDI, 2024.                        large language models trained on code,” arXiv preprint
+                                                                           arXiv:2107.03374, 2021.
+[57] B. Wu, Y. Zhong, Z. Zhang, S. Liu, F. Liu, Y. Sun,
+     G. Huang, X. Liu, and X. Jin, “Fast distributed infer-           [69] Y. Bai, X. Lv, J. Zhang, H. Lyu, J. Tang, Z. Huang, Z. Du,
+     ence serving for large language models,” arXiv preprint               X. Liu, A. Zeng, L. Hou, Y. Dong, J. Tang, and J. Li,
+     arXiv:2305.05920, 2023.                                               “Longbench: A bilingual, multitask benchmark for long
+                                                                           context understanding,” in Proceedings of the 62nd An-
+[58] B. Jeon, M. Wu, S. Cao, S. Kim, S. Park, N. Aggarwal,                 nual Meeting of the Association for Computational Lin-
+     C. Unger, D. Arfeen, P. Liao, X. Miao, M. Alizadeh,                   guistics (Volume 1: Long Papers), 2024.
+     G. R. Ganger, T. Chen, and Z. Jia, “Graphpipe: Improv-
+     ing performance and scalability of dnn training with             [70] R. Qin, Z. Li, W. He, J. Cui, F. Ren, M. Zhang, Y. Wu,
+     graph pipeline parallelism,” in ACM ASPLOS, 2025.                     W. Zheng, and X. Xu, “Mooncake: Trading more storage
+                                                                           for less computation — a KVCache-centric architecture
+[59] “Microsoft Azure Serverless GPU.” https://learn.                      for serving LLM chatbot,” in USENIX Conference on
+     microsoft.com/azure/container-apps/gpu-ser                            File and Storage Technologies, 2025.
+     verless-overview/.
+                                                                      [71] F. Romero, Q. Li, N. J. Yadwadkar, and C. Kozyrakis,
+[60] J. Duan, R. Lu, H. Duanmu, X. Li, X. Zhang, D. Lin,                   “Infaas: Automated model-less inference serving,” in
+     I. Stoica, and H. Zhang, “Muxserve: Flexible spatial-                 USENIX ATC, 2021.
+     temporal multiplexing for multiple llm serving,” arXiv
+     preprint arXiv:2404.02015, 2024.                                 [72] Y. Yang, L. Zhao, Y. Li, H. Zhang, J. Li, M. Zhao,
+                                                                           X. Chen, and K. Li, “Infless: a native serverless system
+[61] “Amazon EC2 On-Demand Pricing,” 2023. https:                          for low-latency, high-throughput inference,” in ACM
+     //aws.amazon.com/ec2/pricing/on-demand/.                              ASPLOS, 2022.
+
+[62] “TensorFlow.” https://www.tensorflow.org/.                       [73] Q. Pei, Y. Yuan, H. Hu, Q. Chen, and F. Liu, “Asyfunc:
+                                                                           A high-performance and resource-efficient serverless
+[63] S. Zeng, M. Xie, S. Gao, Y. Chen, and Y. Lu, “Medusa:                 inference system via asymmetric functions,” in ACM
+     Accelerating serverless llm inference with materializa-               Symposium on Cloud Computing, 2023.
+     tion,” in ACM ASPLOS, 2025.
+                                                                      [74] B. Wu, S. Liu, Y. Zhong, P. Sun, X. Liu, and X. Jin,
+[64] “Safetensors: Ml safer for all,” 2025. https://github                 “Loongserve: Efficiently serving long-context large lan-
+     .com/huggingface/safetensors/.                                        guage models with elastic sequence parallelism,” in
+                                                                           ACM SOSP, 2024.
+[65] “NVIDIA NVLink,” 2024. https://www.nvidia.c
+     om/en-us/design-visualization/nvlink-bridg                       [75] G.-I. Yu, J. S. Jeong, G.-W. Kim, S. Kim, and B.-
+     es/.                                                                  G. Chun, “Orca: A distributed serving system for
+                                                                           transformer-based generative models,” in USENIX
+[66] “Kubernetes.” https://kubernetes.io/.                                 OSDI, pp. 521–538, 2022.
+
+[67] “RyokoAI/ShareGPT52K · Datasets at Hugging Face,”                [76] W. Lee, J. Lee, J. Seo, and J. Sim, “Infinigen: Efficient
+     2023. https://huggingface.co/datasets/RyokoA                          generative inference of large language models with dy-
+     I/ShareGPT52K.                                                        namic KV cache management,” in USENIX OSDI, 2024.
+
+
+                                                                 15
+[77] A. Agrawal, A. Panwar, J. Mohan, N. Kwatra, B. S. Gula-
+     vani, and R. Ramjee, “Sarathi: Efficient llm inference
+     by piggybacking decodes with chunked prefills,” arXiv
+     preprint arXiv:2308.16369, 2023.
+
+
+
+
+                                                               16
+A                     TPOT SLO Attainment
+We provide the TPOT SLO attainment of systems under different CVs in Figure 16. All systems achieve over 95% TPOT SLO
+attainment in most scenarios, and more than 90% under all CVs and RPS configurations.
+
+                                                   Serverless vLLM         ServerlessLLM         HydraServe         HydraServe with Cache
+
+                      100                                            100                                                100
+ SLO Attainment (%)
+
+
+
+
+                       80                                             80                                                  80
+
+
+                       60                                             60                                                  60
+
+
+                       40                                             40                                                  40
+
+
+                       20                                             20                                                  20
+
+
+                        0                                              0                                                   0
+                            0.6           0.7             0.8                   0.6           0.7             0.8                  0.6           0.7            0.8
+                                  Request Rate (req/s)                                Request Rate (req/s)                               Request Rate (req/s)
+                                       (a) CV=2                                            (b) CV=4                                           (c) CV=8
+                                                         Figure 16: TPOT SLO attainment of systems under different CVs.
+
+
+
+
+                                                                                           17
+

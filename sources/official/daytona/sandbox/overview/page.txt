@@ -1,0 +1,171 @@
+Skip to content
+PLATFORM
+REFERENCE
+GUIDES
+CHANGELOG
+v0.223
+Search
+⌘ K
+Sign in
+INTRODUCTION
+Quick Start
+Authentication
+Sandboxes
+CONCEPTS
+Isolation
+Persistence
+Scale
+SANDBOX
+Snapshots
+Warm Pools
+Declarative Builder
+Volumes
+Mount External Storage
+Regions
+AGENT TOOLS
+File System
+Git Operations
+Language Server Protocol
+Process & Code Execution
+Pseudo Terminal (PTY)
+Log Streaming
+MCP Server
+Computer Use
+Agent Skills
+HUMAN TOOLS
+Web Terminal
+SSH Access
+VNC Access
+VPN Connections
+Preview
+Custom Preview Proxy
+Playground
+SYSTEM TOOLS
+Webhooks
+Network Limits
+SECURITY
+Secrets
+Audit Logs
+OBSERVABILITY
+OpenTelemetry Collection
+DEPLOYMENTS
+Bring Your Own Compute
+# CONTENTS
+Overview
+Get started
+Next steps
+Reference
+Daytona Documentation
+Copy for LLM
+View as Markdown
+Open
+
+Daytona is a secure and elastic infrastructure for running AI-generated code.
+
+Daytona provides full composable computers — sandboxes — with complete isolation, a dedicated kernel, filesystem, network stack, and allocated vCPU, RAM, and disk.
+
+Sandboxes are the core component of the Daytona platform, spinning up in under 90ms from code to execution and running any code in Python, TypeScript, and JavaScript. Built on OCI/Docker compatibility, massive parallelization, and unlimited persistence, sandboxes deliver consistent, predictable environments for AI, agent and reinforcement learning workflows.
+
+Agents and developers interact with sandboxes programmatically using the SDKs, API, and CLI. Operations span sandbox lifecycle management, filesystem operations, process and code execution, runtime configuration, and more.
+
+Our stateful environment snapshots enable persistent agent operations across sessions, making Daytona the ideal foundation for AI agent architectures.
+
+#
+Get started
+Create an account → app.daytona.io
+Get an API key → app.daytona.io/dashboard/keys
+PYTHON
+TYPESCRIPT
+RUBY
+GO
+JAVA
+API
+CLI
+
+Install the Python SDK
+
+ 
+
+pip install daytona
+
+Create a sandbox and run code
+
+ 
+
+# Import the Daytona SDK
+from daytona import Daytona, DaytonaConfig
+
+
+# Define the configuration
+config = DaytonaConfig(api_key="YOUR_API_KEY") # Replace with your API key
+
+
+# Initialize the Daytona client
+daytona = Daytona(config)
+
+
+# Create the Sandbox instance
+sandbox = daytona.create()
+
+
+# Run code
+response = sandbox.process.code_run('print("Hello World")')
+print(response.result)
+#
+Next steps
+
+Daytona provides core platform resources for managing sandboxes, environments, and storage.
+
+Sandboxes
+
+Isolated runtime environments you can manage programmatically to run code.
+
+Snapshots
+
+Persistent captures of sandbox state you can use to create sandboxes.
+
+Volumes
+
+Shared file access across sandboxes.
+
+Regions
+
+Geographic locations where sandboxes run.
+
+#
+Reference
+
+Daytona provides a comprehensive set of resources for developers and agents to get started and build on the platform. You can find the following resources in the documentation:
+
+Daytona SDKs: TypeScript, Python, Ruby, Go, Java
+Daytona APIs: Platform (OpenAPI), Toolbox (OpenAPI), Analytics (OpenAPI)
+Daytona CLI: Mac/Linux/Windows
+Daytona LLMs: llms.txt, llms-full.txt
+Daytona Sitemap: sitemap-0.xml
+Daytona Skills: agent skills
+Daytona Markdown: suffix pages with .md (e.g sandboxes.md)
+NEXT
+Authentication
+
+ Need help? - Reach support
+
+ Latest project updates? - View Changelog
+
+ Dotfiles Insider - Read our blog
+
+ LLMs - llms.txt & llms-full.txt
+
+© 2026 DAYTONA PLATFORMS, INC.
+
+Privacy policy
+Terms of Service
+How can I help you today?
+
+I search through your documentation to help you find setup guides, feature details and troubleshooting tips, fast.
+
+Create API key
+Install Daytona SDKs
+Create a sandbox
+Press Enter to send, or Shift and Enter for new line.
+
+Answers are generated with AI which can make mistakes.

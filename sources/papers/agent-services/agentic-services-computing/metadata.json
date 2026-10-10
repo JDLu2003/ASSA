@@ -1,0 +1,73 @@
+{
+  "item": {
+    "topic": "agent-services",
+    "id": "agentic-services-computing",
+    "arxiv": "2509.24380v3",
+    "kind": "arxiv-paper",
+    "title": "Agentic Services Computing",
+    "discovered_by": "all:\"agent as a service\"",
+    "landing_url": "https://arxiv.org/abs/2509.24380v3"
+  },
+  "capture_started_at": "2026-10-09T12:04:36.346490+00:00",
+  "path": "sources/papers/agent-services/agentic-services-computing",
+  "requested_url": "https://arxiv.org/abs/2509.24380v3",
+  "pdf_url": "https://arxiv.org/pdf/2509.24380v3",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "21e9713c40ba41373d954d45ea14c7715e22eef3b12a2b80e685e5f90b9a5764",
+      "bytes": 2610051
+    },
+    "paper.txt": {
+      "sha256": "030d6ab3b63b0605699a071bfa1f14303056809cc214e014d57c7ee8ed7bf1fa",
+      "bytes": 290104
+    },
+    "paper.pdf": {
+      "sha256": "7bf84129fea936e64f0894802ac11570fd6608a90165775788d3072212ef9db1",
+      "bytes": 3354994
+    },
+    "landing.html": {
+      "sha256": "44ee489304e3dcffbac8ab9d3e3c04e6d564beb411e9f03972b852c11d8bb97e",
+      "bytes": 43162
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2509.24380v3",
+    "retrieved_at": "2026-10-09T12:06:38.979440+00:00",
+    "fields": {
+      "citation_title": [
+        "Agentic Services Computing"
+      ],
+      "citation_author": [
+        "Deng, Shuiguang",
+        "Zhao, Hailiang",
+        "Wang, Ziqi",
+        "Qian, Wenzhuo",
+        "Ao, Xiang",
+        "Cheng, Guanjie",
+        "Yin, Jianwei",
+        "Zomaya, Albert Y.",
+        "Dustdar, Schahram"
+      ],
+      "citation_date": [
+        "2025/09/29"
+      ],
+      "citation_online_date": [
+        "2026/07/04"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2509.24380"
+      ],
+      "citation_arxiv_id": [
+        "2509.24380"
+      ],
+      "citation_abstract": [
+        "Services computing has evolved from Web services and microservices to cloud-native and serverless paradigms. These approaches established mature principles for describing, composing, deploying, operating, and governing reusable software functions. LLM-based agents now introduce a fundamentally different service form. Service value in this paradigm emerges not only from invoking predefined functions but also from delegating goals to autonomous entities. These entities understand context, use tools, collaborate with peers, and act across open environments. This shift raises a core question for services computing. How can goal-driven, stateful, tool-mediated, and accountable autonomous behavior be engineered and managed as a service? Recent studies on LLM agents and multi-agent systems provide important foundations. A clear service-centered research roadmap for this emerging paradigm nevertheless remains absent. This work introduces Agentic Services Computing (ASC) to address this gap. ASC extends services computing from managing reusable functional endpoints to engineering and governing autonomous service entities. It defines agentic services as service-oriented autonomous agents. Related research is organized through a lifecycle view that connects service objects, system structures, enabling infrastructure, evaluation metrics, application evidence, and open challenges. This service-centered perspective establishes a foundation for future service ecosystems. Autonomous agents can thus be systematically described, composed, delivered, monitored, audited, and evolved as first-class services."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

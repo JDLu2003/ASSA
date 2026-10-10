@@ -1,0 +1,239 @@
+{
+  "note": "Supplementary candidate URLs; capture and source review required, redirects retained. No claims of product functionality inferred from URLs.",
+  "official": [
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "pricing",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "api",
+      "id": "pricing",
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "responses",
+      "id": "overview",
+      "url": "https://developers.openai.com/api/docs/guides/responses",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "tools",
+      "id": "web-search",
+      "url": "https://developers.openai.com/api/docs/guides/tools-web-search",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "tools",
+      "id": "code-interpreter",
+      "url": "https://developers.openai.com/api/docs/guides/tools-code-interpreter",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-managed-agents",
+      "id": "overview",
+      "url": "https://platform.claude.com/docs/en/managed-agents/overview",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-managed-agents",
+      "id": "pricing",
+      "url": "https://platform.claude.com/docs/en/managed-agents/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-api",
+      "id": "pricing",
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-api",
+      "id": "web-search",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-api",
+      "id": "code-execution",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore",
+      "id": "pricing",
+      "url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore",
+      "id": "overview",
+      "url": "https://aws.amazon.com/bedrock/agentcore/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-engine",
+      "id": "pricing",
+      "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "gemini-api",
+      "id": "search-grounding",
+      "url": "https://ai.google.dev/gemini-api/docs/google-search",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "gemini-api",
+      "id": "pricing",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "microsoft",
+      "product": "foundry",
+      "id": "pricing",
+      "url": "https://azure.microsoft.com/en-us/pricing/details/ai-foundry/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "e2b",
+      "product": "sandbox",
+      "id": "overview",
+      "url": "https://e2b.dev/docs",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "e2b",
+      "product": "sandbox",
+      "id": "pricing",
+      "url": "https://e2b.dev/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "e2b",
+      "product": "sandbox",
+      "id": "persistence",
+      "url": "https://e2b.dev/docs/sandbox/persistence",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "daytona",
+      "product": "sandbox",
+      "id": "overview",
+      "url": "https://www.daytona.io/docs/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "daytona",
+      "product": "sandbox",
+      "id": "pricing",
+      "url": "https://www.daytona.io/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "tavily",
+      "product": "search",
+      "id": "overview",
+      "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "tavily",
+      "product": "search",
+      "id": "pricing",
+      "url": "https://docs.tavily.com/documentation/api-credits",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "exa",
+      "product": "search",
+      "id": "overview",
+      "url": "https://docs.exa.ai/reference/search",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "exa",
+      "product": "search",
+      "id": "pricing",
+      "url": "https://docs.exa.ai/reference/pricing",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "vllm",
+      "product": "inference",
+      "id": "overview",
+      "url": "https://docs.vllm.ai/en/latest/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "sglang",
+      "product": "inference",
+      "id": "overview",
+      "url": "https://docs.sglang.ai/",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "ipads",
+      "product": "publications",
+      "id": "index",
+      "url": "https://ipads.se.sjtu.edu.cn/pub/publication",
+      "kind": "official-web"
+    }
+  ],
+  "papers": [
+    {
+      "topic": "model-serving",
+      "id": "vllm",
+      "arxiv": "2309.06180",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-evaluation",
+      "id": "webarena",
+      "arxiv": "2307.13854",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-evaluation",
+      "id": "osworld",
+      "arxiv": "2404.07972",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-evaluation",
+      "id": "tau-bench",
+      "arxiv": "2406.12045",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-systems",
+      "id": "swe-agent",
+      "arxiv": "2405.15793",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-tools",
+      "id": "toolllm",
+      "arxiv": "2307.16789",
+      "kind": "arxiv-paper"
+    }
+  ]
+}

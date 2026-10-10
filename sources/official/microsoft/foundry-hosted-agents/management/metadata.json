@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "microsoft",
+    "product": "foundry-hosted-agents",
+    "id": "management",
+    "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:41.302539+00:00",
+  "path": "sources/official/microsoft/foundry-hosted-agents/management",
+  "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
+  "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent?pivots=rest",
+  "http_status": 200,
+  "title": "Manage hosted agents - Microsoft Foundry | Microsoft Learn",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "4750f7ecc3d6e9106d2667eba719fbbb5f999ea019900ada9746035a69f11e26",
+      "bytes": 21101
+    },
+    "page.txt": {
+      "sha256": "e452da159caf24dbd6aafd71326d1162d8a866a731cb233ab18d71a305ca72b6",
+      "bytes": 17914
+    },
+    "page.pdf": {
+      "sha256": "dfb8b4261d04da5d902f57ea0446dce4a3cb00ebd8aeec5e88a259a73b5a62dd",
+      "bytes": 419409
+    }
+  }
+}

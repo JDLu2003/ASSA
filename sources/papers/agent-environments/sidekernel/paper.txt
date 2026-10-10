@@ -1,0 +1,1072 @@
+                                             SideKernel: A Usable microVM Sandbox for AI
+                                                        Coding Agents on macOS
+                                                                                                         Dimitrios Prasakis
+                                                                                                  Georgia Institute of Technology
+                                                                                                  dimitrios.prasakis@gatech.edu
+
+
+                                           Abstract—AI coding agents are untrusted system components,                  1) OS-isolation (Shared Kernel): Isolation primitives that
+                                        yet they require autonomy on the developer machines they run                      share the host’s kernel. For example, Linux Contain-
+                                        on. This contradiction is a security problem. Sandboxes provide                   ers, bubblewrap (namespaces & cgroups), or kernel-
+                                        an isolated environment, but for local macOS development, the
+                                                                                                                          enforced security controls such as Linux Landlock, macOS
+arXiv:2610.02456v1 [cs.CR] 1 Oct 2026
+
+
+
+
+                                        existing local, open-source options for AI coding agents are few
+                                        in number and cumbersome to use. I conducted a formative                          Seatbelt/sandbox-exec, and others.
+                                        online user survey which indicates that fewer than 40% of AI                   2) Language-Specific Isolation: Isolation primitives where
+                                        coding agent users run their agents in a sandbox and identifies
+                                                                                                                          the boundary lives inside a managed runtime provided
+                                        the top usability barriers hindering AI coding agent sandbox
+                                        adoption. These findings are used to develop SideKernel: an open-                 by the language. Examples include WASM runtimes,
+                                        source, local, microVM-based macOS sandbox for AI coding                          Chromium’s site isolation, and the JVM.
+                                        agents designed for usability. To evaluate SideKernel, I compiled              3) Virtualization (Separate Kernel): Each workload runs on
+                                        a list of sandboxes available on the market and filtered it
+                                        against five inclusion criteria. Then I performed a comparative                   its own dedicated kernel, whether a full virtual machine
+                                        analysis between SideKernel and the sandboxes that satisfy these                  such as QEMU/KVM, VirtualBox, or Parallels, a unikernel
+                                        criteria, across 23 capability tests derived from the usability                   [27] or a microVM (i.e., a stripped-down guest running
+                                        barriers revealed by the user survey. I discovered that only a                    a minimal Linux kernel) such as Firecracker or Kata
+                                        few sandboxes are similar to SideKernel, and that among those,                    Containers.
+                                        Docker Sandboxes and SideKernel score highest on capability
+                                        features related to usability. A secondary contribution of this                C. Scope
+                                        paper is a survey of the existing solution space for local, open-
+                                        source, microVM-based macOS sandboxes for AI coding agents.                       Many of the AI coding agent sandboxes on the market use
+                                                                                                                       isolation primitives that rely on a shared kernel. Container-
+                                          Index Terms—AI agents, macOS, microVM, sandboxing, us-                       based isolation is weaker than microVM isolation [26]. This
+                                        able security.                                                                 claim is, however, not trivial to establish for other primitives
+                                                                                                                       such as macOS Seatbelt, which on the one hand is a shared
+                                                                  I. I NTRODUCTION
+                                                                                                                       kernel isolation primitive, but on the other hand is policy-
+                                        A. Motivation                                                                  based and enforced at the kernel level. The right question to
+                                           AI agents are untrusted system components, and running                      ask is: under which threat model do I evaluate the security of
+                                        untrusted system components in a sandbox is a recommended                      the two? This is a research question that deserves a study of
+                                        practice in systems security [1]. Over the past year1 , the                    its own, and is out of scope for this paper. However, I state
+                                        cybersecurity market has seen rapid development of AI agent                    in Section II-B the threat model under which SideKernel is
+                                        sandboxes [2–23]—many of which have gained popularity                          designed.
+                                        but, anecdotally, see limited adoption with the majority of                       Moreover, security depends not only on the theoretical
+                                        AI coding agent users not running a sandbox (Section V).                       guarantees of a technology, but also on the actual implemen-
+                                        The implication of this finding is that most users run AI                      tation of it. In this paper, I focus exclusively on microVM
+                                        coding agents on their machines, with all the security risks                   sandboxes. The security argument is architectural: the host’s
+                                        that this implies. For example, AI agents are vulnerable to                    kernel is not reachable, as the untrusted agent interacts with a
+                                        prompt injection attacks, tool misuse leading to remote code                   stripped-down microVM Linux kernel whose attack surface is
+                                        execution, data exfiltration, and the installation of malware                  by definition reduced. A malicious agent or adversary would
+                                        through hallucinated package names [24, 25].                                   have to escape the virtual machine monitor (VMM) to land
+                                                                                                                       on the host. This is the isolation primitive that many cloud
+                                        B. Isolation Primitives
+                                                                                                                       providers use for untrusted code. For example, AWS uses
+                                           The isolation primitives of sandboxes can be broadly clas-                  Firecracker microVMs for Lambda and Fargate [26], as do
+                                        sified based on where the security boundary lives [26]:                        the major commercial hosted AI agent sandboxing platforms
+                                           1 Approximated from the date of the first public commit of most sandboxes   such as E2B and Vercel Sandbox [13, 28].
+                                        listed in Table I.
+D. Research Question and Contributions
+  This paper addresses the following research question:
+     Which usability barriers hinder macOS developers’
+     adoption of AI coding agent sandboxes?
+  In order to answer this question, this paper makes three
+contributions:
+1) SideKernel: An implementation of a local, microVM-
+   based macOS sandbox for AI coding agents. SideKernel’s
+   core thesis is usable security: a sandbox that is secure, easy
+   to use, and built exclusively for AI coding agents.
+2) An empirical account of sandbox usability issues:
+   Informal formative research via an online user Google
+   survey that hints at the USABILITY BARRIERS that AI
+   coding agent users face when using similar sandboxes.
+   This is a secondary contribution of this paper that ties to
+   the development of SideKernel; however, this study should
+   not be treated as statistically generalizable, but rather as an
+   informal signal. More on this in Section IX.
+3) A comparative analysis of the existing sandbox market:
+   Summative research via a comparative analysis of SideK-
+   ernel against a list of similar sandboxing solutions on the
+   market. This is a secondary contribution of this paper that
+                                                                                  Figure 1. North & South Security Boundaries
+   discovers sandboxes similar to SideKernel and compares
+   them.
+                                                                       1) N ORTH B OUNDARY: The north boundary encompasses
+                      II. BACKGROUND
+                                                                           all communications that the agent inside the sandbox con-
+A. Terminal-Based vs. Programmatic AI Agents                               ducts with machines other than the host or localhost. This
+   AI coding agents are typically executed in the terminal                 includes the internet, or other hosts in the same or external
+and require continuous human interaction. Examples include                 networks. I refer to the communication channel from
+Claude Code [29], Codex [30], and others. Programmable                     the sandbox to the north boundary as N ORTHBOUND
+software development kit (SDK) agents are typically executed               C HANNEL.
+on a server, and require little to no human interaction. They          2) S OUTH B OUNDARY: The south boundary includes all
+are programs interacting with MCP servers [31] or directly                 communications that the sandbox performs with the host.
+with the application programming interfaces of LLM providers               Depending on the exact implementation of the sandbox,
+or local models through their official SDKs. This distinction              that could be over virtual sockets, or networking protocols
+matters because this paper is concerned only with AI coding                such as SSH. I refer to the communication channel from
+agents and their related sandboxes.                                        the sandbox to the host boundary as S OUTHBOUND
+                                                                           C HANNEL.
+B. Threat Model
+                                                                        In this context, the south boundary exists to protect the host
+   AI coding agents are untrusted system components and              from malicious actions, for example installing malware, or
+they are executed directly on the host’s terminal. Therefore,        deleting or editing valuable files. The threat is unidirectional:
+SideKernel’s threat model treats the agent itself as the adver-      from the sandbox towards the host. The north boundary, in
+sary. For example, an agent might be prompt-injected from            turn, protects the data that is mounted inside the sandbox
+external sources, directly or indirectly, or might hallucinate       from exfiltration, for example a malicious agent sending all
+dangerously during its own inference. The reason the agent           the mounted data to an external source. It is equally concerned
+turns hostile is immaterial to the threat model: the model           with protecting external entities from a local malicious
+treats the threat actor as fully privileged (inside the sandbox)     agent. In this context, the threat is bidirectional (from the
+regardless of cause.                                                 sandbox to the north boundary and vice versa).
+   To better study the attack surface of AI agents in the context       A notable example is OpenAI’s autonomous AI agent sys-
+of sandboxing, I define two security boundaries, depicted in         tem inadvertently hacking Hugging Face through a sandbox
+Fig. 1:                                                              escape [32]. That very example, however, also shows the
+                                                                     complexity of the enterprise of sandboxing powerful agents.
+                                                                     OpenAI’s agent bypassed northbound security controls by dis-
+covering and exploiting a chain of vulnerabilities to eventually
+escape the sandbox and local networks and reach the internet.
+    The security controls of SideKernel address both bound-
+aries, though not equally.
+    1) South Boundary Threat Model: On the south boundary,
+the goal is protecting the host’s runtime and its non-mounted
+filesystem from adversarial agents running inside the sandbox.
+    2) North Boundary Threat Model: On the north boundary,
+the goal is preventing exfiltration of sandbox data to the
+internet (or other external networks/endpoints), as well as
+using the sandbox as a launch point for outbound offensive
+operations by a malicious agent.
+                        III. R ELATED W ORK
+A. Existing Sandboxes
+   The current sandboxing market is dominated by sandboxes
+that rely on OS-isolation or language-specific isolation. This
+includes the native sandboxes of major frontier-model compa-
+nies, for example, Claude Code [33], Codex [34], Gemini [35],
+and Grok Build [36]—as well as well-known open-source tools
+that depend on Seatbelt and Landlock, such as Nono [2], Agent
+Safehouse [5], and more [8, 9, 11, 12].
+                                                                                                  Figure 2. SideKernel research methodology.
+   Others use hardware-virtualized microVMs, but they are
+SaaS products with no local deployment, indicatively E2B [13]
+and Daytona [7]; are not open-source [22]; are general VM                             against other market sandboxes that satisfy a set of
+runtimes rather than purpose-built agent sandboxes [37–39];                           inclusion criteria (Table I and Fig. 3). The analysis is run
+focus primarily on computer use [17]; or target mainly                                on a set of well-defined capability tests (Section VII),
+programmable SDK agents or MCP gateways rather than                                   grounded on the usability signals of the user survey.
+terminal-based coding agents [14, 20].                                              The depiction of the methodology for developing SideKer-
+   To the best of my knowledge, SmolVM [18], Microsand-                          nel is shown in Fig. 2, where a feedback loop between the
+box [14], Shuru [15], and VibeBox [16] are the only open-                        results of the comparative-analysis and the continuous devel-
+source, local, purpose-built for terminal-based AI coding                        opment of SideKernel ensures that the software is constantly
+agents, hardware-virtualized with microVMs, and macOS-                           improved, by addressing the findings and adding new tests.
+native sandboxes on the market. I refer to these five properties                 The goal of this methodology is to allow me to evaluate and
+as the INCLUSION CRITERIA (IR-1–IR-5) and define and                             improve SideKernel continuously.
+discuss their importance in Section IV-B.
+   This is not an exhaustive survey of all the sandboxes on the                  A. User Survey Methodology
+market. Rather, it aims to present an overview of the different                    The user survey takes the form of an online Google Survey
+types of sandboxes that exist, but more importantly identify a                   that uses a mix of multiple-choice, multi-select, and free-text
+complete list of all the sandboxes similar2 to SideKernel.                       questions, gathering empirical evidence from sandbox users
+                         IV. M ETHODOLOGY                                        on what USABILITY BARRIERS they faced while using similar
+                                                                                 sandboxes.
+   SideKernel’s prototype implementation is informed by two                        The user survey is structured in three steps. First, filtering
+studies:                                                                         out users that have never used an AI coding agent. Second,
+  1) A user survey (formative research) [40, Ch. 3.1.1] con-                     categorizing the remaining users based on whether they are
+      ducted prior to the development of SideKernel (complete                    current or former sandbox users. Third, through multiple-
+      instrument in Table IX). The purpose of this formative                     choice, multi-select, and free-text questions, I gathered evi-
+      online user survey is twofold:                                             dence on what usability barriers they faced while using those
+     a) to inform the implementation of SideKernel                               sandboxes.
+    b) to motivate a comparative analysis of SideKernel                            Respondents were gathered via direct and targeted recruiting
+         against other sandboxes on the market.                                  [41, Ch. 2] specifically through my direct professional net-
+  2) A comparative analysis (summative research) [40,                            work, Zurich’s JFloor startup community3 and Georgia Tech’s
+      Ch. 3.1.2] benchmarking the final SideKernel prototype                     practicum course (CS-6727) online forum and user group &
+  2 What constitutes a similar sandbox is discussed in detail in Section IV-B.     3 https://thejfloor.com/
+                                                                    C. Deriving Tests from the Usability Barriers
+                                                                       The user survey, however, gives little information about the
+                                                                    detailed tests for each barrier. For example, the user study
+                                                                    suggests that sharing files between the host and the sandbox
+                                                                    is something users find cumbersome. But what exactly does
+                                                                    this mean? To the best of my knowledge, there is no prior
+                                                                    literature that studies these attributes in any greater detail for
+                                                                    sandboxes, beyond this study.
+                                                                       The selection of the tests for each usability barrier is done
+                                                                    so that as many possibilities as possible are covered—while
+                                                                    making reasonable assumptions. For example, in file sharing
+                                                                    (UB-1), I noticed that mounting is common across sandboxes,
+                                                                    but file sharing over SFTP or SSH is not; hence I created tech-
+         Figure 3. Filtering process against inclusion criteria.    nical tests around mounting. Indicatively, assessing whether
+                                                                    CRUD operations work bidirectionally, if file-bit flags (r, w,
+                                                                    x) transfer, and more. Another example is image clipboard
+Georgia Tech’s Slack channels. It is important to note that this    sharing, a feature supported by coding agents such as Claude.
+is an informal Google Survey. I treat the results as anecdotal         The multi-select and multiple-choice answers are then
+signals rather than statistically generalizable results.            grouped by frequency to identify the top usability barriers. For
+B. Comparative Analysis Methodology                                 example the answers “Initial installation / setup is too hard”
+                                                                    and “Had to set everything up from scratch (dotfiles, shell,
+   The goal of the comparative analysis is to examine how well      tools, logins)” are merged into one category “Environment
+the final SideKernel prototype addresses the usability barriers     provisioning & Setup”.
+identified from the user study relative to other sandboxes             The comparative analysis provides an overview of specific
+currently on the market.                                            usability capabilities within the confines of the tested usability
+   The comparative analysis begins with the compilation of a        barriers, rather than a generalizable statement about which
+list of all existing sandboxes that are similar to SideKernel. To   sandbox is more useful.
+define what similarity means, I defined a set of INCLUSION
+CRITERIA that I filter the list against. These are the following:   D. Benchmark Construction
+  1) O PEN -S OURCE: The sandbox must be free to use, and              Each task is a CAPABILITY TEST with a binary outcome,
+      either open-source or source-available, to foster trust       testing whether an action related to a specific usability barrier
+      through a publicly inspectable codebase.                      is feasible in a given sandbox. Success criteria for every ca-
+  2) L OCAL: The sandbox must execute in the user’s own             pability test are fixed before the comparative analysis iteration
+      machine, rather than in a remote execution environment        (evaluation) begins [40, §4.1].
+      such as a cloud or a virtual private server (VPS).               A test passes if and only if the sandbox provides a BUILT-
+  3) I NTERACTIVE SHELL: The sandbox must provide an                IN MECHANISM for the task. By built-in mechanism I refer to
+      interactive shell (e.g., bash) intended for operating CLI     a documented feature of the sandbox itself: one discoverable
+      coding agents such as Claude, Codex etc. This excludes        through the tool’s official documentation or its own interface.
+      sandboxes that only provide SDK interfaces or computer-       A test fails if the task is infeasible, or feasible only by working
+      use interfaces (GUI) for AI agents.                           around the sandbox—for example blocking network access to
+  4) H ARDWARE - VIRTUALIZATION ( MICROVM): The sand-               a sandbox by explicitly and manually blocking the sandbox’s
+      box must use hardware virtualization as its isolation         networking on a host’s firewall. More specifically, the binary
+      boundary, and provide this virtualization performantly        outcomes of the capability tests are defined as follows:
+      through a stripped down kernel (microVM or unikernels).        •   ✓ = a built-in mechanism for the task exists
+      This excludes platforms intended for full VM virtual-
+                                                                     •   ✗ = no built-in mechanism exists
+      ization, as performance is not a named but an implied
+      requirement.                                                     This evaluation rule is deliberately generous, and deliber-
+  5) MAC OS S UPPORT: The sandbox must be able to run on            ately blind to how easy or hard the built-in mechanism is to
+      a macOS ARM machine.                                          use. Because I am both the tester and developer of SideKernel,
+   Sandboxes that meet inclusion criteria two to five are           I had to find ways to reduce bias in my evaluation as much
+included in the comparative study. I did not filter on open-        as possible. One way to do this is to have a standardized
+source, because I did not want to exclude the major player,         methodology to test the sandboxes. Had I also scored on
+Docker Sandboxes.                                                   perceived effort, then every cell would encode a subjective
+                                                                    judgment of my own, and the comparison would not be
+                                                                Table I
+  I NCLUSION REQUIREMENTS AND ISOLATION CLASSIFICATION . IR-1: OPEN - SOURCE ; IR-2: LOCAL EXECUTION ; IR-3: INTERACTIVE SHELL FOR CLI
+                                        AGENTS ; IR-4: HARDWARE - VIRTUALIZED ; IR-5: MAC OS
+
+
+                                               Inclusion requirements                                                        Isolation
+
+
+
+
+                                                                                rt.
+
+
+
+
+                                                                                             OS
+                            e
+
+
+
+
+                                                                             -vi
+                           urc
+
+
+
+
+                                           l
+
+
+
+
+                                                              ll
+                                        ca
+
+
+
+
+                                                                           HW
+
+
+
+
+                                                                                           ac
+                                                           he
+                                      Lo
+                       So
+
+
+
+
+                                                                                            m
+                                                            S
+                      -1
+
+
+
+
+                                     -2
+
+
+
+
+                                                         -3
+
+
+
+
+                                                                          -4
+
+
+
+
+                                                                                         -5
+                    IR
+
+
+
+
+                                   IR
+
+
+
+
+                                                      IR
+
+
+
+
+                                                                        IR
+
+
+
+
+                                                                                      IR
+Sandbox                                                                                           Isolation Mechanism(s)                 Class
+
+nono                   ✓              ✓                   ✓                    ✗          ✓       Seatbelt / Landlock                    Shared Kernel
+Landrun                ✓              ✓                   ✓                    ✗           ✗      Landlock                               Shared Kernel
+Fence                  ✓              ✓                   ✓                    ✗          ✓       Seatbelt / bubblewrap                  Shared Kernel
+Daytona               ✓a              ✗                 n/ab              n/ab           n/ab     Shared Kernel / microVM                Cont. / Sep. kernel
+Yolobox                ✓              ✓                   ✓                    ✗          ✗c      Docker/Podman container                Shared Kernel
+AIO                    ✓              ✓                   ✗                    ✗          ✗c      Docker container                       Shared Kernel
+Deno                   ✗              ✗                 n/ab              n/ab           n/ab     microVM                                Sep. kernel
+Capsule                ✓              ✓                   ✗                    ✗          ✓       WASM                                   Runtime
+pctx                   ✓              ✓                   ✗                    ✗          ✓       Deno/V8 isolate; Podman                Runtime / Cont.
+E2B                    ✓              ✗                 n/ab              n/ab           n/ab     microVM                                Sep. kernel
+Microsandbox           ✓              ✓                   ✓                    ✓          ✓       microVM                                Sep. kernel
+Shuru                  ✓              ✓                   ✓                    ✓          ✓       microVM                                Sep. kernel
+VibeBox                ✓              ✓                   ✓                    ✓          ✓       microVM                                Sep. kernel
+CUA                    ✓              ✓                  ✗d                    ✓          ✓       VM                                     Sep. kernel
+SmolVM                 ✓              ✓                   ✓                    ✓          ✓       microVM                                Sep. kernel
+Sprites                ✗              ✗                 n/ab              n/ab           n/ab     microVM                                Sep. kernel
+Arrakis                ✓              ✓                   ✓                    ✓           ✗      microVM                                Sep. kernel
+OpenSandbox            ✓              ✓                   ✗                ✓e             ✗c      Container (opt. MicroVM)               Shared Kernel
+Docker Sbx             ✗              ✓                   ✓                    ✓          ✓       microVM                                Sep. kernel
+CodeRunner             ✓              ✓                  ✗f                    ✓          ✓       microVM                                Sep. kernel
+Agent Safehouse        ✓              ✓                   ✓                    ✗          ✓       Seatbelt                               Shared kernel
+
+SideKernel             ✓              ✓                   ✓                    ✓          ✓       microVM                                Sep. kernel
+
+a Since June 2026, Daytona moved into private repositories.
+b Not applicable: the sandbox executes on remote infrastructure rather than on the user’s machine (fails IR-2), so the remaining requirements, which concern
+
+the local macOS execution environment, are not evaluated.
+c Installable on macOS, but the sandbox does not virtualize natively: it executes only inside a Linux VM supplied by Docker Desktop, Colima, or Podman
+
+machine.
+d CUA is built for computer use. It is heavy (boots full macOS VMs) and has a different purpose (GUI, computer use) than SideKernel.
+e Evaluated in its default configuration (shared host kernel).
+f No native shell subcommand; interactive access uses the apple/container substrate.
+
+
+
+
+reproducible by a reader. Restricting the binary outcome to                              The sum of a sandbox’s binary outcomes forms its capa-
+built-in capabilities makes the scores objective and auditable.                       bility score. It is a naive, unweighted sum in which every test
+   A valid counterargument to this methodology is that this                           counts equally, although in practice not every task is equally
+capability binary scoring measures exactly that: capability, not                      consequential. It is a signal rather than a definitive measure,
+usability. While this statement is true, there is a nuance: these                     and it should be read together with the friction notes rather
+capabilities are sourced from the user study which identifies                         than on its own.
+which usability barriers hinder sandbox adoption. Therefore
+                                                                                      E. Evaluation Protocol
+they are capabilities related to usability barriers.
+   But this alone is not sufficient to demonstrate usability on                          In order to make the comparison standard and as thorough
+its own. Just because a sandbox has built-in capabilities to                          as possible, I create a template directory that contains the
+perform some actions—even when those actions are related to                           following structure and files:
+solving usability barriers—it does not mean that this built-in                        sandbox-test-template/
+mechanism is intuitive and frictionless. To counter this trans-                       |-- external-file.txt                          # host only file
+                                                                                      |-- big-file.txt                               # 10 GB file
+parently, I therefore record friction notes alongside the binary                      ‘-- mount/                                     # mounted dir
+outcomes. Friction notes never change a binary outcome. They                              |-- requirements.txt                       # contains numpy
+are reported per barrier in Section VII and carry the qualitative                         |-- workspace-file.txt                     # CRUD, symlink
+                                                                                          ‘-- shell.sh                               # no exec-bit
+descriptions that the binary outcome cannot, thus allowing the
+reader to make a judgment of their own.
+   This directory is deployed fresh for each new sandbox
+evaluation.
+   These tests are extensive, but not exhaustive—and should
+not be read as such. They are, however, a reasonable and
+transparent indicator of how capable and usable different
+sandboxes are in relation to the barriers the user survey
+uncovered.
+   Another important aspect of this evaluation methodology
+is that the iterative approach of SideKernel’s development
+(Fig. 2) allows me to continuously create new tests or amend
+existing ones while improving the product at the same time.
+                   V. U SER S URVEY R ESULTS
+A. Google Survey Report Analysis                                         Figure 4. Usability barriers reported by current and former sandbox users
+                                                                         (n = 33).
+   Below I present the most frequently mentioned user survey
+results that shaped my decisions on the development of the
+prototype of SideKernel, as well as its evaluation. The com-             of Claude Code helped me scope down my practicum and
+plete instrument and responses are reported in Appendix B.               focus only on Claude Code. The count of 33 former and
+The free-text responses are only analyzed and reported in                current users is the group of interest for this study.
+aggregate in this section.                                                  The free-text responses of current and former users around
+                                                                         what features or improvements an ideal sandboxing solution
+ •   The Google survey gathered a total of 80 respondents.
+                                                                         would offer compared to their current or past setups focus
+ •   Out of the 80 respondents, 68 use AI coding agents (85%).           on a few main points. In aggregate users ask for ease of use
+     Respondents who do not use AI coding agents are filtered            and “nearly invisible” sandboxes that require minimum effort
+     out and not considered for the following results.                   to manage and operate. Another cluster of users emphasizes
+ •   60.3% of AI coding agent users are macOS users.                     the importance of reproducible provisioning. That includes
+                                                                         features such as saving a working setup as a template and
+ •   Out of the 68 AI coding agent users, 86.8% use Claude
+                                                                         flexibility to add tools. A notable response described a “golden
+     Code (59 respondents), 38.2% use Codex (26 respondents),
+                                                                         image” preloaded with tools; that gave me the idea for the
+     and 33.8% use Microsoft’s Copilot in agent mode (23
+                                                                         personalized image SideKernel implements today. Finally,
+     respondents). Cursor (19.1%, 13 respondents) and Gemini
+                                                                         many comments note that granularity in the policies for the
+     CLI (14.7%, 10 respondents) follow, while every remaining
+                                                                         security controls, as well as observability, is an important
+     agent sits at or below 2.9%, making them individually
+                                                                         attribute.
+     insignificant for the scope of SideKernel.
+ •   Only 38.2% (26 users) of respondents are current sandbox            B. Usability Barriers
+     users, while 10.3% (7 users) are former sandbox users and             The usability barriers reported in the user survey are de-
+     51.5% (35 users) have never used a sandbox.                         picted in Fig. 4 and aggregated into the following three
+ •   From the current sandbox users (26 in total), 34.6% (9              categories:
+     users) wrote that they face no significant difficulties.            1) Host–sandbox file sharing (UB-1): How cumbersome is
+ •   From the former and current sandbox users (33 in total), 8             it to share files between the host and the sandbox? This
+     wrote that getting ports / localhost / networking to work is           includes regular files, dotfiles and the clipboard.
+     difficult, and that having to set everything up from scratch        2) Networking (e.g., ports, localhost, internet access) (UB-
+     (e.g., dotfiles, shell, tools, logins) is also difficult; 7 wrote      2): How hard is it to get ports, localhost, and networking
+     that sharing files between the sandbox and the host is hard            to work correctly?
+     or slow. They are followed by 5 users noting that multi-            3) Environment provisioning (UB-3): Does the environment
+     sandbox management is confusing and that initial setup                 (e.g., dotfiles, shell, tools, logins) have to be recreated
+     and installation was confusing.                                        every time in the sandbox? This includes ease of first use,
+ •   Notably, among the non-sandbox users, 60% answered that                custom Claude skill transfer, persisting configurations and
+     they have never considered it and 25.7% that the security              package installations across restarts—as well as the initial
+     benefit of using a sandbox did not seem worth the effort               setup of the sandboxes.
+     for their use case.                                                   Beyond these three usability barriers, users also noted
+  The sample is highly technical, with one third working in              usability issues regarding installation, multisandbox manage-
+security and the vast majority being engineers. The dominance            ment, reliability and performance. However, to keep imple-
+                                                                                  Each design goal of SideKernel relates to a usability barrier
+                                                                               of Section V. The capabilities developed bind to a specific
+                                                                               usability barrier but some entail a deliberate risk acceptance,
+                                                                               as described in SideKernel’s threat model (Section II-B) and
+                                                                               summarized in Table II.
+                                                                                  Table II also includes design goals not implemented for
+                                                                               this paper. These goals around credentials management, ob-
+                                                                               servability of agentic events inside the sandbox, visibility of
+                                                                               outbound connections, and more granular controls on the north
+                                                                               boundary were scoped down from the initial aspirations of the
+                                                                               practicum. Some of those features are present in other mature
+                                                                               products such as Docker Sandboxes [22].
+                                                                                  The rest of this subsection describes the operation of SideK-
+                                                                               ernel in more detail.
+                                                                                  1) Entering a sandbox: After installing SideKernel5 , a user
+                                                                               can enter the shell of SideKernel by typing sidekernel
+                                                                               (or the abbreviated alias sk). The command launches a new
+                    Figure 5. SideKernel’s Architecture
+                                                                               ephemeral microVM in the background and the current direc-
+                                                                               tory of the host is automatically mounted to this microVM.
+                                                                               While this implicit mount looks contrary to standard security
+mentation realistic within the time constraints of the practicum,              practices, it is exactly what a Claude session (and other AI
+I only based my development and evaluation on the top three                    coding agents) does on the host, so it matches what the
+most common usability barrier categories. For the evaluation,                  user expects. A user then can run claude inside SideKernel
+each usability barrier category is broken down into capability                 to launch Claude Code, as the latest version of Claude is
+tests in Section VII.                                                          preinstalled on the first launch. However, SideKernel also
+                          VI. S IDE K ERNEL                                    provides a faster way to start Claude. That is, by running
+                                                                               sclaude directly on the host (which stands for Secure
+A. Architecture                                                                Claude or SideKernel Claude).
+   A depiction of SideKernel’s architecture can be found in                       2) Authentication: If Claude is already authenticated on the
+Fig. 5. SideKernel consists of a virtual machine monitor                       host, running it inside SideKernel automatically provides an
+(VMM) written in Swift on top of Apple’s Virtualization                        authenticated session. When running Claude inside SideKernel
+framework. It uses a stripped-down precompiled Linux kernel                    for the first time, SideKernel’s VMM reads Claude’s existing
+by Kata Containers [42], over a curated Ubuntu root filesystem                 credentials from the host’s macOS Keychain. This is only
+built on first run, both pinned down to their SHA256 hashes.                   possible after an explicit approval from the user. The macOS
+   Moreover, a core component of SideKernel is a minimal                       Keychain access control prompt requests the user for their
+zero-dependency Rust agent that runs as PID 1 inside the mi-                   password and permission to allow SideKernel to write to it. If
+croVM. This Rust agent is responsible for mounting the host’s                  Claude is not authenticated on the host, authenticating Claude
+filesystem using VirtioFS, and for automatic port detection &                  in the sandbox also auto-authenticates Claude to the host. In
+forwarding. The Rust agent uses virtual sockets (vsock) for                    a nutshell, SideKernel’s and the host’s Claude share the same
+communication with the host and exposes a pseudoterminal.                      authentication.
+   An important design decision is a small credential proxy                       3) Sharing External Files: Host files and folders out-
+server on the host, outside the sandbox. It intercepts the agent’s             side of the mounted directory can be requested from inside
+API requests and injects AI coding agent credentials, so that                  SideKernel at runtime via an in-guest command, sk-drop
+no credentials are ever available inside the sandbox4                          <host-path>, which, combined with explicit user approval
+B. Design Goals and Implementation                                             outside the sandbox, drops external files into SideKernel.
+                                                                               SideKernel includes preloaded instructions for Claude on how
+   The user survey signals that usability issues constitute barri-             to use sk-drop. Therefore, asking Claude for a macOS file,
+ers to adoption of sandboxes for AI coding agents. Therefore,                  or dragging and dropping a file into a Claude session is enough
+SideKernel is opinionated, and its design is guided by the                     to trigger sk-drop and make the file available to the agent.
+usability issues the survey identified. This opinionated design                Moreover, the clipboard of the host is pastable into SideKernel.
+means that the standard deny-all-by-default principle is applied               For SideKernel’s Claude sessions particularly, images (e.g.
+selectively rather than absolutely, in favor of usability.                     clipboard screenshots) are pastable into the SideKernel session
+  4 The only exception is the first authentication inside the sandbox, where   as well.
+SideKernel reads the credentials and immediately deletes them from the           5 Currently through a Makefile—in future work through brew or .dmg files
+sandbox while storing them in the macOS Keychain.
+                                                                Table II
+             S IDE K ERNEL DESIGN GOALS TRACED TO THE USABILITY BARRIERS OF S ECTION V AND THE BOUNDARIES OF S ECTION II-B
+
+UB   Boundary Design Goal                                  Mechanism                                   Implemented Risk Description
+UB-1 South       The current folder is the sandbox          Implicit bidirectional current directory        ✓       The agent may read, edit or destroy
+                                                            mount with VirtioFS                                     anything in the mounted directory
+UB-1 South       External (non-mounted) files or            Command sk-drop with host-side                  ✓       —
+                 directories reachable at runtime, with     approval. Drag and drop works into
+                 explicit consent                           SideKernel Claude’s sessions
+UB-1 South       Copy and paste works between the           Bidirectional text (and image)                  ✓       —
+                 host and SideKernel’s Claude sessions clipboard
+UB-2 South       Exposed sandbox ports are                  SideKernel auto-detects and forwards            ✓       A malicious agent can open ports to
+                 automatically available on the host        guest ports to 127.0.0.1                                the host, exposing malicious services.
+UB-2 North       Block all internet/external traffic, while NAT kill-switch, Claude inference               ✓       —
+                 the Claude agent still works               endpoints allowlisted by default
+UB-3 South       SideKernel feels like a second PC (e.g., Runtime OverlayFS persistence with a              ✓       —
+                 installed packages and configurations      personalized SideKernel image, using
+                 persist across sandboxes)                  the in-guest save command
+UB-3 South       One login authenticating on the Mac        The default Claude Code macOS                   ✓       —
+                 or inside a sandbox authenticates both Keychain entry is shared between the
+                                                            VMM of SideKernel (not the sandbox)
+                                                            and the host
+UB-3 South       Claude credentials are never exposed       Credential proxy outside of the                 ✓       —
+                 inside the sandbox                         sandbox
+UB-3 South       Agent feels and behaves as configured Automatic skill, agent and plugin                    ✓       —
+                 on the host                                transfer
+UB-3 South       Arbitrary user secrets can be stored       To be defined (Future Work,                     ✗       —
+                 outside the sandbox, and injected          Section X)
+                 securely
+UB-2 North       The user can allowlist arbitrary           To be defined (Future Work,                     ✗       —
+                 destinations while egress is otherwise     Section X)
+                 blocked
+—    —           Agentic AI filesystem and process          To be defined (Future Work,                     ✗       —
+                 events inside the sandbox are logged       Section X)
+—    North       External endpoints the agent contacted To be defined (Future Work,                         ✗       —
+                 are logged                                 Section X)
+
+
+
+   4) Ports and networking: In SideKernel port forwarding                      background. Persisting this state gives the user a sense of
+is fully automatic. For example, running a Python server on                    continuity. To facilitate environment set-up and provisioning
+port 4000 inside the sandbox makes that port accessible on                     further, Claude’s skills, plugins and agents are automatically
+the host without any extra steps or explicit port forwards. The                copied in from the host before boot, so Claude in SideKernel
+Rust agent detects newly opened ports, and SideKernel auto-                    works as transparently as possible.
+exposes them on the host’s loopback address.
+                                                                                       VII. E VALUATION : A C OMPARATIVE A NALYSIS
+   5) Network (NAT) kill switch: SideKernel provides a net-
+work kill switch for the northbound channel, controlled by                        The evaluation of SideKernel takes the form of a compar-
+an in-guest command via sk-net <on/off>. Turning the                           ative analysis. First, I filter the list of discovered sandboxes
+kill switch on blocks all outbound traffic on the northbound                   against the inclusion requirements two to five (IR-2 to IR-5) as
+channel. The only exception is the official API endpoint of                    depicted in Fig. 3. IR-1 (Open-Source) is deliberately excluded
+Claude (api.anthropic.com), so that Claude can still                           from the filtering. Restricting the study to open-source systems
+run inference. Turning the kill switch off restores traffic on                 would exclude Docker Sandboxes [22], which is freely avail-
+the northbound channel (this action requires explicit user                     able and maintained by a well-known and reputable company
+approval). This capability is coordinated by SideKernel’s Rust                 in the systems industry.
+agent in communication with SideKernel’s VMM.                                     The results of the first stage of the filtering process are
+   6) Persistence and host parity: A user can use SideKernel                   shown in detail in Table I. The sandboxes that pass the
+as they would use any machine, install packages or change                      inclusion criteria and filtering process are Docker Sandboxes,
+configurations, and then type the in-guest command save in-
+side the sandbox. With save, a personalized image (an overlay
+filesystem) persists those changes across restarts and across
+sandboxes. Every time SideKernel is started or restarted, the
+VMM spins up and down a new ephemeral microVM in the
+Microsandbox, SmolVM, Shuru, VibeBox6 and, of course,                                                               Table III
+SideKernel.                                                                                           UB-1 — H OST– SANDBOX FILE SHARING
+
+A. Comparative Analysis Process                                                      Sandbox         T1    T2     T3    T4    T5    T6   T7   T8   T9   Pass
+
+   I break down each usability barrier into CAPABILITY TESTS:                        Docker Sbx      ✓     ✓      ✗     ✓      ✗    ✗    ✓    ✓    ✓    6
+                                                                                     Microsandbox    ✓     ✗      ✗     ✓      ✗    ✗    ✓    ✓    ✓    5
+A capability test is a specific sequence of unit actions. Ex-                        Shuru           ✓     ✓      ✗     ✗      ✗    ✗    ✓    ✓    ✓    5
+amples include (but are not limited to) running a host-side                          SmolVM          ✓     ✗      ✗     ✓      ✗    ✗    ✓    ✓    ✓    5
+                                                                                     VibeBox         —     —      —     —      —    —    —    —    —    —
+command, opening a new terminal window, dragging a file
+                                                                                     SideKernel      ✓      ✓     ✗     ✓      ✓    ✓    ✓    ✓    ✓     8
+onto Claude’s session window, pasting text or an image to
+the clipboard, entering a password etc. In Tables III, IV,                           T1 Mount read/create/delete, both directions
+                                                                                     T2 Mount mode propagation, both directions
+and V, Tn refers to the n-th capability test of each usability                       T3 Mount inode notification, host → sandbox
+barrier category. The capability tests are summarized under                          T4 Unmounted file transfer, host → sandbox
+                                                                                     T5 Clipboard image, host → Claude in sandbox
+each results table and are shown in detail in Appendix A. The                        T6 Clipboard text, Claude in sandbox → host
+result of each capability test is then reported in two parts:                        T7 Mount ownership propagation
+                                                                                     T8 Symlink resolution
+  1) The binary outcome of the capability test (mandatory)                           T9 Large file (10 GB) mount integrity
+  2) Friction notes recording qualitatively the ease-of-use of
+      passing mechanisms. (optional, where applicable)
+                                                                                     Friction Notes
+   In order to be as specific as possible in the qualitative
+                                                                                        Docker Sandboxes and SideKernel offer a native mounting
+descriptions I define and use the following terms:
+                                                                                     experience automounting the CWD. The rest of the sandboxes
+  1) Native: The perceived user experience is exactly the same                       require pre-launch mounts from the host causing friction. In
+      as on a macOS machine, requiring no additional unit                            Microsandbox and SmolVM, permission bits (r, w, x) do not
+      actions                                                                        carry across the south boundary.
+  2) Frictionless: The perceived user experience is pleasant,                           External file dropping (T4) is possible with friction on
+      but not native-like, requiring one or two additional unit                      Docker Sandboxes, Microsandbox, and SmolVM via a host-
+      actions                                                                        side command: the user must open a new terminal, recall the
+  3) (With) friction: The perceived user experience is un-                           sandbox name, discover the sandbox path for mounting the
+      pleasant, requiring three or more additional unit actions                      file, and type/paste it. Each of these unit actions adds friction.
+B. UB-1: Host–Sandbox File Sharing                                                   Indicatively, the host-side commands are:
+                                                                                       # Mounting
+   Table III summarizes the results of the capability tests for                        shuru run --mount <HOST-PATH>:<SBX-PATH>
+UB-1. Out of the nine (9) total tests, SideKernel passes eight                         msb run ubuntu --mount-dir <HOST-PATH>:<SBX-PATH>
+                                                                                       smolvm machine start --name <n> -v <HOST-PATH>:<SBX-PATH>
+(8), Docker Sandboxes passes six (6), and Microsandbox,
+Shuru, and SmolVM pass five (5).                                                       # Copying external files
+                                                                                       sbx cp <FILE> <SBX-NAME>:<SBX-PATH>
+   6 VibeBox was included in the initial list for completeness. However it is          msb copy <FILE> <SBX-NAME>
+                                                                                       smolvm machine cp <FILE> <SBX-NAME>:<SBX-PATH>
+an unmaintained project (the first public commit to VibeBox was on Feb 7,
+2026 and last commit on Feb 18, 2026) which has only one contributor, its               SideKernel’s in-guest command sk-drop <FILE>, as
+author. Moreover, after significant effort to install VibeBox on two separate
+macOS machines (macOS Tahoe 26.2, M1 & M4 chips) I was unable to get a
+                                                                                     well as the ability to drag and drop a file directly into
+working sandbox, despite following its README.md instructions. Therefore,            the Claude session (and Claude executes sk-drop in the
+although the sandbox passes the inclusion criteria, it is currently not a suitable   background) is frictionless: requiring one in-guest command
+candidate for evaluation.
+                                                                                     and approval on a macOS modal per external file.
+                                                                                        A host Claude Code session allows pasting of both text
+                                                                                     and images in interactive mode [43]. SideKernel is the only
+                                                                                     sandbox to pass the clipboard tests (T5, T6), supporting native-
+                                                                                     like bidirectional text copy and paste, and unidirectional image
+                                                                                     pasting from the host clipboard into the SideKernel sandbox.
+C. UB-2: Networking, Ports & Localhost                               SideKernel pass eight (8), and SmolVM, Microsandbox and
+   Table IV summarizes the results of the capability tests           Shuru pass four (4).
+for UB-2. Out of the five (5) total tests, Docker Sandboxes
+passes five (5), while Microsandbox, Shuru, SmolVM, and                                             Table V
+                                                                                    UB-3 — E NVIRONMENT PROVISIONING & SETUP
+SideKernel pass three (3).
+                                                                     Sandbox          T1     T2      T3    T4   T5   T6   T7   T8   T9   Pass
+                             Table IV                                Docker Sbx        ✓      ✗      ✓     ✓    ✓    ✓    ✓    ✓    ✓    8
+               UB-2 — N ETWORKING , PORTS & LOCALHOST                Microsandbox      ✗      ✗      ✓     ✓    ✓    ✓    ✗    ✗    ✗    4
+                                                                     Shuru             ✗      ✗      ✓     ✓    ✓    ✓    ✗    ✗    ✗    4
+Sandbox            T1         T2        T3   T4         T5   Pass    SmolVM            ✗      ✗      ✓     ✓    ✓    ✓    ✗    ✗    ✗    4
+                                                                     VibeBox           —      —      —     —    —    —    —    —    —    —
+Docker Sbx         ✓           ✓        ✓    ✓          ✓     5
+Microsandbox       ✗           ✓        ✗    ✓          ✓     3      SideKernel        ✓      ✓      ✓     ✓    ✓    ✓    ✓    ✓    ✗     8
+Shuru              ✗           ✓        ✗    ✓          ✓     3
+SmolVM             ✗           ✓        ✗    ✓          ✓     3      T1 Agent preinstallation
+VibeBox            —           —        —    —          —     —      T2 Credential inheritance
+                                                                     T3 Agent state persistence
+SideKernel         ✓           ✓        ✗    ✓          ✗      3     T4 Configuration file persistence
+                                                                     T5 Package installation persistence
+T1 Runtime port forwarding                                           T6 Git state visibility
+T2 Restart port forwarding                                           T7 Live checkpoint persistence
+T3 DNS connection URL logs visibility                                T8 Secret store, agent credentials
+T4 Egress control, blocking                                          T9 Secret store, custom secrets
+T5 Egress control, allowlisting
+
+
+                                                                     Friction notes.
+Friction Notes
+                                                                        Docker Sandboxes and SideKernel are the only two sand-
+   All candidate sandboxes provide some way of port-
+                                                                     boxes that come with preinstalled agents (T1). However,
+forwarding, however they differ on the mechanism. SideKernel
+                                                                     Docker Sandboxes supports many major agents including
+provides native-like automatic runtime port-forwarding with-
+                                                                     Claude Code, Codex, Gemini CLI, GitHub Copilot, opencode
+out any user interaction; Docker Sandboxes allows frictionless
+                                                                     and more. SideKernel currently only supports Claude Code.
+manual runtime port forwarding through a host command.
+                                                                     SideKernel is the only sandbox that shares agent authentication
+   Microsandbox, SmolVM and Shuru allow port-forwarding
+                                                                     with the host, providing a frictionless experience on the first
+but not on a running sandbox (T1). They require the ports
+                                                                     run (entering the macOS password once on the Keychain’s
+to be defined on the host before starting the sandbox, which
+                                                                     access control prompt).
+introduces friction (especially if the developer does not know
+                                                                        Configuration and package installation persistence is feasi-
+in advance if and which ports they might need open and
+                                                                     ble in all sandboxes, although in Shuru, Microsandbox, and
+exposed to the host). Indicatively, the commands are:
+                                                                     SmolVM with friction. Docker Sandboxes and SideKernel
+  msb run ubuntu --port <HOST-PORT>:<SBX-PORT>
+  smolvm machine <run|create> --port <HOST>:<SBX-PORT>               however persist changes that survive restarts at runtime in a
+  shuru run -p <HOST-PORT>:<SBX-PORT> -- nginx                       frictionless manner.
+   Docker Sandboxes is the only sandbox providing DNS                   With regard to AI agent configuration, SideKernel is the
+observability on the north boundary (T3). All sandboxes but          only sandbox that inherits Claude Code’s skills, plugins and
+SideKernel provide granular north boundary security controls         agents from the host providing a native-like experience. With
+blocking egress traffic with allowlists. SideKernel provides         regard to credentials management, Docker Sandboxes is the
+an in-guest kill-switch without however the granularity other        only sandbox with a built-in secret store for custom creden-
+sandboxes provide.                                                   tials.
+   Notably, Docker Sandboxes’ allowlist is configurable                                           VIII. D ISCUSSION
+through the sandbox’s built-in TUI beyond declarative host
+                                                                     A. Interpreting the Aggregate Results
+policies, making it easy to disallow or allow connections
+during runtime. It continuously monitors DNS connections,               Across all 23 capability tests, Docker Sandboxes and SideK-
+lists all the domains that the sandbox has communicated with,        ernel pass 19 tests, SmolVM, Microsandbox and Shuru pass 12
+and allows the allowlist to be toggled seamlessly through the        tests. The combination of the aggregated test results with the
+terminal interface (or new records to be added).                     qualitative friction notes indicates that Docker Sandboxes and
+   These observability and firewall features are additional          SideKernel are the most usable sandboxes in the study (fol-
+capabilities that are not normally present in the host; therefore,   lowing the benchmark introduced in Section IV-D). However,
+describing friction for those is not applicable.                     this is only true inside the confines of the usability barriers that
+                                                                     were tested and it is not a generalizable statement. It is also
+D. UB-3: Environment Provisioning & Setup                            worth noting that even among AI coding agent sandboxes, the
+ Table V summarizes the results of the capability tests for          intended use varies. Docker Sandboxes, for example, is built
+UB-3. Out of the nine (9) total tests, Docker Sandboxes and          for enterprise deployments and multi-sandbox orchestration.
+Shuru is intended to be used as a Claude skill invoked by an                IX. L IMITATIONS AND T HREATS TO VALIDITY
+AI agent running on the host, self-isolating its tool runs inside      Below I describe all the limitations and threats to the validity
+the sandbox. SideKernel attempts to replicate as closely as         of the evaluation and development of SideKernel. The majority
+possible the experience a user has on the host, from inside a       of those limitations are attributed to the time constraints of
+microVM. Last but not least, Microsandbox and SmolVM are            the practicum (which required scoping down), and single-
+hybrid sandboxes, focusing primarily on SDK programmable            evaluator bias.
+agents and providing CLI features as a sidecar rather than as
+                                                                     •   Evaluator bias. The comparative analysis unavoidably
+their main design.
+                                                                         introduces bias, because the developer is also the evaluator.
+B. Comparison with Docker Sandboxes                                      Although I took every reasonable measure to reduce it (e.g.
+   SideKernel provides a few features bound to usability bar-            fixed success criteria, binary outcomes based on built-in
+riers of the user study that no other sandbox does: frictionless         capabilities, auditable tests, standardized and transparent
+external file drops through an in-guest command or drag                  friction notes), a better methodology would involve multi-
+and drop into Claude, automatic port forwarding of newly                 ple users, something, however, practically infeasible within
+opened ports inside the sandbox, bidirectional clipboard ca-             the practicum’s timeline.
+pabilities inside Claude sessions (e.g., pasting images), and        •   User survey instrument bias. The user survey instru-
+synchronized authentication with the host. These are small               ment is designed by the developer. Many of the survey’s
+but not insignificant contributions to the current market of             questions are multiple-choice or multi-select format. This
+sandboxes. Moreover, I intend to open-source SideKernel, a               anchors respondents towards the pre-formulated options,
+fact differentiating it from the free but closed-source Docker           which introduces bias. I mitigate this by providing a
+Sandboxes.                                                               free-text “Other” option on closed questions, as well as
+   That said, Docker Sandboxes is an undeniably more feature-            enriching the instrument with open free-text questions.
+rich sandbox, including advanced observability and auditing              While this likely reduces the instrument bias, it does not
+capabilities, governance and granular policies, a versatile ter-         eliminate it.
+minal user interface, easy multi-sandbox management features,
+                                                                     •   Sampling bias. The online survey’s sample tilts towards
+mature credential management, and others that were out of
+                                                                         a security-aware audience. Real-world AI coding agent
+scope for this study. However, within the confines of the
+                                                                         sandbox adoption is therefore probably significantly lower
+usability barriers that the user study discovered, I conclude
+                                                                         than the 38.2% that the study records.
+Docker Sandboxes and SideKernel are the most capable
+sandboxes in regard to usability features—something which a          •   Sample size. While the sample (N = 80 respondents; 33
+reader can evaluate through the capability tests and the friction        current or former sandbox users) is likely sufficient for
+notes.                                                                   formative/directional signals, it is low. The results were
+                                                                         used for informed development decisions and a framework
+C. Real-World Considerations                                             for the comparative analysis, rather than statistically gen-
+  • SideKernel is designed for single macOS machines, but                eralizable data.
+    tested only on M1 and M4 chips and only on the latest            •   Informal study status. The formative user survey was
+    Tahoe 26.2 OS version. It might still include undetected             conducted as informal practicum research and did not
+    bugs and rough edges.                                                undergo a formal Georgia Tech IRB review. The study is
+  • The security of SideKernel is implied from an architec-              not designed to produce generalizable knowledge but rather
+    tural perspective, but the implementation has not under-             its results are interpreted as signals for the development and
+    gone a formal security review.                                       evaluation of SideKernel, rather than rigorous academic
+  • SideKernel is not yet notarized (and it is self-signed). It          data.
+    currently has no observability out of the box.
+  • SideKernel currently provides no enterprise features,
+                                                                     •   Usability is measured indirectly. The tests measure how
+    including logging, declarative policies and centralized              well a sandbox addresses the survey’s usability barriers,
+    governance capabilities.                                             not usability in any general sense.
+                                                                     •   Binary scoring without gradation. The binary score of
+                                                                         the capability tests is blind to friction. While I remediate
+                                                                         this with qualitative notes on friction, it does not eliminate
+                                                                         the fact that the score itself does not weigh the very
+                                                                         nuances that describe usability.
+                                                                     •   Binary scoring without weights. The binary score of the
+                                                                         capability tests does not consider which capabilities are
+                                                                         important for the users in practice. The scores are naive,
+     in the sense that the binary outcomes are unweighted.            big as Docker did not release sbx until January 30, 2026 [22]
+     Therefore, the results are approximations.                       further strengthens this claim, and justifies the development of
+ •   Platform constraints. SideKernel is a Linux microVM on           SideKernel.
+     top of macOS. It therefore cannot offer capabilities that           A personal note: I already use SideKernel daily. I now
+     Seatbelt-based sandboxes can. For example, it is unsuit-         develop SideKernel inside of SideKernel!
+     able for testing native macOS SwiftUI applications, and
+     certain macOS terminal commands are unavailable inside
+     SideKernel.
+ •   Scoping constraints. SideKernel is a microVM sandbox.
+     Sandboxes based on other isolation primitives such as
+     macOS Seatbelt might also provide sufficient security
+     guarantees—depending on the use case and threat model.
+     SideKernel is not evaluated against such sandboxes which
+     were deliberately left out of scope to keep the project
+     manageable within the time constraints of the practicum.
+                      X. F UTURE W ORK
+   The comparative analysis exposed areas for improvement
+in SideKernel, in particular capabilities that similar sandboxes
+already implement. Future work will include replacing the
+NAT kill-switch with a full network proxy server that provides
+granular allowlisting. Such a network proxy will also allow
+implementation of DNS observability. On the south boundary,
+the remaining work is a secure generic credential management
+store, beyond Claude’s credentials. Finally, SideKernel will
+support more major agents (in a similar way to how Claude
+Code is currently integrated), including Codex, Microsoft
+Copilot and others.
+                       XI. C ONCLUSION
+   SideKernel constitutes a capable local microVM sandbox
+for AI coding agents that addresses many of the usability
+barriers reported in the user study. It is currently the only local
+microVM sandbox that solves the bidirectional clipboard issue
+in Claude Code, provides automatic runtime port forwarding,
+integrates Claude Code’s native macOS Keychain authenti-
+cation seamlessly, and transfers the host’s Claude skills and
+agents into the sandbox automatically. Moreover, it provides
+a frictionless way to drop external files into the sandbox, and
+eases environment provisioning through a personalized image.
+   Another highly capable microVM sandbox in the context of
+the usability barriers addressed is Docker Sandboxes. It is the
+only sandbox that allows or blocks DNS requests through a
+TUI, provides custom credential management, preinstalls most
+major AI coding agents, and offers observability on top.
+   Microsandbox, Shuru and SmolVM follow, with more lim-
+ited AI coding agent capabilities.
+   I attribute this to the fact that there has been little serious
+effort in the industry focused on AI coding agents for local ma-
+cOS environments. The arms race pushes sandboxes towards
+autonomous programmable SDK agents, leaving coding agents
+as an afterthought, despite this being a demonstrably real
+security problem. This part of the industry is still young and
+rapidly developing. The fact that an infrastructure company as
+A PPENDIX A
+F ULL TASK D EFINITIONS
+  This appendix gives the complete definition of every task referenced in Section VII. Each task is a capability test with a
+binary outcome, scored according to the criteria in Section IV-D.
+
+                                           Table VI: UB-1 — Host–sandbox file sharing: full task definitions
+
+
+    ID       Name                                   Definition
+
+    T1       M OUNT CRUD, BOTH DIRECTIONS           Read, create and delete the mount dir file mount/workspace-file.txt and validate
+                                                    bidirectionally all actions.
+    T2       M OUNT MODE PROPAGATION ,              Run chmod 777 mount/shell.sh. Test that all the permission bits (r, w, x) carry across.
+             BOTH DIRECTIONS
+
+    T3       M OUNT INODE NOTIFICATION ,            Run inotifywait on workspace-file.txt inside the sandbox, then edit the file on the
+             HOST → SANDBOX                         host. Test that the notification fired.
+    T4       U NMOUNTED FILE TRANSFER ,             Test whether <HOST-PATH>/external-file.txt can be accessed and read inside the
+             HOST → SANDBOX                         sandbox, without host-side commands, without sandbox restart, and with explicit approval.a
+    T5       C LIPBOARD IMAGE , HOST →              Copy an image to the host clipboard. Test that it pastes into the Claude session inside the
+             C LAUDE IN SANDBOX                     sandbox.
+    T6       C LIPBOARD TEXT, SANDBOX →             Copy text from the Claude session inside the sandbox. Test that it pastes on the host.
+             HOST
+
+    T7       M OUNT OWNERSHIP PROPAGATION           Create mount/sandbox-created.txt inside the sandbox. Test that ls -l on the host
+                                                    shows the host user as owner.
+    T8       S YMLINK RESOLUTION                    Create a symlink in mount/ to workspace-file.txt. Test that it resolves.
+    T9       L ARGE FILE MOUNT INTEGRITY            Mount the zero-filled 10GB <HOST-PATH>/big-file.txt to the sandbox. Check that it
+                                                    mounts successfully and that the md5sum matches the one on the host.
+    a The goal is to let the user read any external file easily and securely. Easily means from inside the sandbox through a built-in
+
+    mechanism, without sandbox restarts or host-side commands; securely means with explicit user approval.
+
+
+
+                                        Table VII: UB-2 — Networking, ports & localhost: full task definitions
+
+
+    ID       Name                                   Definition
+
+    T1       RUNTIME PORT FORWARDING                Run python3 -m "http.server" 5000 inside the sandbox. Configure port forwarding
+                                                    without restarting the sandbox for 5000. Test that curl localhost:5000 is reachable from
+                                                    the host.
+    T2       R ESTART PORT FORWARDING               Run python3 -m "http.server" 6000 inside the sandbox. Test that curl
+                                                    localhost:6000 is reachable from the host after explicitly configuring port forwarding.
+    T3       DNS CONNECTION URL LOGS                Provides a DNS network log panel listing the websites connected to.
+             VISIBLE
+
+    T4       E GRESS CONTROL , BLOCKING             Test that blocking outbound internet access is feasible with a built-in sandbox mechanism
+                                                    enforced by the hypervisor. Run the sandbox and block all traffic.
+    T5       E GRESS CONTROL , ALLOWLISTING         If blocking outbound internet access is feasible, test whether allowlisting is feasible natively,
+                                                    enforced by the hypervisor. Run the sandbox and allowlist curl https://example.com.
+
+
+
+                                Table VIII: UB-3 — Environment provisioning & setup: full task definitions. For each
+                                task, the tester checkpoints the sandbox (if applicable)
+
+
+    ID       Name                                   Definition
+
+    T1       AGENT PREINSTALLATION                  Test that claude -version succeeds on first boot, without the tester installing it manually.
+    T2       C REDENTIAL INHERITANCE                Ensure Claude is authenticated on the host. Test that the agent completes a prompt–response
+                                                    round-trip inside the sandbox without the tester performing a login in the sandbox.
+    T3       AGENT STATE PERSISTENCE                Restart the sandbox. Test that Claude is still present and authenticated.
+    Table VIII (continued)
+
+    ID       Name                                   Definition
+
+    T4       C ONFIGURATION FILE                    Define alias print_hi in the sandbox shell rc, and restart it. Test that print_hi resolves.
+             PERSISTENCE
+
+    T5       PACKAGE INSTALLATION                   Run pip install -r requirements.txt, and restart it. Test that python -c
+             PERSISTENCE                            "import numpy" exits successfully.
+    T6       G IT STATE VISIBILITY                  Run git init . on the host and create a new file called git.txt. Enter the sandbox and
+                                                    run git diff .. Test whether git.txt appears on the diff.
+    T7       L IVE CHECKPOINT PERSISTENCE           Test whether the sandbox supports live checkpoints. A live checkpoint saves the running disk
+                                                    state of a sandbox, including installed packages and configuration changes. Run apt-get
+                                                    install nmap, checkpoint and restart the sandbox, then verify whether nmap is still installed.
+    T8       S ECRET STORE , AGENT                  Test whether the sandbox provides a designated secret store (e.g., macOS Keychain) for Claude
+             CREDENTIALS                            credentials (OAuth/API Keys).
+    T9       S ECRET STORE , CUSTOM SECRETS         Test whether the sandbox provides a designated secret store (e.g., macOS Keychain) for
+                                                    arbitrary custom secrets.
+
+
+
+A PPENDIX B
+G OOGLE S URVEY R ESULTS
+  Table IX reports the complete survey results. Questions are presented for the relevant corresponding groups, for example,
+sandboxing tools previously used are over the group of former users. Reasons for never using a sandbox are over the group
+of non-users etc. For brevity, I omit free-text responses/options that were only selected by a single respondent.
+
+                                                      Table IX: Complete Google Survey results
+
+                              Question / Response                                                           n           %
+
+                             Q1. Do you currently use AI coding agents? (N = 80)
+                                 Yes                                                                   68             85.0
+                                 No                                                                    12             15.0
+                             Q2. Professional role (n = 68)
+                                 Cybersecurity (Engineering, OffSec etc)                               23             33.8
+                                 Software developer or engineer                                        14             20.6
+                                 Platform engineer                                                     10             14.7
+                                 Technical manager or product owner                                     8             11.8
+                                 Hobbyist developer                                                     4              5.9
+                                 Student                                                                4              5.9
+                                 Data/AI engineer or scientist                                          3              4.4
+                                 Other (e.g., founder)                                                  2              2.9
+                             Q3. AI coding agents used (multi-select, n = 68)
+                                 Claude Code                                                           59             86.8
+                                 OpenAI Codex                                                          26             38.2
+                                 GitHub Copilot (agent mode/chat, not just inline suggestions)         23             33.8
+                                 Cursor                                                                13             19.1
+                                 Gemini CLI                                                            10             14.7
+                                 opencode                                                               2              2.9
+                             Q4. Operating systems used (multi-select, n = 68)
+                                 macOS                                                                 41             60.3
+                                 Linux                                                                 37             54.4
+                                 Windows                                                               22             32.4
+                                 Windows (in WSL)                                                      13             19.1
+                             Q5. Have you used an isolation environment for AI coding agents? (n = 68)
+                                 Yes, I currently use one                                              26             38.2
+                                 Yes, but I stopped using it                                            7             10.3
+                                 No, I have never used one                                             35             51.5
+                             Q6. Sandboxing tools in use (multi-select, current users, n = 26)
+                                 Docker Sandboxes                                                      12             46.2
+                                 Full VM (UTM, Parallels, Lima etc.)                                    9             34.6
+                                                                                                     continued on next page
+Table IX (continued)
+ Question / Response                                                               n    %
+    Nono.sh                                                                  7         26.9
+    Separate machine dedicated for AI (e.g., Mac Mini)                       2          7.7
+Q7/Q10. Barriers experienced (multi-select, current + former users, n = 33)
+    No significant difficulties†                                             9          n/a
+    Had to set everything up from scratch (dotfiles, shell, tools, logins)   8         24.2
+    Getting ports / localhost / networking to work is difficult              8         24.2
+    Sharing files between sandbox and host is hard or slow                   7         21.2
+    Security benefit not worth the effort‡                                   6          n/a
+    Managing multiple sandboxes is confusing                                 5         15.2
+    Initial installation / setup is too hard                                 5         15.2
+    It is slow, or slows down my machine                                     4         12.1
+    The sandbox itself crashes or breaks                                     3          9.1
+    OS mismatch (e.g., macOS host, Linux-only sandbox)                       3          9.1
+    Usual host tools do not work inside the sandbox                          2          6.1
+Q9. Sandboxing tools previously used (multi-select, former users, n = 7)
+    Docker Sandbox                                                           3         42.9
+    Full VM (UTM, Parallels, Lima etc.)                                      2         28.6
+    Microsandbox                                                             1         14.3
+    Separate machine dedicated for AI (e.g., Mac Mini)                       1         14.3
+    OrbStack                                                                 1         14.3
+    OpenHands with Docker                                                    1         14.3
+Q12. Reasons for never using a sandbox (multi-select, n = 35)
+    I have never considered it                                              21         60.0
+    I am not aware of any good options                                      11         31.4
+    The security benefit does not seem worth the effort for my use case      9         25.7
+    The built-in sandboxing in my coding agent is sufficient                 7         20.0
+    I looked into it, but it seemed too difficult                            4         11.4
+† Offered to current users only; not applicable to the combined percentage base.
+‡ Offered to former users only; not applicable to the combined percentage base.
+                     ACKNOWLEDGMENT                                   [15] Shuru, “Shuru Sandbox Documentation,” 2026, accessed:
+   I co-developed the SideKernel codebase with AI (Claude,                 Jun. 28, 2026. [Online]. Available: https://github.com/
+Anthropic). I also used AI to refine the grammar and phrasing              shuru-project/shuru
+of this paper, to generate the LaTeX code for tables and the          [16] VibeBox, “VibeBox Documentation,” 2026, accessed:
+draw.io code for diagrams, and to review the manuscript for                Jun. 28, 2026. [Online]. Available: https://github.com/
+factual errors. AI was used in a supporting capacity throughout            robcholz/vibebox
+every task, but the substance of the work is my own, including        [17] Cua, “Cua Documentation,” 2026, accessed: Jun. 28,
+but not limited to the text of this paper, design decisions, threat        2026. [Online]. Available: https://github.com/trycua/cua
+model, methodology, instrument design, content of the tables          [18] Smol Machines, “smolvm: Portable, Lightweight, Self-
+and diagrams, evaluation, analysis, research, and conclusions.             Contained Virtual Machine,” 2026, accessed: Jul.
+                                                                           25, 2026. [Online]. Available: https://github.com/
+                          R EFERENCES                                      smol-machines/smolvm
+                                                                      [19] Fly.io, “Sprites: Stateful Sandbox Environments,” 2026,
+ [1] M. Christodorescu, E. Fernandes, A. Hooda, S. Jha,                    accessed: Jul. 25, 2026. [Online]. Available: https:
+     J. Rehberger, K. Chaudhuri, X. Fu, K. Shams, G. Amir,                 //sprites.dev/
+     J. Choi, S. Choudhary, N. Palumbo, A. Labunets,                  [20] A. Bhardwaj, “Arrakis,” 2025, accessed: Jun. 28, 2026.
+     and N. V. Pandya, “Agent security is a systems                        [Online]. Available: https://github.com/abshkbh/arrakis
+     problem,” 2026. [Online]. Available: https://arxiv.org/          [21] OpenSandbox, “OpenSandbox Documentation,” 2026,
+     abs/2605.18991                                                        accessed: Jul. 25, 2026. [Online]. Available: https:
+ [2] Always Further, Inc., “nono sandbox documentation,”                   //github.com/opensandbox-group/OpenSandbox
+     2026, accessed: Jun. 28, 2026. [Online]. Available:              [22] Docker, Inc., “Docker Sandboxes (sbx) Documentation,”
+     https://nono.sh/os-sandbox                                            2026, accessed: Jun. 28, 2026. [Online]. Available:
+ [3] Zouuup, “landrun: Run Any Linux Process in                            https://docs.docker.com/ai/sandboxes/
+     a Secure, Unprivileged Landlock Sandbox,” 2026,                  [23] InstaVM,       “CodeRunner      Documentation,”     2026,
+     accessed: Jul. 25, 2026. [Online]. Available:                         accessed: Jun. 28, 2026. [Online]. Available:
+     https://github.com/Zouuup/landrun                                     https://instavm.io/docs/quickstart
+ [4] Fence, “Fence Documentation,” 2026, accessed: Jun. 28,           [24] OWASP GenAI Security Project, “Agentic AI — threats
+     2026. [Online]. Available: https://fencesandbox.com/docs              and mitigations,” OWASP Agentic Security Initiative,
+ [5] Agent Safehouse, “Agent Safehouse Documentation,”                     Tech. Rep. Version 1.1, Dec. 2025, accessed: Jun. 28,
+     2026, accessed: Jul. 25, 2026. [Online]. Available:                   2026. [Online]. Available: https://genai.owasp.org/
+     https://github.com/eugene1g/agent-safehouse                      [25] J. Spracklen, R. Wijewickrama, A. H. M. N. Sakib,
+ [6] L. Meng, H. Feng, I. Shumailov, and E. Fernandes,                     A. Maiti, B. Viswanath, and M. Jadliwala, “We have a
+     “ceLLMate: Sandboxing browser AI agents,” 2025.                       package for you! A comprehensive analysis of package
+     [Online]. Available: https://arxiv.org/abs/2512.12594                 hallucinations by code generating LLMs,” in Proceed-
+ [7] Daytona Platforms, Inc., “Daytona Documentation,”                     ings of the 34th USENIX Security Symposium (USENIX
+     2026, accessed: Jun. 28, 2026. [Online]. Available:                   Security 25). Seattle, WA, USA: USENIX Association,
+     https://www.daytona.io/docs/en/sandboxes/                             2025.
+ [8] F. Taylor, “Yolobox,” 2026, accessed: Jun. 28, 2026.             [26] A. Agache, M. Brooker, A. Florescu, A. Iordache,
+     [Online]. Available: https://yolobox.dev/                             A. Liguori, R. Neugebauer, P. Piwonka, and D.-M. Popa,
+ [9] Agent Infra, “AIO Sandbox Documentation,” 2026,                       “Firecracker: Lightweight virtualization for serverless
+     accessed: Jul. 25, 2026. [Online]. Available: https:                  applications,” in Proceedings of the 17th USENIX Sympo-
+     //github.com/agent-infra/sandbox                                      sium on Networked Systems Design and Implementation
+[10] Deno Land, Inc., “Deno Sandbox Documentation,”                        (NSDI 20). USENIX Association, 2020, pp. 419–434.
+     2026, accessed: Jun. 28, 2026. [Online]. Available:              [27] S. Kuenzer, V.-A. Bădoiu, H. Lefeuvre, S. Santhanam,
+     https://docs.deno.com/sandbox/                                        A. Jung, G. Gain, C. Soldani, C. Lupu, Ş. Teodor-
+[11] Bots Garden, “Capsule,” 2025, accessed: Jun.                          escu, C. Răducanu, C. Banu, L. Mathy, R. Deaconescu,
+     28, 2026. [Online]. Available: https://github.com/                    C. Raiciu, and F. Huici, “Unikraft: Fast, specialized
+     bots-garden/capsule                                                   unikernels the easy way,” in Proceedings of the Sixteenth
+[12] Port of Context, “pctx,” 2026, accessed: Jun. 28, 2026.               European Conference on Computer Systems, New York,
+     [Online]. Available: https://github.com/portofcontext/                NY, USA, 2021, pp. 376–394.
+     pctx                                                             [28] Vercel, “Vercel Sandbox,” 2026, accessed: Jul. 25, 2026.
+[13] E2B, “E2B Documentation,” 2026, accessed: Jun. 28,                    [Online]. Available: https://vercel.com/docs/sandbox
+     2026. [Online]. Available: https://e2b.dev/docs                  [29] Anthropic, “Claude Code: Overview,” 2026, accessed:
+[14] Super Rad Company, “Microsandbox Documentation,”                      Jul. 25, 2026. [Online]. Available: https://code.claude.
+     2026, accessed: Jun. 28, 2026. [Online]. Available: https:            com/docs/en/overview
+     //docs.microsandbox.dev/getting-started/introduction             [30] OpenAI, “ChatGPT and Codex Documentation:
+     Overview,” 2026, accessed: Jul. 25, 2026. [Online].
+     Available: https://learn.chatgpt.com/docs
+[31] Anthropic, “Introducing the Model Context Protocol,”
+     Nov. 2024. [Online]. Available: https://www.anthropic.
+     com/news/model-context-protocol
+[32] OpenAI, “OpenAI and Hugging Face partner
+     to    address     security    incident   during     model
+     evaluation,”     Jul.    2026,    accessed:    Jul.   28,
+     2026. [Online]. Available: https://openai.com/index/
+     hugging-face-model-evaluation-security-incident/
+[33] Anthropic, “Making Claude Code More Secure and
+     Autonomous with Sandboxing,” 2026, accessed: Jun. 28,
+     2026. [Online]. Available: https://www.anthropic.com/
+     engineering/claude-code-sandboxing
+[34] OpenAI, “Codex Sandboxing,” 2026, accessed: Jun.
+     28, 2026. [Online]. Available: https://developers.openai.
+     com/codex/concepts/sandboxing
+[35] Google, “Sandboxing in Gemini CLI,” 2026, accessed:
+     Jun. 28, 2026. [Online]. Available: https://geminicli.
+     com/docs/cli/sandbox/
+[36] xAI, “Enterprise Deployments, Grok Build,” 2026,
+     accessed: Jun. 28, 2026. [Online]. Available: https:
+     //docs.x.ai/build/enterprise
+[37] Lima Project, “Lima,” 2026, accessed: Jun. 28, 2026.
+     [Online]. Available: https://lima-vm.io/docs/
+[38] Apple, “container,” 2026, accessed: Jun. 28, 2026.
+     [Online]. Available: https://github.com/apple/container
+[39] Orbital Labs, LLC, “OrbStack Documentation,” 2026,
+     accessed: Jun. 28, 2026. [Online]. Available: https:
+     //docs.orbstack.dev/
+[40] W. Albert and T. S. Tullis, Measuring the User Experi-
+     ence: Collecting, Analyzing, and Presenting UX Metrics,
+     3rd ed.     Cambridge, MA, USA: Morgan Kaufmann,
+     2022.
+[41] W. Albert, T. S. Tullis, and D. Tedesco, Beyond the Us-
+     ability Lab: Conducting Large-Scale Online User Expe-
+     rience Studies. Boston, MA, USA: Morgan Kaufmann,
+     2010.
+[42] OpenInfra Foundation, “Kata Containers,” 2026,
+     accessed: Jul. 31, 2026. [Online]. Available:
+     https://katacontainers.io/
+[43] Anthropic, “Interactive Mode — Claude Code Documen-
+     tation,” 2026, accessed: Jul. 29, 2026. [Online]. Avail-
+     able: https://code.claude.com/docs/en/interactive-mode
+

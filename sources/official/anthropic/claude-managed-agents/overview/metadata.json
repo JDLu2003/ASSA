@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-managed-agents",
+    "id": "overview",
+    "url": "https://platform.claude.com/docs/en/managed-agents/overview",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:23.871412+00:00",
+  "path": "sources/official/anthropic/claude-managed-agents/overview",
+  "requested_url": "https://platform.claude.com/docs/en/managed-agents/overview",
+  "final_url": "https://platform.claude.com/docs/en/managed-agents/overview",
+  "http_status": 200,
+  "title": "Claude Managed Agents overview - Claude Platform Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "6c62436401130f514e13724742e13be2ecf3a991804f4e64c87f9ae359b4c26e",
+      "bytes": 7941
+    },
+    "page.txt": {
+      "sha256": "4d255be55f4c34fa3a69f2cb509946721ecff27771063312b30dda8202e6cda1",
+      "bytes": 6739
+    },
+    "page.pdf": {
+      "sha256": "83ff16788e32bc84fb2c1d98830c9fcf8a4de411a6f6eae9c66edfd4e64a79b6",
+      "bytes": 335814
+    }
+  }
+}

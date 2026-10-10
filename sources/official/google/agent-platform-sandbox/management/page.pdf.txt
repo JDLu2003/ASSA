@@ -1,0 +1,177 @@
+Manage sandboxes content_copy arrow_drop_down
+This page demonstrates how to manage the lifecycle of your sandbox environments using the Python SDK. You can list existing
+sandboxes, view their details, pause and resume them, or delete them when they are no longer needed.
+
+
+
+
+Before you begin
+To manage sandboxes, you need the following roles on your project:
+
+     Agent Platform User (roles/aiplatform.user)
+
+
+
+
+Manage sandboxes
+You can list, view details for, pause, resume, and delete sandbox environments associated with an Agent Platform instance. Pause and
+resume let you deschedule compute resources for idle sandboxes and bring them back online later without losing file system state or
+connection identity. To change an existing sandbox's configuration, you must delete it and create a new one.
+
+
+
+List sandboxes
+To list all sandboxes associated with an Agent Platform instance:
+
+
+
+
+import agentplatform
+
+client = agentplatform.Client(project='PROJECT_ID edit', location='LOCATION edit')
+instance_name = 'projects/PROJECT_ID edit/locations/LOCATION edit/reasoningEngines/INSTANCE_ID edit'
+
+sandboxes = client.sandboxes.list(name=instance_name)
+
+for sandbox in sandboxes:
+    print(sandbox.name)
+
+
+Replace the following:
+
+     PROJECT_ID: Your Google Cloud project ID.
+
+     LOCATION: The Google Cloud region of your Agent Platform instance. See Supported regions
+      (/gemini-enterprise-agent-platform/resources/agent-locations).
+
+     INSTANCE_ID: The Agent Platform instance ID.
+
+
+View sandbox details
+To view the configuration and status of a specific sandbox:
+
+
+
+
+sandbox_name = 'projects/PROJECT_ID edit/locations/LOCATION edit/reasoningEngines/INSTANCE_ID edit/sandboxEnvironments/SANDBO
+
+sandbox = client.sandboxes.get(name=sandbox_name)
+print(sandbox)
+
+
+Replace the following:
+
+     PROJECT_ID: Your Google Cloud project ID.
+
+     LOCATION: The Google Cloud region of your Agent Platform instance. See Supported regions
+      (/gemini-enterprise-agent-platform/resources/agent-locations).
+
+     INSTANCE_ID: The Agent Platform instance ID that contains your sandbox.
+     SANDBOX_ID: The existing sandbox ID.
+
+The output includes details like creation time, state (e.g., STATE_RUNNING), and the sandbox specification.
+
+
+
+Pause a sandbox
+Pausing a sandbox releases its compute resources while preserving disk state and connection metadata. Paused sandboxes cost
+significantly less than running ones and can be resumed in seconds. Use pause when a sandbox is idle for an extended period but you
+want to preserve session state and connection identity for later use.
+
+Paused sandboxes:
+
+     Retain their sandbox ID, connection metadata, and any Private Service Connect endpoint.
+
+     Retain all in-container file system state at the moment of pause.
+
+     Transition to STATE_PAUSED. Requests to their data-plane endpoint return errors until you resume.
+
+
+
+
+import agentplatform
+
+client = agentplatform.Client(project='PROJECT_ID edit', location='LOCATION edit')
+sandbox_name = 'projects/PROJECT_ID edit/locations/LOCATION edit/reasoningEngines/INSTANCE_ID edit/sandboxEnvironments/SANDBO
+
+pause_operation = client.sandboxes.pause(
+    name=sandbox_name,
+    config={
+        "wait_for_completion": True, # Optional. Blocks until the sandbox reaches STATE_PAUSED.
+    },
+)
+paused_sandbox = pause_operation.response
+print(f"Sandbox {paused_sandbox.name} state: {paused_sandbox.state}") # STATE_PAUSED
+
+
+Replace the following:
+
+     PROJECT_ID: Your Google Cloud project ID.
+
+     LOCATION: The Google Cloud region of your Agent Platform instance. See Supported regions
+      (/gemini-enterprise-agent-platform/resources/agent-locations).
+
+     INSTANCE_ID: The Agent Platform instance ID that contains your sandbox.
+
+     SANDBOX_ID: The existing sandbox ID.
+
+
+Resume a sandbox
+Resuming a paused sandbox brings its compute back online. The sandbox retains the same ID, connection endpoint (including any Private
+Service Connect service attachment), and file system state it had at the moment of pause. Data-plane requests can be made to the
+sandbox again as soon as the resume operation completes.
+
+
+
+
+sandbox_name = 'projects/PROJECT_ID edit/locations/LOCATION edit/reasoningEngines/INSTANCE_ID edit/sandboxEnvironments/SANDBO
+
+resume_operation = client.sandboxes.resume(
+    name=sandbox_name,
+    config={
+        "wait_for_completion": True, # Optional. Blocks until the sandbox reaches STATE_RUNNING.
+    },
+)
+resumed_sandbox = resume_operation.response
+print(f"Sandbox {resumed_sandbox.name} state: {resumed_sandbox.state}") # STATE_RUNNING
+
+
+Replace the following:
+
+     PROJECT_ID: Your Google Cloud project ID.
+      LOCATION: The Google Cloud region of your Agent Platform instance. See Supported regions
+       (/gemini-enterprise-agent-platform/resources/agent-locations).
+
+      INSTANCE_ID: The Agent Platform instance ID that contains your sandbox.
+
+      SANDBOX_ID: The paused sandbox ID.
+
+
+Note: You can only resume sandboxes that are in STATE_PAUSED. Attempting to resume a running sandbox returns FAILED_PRECONDITION.
+
+
+
+
+Delete a sandbox
+To explicitly delete a sandbox environment and free up resources:
+
+
+
+
+client.sandboxes.delete(name=sandbox_name)
+print("Sandbox deleted.")
+
+
+
+Note: Sandboxes are billed while they exist. You can set config.ttl when you create the sandbox so that the sandbox is removed automatically when the
+TTL expires, even if your process crashes before it can call delete().
+
+
+
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License (https://creativecommons.org/licenses/by/4.0/),
+and code samples are licensed under the Apache 2.0 License (https://www.apache.org/licenses/LICENSE-2.0). For details, see the Google Developers Site Policies
+(https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+

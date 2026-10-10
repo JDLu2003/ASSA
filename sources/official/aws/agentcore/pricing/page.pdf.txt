@@ -1,0 +1,371 @@
+                                                                        English       Contact us   AWS Marketplace   Support       My account
+
+
+
+            re:Invent    Discover AWS      Products         Solutions      Pricing     Resources          Search       Sign in to console       Create accoun
+
+
+
+
+    Amazon Bedrock AgentCore            Overview      Pricing      Resources         FAQs
+
+
+
+
+Amazon Bedrock   AgentCore   Pricing
+
+
+
+Amazon Bedrock AgentCore Pricing
+Tailor AgentCore to your needs—mix and match capabilities, use
+them independently or together, and pay for what you use as your
+AI initiatives grow.
+
+
+
+                                                                                                                                                       Feedba
+Pay only for what you use                                                 Amazon Bedrock AgentCore offers flexible, consumption-based
+                                                                          pricing with no upfront commitments or minimum fees. Each
+                                                                          feature can be used independently or together, and you pay
+                                                                          only for what you use. This modular approach allows you to
+                                                                          start small and scale as your agent applications grow.
+
+                                                                          New AWS customers receive up to $200 in Free Tier
+                                                                          credits. Explore AWS Free Tier benefits and start building today.
+
+
+
+
+  AgentCore features    13
+                                                   AgentCore features                                                           Open all
+
+
+
+                                                   Runtime
+
+
+
+                                                   Browser
+
+
+
+                                                   Code Interpreter
+
+
+
+                                                   Web Search on AgentCore
+
+
+
+                                                   Gateway
+
+
+
+                                                   Policy
+
+
+
+                                                   Identity
+
+
+
+                                                   Memory
+
+
+
+                                                   Observability
+
+
+
+                                                   Evaluations
+
+
+
+                                                   Optimization
+                                          AWS Agent Registry
+
+
+
+                                          Payments
+
+
+Amazon Bedrock AgentCore     Overview        Pricing    Resources    FAQs
+
+
+
+
+       Pricing Table
+
+
+        Service/Capability    Resource                       Price
+
+                              v1 CPU                         $0.0895 per vCPU-hour
+
+                              v1 Memory                      $0.00945 per GB-hour
+
+
+                                                             0.1276 per vCPU-hour (consumption)
+
+                              v2 CPU                         $0.0997 per vCPU-hour (committed baseline,
+        Runtime microVMs                                     launching by October 2026)
+
+
+
+                                                             $0.0169 per GB-hour (consumption)
+
+                              v2 Memory                      $0.0132 per GB-hour (committed baseline, launching
+                                                             by October 2026)
+
+
+        Runtime instances     Managed instance               See Runtime instances pricing below.
+
+                              CPU                            $0.0895 per vCPU-hour
+        Browser Tool
+                              Memory                         $0.00945 per GB-hour
+
+                              CPU                            $0.0895 per vCPU-hour
+        Code Interpreter
+                              Memory                         $0.00945 per GB-hour
+
+
+
+
+        Web Search on
+                              Queries                        $7.00 per 1,000 queries
+        AgentCore
+
+
+
+
+                                                             Please see the Amazon
+                              Storage
+                                                             Bedrock pricing page for details.
+        Bedrock Managed
+        Knowledge Base
+                                                             Please see the Amazon
+                              Queries
+                                                             Bedrock pricing page for details.
+
+                              API Invocations (e.g.
+                                                             $0.005 per 1,000 invocations
+                              ListTools, InvokeTool, Ping)
+
+        Gateway
+                              Search API                     $0.025 per 1,000 invocations
+
+                              Tool Indexing                  $0.02 per 100 tools indexed per month
+
+
+                                                             $0.010 per 1,000 token or API keys requested by the
+                                                             agent
+                              Token or API key requests
+        Identity                                             (Note: AgentCore Identity is available at no additional
+                              for non-AWS resources
+                                                             charge to customers when they use it through either
+                                                             AgentCore Runtime or AgentCore Gateway)
+
+
+        Memory                                               $0.25 per 1,000 new events (Through October 5,
+                              Short-Term Memory -
+                                                             2026)
+                              Ingestion
+                                                             $1.00 per GB ingested (As of October 6, 2026)
+
+                              Short-Term Memory –
+                                                             $0.20 per GB retrieved (As of October 6, 2026)
+                              Retrieval
+
+                              Short-Term Memory –
+                                                             $0.10 per GB-month (As of October 6, 2026)
+                              Storage
+                                     Long-Term Memory Storage
+                                                                      $0.75 per 1,000 records/month
+                                     (built-in)
+
+                                     Long-Term Memory Storage
+                                                                      $0.25 per 1,000 records/month*
+                                     (override/self-managed)
+
+                                     Long-Term Memory
+                                                                     $0.50 per 1,000 retrievals
+                                     Retrieval     Pricing
+Amazon Bedrock AgentCore            Overview                    Resources    FAQs
+
+        Observability                Spans, logs, and metrics         Charged as per Amazon CloudWatch pricing
+
+                                     Built-in evaluators - input
+                                                                      $0.0024 per 1000 input tokens
+                                     tokens
+
+                                     Built-in evaluators - output
+                                                                      $0.012 per 1,000 output tokens
+                                     tokens
+
+        Evaluations                                                   $1.50 per 1,000 evaluations (model usage billed
+                                     Custom evaluators
+                                                                      separately)
+
+
+                                                                      $0.0018 per 1,000 input token
+                                     Batch evaluations
+                                                                      $0.009 per 1,000 output tokens
+
+
+                                                                      Free during public preview; pricing will be announced
+                                     Insights (Preview)
+                                                                      before general availability
+
+        Optimization                                                  Recommendation generation is free; pay for any new
+                                     Recommendations
+                                                                      Evaluations consumed as part of workflow
+
+                                     A/B Tests                        Pay for underlying AgentCore resources consumed
+
+
+                                                                      $0.000025 per request
+
+                                     Authorization Request            Your first 100 temporal policies per policy engine incur
+                                                                      no additional authorization charges
+
+        Policy
+                                     Input Tokens Processed           $0.13 per 1,000 tokens
+
+                                                                      Pricing for Amazon Bedrock Guardrails is based on the
+                                     Guardrail safeguard usage        usage of each safeguard. Please see the Amazon
+                                                                      Bedrock pricing page for details.
+
+                                                                      First 5,000 records free monthly, then $0.400 per
+                                     Registry Records
+                                                                      1,000 records
+
+                                                                      First 1,000,000 invocations free monthly, then $0.020
+        AWS Agent Registry **        Search API Invocation
+                                                                      per 1,000 invocations
+
+                                                                      First 2,000,000 combined invocations free monthly,
+                                     List and Get API Invocations
+                                                                      then $0.004 per 1,000 invocations
+
+
+                                                                      Coinbase CDP Wallet: Wallet operations performed
+                                                                      through the AgentCore Payments API are charged per
+                                                                      Coinbase's published pricing:
+                                                                      1 CreateInstrument API invocation = 1 wallet
+                                                                      operation fee 1 ProcessPayment API invocation = 1
+                                     CreateInstrument and             wallet operation fee
+                                     ProcessPayment API
+        Payments                     invocations                      Stripe Privy Wallet: Wallet operations performed
+                                                                      through the AgentCore Payments API are charged per
+                                                                      Privy's published pricing:
+                                                                      1 CreateInstrument API invocation = No charge
+                                                                      1 ProcessPayment API invocation = 1 wallet operation
+                                                                      fee
+
+
+                                     Rest of the API invocations      No charge
+
+
+
+       * For built-in with override and self-managed strategies, you may incur additional charges for the model usage in your
+       account
+
+       ** Customers that resell AWS Agent Registry to their End Users or customers are not be eligible for Free Tier. Such
+       customers will be charged from their first record, Search API invocation or List and Get API invocation at the above
+       defined rates
+         Amazon Bedrock AgentCore   Overview      Pricing     Resources   FAQs
+
+
+
+
+        Pricing Examples   14
+                                               Pricing Examples                  Open all
+
+
+
+                                               Runtime microVMs v2
+
+
+
+                                               Runtime instances
+
+
+
+                                               Browser
+
+
+
+                                               Code Interpreter
+
+
+
+                                               Web Search on AgentCore
+
+
+
+                                               Gateway
+
+
+
+                                               Policy
+
+
+
+                                               Identity
+
+
+
+                                               Memory
+
+
+
+                                               Observability
+
+
+
+                                               Evaluations
+
+
+
+                                               Optimization
+
+
+
+                                               AWS Agent Registry
+
+
+
+                                               Payments
+
+
+
+
+  Create an AWS account                                                            English
+
+
+
+
+Learn
+Resources
+
+
+
+Developers
+
+
+            Amazon Bedrock AgentCore                 Overview       Pricing      Resources      FAQs
+Help
+
+
+
+
+                                                                              Back to top
+
+
+Amazon is an equal opportunity employer and does not discriminate on the basis of protected veteran
+status, disability or other legally protected status. Veterans, military spouses, and people with disabilities
+are encouraged to apply.
+
+Privacy   Site terms    Your Privacy Choices            Cookie Preferences
+
+© 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+

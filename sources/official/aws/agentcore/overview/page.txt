@@ -1,0 +1,151 @@
+Skip to main content
+English
+Contact us
+AWS Marketplace
+Support
+My account
+re:Invent
+Discover AWS
+Products
+Solutions
+Pricing
+Resources
+
+Search
+
+Sign in to console
+Create account
+
+Amazon Bedrock AgentCore
+
+Overview
+Pricing
+Resources
+FAQs
+Generative AI
+Amazon Bedrock
+AgentCore
+Amazon Bedrock AgentCore
+
+The platform for production AI agents. Any framework. Any model. Secure at scale.
+
+Get started with the AgentCore CLI
+See it in action
+One platform to build, connect and optimize agents
+
+Building an agent is fast. Connecting it to your systems, securing tool calls, debugging unexpected behaviors, and scaling without rebuilding everything, that's what slows you down. AgentCore handles the heavy lifting so you can get agents to market faster, scale without rearchitecting, and focus engineering efforts on differentiation, not back end plumbing. Build with any framework, any model, with security built in from the start.
+
+Your agent demo took a week. Now what?
+Get agents out of pilot and into production. Learn from leading companies already running agents at scale.
+Close the production gap
+Your agent demo took a week. Now what?
+Get agents out of pilot and into production. Learn from leading companies already running agents at scale.
+Close the production gap
+Ship fast. Evolve on your terms.
+
+Start with LangChain, OpenAI Agents SDK, Claude Agent SDK, Strands SDK, or your own framework, and deploy with any model. The same code that runs on your laptop can deploy to production with security built into the platform. As your needs change, add more capabilities without tearing down what you’ve built. 
+
+Learn more
+100%
+Download
+Connect across your stack. Control every call.
+
+Your agent needs to call an MCP server, a knowledge base, an internal API, and a Lambda function in the same turn, and every connection needs to know who's calling and whether they're allowed. AgentCore helps you handle the authentication and access control so you focus on what your agent does, rather than how it gets permission to do it. 
+
+Learn more
+100%
+Download
+Debug faster. Optimize smarter.
+
+When something goes wrong, you can see what steps your agent took, what it called, and where it went off track. When something works, you can test variations against real traffic and let the data tell you what to ship next. 
+
+Learn more
+100%
+Download
+Built on AWS. Secure from day one.
+
+Ship agents with confidence on infrastructure trusted by millions of customers for their most critical workloads. Security controls are enforced at the platform layer with access policies verified by automated reasoning, the same technology behind IAM and S3. Scale when you need, stay aligned with numerous AWS compliance programs, and deploy across multiple regions from day one. 
+
+More time building agents. Less time fighting infrastructure.
+0%
+less time spent on infrastructure and integrations
+Source: Signal65, compared to custom development
+0.0x
+faster deployment speed
+0.0x
+faster end-to-end agent development
+Customer stories
+
+Cox Automotive
+How an enterprise scaled from zero to 17 production AI agents in under a year
+Learn more
+Druva
+Druva solves 68 percent of support issues without human intervention.
+Learn more
+Thomson Reuters
+Thomson Reuters transformed platform engineering with 70% automation
+Learn more
+Why developers build on AgentCore
+
+Flexibility
+Confidence and control
+Breadth and depth
+Ready to take the next step?
+Documentation
+Go from zero to your first agent in minutes.
+Read the docs
+AI Assistant
+Have a question about AgentCore? Get help without leaving the page.
+Chat with us
+Did you find what you were looking for today?
+
+Let us know so we can improve the quality of the content on our pages
+
+Yes
+No
+Create an AWS account
+Learn
+What Is AWS?
+What Is Cloud Computing?
+What Is Agentic AI?
+Cloud Computing Concepts Hub
+AWS Cloud Security
+What's New
+Blogs
+Press Releases
+Careers
+Resources
+Getting Started
+Training
+AWS Trust Center
+AWS Solutions Library
+Architecture Center
+Product and Technical FAQs
+Analyst Reports
+AWS Partners
+Developers
+Builder Center
+SDKs & Tools
+.NET on AWS
+Python on AWS
+Java on AWS
+PHP on AWS
+JavaScript on AWS
+Help
+Contact Us
+File a Support Ticket
+AWS re:Post
+Knowledge Center
+AWS Support Overview
+AWS Accessibility
+Legal
+Event Code of Conduct
+Event Terms & Conditions
+English
+Back to top
+Amazon is an equal opportunity employer and does not discriminate on the basis of protected veteran status, disability or other legally protected status. Veterans, military spouses, and people with disabilities are encouraged to apply.
+Privacy
+Site terms
+Your Privacy Choices
+Cookie Preferences
+© 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.

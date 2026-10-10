@@ -1,0 +1,38 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "gemini-enterprise-agent-platform",
+    "id": "generative-ai-pricing",
+    "url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+    "kind": "official-web",
+    "discovery": "Linked by captured Managed Agents API overview"
+  },
+  "capture_started_at": "2026-10-09T12:23:14.418581+00:00",
+  "path": "sources/official/google/gemini-enterprise-agent-platform/generative-ai-pricing",
+  "requested_url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+  "final_url": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+  "http_status": 200,
+  "title": "Agent Platform Pricing | Google Cloud",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "6362ac3c6a72c1a2faf5b44ea36ec5d41555b2055c27ac493cb6b183e7328ff1",
+      "bytes": 117462
+    },
+    "page.txt": {
+      "sha256": "ca68895d4f8b988d10992fe2aa3c0c204d9e2f6dbe0d7eb96546ed73d90e3994",
+      "bytes": 62843
+    },
+    "page.pdf": {
+      "sha256": "87feb0a7e89662b18681548caf3bcf6ef62499d88dd669e2a3e68286a3c4be75",
+      "bytes": 370945
+    },
+    "page.html": {
+      "sha256": "ea3749e1ddbf4aa387b4ad993ed55d69a94d27ea14a268f3886977805b2ac53c",
+      "bytes": 3160077
+    }
+  }
+}

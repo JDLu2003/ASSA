@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform",
+    "id": "agent-evaluation",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:08:17.773775+00:00",
+  "path": "sources/official/google/agent-platform/agent-evaluation",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
+  "http_status": 200,
+  "title": "Agent evaluation  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "40ad0619f4e257691616b71b4e6db645a5a15bf932d160e27e401754e5a04b4e",
+      "bytes": 8036
+    },
+    "page.txt": {
+      "sha256": "24c0f1fb6fe15671554c12d0289ec0fe29465c864c5b6a157a32ebb7536e6daf",
+      "bytes": 8143
+    },
+    "page.pdf": {
+      "sha256": "0ea09343991248198ad06fe7f1815fa56f728845153919f6edd125f3d824ae5f",
+      "bytes": 209261
+    },
+    "page.html": {
+      "sha256": "be20f7a55adaaed8f0708f74c3d8ea037cfaab096a807139def7025fb40b7f00",
+      "bytes": 241642
+    }
+  }
+}

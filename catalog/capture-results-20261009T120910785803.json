@@ -1,0 +1,327 @@
+{
+  "run_at": "2026-10-09T12:09:10.785844+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "runtime-quickstart",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:55.466507+00:00",
+      "path": "sources/official/google/agent-platform/runtime-quickstart",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:08:55.466644+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "runtime-scaling",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:55.466690+00:00",
+      "path": "sources/official/google/agent-platform/runtime-scaling",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+      "http_status": 200,
+      "title": "Optimize and scale Agent Runtime performance  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "2aa5e597a041fdd0098f281432d93c71b2cd08c905bca53acbd2a580f7319823",
+          "bytes": 15671
+        },
+        "page.txt": {
+          "sha256": "4ddad620cd82d367b11dcf9edf67420bc4396756883dc5d860d8d3009650f685",
+          "bytes": 12283
+        },
+        "page.pdf": {
+          "sha256": "ff1e790dfbde32801edb0fe37bb25a73ab43433e579b721a33dafae2861747fe",
+          "bytes": 252754
+        },
+        "page.html": {
+          "sha256": "f31a99e229d832fe56468c3acc7d6fe8bcc7a7a80258989c24aebc56e92c238d",
+          "bytes": 201787
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:08:57.228647+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "sessions",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.228699+00:00",
+      "path": "sources/official/google/agent-platform/sessions",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:08:57.228773+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "session-management",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.228785+00:00",
+      "path": "sources/official/google/agent-platform/session-management",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:08:57.228828+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "agent-evaluation",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.228837+00:00",
+      "path": "sources/official/google/agent-platform/agent-evaluation",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:08:57.228876+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "managed-agents",
+        "id": "sandbox-environment",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.228894+00:00",
+      "path": "sources/official/google/managed-agents/sandbox-environment",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:08:57.282015+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "shell-quickstart",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.282139+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/shell-quickstart",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:08:57.282239+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "management",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-sandboxes",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.282290+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/management",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:08:57.282345+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "templates",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.282355+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/templates",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:08:57.282396+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "cloud-sandbox-reference",
+        "url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.282412+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/cloud-sandbox-reference",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:08:57.367752+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-sdk",
+        "id": "sdk-overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.367825+00:00",
+      "path": "sources/official/openai/agents-sdk/sdk-overview",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:08:57.437083+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "responses",
+        "id": "migration-guide",
+        "url": "https://developers.openai.com/api/docs/guides/migrate-to-responses",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.437133+00:00",
+      "path": "sources/official/openai/responses/migration-guide",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:08:57.475397+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "sandbox-lifecycle",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.475476+00:00",
+      "path": "sources/official/openai/agents-api/sandbox-lifecycle",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:08:57.514287+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "sandbox-security",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.514795+00:00",
+      "path": "sources/official/openai/agents-api/sandbox-security",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:08:57.554649+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "firecracker",
+        "id": "announcement",
+        "url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.554697+00:00",
+      "path": "sources/official/aws/firecracker/announcement",
+      "status": "failed",
+      "error": "HTTP 503",
+      "capture_finished_at": "2026-10-09T12:08:57.624640+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-surveys",
+        "id": "autonomous-agents-survey",
+        "arxiv": "2308.11432",
+        "title": "A Survey on Large Language Model based Autonomous Agents",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:08:57.624930+00:00",
+      "path": "sources/papers/agent-surveys/autonomous-agents-survey",
+      "requested_url": "https://arxiv.org/abs/2308.11432",
+      "pdf_url": "https://arxiv.org/pdf/2308.11432",
+      "source_status": "unavailable: CalledProcessError",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "paper.txt": {
+          "sha256": "b7cfd543a0010d5fe86697db058ba54610c8e7d12bc595da97a3f7798d956988",
+          "bytes": 193998
+        },
+        "paper.pdf": {
+          "sha256": "8709507742c260a5a92b4690ffc0459a0ab9af16dc7a5478d253a6e7b57bf23a",
+          "bytes": 5788348
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:09:01.026944+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-surveys",
+        "id": "rise-and-potential-survey",
+        "arxiv": "2309.07864",
+        "title": "The Rise and Potential of Large Language Model Based Agents: A Survey",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:09:01.027020+00:00",
+      "path": "sources/papers/agent-surveys/rise-and-potential-survey",
+      "status": "failed",
+      "error": "Command '['curl', '--fail', '--location', '--retry', '2', '--max-time', '120', '--output', '/tmp/tmpfj8itzng/paper.pdf', 'https://arxiv.org/pdf/2309.07864']' returned non-zero exit status 22.",
+      "capture_finished_at": "2026-10-09T12:09:04.144236+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "ai-agents-that-matter",
+        "arxiv": "2407.01502",
+        "title": "AI Agents That Matter",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:09:04.144336+00:00",
+      "path": "sources/papers/agent-evaluation/ai-agents-that-matter",
+      "status": "failed",
+      "error": "Command '['curl', '--fail', '--location', '--retry', '2', '--max-time', '120', '--output', '/tmp/tmpp25ic2nk/paper.pdf', 'https://arxiv.org/pdf/2407.01502']' returned non-zero exit status 22.",
+      "capture_finished_at": "2026-10-09T12:09:07.199650+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "the-agent-company",
+        "arxiv": "2412.14161",
+        "title": "TheAgentCompany: Benchmarking LLM Agents on Consequential Real World Tasks",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T12:09:07.199718+00:00",
+      "path": "sources/papers/agent-evaluation/the-agent-company",
+      "requested_url": "https://arxiv.org/abs/2412.14161",
+      "pdf_url": "https://arxiv.org/pdf/2412.14161",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "0451c13734724ca31c050adde9a2093565b2f716d5e876388a6ba195d384a91d",
+          "bytes": 1623674
+        },
+        "paper.txt": {
+          "sha256": "51365b2137f27b7424ef2854f2dbd2929a02d616cc4351045909c042c78e5b64",
+          "bytes": 104242
+        },
+        "paper.pdf": {
+          "sha256": "9574c7c5d4f1592dd1a0c9615cb3c2f8bd130f18b2c2cde4d0bbace4e80ef620",
+          "bytes": 2169754
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:09:10.709826+00:00"
+    }
+  ]
+}

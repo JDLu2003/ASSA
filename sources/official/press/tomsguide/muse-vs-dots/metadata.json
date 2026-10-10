@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "press",
+    "product": "tomsguide",
+    "id": "muse-vs-dots",
+    "url": "https://www.tomsguide.com/ai/meta-muse-vs-chatgpt-dots-i-compared-the-new-ai-agents-and-theyre-not-as-similar-as-they-look",
+    "kind": "press"
+  },
+  "path": "sources/official/press/tomsguide/muse-vs-dots",
+  "requested_url": "https://www.tomsguide.com/ai/meta-muse-vs-chatgpt-dots-i-compared-the-new-ai-agents-and-theyre-not-as-similar-as-they-look",
+  "final_url": "https://www.tomsguide.com/ai/meta-muse-vs-chatgpt-dots-i-compared-the-new-ai-agents-and-theyre-not-as-similar-as-they-look",
+  "title": "Meta Muse vs ChatGPT Dots — I compared the new AI agents",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

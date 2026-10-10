@@ -1,0 +1,423 @@
+                                                                    English   Preferences       Contact Us Feedback
+
+
+                        Get started       Service guides      Developer tools          AI resources
+
+
+
+Amazon Bedrock                                 Documentation         Amazon Bedrock AgentCore         Developer Gu…
+
+AgentCore
+Developer Guide                                Instances
+                                                     PDF               RSS             Markdown
+Overview
+Supported AWS Regions                                Agent Setup              Focus mode
+Get started with AgentCore
+AgentCore harness
+
+Understand the available interfaces for
+using AgentCore                                On this page
+AgentCore Runtime: Host agent or                  When to use Instances
+tools                                             Core concepts
+   How it works                                   Compare compute types
+
+       microVMs                                   Use GPU instance types
+                                                  Invocation flow
+       Instances
+                                                  Persistent storage across sessions
+   Understand the AgentCore
+                                                  IAM roles
+   Runtime service contract
+
+   IAM Permissions for AgentCore
+   Runtime
+                                               Did this page help you?
+   Get started with AgentCore
+   Runtime
+                                                     Yes              No
+   Optimize your agent
+
+   Use any agent framework                     Provide feedback
+
+   Use any foundation model
+
+   Deploy MCP servers
+
+   Stateful MCP features
+                                               When you host an agent on the Instances compute type,
+   Deploy A2A servers
+                                               Amazon Bedrock AgentCore Runtime runs your agent on
+   Deploy AG-UI servers
+                                               Amazon EC2 managed instances that it provisions and
+   Use isolated sessions for agents            operates inside your own AWS account — so you get the
+   File system configurations                  hardware selection and pricing benefits of Amazon EC2
+   Handle asynchronous and long                without managing instance lifecycle, operating system and
+   running agents                              runtime patching, scaling, or teardown. A capacity provider
+   Stream agent responses                      defines the infrastructure those instances use, and AgentCore
+   Bidirectional streaming                     handles provisioning, patching, scaling, and teardown on
+                                               your behalf. Because the instances run in your account, your
+   Pass custom headers
+                                               data stays in your account, your existing account controls
+   Authenticate and authorize with
+                                               apply, and you can use your EC2 pricing agreements such as
+   Inbound Auth and Outbound
+   Auth                                        Savings Plans, Reserved Instances, and On-Demand Capacity
+                   Reservations (ODCRs).
+                                  EnglishWithPreferences
+                                              Instances, youContact
+                                                             get persistent
+                                                                    Us Feedback
+                   compute and can run multiple collaborating agents on a
+Get started         single
+              Service      instance,
+                      guides         while retaining
+                                 Developer  tools    visibility and control over the
+                                                      AI resources
+                   underlying infrastructure.
+
+                   Topics
+
+                       When to use Instances
+                       Core concepts
+                       Compare compute types
+                       Use GPU instance types
+                       Invocation flow
+                       Persistent storage across sessions
+                       IAM roles
+
+
+
+
+                   When to use Instances
+                   Choose the Instances compute type when your workload
+                   needs capabilities beyond what the serverless microVM
+                   model provides:
+
+                       Persistent, long-running sessions – Sessions can run for
+                       up to 14 days, compared to a maximum of 8 hours for
+                       microVMs. This suits long-running automation,
+                       transformation jobs, and agents that pause and resume
+                       over extended periods.
+                       Specialized hardware – Choose a supported GPU
+                       instance type for compute-intensive workloads such as
+                       3D rendering, simulation, or model inference. AgentCore
+                       provisions the GPU drivers on the instance, so standard
+                       container images work without bundling drivers, and
+                       both compute (CUDA) and graphics workloads are
+                       supported. For the supported families, see Use GPU
+                       instance types.
+                       Multi-agent collaboration – Multiple agents can run on
+                       the same instance, share a filesystem, and coordinate on
+                       the same task.
+                       Your account, your controls – Instances run in your
+                       account, so your data stays in your account and you can
+                       use existing cost mechanisms such as Savings Plans and
+                       On-Demand Capacity Reservations (ODCRs).
+
+                   If your workload is a lightweight, API-driven interaction that
+                   completes quickly, the default microVMs compute type is
+                   usually the better fit. For more
+                                   English           information,
+                                                Preferences       see Compare
+                                                              Contact Us Feedback
+                   compute types.
+Get started   Service guides      Developer tools   AI resources
+
+
+                   Core concepts
+                   Hosting an agent on Instances introduces a few resources in
+                   addition to the core AgentCore Runtime concepts described
+                   in microVMs.
+
+
+                   Capacity provider
+                   A capacity provider defines the EC2 infrastructure your
+                   agents run on: the operating system, the allowed instance
+                   types, networking (VPC and subnets), storage volumes, and
+                   the IAM roles used to provision and access the instances. A
+                   capacity provider is a reusable template — you can associate
+                   it with multiple agent runtimes, and AgentCore uses it to
+                   launch instances when those runtimes are invoked.
+
+                   Key characteristics:
+
+                       A capacity provider is created in a CREATING state and
+                       becomes READY after its configuration is validated. If
+                       validation fails, it enters CREATE_FAILED .
+                       After a capacity provider is created, only its description
+                       can be edited. To change other configurations, duplicate
+                       the capacity provider and make your updates in the
+                       duplicate flow.
+                       You can list the runtimes (and runtime versions)
+                       associated with a capacity provider, and you must
+                       disassociate them before the capacity provider can be
+                       deleted.
+                       Deleting a capacity provider stops and deletes all of its
+                       associated sessions and their persistent storage.
+
+
+                   Agent runtime on Instances
+                   When you create an agent runtime, you choose its compute
+                   type. Selecting Instances associates the runtime with a
+                   capacity provider through the
+                   capacityProviderConfiguration parameter. The
+                   runtime still defines what agent runs (the code or container
+                   artifact) and how it’s configured (protocol, authentication,
+                   endpoints, versions); the capacity provider defines the
+                   compute it runs on.
+                   You can’t changeEnglish
+                                    the compute  type after Contact
+                                            Preferences     a runtime
+                                                                    Us isFeedback
+                   created.
+Get started   Service guides    Developer tools     AI resources
+                   Session
+                   A session is an isolated EC2 instance instantiated from a
+                   runtime’s capacity provider. Each session has its own lifecycle
+                   and persistent state, and you identify it with a
+                   runtimeSessionId that you provide on invocation.
+                   AgentCore creates a session on the first invocation with a
+                   new session ID, and the session retains its state across stops.
+
+                   A session runs for a maximum of 14 days. When a session
+                   reaches this maximum lifetime, AgentCore automatically
+                   stops it. It terminates the EC2 instance but retains the
+                   session’s persistent volumes. To resume work after a session
+                   is stopped, invoke the runtime again with the same
+                    runtimeSessionId . AgentCore provisions a new instance
+                   and re-attaches the persistent volumes, so your data is intact.
+                   Because the new instance can launch from an updated
+                   machine image, a restarted session might run on an instance
+                   with the latest patches. When you delete a session,
+                   AgentCore deprovisions everything, including the persistent
+                   volumes.
+
+                   For the session isolation and multi-tenant security model, see
+                   Security model and permissions for Runtime Instances.
+
+
+                   Agent
+                   An agent is a workload running within a session. Unlike the
+                   microVM model, where one runtime hosts one agent, a single
+                   Instances session can host multiple agents. When two agent
+                   runtimes share the same capacity provider, you can invoke
+                   them with the same runtimeSessionId to land both
+                   agents on the same EC2 instance. There, they share a
+                   filesystem and can collaborate on the same task.
+
+
+                   Understanding managed instances
+                   The EC2 instances that back your sessions are Amazon EC2
+                   managed instances — AgentCore provisions and operates
+                   them in your account on your behalf, so you have restricted
+                   permissions on them compared with standard EC2 instances.
+                   You can identify them by the Operator field in EC2
+                    DescribeInstances output and by the AgentCore
+                   capacity-provider tag on the instance.
+                   You don’t perform   standard
+                                    English     EC2 lifecycle Contact
+                                              Preferences     operations  on these
+                                                                      Us Feedback
+                   instances directly — for example, you don’t launch, patch, or
+Get started         terminate
+              Service guides them yourself.
+                               Developer    AgentCore
+                                         tools         manages their lifecycle;
+                                                  AI resources
+                   to remove them, delete the associated capacity provider,
+                   which stops and deletes its sessions and their persistent
+                   storage. Managed instances are hidden from your EC2
+                   console views and API list operations by default; you can
+                   change this with the managed resource visibility setting.
+                   They remain fully operational and billable in your account.
+
+
+
+
+                   Compare compute types
+                   The following table compares the microVMs and Instances
+                   compute types to help you choose the right one for your
+                   workload.
+
+
+                     Characteristic       microVMs              Instances
+
+                     Best suited          Lightweight,          Long-running,
+                     for                  API-driven            stateful, or
+                                          agents that           collaborative
+                                          start fast, scale     workloads
+                                          on demand,            needing GPUs
+                                          and complete          or multi-
+                                          within hours          agent
+                                                                sessions
+
+                     Management           Fully AWS             AWS
+                     model                managed,              managed EC2
+                                          serverless,           in your
+                                          scale on              account; AWS
+                                          demand                manages
+                                                                patching and
+                                                                updates, with
+                                                                persistent
+                                                                sessions
+
+                     Maximum              Up to 8 hours         Up to 14 days
+                     session
+                     duration
+
+                     Operating            Linux                 Linux
+                     systems              containers            ( x86_64 and
+                                          ( arm64 )             arm64 )
+
+                     Networking           PUBLIC or             VPC
+                                     English   Preferences    Contact Us Feedback
+
+                   Use GPU instance types
+Get started   Service guides    Developer tools      AI resources
+                   For compute-intensive workloads such as model inference,
+                   3D rendering, and media processing, include a GPU instance
+                   type in the allowed instance types of your capacity provider.
+                   AgentCore provisions the GPU drivers on the instance, so you
+                   don’t configure device paths, GPU indices, or driver versions,
+                   and standard container images (for example, CUDA images)
+                   work without bundling drivers. Both compute (CUDA) and
+                   graphics (such as Vulkan, EGL, and GLX) workloads are
+                   supported. When more than one agent runs on the same
+                   instance, all agents share access to its GPUs.
+
+                   The following GPU and accelerator instance families are
+                   supported:
+
+                       NVIDIA GPU families – g4dn , g5 , g6 , g6e , gr6 , g6f ,
+                        gr6f , and g7e .
+                       AWS accelerator families – inf2 (powered by AWS
+                       Inferentia2).
+
+                   If you include an accelerator instance type from a family that
+                   isn’t supported, CreateCapacityProvider fails with a
+                    ValidationException that names the instance type and
+                   lists the supported families. Non-accelerator instance types
+                   are unaffected.
+
+
+
+
+                   Invocation flow
+                   Invoking an agent runtime backed by a capacity provider
+                   follows the same InvokeAgentRuntime entry point as the
+                   microVM model. AgentCore resolves the capacity provider,
+                   ensures an instance and agent are running for your session,
+                   and proxies the request to the agent:
+
+                    1. You call InvokeAgentRuntime with the runtime ARN
+                       and a runtimeSessionId .
+                    2. If no session exists for that session ID, AgentCore
+                       provisions an EC2 instance from the runtime’s capacity
+                       provider in your account and launches the agent on it.
+                       The first invocation for a session takes longer because it
+                       includes instance provisioning.
+                    3. If a session already exists, AgentCore reuses the running
+                       instance. Invoking a second runtime that shares the same
+                       capacity provider
+                                   Englishwith Preferences
+                                               the same session ID launches
+                                                             Contact        that
+                                                                     Us Feedback
+                       agent alongside the first on the same instance.
+Get started   Service4.guides
+                         AgentCore proxies tools
+                                Developer  the request to the agent and streams
+                                                    AI resources
+                       the response back to you. Each agent runs with its own
+                       IAM credentials derived from its runtime’s execution role.
+
+                   Because the agent runs on an instance in your account, the
+                   EC2 instance, its network interfaces, and any persistent
+                   volumes are visible in your account’s EC2 console and billed
+                   to your account. These are Amazon EC2 managed instances
+                   — instances that AgentCore provisions and operates in your
+                   account on your behalf. You can control whether they appear
+                   in your EC2 console views and API list operations with
+                   managed resource visibility settings.
+
+
+
+
+                   Persistent storage across sessions
+                   A capacity provider can define one or more Amazon EBS
+                   volumes. When you save the capacity provider, AgentCore
+                   saves the volume configuration and creates the EBS volume
+                   on the session’s first launch. When an agent runtime mounts
+                   a volume through its storage configuration, the volume’s
+                   data survives session stops:
+
+                    1. On the first invocation for a session, AgentCore creates
+                       the volume and attaches it to the EC2 instance.
+                    2. When AgentCore stops the session, it terminates the EC2
+                       instance but retains the volume.
+                    3. On the next invocation with the same
+                       runtimeSessionId , AgentCore provisions a new
+                       instance and re-attaches the existing volume, so the
+                       agent sees its previous data intact.
+
+                   This enables stateful agent workflows where workspace files,
+                   caches, and checkpoints persist across session restarts.
+                   Deleting the session deprovisions the EC2 resources —
+                   instance, network interface, and EBS volume — so you stop
+                   incurring costs for infrastructure you no longer need.
+
+
+
+
+                   IAM roles
+                   Hosting agents on Instances involves the following roles, in
+                   addition to the agent runtime execution role that grants your
+                   agent code its runtime permissions:
+                                                             Instance profile  – An IAM
+                                                                         English         role attached
+                                                                                     Preferences        to the
+                                                                                                     Contact Us EC2
+                                                                                                                 Feedback
+                                                             instance. AgentCore uses it to collect system logs from
+                                 Get started                 the instance;
+                                                   Service guides          it does
+                                                                      Developer    not grant
+                                                                                 tools     AI permissions
+                                                                                              resources    to your agent
+                                                                 code (the agent runtime execution role does that).
+                                                                 Infrastructure role – An IAM role that AgentCore
+                                                                 assumes to provision and manage EC2 instances in your
+                                                                 account on your behalf (launching, tagging, and
+                                                                 configuring networking for instances and their network
+                                                                 interfaces).
+
+                                                            You can let the console create default roles for you, or supply
+                                                            existing roles. Because the infrastructure role grants
+                                                            AgentCore the ability to manage compute in your account,
+                                                            scope it to the least privilege your workloads require, and use
+                                                            IAM conditions to restrict it to specific VPCs, subnets, or
+                                                            instance types where appropriate.
+
+
+
+
+                                                            Next topic: Understand the AgentCore Runtime service
+                                                            contract
+                                                            Previous topic: microVMs
+
+
+
+Get Started                          Service Guides                 Developer Tools                 Helpful Links
+                                                                                                                             Top
+AWS Hands-On                         Choosing a generative          AWS Code Example                Download the AWS
+Tutorials                            AI service                     Library                         Docs MCP Server
+AWS Solutions                        AWS service guides             AWS CLI                         Sign into the AWS
+Library                              AWS CLI Tutorials on           AWS Builder Center              Console
+AWS Decision Guides                  GitHub                         AWS Developer Tools             AWS re:Post
+                                                                    Blog
+
+
+Privacy     |   Site terms   |    Cookie preferences   |   © 2026, Amazon Web Services, Inc. or its affiliates. All rights
+
+reserved.        English
+

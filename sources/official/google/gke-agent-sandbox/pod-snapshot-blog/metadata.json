@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "gke-agent-sandbox",
+    "id": "pod-snapshot-blog",
+    "url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:21.217017+00:00",
+  "path": "sources/official/google/gke-agent-sandbox/pod-snapshot-blog",
+  "requested_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+  "final_url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+  "http_status": 200,
+  "title": "Agent Factory Recap: Supercharging Agents on GKE with Agent Sandbox and Pod Snapshots | Google Cloud Blog",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "61b9900b0202e3fc343161609661b2344a41d131646bf6d6ceee10c9c2bb003b",
+      "bytes": 6614
+    },
+    "page.txt": {
+      "sha256": "628fed61fd7507f12d418aed61ad874613a9b7cdadc86f4710a21f4b1c47602e",
+      "bytes": 5618
+    },
+    "page.pdf": {
+      "sha256": "8b29c077443afecf051783f1b1dd1061c4a557bccb17f45a206d387d12c8c559",
+      "bytes": 3767118
+    }
+  }
+}

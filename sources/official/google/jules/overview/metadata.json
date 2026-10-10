@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "jules",
+    "id": "overview",
+    "url": "https://jules.google/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:23:34.404549+00:00",
+  "path": "sources/official/google/jules/overview",
+  "requested_url": "https://jules.google/",
+  "final_url": "https://jules.google/",
+  "http_status": 200,
+  "title": "Jules - An Autonomous Coding Agent",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "97e184d68a8894792166d936eb06f356679715fe8391d2663986317a34c516ef",
+      "bytes": 4924
+    },
+    "page.txt": {
+      "sha256": "8978483eb1b4d6485ce8ca3da56234f0fbd996ca0ea524a890ba174af72e0eed",
+      "bytes": 3116
+    },
+    "page.pdf": {
+      "sha256": "4210c925dd5e881cc7d2e424bf4340d9a58773b926a57c4cf1fa2330ae092e4e",
+      "bytes": 2956061
+    },
+    "page.html": {
+      "sha256": "a9225213b0b59ae81be03ab511756349c43aa24617fff662c603166e1eda4770",
+      "bytes": 59589
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "tools",
+    "id": "web-search",
+    "url": "https://developers.openai.com/api/docs/guides/tools-web-search",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:21.446819+00:00",
+  "path": "sources/official/openai/tools/web-search",
+  "requested_url": "https://developers.openai.com/api/docs/guides/tools-web-search",
+  "final_url": "https://developers.openai.com/api/docs/guides/tools-web-search?api-mode=responses",
+  "http_status": 200,
+  "title": "Web search | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "aa065bc91c16f2c7b6879fca72478093bc0343fb04ddfa839cd57fc4d70d7048",
+      "bytes": 2406
+    },
+    "page.txt": {
+      "sha256": "9f355fddcbb390f3b8b78db35fe6e7787011eddc4855ae6c7fa8a7a59f0f80ae",
+      "bytes": 16786
+    },
+    "page.pdf": {
+      "sha256": "b31b03b900c79966ae0ee24962841fd03f002bfb91005b57f7e7710f055d183a",
+      "bytes": 67439
+    },
+    "page.html": {
+      "sha256": "3418f2b9a83cea42f8f4294ef44eb325a3a51356844cde8efa37e3b2c825ad10",
+      "bytes": 850707
+    },
+    "page.complete.pdf": {
+      "sha256": "c94f471086ad0c040db4fb7c100cf3f66f4184840055b4ecd27b94b1538c5fe9",
+      "bytes": 708783
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "c57cc74d2366a5d5eb502d2e551ae3f6db59e4d6f59ed271276ad9e678ef0c0e",
+      "bytes": 19437
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

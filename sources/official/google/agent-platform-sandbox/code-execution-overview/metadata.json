@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-platform-sandbox",
+    "id": "code-execution-overview",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:20:11.069675+00:00",
+  "path": "sources/official/google/agent-platform-sandbox/code-execution-overview",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+  "http_status": 200,
+  "title": "Code Execution  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "34a10d3aac9f3a1fc9894751f554024b392508ec42c04a673dde72e5ce8bdecd",
+      "bytes": 18024
+    },
+    "page.txt": {
+      "sha256": "b09673e0bb5a84f949eca3df4687e93ff9a3b82680956b136ce0fdae3ccb7187",
+      "bytes": 17714
+    },
+    "page.pdf": {
+      "sha256": "eeea28d113a6a1e7b094c7ef49a281f0b2a2901576f848c50c5e6402d139c197",
+      "bytes": 243226
+    },
+    "page.html": {
+      "sha256": "8d25c398ffdbcc7e96020b85c5f00b0622c132435e925566167c661577bad1ef",
+      "bytes": 255625
+    }
+  }
+}

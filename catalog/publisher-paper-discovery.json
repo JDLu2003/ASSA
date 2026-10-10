@@ -1,0 +1,18 @@
+[
+  {
+    "requested_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "requested_url": "https://www.usenix.org/conference/osdi26/technical-sessions",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "requested_url": "https://www.usenix.org/search/site/reinforcement%20learning%20file%20system",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "requested_url": "https://dl.acm.org/doi/10.1145/3779212.3790172",
+    "error": "HTTP Error 403: Forbidden"
+  }
+]

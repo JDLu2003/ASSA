@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "vertex-agent-engine",
+    "id": "overview",
+    "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:42.662593+00:00",
+  "path": "sources/official/google/vertex-agent-engine/overview",
+  "requested_url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale",
+  "http_status": 200,
+  "title": "Scale your agents  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "830b32557f1b8e2ca7f4e5b9c08e130d7ae181d9f145a8c989f666ef685ba8a1",
+      "bytes": 13845
+    },
+    "page.txt": {
+      "sha256": "d772af2c65992275952487d15b0038088674c86768b94815661759b36b57b3f2",
+      "bytes": 9025
+    },
+    "page.pdf": {
+      "sha256": "8b195280bb57dd6c762369eb5f44272b8b28a372379462cd87ba3798acf37550",
+      "bytes": 2164706
+    }
+  }
+}

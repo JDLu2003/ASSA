@@ -1,0 +1,209 @@
+Skip to main content
+Documentation
+/
+Console
+Sign in
+Gemini Enterprise Agent Platform
+Start free
+Overview
+Studio
+Agents
+Models
+Notebooks
+API reference
+Pricing
+Engineering Blog
+Overview
+Get an API key
+Get started
+Build an agent with ADK and Agents CLI
+Build
+Overview
+Create agents
+Skill Registry
+Authentication
+RAG Engine
+Tokenizer
+Multimodal datasets
+Use Agent Search
+Perform vector similarity searches
+Agent Retrieval (formerly Vector Search 2.0) - Intelligent Retrieval for AI Applications
+Scale
+Overview
+Agent Runtime
+Sessions
+Feedback service
+Memory Bank
+Sandbox
+Overview
+Code execution
+Computer use
+Overview
+Quickstart
+Shell sandbox quickstart
+Manage sandboxes
+Manage sandbox templates
+Manage snapshots
+Configure VPC Service Controls for sandboxes
+Configure customer-managed encryption keys (CMEK) for sandboxes
+Custom containers (BYOC)
+Autonomous agent scheduling
+Govern
+Overview
+Safety (Responsible AI)
+Share an agent
+Agent Identity
+Agent Registry
+Topology graphs
+Policies
+Agent Gateway
+Guides
+Security
+Agent Audit
+Optimize
+Overview
+Observability
+Evaluation
+Example Store
+Troubleshooting
+Overview
+Agent Platform Runtime environment setup
+Create an agent
+Agent deployment
+Agent Gateway connectivity
+IAM access policies
+Manage deployed agents
+Code Execution
+Memory Bank
+On this page
+How it works
+Control the browser using API
+Control the browser using a CDP connection
+Live streaming view
+What's next
+Home
+Documentation
+AI and ML
+Gemini Enterprise Agent Platform
+Agents
+Was this helpful?
+Send feedback
+Computer Use
+
+Agent Platform Computer Use sandboxes provide a secure, isolated browser environment that your agents can interact with. These sandboxes allow agents to automate tasks that mimic human interactions (such as clicking, navigating sites, and taking screenshots).
+
+How it works
+
+When you create a Computer Use sandbox, Gemini Enterprise Agent Platform provisions a containerized environment that runs a web browser agent. You can control the browser in two ways:
+
+API requests: Send commands to the sandbox to perform actions like navigating to a URL, clicking on elements, or typing text.
+Browser control: Connect to the browser by using a standard Chrome DevTools Protocol (CDP) connection, letting you use browser automation tools (such as Playwright) to automate the browser.
+Control the browser using API
+
+You can send API requests to the sandbox to perform common browser actions. The sandbox handles the execution of these actions within its isolated environment.
+
+Supported actions include:
+
+Navigating to a URL.
+Clicking at specific coordinates.
+Typing text into fields.
+Taking screenshots.
+
+For an example of how to send commands, see the Computer Use quickstart.
+
+Control the browser using a CDP connection
+
+For more advanced automation, you can connect to the sandbox browser over a Chrome DevTools Protocol (CDP) connection. This method lets you use standard browser automation tools, such as Playwright, to interact with the webpage.
+
+To connect Playwright to the sandbox:
+
+Generate the WebSocket URL and required headers for your sandbox by using the Python SDK generate_browser_ws_headers method.
+
+  service_account_email = "SERVICE_ACCOUNT_EMAIL"
+  ws_url, ws_headers = client.agent_engines.sandboxes.generate_browser_ws_headers(
+      sandbox_environment=sandbox,
+      service_account_email=service_account_email,
+  )
+
+
+Use Playwright's connect_over_cdp method to establish a connection.
+
+Use the generated WebSocket URL and headers to connect over CDP using Playwright:
+
+  import asyncio
+  from playwright.async_api import async_playwright
+  import nest_asyncio
+  nest_asyncio.apply()
+
+  async def connect_over_cdp(ws_url, ws_headers):
+      async with async_playwright() as p:
+          try:
+              browser = await p.chromium.connect_over_cdp(
+                  endpoint_url=ws_url,
+                  headers=ws_headers
+              )
+              print("Successfully connected to browser over CDP.")
+
+              # You can now interact with the browser
+              page = browser.contexts[0].pages[0]
+              await page.goto("https://www.example.com")
+              print(f"Page title: {await page.title()}")
+
+              await browser.close()
+              print("Browser connection closed.")
+          except Exception as e:
+              print(f"An error occurred: {e}")
+
+  # Run CDP connection
+  asyncio.run(connect_over_cdp(ws_url, ws_headers))
+
+Live streaming view
+
+Computer Use sandboxes support a live streaming view (VNC), letting you to visually monitor the agent's actions in real-time. You can debug and observe the agent's behavior.
+
+For example, you can use noVNC to connect to the sandbox through WebSocket.
+
+What's next
+Computer Use quickstart
+Configure VPC Service Controls
+Configure customer-managed encryption keys (CMEK)
+Was this helpful?
+Send feedback
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+
+Products and pricing
+See all products
+Google Cloud pricing
+Google Cloud Marketplace
+Contact sales
+Support
+Community forums
+Support
+Release Notes
+System status
+Resources
+GitHub
+Getting Started with Google Cloud
+Code samples
+Cloud Architecture Center
+Training and Certification
+Engage
+Blog
+Events
+X (Twitter)
+Google Cloud on YouTube
+Google Cloud Tech on YouTube
+Android
+Chrome
+Firebase
+Google AI
+About Google
+Privacy
+Site terms
+Google Cloud terms
+Our third decade of climate action: join us
+Sign up for the Google Cloud newsletter
+Subscribe

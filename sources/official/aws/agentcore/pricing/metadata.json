@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore",
+    "id": "pricing",
+    "url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:41.399727+00:00",
+  "path": "sources/official/aws/agentcore/pricing",
+  "requested_url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+  "final_url": "https://aws.amazon.com/bedrock/agentcore/pricing/",
+  "http_status": 200,
+  "title": "Amazon Bedrock AgentCore Pricing - AWS",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "e768799abed854325d80ebbc23c102ce2e745ed57d0d7773f0eaf4f93f015e45",
+      "bytes": 14276
+    },
+    "page.txt": {
+      "sha256": "bcda707d9858846c78d76a4d83d4d9590aafeb61242cab9312292d0fcff766b2",
+      "bytes": 6377
+    },
+    "page.pdf": {
+      "sha256": "5aad90b4457f92eabcc340f31bb03d052fa76f6214abbdd7a339de1963081244",
+      "bytes": 173647
+    }
+  }
+}

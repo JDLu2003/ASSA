@@ -1,0 +1,521 @@
+Documentation Index
+
+Fetch the complete documentation index at: /docs/llms.txt
+
+Use this file to discover all available pages before exploring further.
+
+Skip to main content
+Exa home page
+Blog
+API Dashboard
+Documentation
+API Reference
+Changelog
+Search
+Ctrl
+K
+Search
+POST
+Search
+Contents
+POST
+Contents
+Agent
+POST
+Create a run
+GET
+Get a run
+GET
+List runs
+POST
+Cancel a run
+POST
+Stop a run
+DEL
+Delete a run
+GET
+List run events
+Monitors
+POST
+Create a monitor
+GET
+List monitors
+GET
+Get a monitor
+PATCH
+Update a monitor
+DEL
+Delete a monitor
+POST
+Trigger a monitor
+POST
+Batch action on monitors
+Runs
+Answer
+POST
+Answer
+Batch
+POST
+Create a batch
+GET
+List batches
+GET
+Get a batch
+POST
+Cancel a batch
+DEL
+Delete a batch
+Team Management
+POST
+Create API key
+GET
+List API keys
+GET
+Get API key
+GET
+Get API key usage
+PUT
+Update API key
+DEL
+Delete API key
+Websets
+Websets
+Items
+Searches
+Enrichments
+Imports
+Monitors
+Webhooks
+Events
+Teams
+
+cURL
+
+curl -X POST https://api.exa.ai/search \
+  -H "x-api-key: $EXA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "query": "<query>",
+  "type": "auto",
+  "contents": {
+    "highlights": true
+  }
+}'
+200
+400
+401
+402
+403
+429
+500
+503
+{
+  "results": [
+    {
+      "title": "<string>",
+      "url": "<string>",
+      "publishedDate": "2023-11-07T05:31:56Z",
+      "author": "<string>",
+      "id": "<string>",
+      "image": "<string>",
+      "favicon": "<string>",
+      "text": "<string>",
+      "highlights": [
+        "<string>"
+      ],
+      "highlightScores": [
+        123
+      ],
+      "summary": "<string>",
+      "subpages": [
+        {
+          "title": "<string>",
+          "url": "<string>",
+          "publishedDate": "2023-11-07T05:31:56Z",
+          "author": "<string>",
+          "id": "<string>",
+          "image": "<string>",
+          "favicon": "<string>"
+        }
+      ],
+      "entities": [
+        {
+          "id": "<string>",
+          "type": "company",
+          "version": 2,
+          "properties": {
+            "name": "<string>",
+            "foundedYear": 123,
+            "description": "<string>",
+            "workforce": {
+              "total": 123
+            },
+            "headquarters": {
+              "address": "<string>",
+              "city": "<string>",
+              "postalCode": "<string>",
+              "country": "<string>"
+            },
+            "financials": {
+              "revenueAnnual": 123,
+              "fundingTotal": 123,
+              "fundingLatestRound": {
+                "name": "<string>",
+                "date": "<string>",
+                "amount": 123
+              }
+            },
+            "webTraffic": {
+              "visitsMonthly": 123,
+              "countryRank": 123,
+              "avgDurationSeconds": 123,
+              "history": [
+                {
+                  "value": 123,
+                  "dateFrom": "<string>",
+                  "dateTo": "<string>"
+                }
+              ]
+            },
+            "research": {
+              "worksCount": 123,
+              "citationCount": 123,
+              "areas": [
+                "<string>"
+              ],
+              "notableWorks": [
+                {
+                  "title": "<string>",
+                  "year": 123,
+                  "venue": "<string>",
+                  "citationCount": 123,
+                  "doi": "<string>",
+                  "id": "<string>",
+                  "type": "article"
+                }
+              ],
+              "topResearchers": [
+                {
+                  "person": {
+                    "name": "<string>",
+                    "id": "<string>"
+                  },
+                  "worksCount": 123,
+                  "citationCount": 123
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "extras": {
+        "links": [
+          "<string>"
+        ],
+        "imageLinks": [
+          "<string>"
+        ],
+        "richImageLinks": [
+          {
+            "url": "<string>",
+            "alt": "<string>"
+          }
+        ],
+        "richLinks": [
+          {
+            "url": "<string>",
+            "anchor": "<string>"
+          }
+        ],
+        "codeBlocks": [
+          {
+            "text": "<string>",
+            "source": "<string>"
+          }
+        ]
+      }
+    }
+  ],
+  "output": {
+    "content": "<string>",
+    "grounding": [
+      {
+        "field": "<string>",
+        "citations": [
+          {
+            "url": "<string>",
+            "title": "<string>"
+          }
+        ],
+        "confidence": "low"
+      }
+    ]
+  },
+  "requestId": "<string>",
+  "costDollars": {
+    "total": 123,
+    "search": {
+      "neural": 123,
+      "keyword": 123
+    },
+    "summary": 123,
+    "contents": {
+      "text": 123,
+      "highlights": 123,
+      "summary": 123
+    }
+  },
+  "searchTime": 123,
+  "resolvedSearchType": "<string>",
+  "context": "<string>"
+}
+Search
+
+The search endpoint lets you search the web and extract contents from the results.
+
+Copy page
+Get your Exa API key
+Create a key in the dashboard. New accounts start with free credits.
+Authorizations
+apiKey
+bearer
+apiKey
+​
+x-api-key
+stringheaderrequired
+
+Pass your Exa API key in the x-api-key header. You can also authenticate with Authorization: Bearer .
+
+Body
+application/json
+​
+query
+stringrequired
+
+The query string for the search.
+
+Minimum string length: 1
+​
+includeDomains
+string[] | null
+
+List of domains or domain paths to include in the search. Each entry can be a hostname (for example, example.com), a hostname with a path prefix (for example, example.com/docs), or a wildcard subdomain (for example, *.example.com). If specified, results will only come from the matching domains or paths. Use this parameter for domain or path filtering instead of adding a site: operator to the query.
+
+Maximum array length: 1200
+​
+excludeDomains
+string[] | null
+
+List of domains or domain paths to exclude from search results. Each entry can be a hostname (for example, example.com), a hostname with a path prefix (for example, example.com/docs), or a wildcard subdomain (for example, *.example.com). If specified, no results will be returned from the matching domains or paths. Use this parameter for domain or path filtering instead of adding a site: operator to the query.
+
+Maximum array length: 1200
+​
+startPublishedDate
+string<date-time> | null
+
+Only links with a published date after this will be returned. Must be specified in ISO 8601 format.
+
+​
+endPublishedDate
+string<date-time> | null
+
+Only links with a published date before this will be returned. Must be specified in ISO 8601 format.
+
+​
+numResults
+integer | nulldefault:10
+
+Number of results to return. Limits vary by search type. The maximum public limit is 100 results. Contact sales (hello@exa.ai) to discuss higher limits.
+
+Required range: 1 <= x <= 100
+​
+moderation
+boolean | nulldefault:false
+
+Enable content moderation to filter unsafe content from search results.
+
+​
+contents
+object | null
+
+Content options for text, highlights, summary, extras, and freshness controls.
+
+Show child attributes
+
+​
+additionalQueries
+string[] | null
+
+Additional query variations for deep-search variants. Only works with a deep-search type. When provided, these queries are used alongside the main query for broader results.
+
+Required array length: 1 - 10 elements
+​
+type
+enum<string> | nulldefault:auto
+
+The search mode to use. auto (default) is a balanced mode that optimizes for both quality and speed and is recommended for most applications. fast returns high-quality results with reduced latency, making it a good fit for user-facing search and interactive workflows. instant is optimized for minimum response time, trading some search depth for speed in real-time experiences such as chat, voice agents, and autocomplete. deep-lite performs lightweight research with synthesized results and a consistent 4-second latency, lower than full deep search. deep conducts comprehensive multi-step research with synthesis, while deep-reasoning adds stronger reasoning for complex analysis and decision-making tasks.
+
+Available options: instant, fast, auto, deep-lite, deep, deep-reasoning 
+​
+category
+enum<string> | null
+
+A data category to focus on. Known categories include company, publication, news, personal site, financial report, and people. Other strings are accepted and used as category hints for search. The people and company categories have improved quality for finding people profiles and company pages. The publication category surfaces scholarly publications such as research papers, preprints, and journal articles, with structured metadata like authors, venue, and citations. Note: The company and people categories only support a limited set of filters. The following parameters are NOT supported for these categories: startPublishedDate, endPublishedDate, excludeDomains. Using unsupported parameters will result in a 400 error.
+
+Available options: company, publication, news, personal site, financial report, people 
+​
+userLocation
+Option 1 · string
+Option 2 · object
+Option 3 · object
+Option 1 · string
+
+The end user's location, used to localize results. Either a two-letter ISO 3166-1 country code string (e.g. US) or an object with country and/or latitude + longitude in decimal degrees. Coordinates are optional and must be sent together; country alone is equivalent to the string form. Send only the precision your use case needs.
+
+​
+compliance
+enum<string> | null
+
+Enterprise-only compliance mode. Set to hipaa for HIPAA mode. Requires cache-only retrieval with supported parameters. See the HIPAA docs for details.
+
+Available options: hipaa 
+​
+outputSchema
+object
+
+JSON schema for synthesized output. Supported root types are "text" and "object". When provided, the response includes an output object whose content matches this schema. Works with every search type and adds about 2 seconds of synthesis latency on top of the selected search type. Object schemas are limited to 10 properties in total (nested and array items properties count toward the limit) and 2 levels of nesting, and every array must define items.
+
+Option 1
+Option 2
+
+Show child attributes
+
+​
+objective
+string | null
+
+The broader goal this search serves: the task the caller is working on, beyond the query itself. When exposing this field to an agent as a tool parameter, describe it as: "Goal for this search turn; say which documents should rank first, which should be excluded, and what specific facts or figures to pull from them."
+
+Maximum string length: 4096
+​
+userIdentifier
+string | null
+
+An opaque identifier your platform generates for the end user this request is made on behalf of, such as a UUID. Exa records it with the request so that usage and abuse can be attributed to one end user instead of your whole team. It must not be or contain personal information such as an email address, phone number, username, or name; send a hash if that is all you have. 1 to 64 characters: letters, digits, underscores, and hyphens. It is retained under Zero Data Retention and does not change results.
+
+Required string length: 1 - 64
+Pattern: ^[A-Za-z0-9_-]+$
+Example:
+
+"7f3a9c52-1d4e-4b8a-9e60-2c5d8a1f0b37"
+
+​
+systemPrompt
+string | null
+
+Additional instructions that guide generated output or agent behavior. Use this for source preferences, novelty constraints, duplication constraints, or other behavior guidance.
+
+​
+stream
+boolean | nulldefault:false
+
+Requests server-sent events for synthesized output streaming. Streaming is currently used only when outputSchema is provided; otherwise the endpoint returns the normal JSON search response.
+
+​
+startCrawlDate
+string<date-time> | nulldeprecated
+
+Deprecated. Ignored by the API.
+
+​
+endCrawlDate
+string<date-time> | nulldeprecated
+
+Deprecated. Ignored by the API.
+
+​
+includeText
+string[] | nulldeprecated
+
+Deprecated. List of strings that must be present in the webpage text of results. Matching is approximate (word-level rather than exact phrase), so a multi-word entry can match pages where its words appear separately. Up to 50 strings, each up to 4096 characters.
+
+Maximum array length: 50
+Maximum string length: 4096
+​
+excludeText
+string[] | nulldeprecated
+
+Deprecated. List of strings that must not be present in the webpage text of results. Matching is approximate (word-level rather than exact phrase). Up to 50 strings, each up to 4096 characters.
+
+Maximum array length: 50
+Maximum string length: 4096
+​
+context
+boolean
+object
+boolean
+deprecated
+
+Deprecated. Use highlights or text instead. Returns page contents as a combined context string.
+
+Response
+200
+application/json
+
+OK
+
+Option 1
+Option 2
+​
+results
+object[]required
+
+A list of search results containing title, URL, published date, and author.
+
+Show child attributes
+
+​
+output
+objectrequired
+
+Synthesized output. Returned when outputSchema is provided.
+
+Show child attributes
+
+​
+requestId
+string
+
+Unique identifier for the request.
+
+​
+costDollars
+object
+
+Endpoint-dependent estimated dollar cost breakdown for the completed request. Billing is computed from usage counters rather than this response object.
+
+Show child attributes
+
+​
+searchTime
+number
+
+Server-side processing time in milliseconds, measured at the gateway. Covers retrieval but may exclude later phases such as structured output synthesis, so it can be lower than end-to-end request latency.
+
+​
+resolvedSearchType
+stringdeprecated
+
+Deprecated. May be an empty string. Do not branch on this value.
+
+​
+context
+stringdeprecated
+
+Deprecated. Use results[].highlights or results[].text instead. Combined context string from search results.
+
+Contents
+Next
+x
+linkedin
+llms.txt for AI agents

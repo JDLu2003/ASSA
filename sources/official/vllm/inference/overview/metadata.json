@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "vllm",
+    "product": "inference",
+    "id": "overview",
+    "url": "https://docs.vllm.ai/en/latest/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:05:31.796962+00:00",
+  "path": "sources/official/vllm/inference/overview",
+  "requested_url": "https://docs.vllm.ai/en/latest/",
+  "final_url": "https://docs.vllm.ai/en/latest/",
+  "http_status": 200,
+  "title": "vLLM",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "a099dc8bb10e8dbf97ff49e4fbf66c7fdcffcb7832841f652ae095ff74adfea3",
+      "bytes": 3957
+    },
+    "page.txt": {
+      "sha256": "3f8613d6fd313c676fce2e87a3f06ad3b1a2622eaf7073e4532ac0e1812cb078",
+      "bytes": 3311
+    },
+    "page.pdf": {
+      "sha256": "edda1a4f26e62df79d73c28a639fa4be61c5b9f869b4e99d799dd8da427c27e9",
+      "bytes": 290939
+    }
+  }
+}

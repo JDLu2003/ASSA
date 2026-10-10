@@ -1,0 +1,38 @@
+{
+  "item": {
+    "vendor": "github",
+    "product": "copilot-cloud-agent",
+    "id": "api",
+    "url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+    "kind": "official-web",
+    "discovery": "Link extracted from captured GitHub overview"
+  },
+  "capture_started_at": "2026-10-09T12:26:16.105588+00:00",
+  "path": "sources/official/github/copilot-cloud-agent/api",
+  "requested_url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+  "final_url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+  "http_status": 200,
+  "title": "Using Copilot cloud agent via the API - GitHub Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "453608902691c27251d5b5606eb301ace99709d518795619e09f04882e08f8e3",
+      "bytes": 15199
+    },
+    "page.txt": {
+      "sha256": "08f72d88d7e664070458ca2d00b3fd48fa3a13410c42200c07cd627704dd4b5e",
+      "bytes": 13033
+    },
+    "page.pdf": {
+      "sha256": "da35257a0169ff4aecfbdd443aec8955b5163135b7b5a16d5eeb9842fda7a451",
+      "bytes": 577140
+    },
+    "page.html": {
+      "sha256": "863f49d3d30f53b5744aebed6a77fe1fa0ab8dbe1d83be7aa1cd4dc31621700f",
+      "bytes": 741838
+    }
+  }
+}

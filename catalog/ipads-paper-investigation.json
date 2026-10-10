@@ -1,0 +1,23 @@
+{
+  "status": "User-mentioned OSDI filesystem/RL work remains unidentified",
+  "evidence": [
+    {
+      "source": "sources/official/ipads/publications/index/page.txt",
+      "listed_title": "History Doesn't Repeat Itself but Rollouts Rhyme: Accelerating Reinforcement Learning with HistoRL",
+      "listed_venue": "ASPLOS 2026"
+    },
+    {
+      "source": "catalog/rhymerl-crossref-record.json",
+      "doi": "10.1145/3779212.3790172",
+      "title": "History Doesn't Repeat Itself but Rollouts Rhyme: Accelerating Reinforcement Learning with RhymeRL",
+      "venue": "ASPLOS 2026"
+    },
+    {
+      "source": "sources/papers/rl-systems/rhymerl/paper.txt",
+      "title": "History Rhymes: Accelerating LLM Reinforcement Learning with RhymeRL",
+      "arxiv": "2508.18588v1",
+      "affiliation_observed": "IPADS, Shanghai Jiao Tong University; ByteDance"
+    }
+  ],
+  "limit": "These source records do not establish that RhymeRL is the user-mentioned OSDI paper. ACM publisher browser access returned a challenge; no substitute formal PDF was fabricated."
+}

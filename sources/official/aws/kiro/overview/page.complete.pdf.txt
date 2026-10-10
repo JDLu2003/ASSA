@@ -1,0 +1,964 @@
+AGENTS               ENTERPRISE    PRICING   DOCS
+         APPS                                       COMMUNITY     RESOURCES
+
+
+
+
+  SIGN
+   IN
+
+
+DOWNLOADS
+
+
+
+
+Move beyond AI coding to
+agentic engineering
+Move beyond AI coding to
+agentic engineeringMove
+beyond AI coding to
+agentic engineering
+Kiro helps developers and teams do their best work: turn prompts into executable
+specs, validate code correctness to find bugs unit tests miss, and build across large
+codebases with parallel agents that learn from every session.
+
+
+  Install Crew
+    curl -fsSL https://download.crew.kiro.dev/cli.sh | sh
+   Downl
+    oad
+    IDE
+
+   Install CLI
+    curl -fsSL https://cli.kiro.dev/install | bash
+
+
+
+
+WHAT’S NEW
+
+🔥 $20 credit when you first sign up for a paid plan using social login or Builder ID ↗Software
+factory with Kiro CrewWorkflows
+
+
+
+
+Terminal session ~/workspace/repos ❯ kiro-cli chat --agent Crabby --cloud --v3
+⢀⣴⣶⣶⣦⡀⠀⠀⠀⠀⢀⣴⣶⣦⣄⡀ ⢀⣴⣶⣶⣦⡀ ⢀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣶⣦⣄⡀ ⢀⣠⣴⣶⣶⣶⣶⣶⣦⣄⡀ ⢰⣿⠋⠁⠈⠙⣿⡆⠀
+⢀⣾⡿⠁ ⠈⢻⡆ ⢰⣿⠋⠁⠈⠙⣿⡆ ⢰⣿⠋⠁ ⠈⠙⠻⣦ ⣴⡿⠟⠋⠁ ⠈⠙⠻⢿⣦ ⢸⣿⠀⠀⠀⠀⣿⣇⣴⡿⠋⠀⠀ ⢀⣼⠇ ⢸⣿⠀⠀⠀⠀
+⣿⡇ ⢸⣿⠀⠀⠀⢠⣤⣤⣤⣤⣄ ⣿⡆ ⣼⡟⠀⠀⠀ ⣀⣀⣀ ⢻⣧ ⢸⣿⠀⠀⠀⠀⣿⡿⠋⠀⠀ ⢀⣾⡿⠁ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀
+⢸⣿⠉⠉⠉⣿⡇ ⣿⡇ ⣼⡟⠀⠀ ⣰⡿⠟⠛⠻⢿⣆⠀⠀ ⢻⣧ ⢸⣿⠀⠀⠀⠀⠙⠁⠀⠀ ⢀⣼⡟⠁ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀
+⢸⣿⣶⣶⡶⠋⠀ ⣿⠇ ⢰⣿⠀⠀⠀⢰⣿⠀⠀⠀ ⣿⡆⠀⠀ ⣿⡆ ⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀ ⠹⣷⡀ ⢸⣿⠀⠀⠀⠀⣿⡇⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀
+⣠⣼⠟ ⢸⣿⠀⠀ ⢸⣿⠀⠀⠀⠀ ⣿⡇⠀⠀ ⣿⡇ ⢸⣿⠀⠀⠀⠀⠀⣠⡀⠀⠀ ⠹⣷⡄ ⢸⣿⠀⠀⠀⠀⣿⡇⠀⢸⣿⠀⠀⠀⠀⣤⣄ ⠀⠀⠹⣿⡅
+⠸⣿⠀⠀ ⠸⣿⠀⠀⠀⠀ ⣿⠇⠀ ⣿⠇ ⢸⣿⠀⠀⠀⠀⣾⡟⣷⡀⠀⠀ ⠘⣿⣆ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⠀⣿⡟⣷⡀⠀⠀ ⠘⣿⣆
+⢻⣧⠀⠀ ⠹⣷⣦⣤⣤⣾⠏⠀⠀⠀⣼⡟ ⢸⣿⠀⠀⠀⠀⣿⡇⠹⣷⡀ ⠀⠈⢻⡇ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⠀⣿⡇⠹⣷⡀ ⠀⠈⢻⡇
+⢻⣧⠀⠀⠀ ⠉⠉⠉ ⣼⡟ ⠸⣿⣄⡀⢀⣠⣿⠇⠀⠙⣷⡀ ⢀⣼⠇ ⣿⣄⡀⢀⣠⣿⠇ ⣿⣄⡀⢀⣠⣿⠇⠀⠙⣷⡀ ⢀⣼⠇ ⠻⣷⣦⣄⡀
+⢀⣠⣴⣾⠟ ⠈⠻⠿⠿⠟⠁⠀⠀⠀⠈⠻⠿⠿⠟⠁ ⠈⠻⠿⠿⠟⠁ ⠈⠻⠿⠿⠟⠁⠀⠀⠀⠈⠻⠿⠿⠟⠁ ⠀⠀⠈⠙⠻⠿⠿⠿⠿⠟⠋⠁
+Welcome to Kiro CLI V3! What's new: Specs, expanded hooks, and an improved trust
+model. Upgrade your V2 agent configurations to V3 with /upgrade-agent
+https://kiro.dev/docs/cli/v3/   ✓ Connected
+                         View transcript:           to kiro.dev
+                                          Kiro CLI demo:              ✓ Connected
+                                                         starting a cloud session to Amazon Tools ⠦
+Creating cloud session… Your cloud workspace doesn't have your local setup by
+default. Go to app.kiro.dev/settings/cloud-config to bring your agents, MCP servers,
+hooks, and steering from ~/.kiro/ (home directory) to the cloud. Welcome to Kiro CLI
+V3! What's new: Specs, expanded hooks, and an improved trust model. Upgrade your V2
+agent configurations to V3 with /upgrade-agent https://kiro.dev/docs/cli/v3/ Tip: Want
+a simpler, lighter-weight terminal with all the same features? Try /lite! ✓ Connected
+to kiro.dev ✓ Connected to Amazon Tools ✓ Cloud session created /repo to select
+(optional) Your cloud workspace doesn't have your local setup by default. Go to
+app.kiro.dev/settings/cloud-config to bring your agents, MCP servers, hooks, and
+steering from ~/.kiro/ (home directory) to the cloud.
+───────────────────────────────────────────────────────────────
+───────────────── Default · GPT 5.6 Sol · high               ☁️
+                                                        Cloud (Preview) Initializing ·
+type to queue a message /copy to clipboard ● fetch_cloud_config ╰
+toolName=fetch_cloud_config
+───────────────────────────────────────────────────────────────
+───────────────── Default · GPT 5.6 Sol · high               ☁️
+                                                        Cloud (Preview) ask a question
+or describe a task ↵ /copy to clipboard Default · GPT 5.6 Sol · high · ◔ 1%    Cloud   ☁️
+(Preview) /agent List or switch agents (tab for sub-commands) /autonomous Turn
+autonomous mode on or off (tab for sub-commands) /changelog Show recent release
+notes /chat Load a previous session, save, or start a new one (tab for... /clear Clear
+the conversation and start a fresh session /code Code intelligence status,
+initialization, and codebase ove... /compact Compact conversation history to reduce
+context usage /context Show or manage context files (tab for sub-commands) (+32
+more)
+Bring structure to AI coding with spec-driven development
+───────────────────────────────────────────────────────────────
+Kiro turns your prompts into requirements, architectural designs, and sequenced tasks, then
+───────────────── esc to cancel · ↑↓ to navigate · ↵ to select /session-id Print
+implements them with parallel agents. Property-based tests catch the edge cases that pass unit tests
+the current session ID /sessions Load a previous session, save, or start a new one
+but break in production. With spec-driven development, you ship maintainable code that matches
+(tab for su... /settings Configure theme, terminal, keybindings, and other preferences
+what you specified.
+/spawn Spawn a new agent session with a task /spec List specs, switch to spec mode,
+or run spec tasks (tab for s... /switch Switch to a spawned agent session /autonomous
+Turn autonomous mode on or off (tab for sub-commands) /disconnect Disconnect from
+the cloud session (it keeps running)
+───────────────────────────────────────────────────────────────
+───────────────── esc to cancel · ↑↓ to navigate · ↵ to select
+───────────────────────────────────────────────────────────────
+───────────────── esc to cancel · ↑↓ to navigate · ↵ to select /session-id Print
+the current session ID /sessions Load a previous session, save, or start a new one
+(tab for su...
+───────────────────────────────────────────────────────────────
+───────────────── Default · GPT 5.6 Sol · high · ◔ 1%               ☁️
+                                                             Cloud (Preview) ask a
+question or describe a task ↵ /copy to clipboard ✓ 5420 repositories found, /repo to
+select (optional)
+───────────────────────────────────────────────────────────────
+───────────────── ID Name Environment Status Last updated ❯ 640ec361 Remote
+session 640ec361-… cloud idle 3m sess_848 Build crabbymark CLI local idle 20h
+sess_a54 quot local idle 20h sess_2a4 New Session local idle 20h sess_b83 New
+Session local idle 20h sess_ccf New Session local idle 20h sess_ddb New Session
+local idle 20h sess_9c4 New Session local idle 20h 21e31805 (no title) local idle 20h
+161ef8d6 Working on an app that w… cloud idle 3d 07b0f4f9 I want a Rust based comm…
+cloud idle 3d 66a486bc I want to build a comman… cloud idle 3w type to search View
+all cloud sessions at https://app.kiro.dev/session
+───────────────────────────────────────────────────────────────
+───────────────── esc to cancel · ↑↓ to navigate · ↵ to resume 640ec361 Remote
+session 640ec361-… cloud idle 3m sess_848 Build crabbymark CLI local idle 20h
+sess_a54 quot local idle 20h sess_2a4 New Session local idle 20h sess_b83 New
+Session local idle 20h sess_ccf New Session local idle 20h sess_ddb New Session
+local idle 20h ❯ sess_ddb New Session local idle 20h ❯ sess_ccf New Session local
+idle 20h ❯ sess_b83 New Session local idle 20h ❯ sess_2a4 New Session local idle
+20h ❯ sess_a54 quot local idle 20h ❯ sess_848 Build crabbymark CLI local idle 20h ❯
+640ec361 Remote session 640ec361-… cloud idle 3m Default · GPT 5.6 Sol · high · ◔ 1%
+☁️ Cloud (Preview) ask a question or describe a task ↵ /copy to clipboard Build a
+Rust CLI tool called crabbymark that renders a markdown file to GitHub-styled HTML
+with syntax highlighting and opens it in the default browser. ⢀⣴⣶⣶⣦⡀⠀⠀⠀⠀⢀⣴⣶⣦⣄⡀
+⢀⣴⣶⣶⣦⡀ ⢀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣶⣦⣄⡀ ⢀⣠⣴⣶⣶⣶⣶⣶⣦⣄⡀ ⢰⣿⠋⠁⠈⠙⣿⡆⠀⢀⣾⡿⠁ ⠈⢻⡆ ⢰⣿⠋⠁⠈⠙⣿⡆
+⢰⣿⠋⠁ ⠈⠙⠻⣦ ⣴⡿⠟⠋⠁ ⠈⠙⠻⢿⣦ ⢸⣿⠀⠀⠀⠀⣿⣇⣴⡿⠋⠀⠀ ⢀⣼⠇ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⢠⣤⣤⣤⣤⣄ ⣿⡆
+Check⣀⣀⣀
+⣼⡟⠀⠀⠀  correctness  to catch
+          ⢻⣧ ⢸⣿⠀⠀⠀⠀⣿⡿⠋⠀⠀ ⢀⣾⡿⠁issues missed
+                              ⢸⣿⠀⠀⠀⠀⣿⡇      by unit tests
+                                       ⢸⣿⠀⠀⠀⢸⣿⠉⠉⠉⣿⡇ ⣿⡇ ⣼⡟⠀⠀
+⣰⡿⠟⠛⠻⢿⣆⠀⠀        ⢻⣧
+“All tests passed”    ⢸⣿⠀⠀⠀⠀⠙⠁⠀⠀
+                    doesn’t            ⢀⣼⡟⠁
+                            mean the code      ⢸⣿⠀⠀⠀⠀⣿⡇
+                                          matches           ⢸⣿⠀⠀⠀⢸⣿⣶⣶⡶⠋⠀
+                                                   your intent.                   ⣿⠇Kiro
+                                                                Before writing code,  ⢰⣿⠀⠀⠀⢰⣿⠀⠀⠀
+                                                                                         checks your
+⣿⡆⠀⠀     ⣿⡆ ⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀
+requirements                   ⠹⣷⡀
+               for contradictions and⢸⣿⠀⠀⠀⠀⣿⡇⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀
+                                      gaps using automated reasoning⣠⣼⠟     ⢸⣿⠀⠀ ⢸⣿⠀⠀⠀⠀
+                                                                       techniques.            ⣿⡇⠀⠀
+                                                                                   Then it checks
+⣿⡇  ⢸⣿⠀⠀⠀⠀⠀⣠⡀⠀⠀
+behavior                ⠹⣷⡄ ⢸⣿⠀⠀⠀⠀⣿⡇⠀⢸⣿⠀⠀⠀⠀⣤⣄
+          with property-based  tests (like fuzz testing) which⠀⠀⠹⣿⡅    ⠸⣿⠀⠀
+                                                              assert rules that ⠸⣿⠀⠀⠀⠀    ⣿⠇⠀ ⣿⠇
+                                                                                must hold across all
+⢸⣿⠀⠀⠀⠀⣾⡟⣷⡀⠀⠀         ⠘⣿⣆ ⢸⣿⠀⠀⠀⠀⣿⡇
+inputs instead of checking a few examples.  ⢸⣿⠀⠀⠀⠀⣿⡟⣷⡀⠀⠀ ⠘⣿⣆ ⢻⣧⠀⠀ ⠹⣷⣦⣤⣤⣾⠏⠀⠀⠀⣼⡟
+⢸⣿⠀⠀⠀⠀⣿⡇⠹⣷⡀ ⠀⠈⢻⡇ ⢸⣿⠀⠀⠀⠀⣿⡇ ⢸⣿⠀⠀⠀⠀⣿⡇⠹⣷⡀ ⠀⠈⢻⡇ ⢻⣧⠀⠀⠀ ⠉⠉⠉ ⣼⡟
+⠸⣿⣄⡀⢀⣠⣿⠇⠀⠙⣷⡀ ⢀⣼⠇ ⣿⣄⡀⢀⣠⣿⠇ ⣿⣄⡀⢀⣠⣿⠇⠀⠙⣷⡀ ⢀⣼⠇ ⠻⣷⣦⣄⡀ ⢀⣠⣴⣾⠟ ⠈⠻⠿⠿⠟⠁⠀⠀⠀
+⠈⠻⠿⠿⠟⠁ ⠈⠻⠿⠿⠟⠁ ⠈⠻⠿⠿⠟⠁⠀⠀⠀⠈⠻⠿⠿⠟⠁ ⠀⠀⠈⠙⠻⠿⠿⠿⠿⠟⠋⠁ Welcome to Kiro CLI V3!
+What's new: Specs, expanded hooks, and an improved trust model. Upgrade your V2
+agent configurations to V3 with /upgrade-agent https://kiro.dev/docs/cli/v3/ Tip: Want
+a simpler, lighter-weight terminal with all the same features? Try /lite!
+───────────────────────────────────────────────────────────────
+───────────────── ● fetch_cloud_config ╰ toolName=fetch_cloud_config
+───────────────────────────────────────────────────────────────
+───────────────── Build a Rust CLI tool called crabbymark that renders a
+markdown file to GitHub-styled HTML with syntax highlighting and opens it in the
+default browser. ⠀ Thinking... (esc to cancel)
+───────────────────────────────────────────────────────────────
+───────────────── Default · GPT 5.6 Sol · high · ◔ 1%                   ☁️
+                                                      Cloud (Preview) Kiro is
+working · Type to steer · Ctrl+S to queue ╰ Tip: Use /hooks to see your configured
+automation hooks.
+───────────────────────────────────────────────────────────────
+───────────────── Default · GPT 5.6 Sol · high · ◔ 1%                   ☁️
+                                                               Cloud (Preview) Kiro is
+working · Type to steer · Ctrl+S to queue ⣿ Thinking... (esc to cancel)
+───────────────────────────────────────────────────────────────
+───────────────── Default · GPT 5.6 Sol · high · ◔ 1%                       ☁️
+                                                               Cloud (Preview) Kiro is
+working · Type to steer · Ctrl+S to queue I’ll scaffold crabbymark/ as a compact Cargo
+project: Cargo.toml, src/main.rs,
+Alongside you from plan to PR
+───────────────────────────────────────────────────────────────
+Plan with specs. Implement with
+─────────────────            Default
+                                   parallel
+                                        · GPT
+                                            agents,
+                                                5.6 on
+                                                     Sol
+                                                       your
+                                                          · high
+                                                            local machine   ☁️
+                                                                  · ◔ 1% or in
+                                                                             Cloud
+                                                                               the cloud.
+                                                                                    (Preview)
+                                                                                          Catch Kiro
+                                                                                                bugs is
+with property-based
+working              tests, or
+          · Type to steer    · pull context
+                               Ctrl+S        from tools
+                                        to queue    an like Figma orGitHub-style
+                                                        embedded     Terraform. Runstylesheet,
+                                                                                    the headless and
+                                                                                                 CLI in
+                                                                                                      a
+CI/CD to review
+README.          PRswill
+           The CLI   and fix  bugsGitHub-flavored
+                          parse     without opening anMarkdown,
+                                                         editor.     highlight fenced code blocks,
+write a
+───────────────────────────────────────────────────────────────
+───────────────── Default · GPT 5.6 Sol · high · ◔ 1%                       ☁️ Cloud (Preview) Kiro is
+working · Type to steer · Ctrl+S to queue GitHub-flavored Markdown, highlight fenced
+  Type to filter…
+code blocks, write a temporary HTML file, and launch the system browser.
+───────────────────────────────────────────────────────────────
+ auto    1.0x baseline credit
+                 cost
+───────────────── Default · GPT 5.6 Sol · high · ◔ 1%
+  Kiro picks the best model for each task
+                                                                            ☁️
+                                                      Cloud (Preview) Kiro is
+working · Type to steer · Ctrl+S to queue Build a Rust CLI tool called crabbymark that
+               4.4x the credit cost of
+renders   a markdown Auto
+  gpt-5.6-sol            file to GitHub-styled HTML with syntax highlighting and opens it
+inHardest
+    the multi-step
+          defaultwork with a 1M context window
+                   browser.       I’ll scaffold crabbymark/ as a compact Cargo project:
+Cargo.toml,
+ gpt-5.6-terrasrc/main.rs,        Auto an embedded GitHub-style stylesheet, and a README. The CLI
+                        2.2x the credit cost of
+
+
+will  parse
+ Balanced       GitHub-flavored
+          tier for everyday agentic work   Markdown, highlight fenced code blocks, write a temporary
+HTML    file, and launch
+ gpt-5.6-luna                       thecredit
+                              0.6x the     system
+                                         Auto
+                                                cost ofbrowser. ◔ Task list created esc to cancel
+
+───────────────────────────────────────────────────────────────
+                                                                            ☁️
+ Fastest, lowest-cost GPT-5.6 tier for high-frequency tasks
+
+─────────────────
+ claude-fable-5.1             6.0x the Default
+                                       credit cost ·of GPT 5.6 Sol · high · ◔ 1% Cloud (Preview) Kiro is
+                                        Auto
+working     · Type to steer · Ctrl+S to queue ● Task list created ╰ output: (no output) ⠀
+ Enterprise preview with a 1M context window, US East only
+Thinking... (esc to cancel) 2.0x
+                             ◐ 4thetasks   remaining · ctrl+x expand
+                                    credit cost of
+ claude-opus-5.5                     Auto
+───────────────────────────────────────────────────────────────
+───────────────── Default · GPT 5.6 Sol · high · ◔ 1%       ☁️ Cloud (Preview) Kiro is
+  Demanding agentic coding and knowledge work with a 1M context window
+
+
+
+working · Type to steer · Ctrl+S to queue Default · GPT 5.6 Sol · high · ◔ 6% ☁️ Cloud
+  claude-sonnet-5.5                1.3x the credit cost of
+                                             Auto
+  Fast scoped coding and agentic work with a 1M context window
+(Preview) earlier point. ◐ 4 tasks remaining · ctrl+x expand
+                                     2.2x the credit cost of
+───────────────────────────────────────────────────────────────
+                                                                             ☁️
+ claude-opus-5                                  Auto
+
+───────────────── Default · GPT 5.6 Sol · high · ◔ 6%
+ Highest reliability for sustained multi-file and multi-agent work
+                                                                   Cloud (Preview) Kiro is
+working      · Type to2.2x
+  claude-opus-4.8            steer    · Ctrl+S
+                                the credit cost of to queue I’ll scaffold crabbymark/ as a compact Cargo
+Powered
+project:
+                   by
+              Cargo.toml,
+  Previous Opus generation
+                          your       favorite
+                                     Auto
+                                                      models
+                                  src/main.rs, an embedded GitHub-style stylesheet, and a README.
+Choose
+The   CLIthe    best
+             will      model
+                    parse        for every task: Anthropic  Claude, OpenAI GPT,   open-weight models   like a
+                           2.2xGitHub-flavored
+                                the credit cost of    Markdown,  highlight   fenced  code blocks,   write
+  claude-opus-4.7
+DeepSeek and Qwen, or Auto,          Auto
+                                          which picks the best model for the task based on complexity, factoring
+temporary       HTML file, and launch the system browser. ● Task list created ╰ output: (no
+  Previous Opus generation
+in model quality, latency, and cost. Try it: open the model menu, type to filter, pick a model, then set its
+output) ◔ get_sandbox_info                  esc to cancel ◐ 4 tasks remaining · ctrl+x expand
+reasoning     effort. 2.2x the credit
+  claude-opus-4.6                    Auto
+                                           cost of
+───────────────────────────────────────────────────────────────
+  Previous Opus generation
+Learn     about models
+─────────────────
+  claude-opus-4.5
+                                       Default · GPT 5.6 Sol · high · ◔ 6%
+                           2.2x the credit cost of
+                                                                             ☁️      Cloud (Preview) Kiro is
+working · Type to steer · Ctrl+S to queue ● get_sandbox_info ╰ output: "content": [
+                                     Auto
+  Previous Opus generation
+"type": "text", "text": "{\"network_mode\": \"INTEGRATIONS_ONLY\", ...+30 lines
+(ctrl+o  to toggle)1.3x
+  claude-sonnet-5    ⠀ the credit cost of
+                        Thinking...
+                            Auto          (esc to cancel) ◐ 4 tasks remaining · ctrl+x expand
+ Near-Opus agentic coding at a lower cost
+───────────────────────────────────────────────────────────────
+─────────────────
+ claude-sonnet-4.6                    Default
+                            1.3x the credit
+                                       Auto
+                                                 · GPT 5.6 Sol · high · ◔ 6%
+                                            cost of                          ☁️
+                                                                             Cloud (Preview) Kiro is
+working     · Type
+ Previous Sonnet
+                                 Built for the way you work
+                       to steer · Ctrl+S to queue ● Task list created ● get_sandbox_info ╰
+                 generation
+
+output:     "content": 1.3x
+  claude-sonnet-4.5          [ "type":
+                                the credit"text",
+                                           cost of "text": "{\"network_mode\":
+                                     Auto
+\"INTEGRATIONS_ONLY\",
+  Previous Sonnet generation          ...+30 lines (ctrl+o to toggle) ● Read /projects/sandbox ╰
+explanation=I’m confirming the workspace is empty before creating the new Cargo
+Built
+project    on   open standards
+             structure.,
+  claude-sonnet-4           1.3x depth=1        ╰ output:
+                                  the credit cost
+                                       Auto
+                                                   of      (no output) ⠀ Thinking... (esc to cancel) ◐ 4
+tasks    remaining · ctrl+x
+  Hybrid reasoning              for regularexpand
+The   Kiro agentandiscoding
+                         compatible         use
+                                           with  Agent Client Protocol (ACP) so you can bring it to your favorite
+───────────────────────────────────────────────────────────────
+tools.
+  claude-haiku-4.5
+─────────────────
+themes,
+        It supports AGENTS.md,
+            and VS
+  Fast and frugal      Code
+                  for quick
+                                         Auto Skills.md, and MCP. The Kiro IDE supports Open VSX extensions,
+                              0.4x the credit cost of
+
+
+                                 settings.
+                            iterations
+                                          Default · GPT 5.6 Sol · high · ◔ 6%       ☁️    Cloud (Preview) Kiro is
+                                              Kiro CLI works with bash, zsh, fish, and over 500 popular CLIs.
+                                       and sub-agents
+working · Type to steer · Ctrl+S to queue ╰ Tip: Type /spec new <name> to create a
+  deepseek-3.2          0.25x the credit cost of
+structured feature spec             Auto
+                                          with requirements and tasks. ◐ 4 tasks remaining · ctrl+x
+  Open-weight model from DeepSeek
+expand
+Enterprise-ready 0.25x the credit cost of
+  minimax-m2.5
+───────────────────────────────────────────────────────────────
+                                                                                    ☁️
+                                            Auto
+
+Built  and
+  Frontier   operated
+           coding          by
+                  at low cost
+───────────────── Default      AWS,
+                              across theKiro   benefits
+                                         development
+                                                     ·lifecycle
+                                                         GPT         same
+                                                                 theSol
+                                                           from5.6          security,
+                                                                          · high · ◔reliability,
+                                                                                      6%         and privacy
+                                                                                               Cloud   (Preview)  Kiroand
+                                                                                                             standards is
+controls
+working
+  glm-5
+            trusted
+             · Type    by   millions
+                         to steer       of  customers.      Kiro offers IAM  and SSO  authentication,
+                                        · Ctrl+S to queue /agent List or switch agents (tab for sub-
+                     0.5x the credit cost of                                                            usage  dashboards,
+                               Auto
+cost  management           controls,    IP  indemnity, governance, and administration controls you’d expect from
+commands)         /autonomous
+  Repo-scale agentic  work across large Turn
+                                        codebasesautonomous mode on or off (tab for sub-commands)
+an enterprise-grade          product.
+/changelog
+  minimax-m2.1 Show         recent
+                        0.15x the credit
+                                   Auto
+                                        release
+                                           cost of   notes /chat Load a previous session, save, or start a
+new   oneMiniMax
+  Previous    (tabgeneration
+                      for... /clear Clear the conversation and start a fresh session /code Code
+Kiro for enterprise
+intelligence status,0.05x         initialization,
+                                       the credit cost of and codebase ove... /compact Compact conversation
+  qwen3-coder-next                  Auto
+history     to reduce context usage /context Show or manage context files (tab for sub-
+  Long coding sessions on a budget with strong error recovery
+commands) (+32 more)
+Predictable           pricing
+───────────────────────────────────────────────────────────────
+ Set auto as default model for default
+
+Kiro offers a credit-based pricing
+─────────────────                      esc to model     with ·no↑↓
+                                                   cancel        daily
+                                                                   to or weekly rate
+                                                                       navigate   · ↵limits and pre-paid
+                                                                                       to select   /quit overages,
+                                                                                                         Quit theso
+you can
+application
+ Global    code
+        default forwithout   breaking your flow or getting a surprise bill.
+                   new sessions…
+
+───────────────────────────────────────────────────────────────
+View    pricing
+  Add rate  limiting to the /export endpoint and write property tests for it.
+─────────────────                   esc to cancel · ↵ to select /quit Quit the application
+───────────────────────────────────────────────────────────────
+            Trust
+
+───────────────── esc to cancel · ↵ to select /quit
+───────────────────────────────────────────────────────────────
+   default 150
+                auto · Default
+─────────────────              Would you like the agent to continue working? ❯ Yes (agent
+continues) No (agent stops)
+───────────────────────────────────────────────────────────────
+───────────────── esc to cancel · ↑↓ to navigate · ↵ to select ⣿ Thinking...
+(esc to cancel) ⠉ Thinking... (esc to cancel) ⣹ Thinking... (esc to cancel)
+                      Trusted by engineers worldwide
+As ~/workspace/repos
+   a startup co-founder and CTO, time is the most important resource. Kiro justifies the
+   ❯
+use of my time for developing our business critical assets in-house.
+
+
+
+
+Rolf Koski
+CTO & Co-Founder
+
+
+In my role designing AWS Cloud and AI solutions with Terraform and Python, spec-driven
+development with Kiro has brought code relevancy and quality to a whole new level.
+We’ve accelerated feature development dramatically, reducing time to customer value
+from weeks to days. We are excited to welcome Kiro as our newest team member.
+
+
+
+
+Håkon Eriksen Drange
+Principal Cloud Architect
+
+
+Kiro is a strong ally for startups. It naturally turns overlooked docs and specs into
+robust assets, making growth smoother and future scaling more effective.
+
+
+
+
+Kento Ikeda
+Founder & Engineer
+
+I use Kiro for everything - drafting new Terraform modules, tweaking container setups,
+even writing down random AI ideas at 2 am. But more than anything, it supports how I
+learn. I’m endlessly curious, and Kiro helps me stay in that learning loop—tinkering,
+breaking things, fixing them, and then allowing me to share what I learn back with the
+community.
+
+
+
+
+Adit Modi
+Solution Architect
+
+
+I’ve been blown away by Kiro’s capabilities. The agentic experience is really
+transformative. From the multimodal inputs that understand context to the complete
+lifecycle control within the IDE, it feels like I’m working with a senior developer.
+          Vivek Velso
+          Cloud Engineering Lead
+
+
+
+
+Most tools are great at generating code, but Kiro gives structure to the chaos before
+you write a single line.
+
+
+          Farah Abdirahman
+          Cloud & AI Engineer
+
+
+
+
+In roughly two days, I built a secure file sharing application from scratch. By simply
+sharing my requirements with Kiro, I was able to create a fully secure application that
+incorporates encryption and various security coding practices—no additional prompts
+needed.
+
+
+          Ihor Sasovets
+          Lead Security Engineer
+
+
+
+
+I often forget to add unit tests, or update documentation when pushing changes, but
+with Kiro I can create a hook and it will automatically run those tasks in the
+background for me, never having to think twice.
+
+
+          Darya Petrashka
+          Senior Data Scientist
+
+
+
+
+As an open source developer, I typically don’t build games, but last night I was able to
+create one using Kiro. I didn’t have to think too hard about implementation since Kiro
+handled the logic and enabled me to write code quickly and accurately.
+
+
+          Michael Walmsley
+          Serverless Application Architect
+
+
+
+
+Kiro lowers the barrier to entry, whether that be, you don’t even know how to code,
+you’re new to coding, or you’re like me and you’re just learning a new tech stack. If
+something doesn’t make sense to you, or you feel like you are asking a silly question,
+ask Kiro anyway!
+          Danielle Heberling
+          Founding Infrastructure Engineer
+
+
+
+
+Kiro comes equipped with all the best practices that I would put in my specs, and
+builds me the application I want, faster.
+
+
+          Blake Romano
+          Senior Software Engineer
+
+
+
+
+Thanks to Kiro’s spec-driven development, I was able to go from concept to working
+prototype in a single weekend.
+
+
+          Dakota Lewallen
+          Software Engineer
+
+
+
+
+In just four lines into a spec, Kiro was able to write user stories like a product
+manager and capture so many details that I didn’t even need to mention, saving me
+several days of work.
+
+
+          Sathiesh Veera
+          Principal Software Engineer
+
+
+
+
+Kiro isn’t just speeding up my work – it’s making me write better code, think more
+systematically about architecture, and deliver higher quality results while automated
+workflows happen seamlessly in the background.
+
+
+          Anuj Tyagi
+          Developer
+
+
+
+
+Kiro is just more than code. Aside from just listening to prompts and doing things, it
+can actually work on tasks based on predefined triggers, making the development
+experience more efficient.
+
+
+          Sreekesh Iyer
+          Software Engineer
+As a startup co-founder and CTO, time is the most important resource. Kiro justifies the
+use of my time for developing our business critical assets in-house.
+
+
+
+
+Rolf Koski
+CTO & Co-Founder
+
+In my role designing AWS Cloud and AI solutions with Terraform and Python, spec-driven
+development with Kiro has brought code relevancy and quality to a whole new level.
+We’ve accelerated feature development dramatically, reducing time to customer value
+from weeks to days. We are excited to welcome Kiro as our newest team member.
+
+
+
+
+Håkon Eriksen Drange
+Principal Cloud Architect
+
+Kiro is a strong ally for startups. It naturally turns overlooked docs and specs into
+robust assets, making growth smoother and future scaling more effective.
+
+
+
+
+Kento Ikeda
+Founder & Engineer
+
+I use Kiro for everything - drafting new Terraform modules, tweaking container setups,
+even writing down random AI ideas at 2 am. But more than anything, it supports how I
+learn. I’m endlessly curious, and Kiro helps me stay in that learning loop—tinkering,
+breaking things, fixing them, and then allowing me to share what I learn back with the
+community.
+
+
+
+
+Adit Modi
+Solution Architect
+
+I’ve been blown away by Kiro’s capabilities. The agentic experience is really
+transformative. From the multimodal inputs that understand context to the complete
+lifecycle control within the IDE, it feels like I’m working with a senior developer.
+
+
+          Vivek Velso
+          Cloud Engineering Lead
+
+
+
+
+Most tools are great at generating code, but Kiro gives structure to the chaos before
+you write a single line.
+
+
+          Farah Abdirahman
+          Cloud & AI Engineer
+
+
+
+
+In roughly two days, I built a secure file sharing application from scratch. By simply
+sharing my requirements with Kiro, I was able to create a fully secure application that
+incorporates encryption and various security coding practices—no additional prompts
+needed.
+
+
+          Ihor Sasovets
+          Lead Security Engineer
+
+
+
+
+I often forget to add unit tests, or update documentation when pushing changes, but
+with Kiro I can create a hook and it will automatically run those tasks in the
+background for me, never having to think twice.
+          Darya Petrashka
+          Senior Data Scientist
+
+
+
+
+As an open source developer, I typically don’t build games, but last night I was able to
+create one using Kiro. I didn’t have to think too hard about implementation since Kiro
+handled the logic and enabled me to write code quickly and accurately.
+
+
+          Michael Walmsley
+          Serverless Application Architect
+
+
+
+
+Kiro lowers the barrier to entry, whether that be, you don’t even know how to code,
+you’re new to coding, or you’re like me and you’re just learning a new tech stack. If
+something doesn’t make sense to you, or you feel like you are asking a silly question,
+ask Kiro anyway!
+
+
+          Danielle Heberling
+          Founding Infrastructure Engineer
+
+
+
+
+Kiro comes equipped with all the best practices that I would put in my specs, and
+builds me the application I want, faster.
+
+
+          Blake Romano
+          Senior Software Engineer
+
+
+
+
+Thanks to Kiro’s spec-driven development, I was able to go from concept to working
+prototype in a single weekend.
+
+
+          Dakota Lewallen
+          Software Engineer
+
+
+
+
+In just four lines into a spec, Kiro was able to write user stories like a product
+manager and capture so many details that I didn’t even need to mention, saving me
+several days of work.
+          Sathiesh Veera
+          Principal Software Engineer
+
+
+
+
+Kiro isn’t just speeding up my work – it’s making me write better code, think more
+systematically about architecture, and deliver higher quality results while automated
+workflows happen seamlessly in the background.
+
+
+          Anuj Tyagi
+          Developer
+
+
+
+
+Kiro is just more than code. Aside from just listening to prompts and doing things, it
+can actually work on tasks based on predefined triggers, making the development
+experience more efficient.
+
+
+          Sreekesh Iyer
+          Software Engineer
+
+
+
+
+             Get started fast with quick guides
+    Learn by playing: create a video game
+    In this guide, you will learn how to use Kiro by completing tasks in the codebase for a
+    sample video game called Spirit of Kiro.
+
+
+
+    {BLOG}
+
+    Does your code match your spec?
+
+
+    {GUIDE}
+
+    Your first project
+
+
+
+
+                               Common questions
+
+What is Kiro?
+
+
+What is Kiro?
+Kiro is an agentic AI with an [IDE](/docs/), [CLI](/docs/cli/), [web interface]
+(/docs/web/), mobile app, and Kiro Crew that helps developers and teams do their best
+work. From quick fixes to complex tasks, Kiro works alongside you to turn prompts into
+executable specs, validate code correctness to find bugs unit tests miss, and build
+across large codebases with parallel agents that learn from every session—so what you
+build is exactly what you want and ready to share with your team. Kiro agents help you
+solve challenging problems, automate tasks, and keep working in the cloud when you
+step away.
+
+
+What is spec-driven development? How is it different from vibe
+coding?
+
+What is spec-driven development? How is it different from
+vibe coding?
+Developing with specs keeps the fun of vibe coding, but fixes some of its limitations:
+vibe coding can require too much guidance on complex tasks or when building on top
+of large codebases, and it can misinterpret context. When implementing a task with
+vibe coding, it’s difficult to keep track of all the decisions that were made along the
+way, and document them for your team. By using specs, Kiro works alongside you to
+define requirements, system design, and tasks to be implemented before writing any
+code. This approach explicitly documents the reasoning and implementation decisions,
+so Kiro can implement more complex tasks in fewer shots.
+
+
+How can I get started with Kiro?
+
+
+How can I get started with Kiro?
+Kiro works as an agent in the [IDE](/docs/), with a [CLI](/docs/cli/), in a [web
+browser](/docs/web/), from mobile app, and in Kiro Crew. [Download](/downloads/) the
+installer for your operating system, or [sign in](https://app.kiro.dev/) to use it with a
+paid account on the web or mobile. Log in with GitHub, Google, AWS Builder ID, or
+AWS IAM Identity Center. You do not need an AWS account to use Kiro. Kiro Crew is an
+open-source development workspace that runs on your machine and keeps working
+across sessions, it’s free, install from [GitHub]
+(https://github.com/kirodotdev/KiroCrew). For more, see [documentation](/docs).
+
+
+What programming languages does Kiro support?
+
+
+What programming languages does Kiro support?
+Kiro supports a variety of programming languages that developers use in their day to
+day work. This list includes, but is not limited to Python, Java, JavaScript,
+TypeScript, C#, Go, Rust, PHP, Ruby, Kotlin, C, C++, shell scripting, SQL, Scala,
+JSON, YAML, and HCL.
+Can I import settings from my existing IDE?
+
+
+Can I import settings from my existing IDE?
+Kiro is based on Code OSS, so you can [import your VS Code settings, themes, and
+Open VSX compatible plugins](/docs/guides/migrating-from-vscode/) in the Kiro
+onboarding flow.
+
+
+How is Kiro Web different from Kiro IDE, CLI, and Kiro Crew?
+
+
+How is Kiro Web different from Kiro IDE, CLI, and Kiro Crew?
+Kiro IDE is for active, local development with real-time agent collaboration. Kiro CLI
+is for terminal-based workflows, custom agents, and deployment pipelines. Kiro Crew
+is the persistent, open source development workspace that coordinates across your
+unique tools and workflows. [Kiro Web](/web/) is for delegating and steering from the
+browser, with sessions that run in isolated cloud [sandboxes](/docs/web/sandbox/),
+keep going when you close your laptop, and coordinate changes across [GitHub]
+(/docs/web/github/) and [GitLab](/docs/web/gitlab/) repos in a single session. All
+three modes ([autonomous](/docs/web/autonomous-mode/), [spec](/docs/specs/), and
+default) are available together in Kiro Web. [Cloud automations]
+(/docs/web/automations/) are only available in Kiro Web today. Use whichever Kiro
+interface fits the work; they work best together. [Steering files](/docs/web/steering/)
+carry across all surfaces, and personal configuration syncs through [cloud
+configuration](/docs/web/cloud-configuration/), so your setup follows you regardless
+of where you work.
+
+
+What is an AI agent?
+
+
+What is an AI agent?
+An agent is an AI system that can plan and execute multi-step tasks with some degree
+of autonomy. Unlike simple chatbots that respond to individual prompts, agents can
+break down complex tasks, make decisions about how to proceed, and take actions to
+accomplish goals.
+
+
+    Browse all
+       FAQs
+        Build something
+        real in minutes
+                   Get started for free
+
+                        Install Crew
+    curl -fsSL https://download.crew.kiro.dev/cli.sh | sh
+
+
+
+
+Downl
+ oad
+ IDE
+
+                         Install CLI
+        curl -fsSL https://cli.kiro.dev/install | bash
+PRODUCT       FOR          SOCIAL
+
+About Kiro    Enterprise
+
+Agents        Startups
+
+IDE           Students
+
+CLI
+
+Web
+
+Mobile
+
+Crew
+
+Pricing
+
+Downloads
+
+
+
+COMMUNITY     RESOURCES
+
+Overview      Docs
+
+Ambassadors   Blog
+Case studies                                           Changelog
+
+Discord                                                FAQs
+
+Events                                                 Report a bug
+
+Powers                                                 Suggest an idea
+
+Shop                                                   Billing support
+
+Showcase
+
+
+
+
+Site TermsLicenseResponsible AI PolicyLegalPrivacy PolicyCookie PreferencesYour Privacy Choices
+

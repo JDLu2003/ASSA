@@ -1,0 +1,70 @@
+{
+  "item": {
+    "topic": "agent-services",
+    "id": "aaas-agent-network",
+    "arxiv": "2505.08446v1",
+    "kind": "arxiv-paper",
+    "title": "Agent-as-a-Service based on Agent Network",
+    "discovered_by": "all:\"agent as a service\"",
+    "landing_url": "https://arxiv.org/abs/2505.08446v1"
+  },
+  "capture_started_at": "2026-10-09T12:04:27.100723+00:00",
+  "path": "sources/papers/agent-services/aaas-agent-network",
+  "requested_url": "https://arxiv.org/abs/2505.08446v1",
+  "pdf_url": "https://arxiv.org/pdf/2505.08446v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "2068eb88b30fbbb3fa226658db285db5b294d1ead658c458ea9b0684b0841728",
+      "bytes": 502593
+    },
+    "paper.txt": {
+      "sha256": "b8dcd539fe462e18a4547c9fb3a6941da126bb475dd63423055a1cd146d1ecfe",
+      "bytes": 51611
+    },
+    "paper.pdf": {
+      "sha256": "f3e5314a40950a0a2828851aa48a556541e9430fccc3a4f879a62b032f681037",
+      "bytes": 693146
+    },
+    "landing.html": {
+      "sha256": "d942945a26317a96421e875a342ce9f119c89a57096c04940412d378225df699",
+      "bytes": 42332
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2505.08446v1",
+    "retrieved_at": "2026-10-09T12:06:38.975383+00:00",
+    "fields": {
+      "citation_title": [
+        "Agent-as-a-Service based on Agent Network"
+      ],
+      "citation_author": [
+        "Zhu, Yuhan",
+        "Liu, Haojie",
+        "Wang, Jian",
+        "Li, Bing",
+        "Yin, Zikang",
+        "Liao, Yefei"
+      ],
+      "citation_date": [
+        "2025/05/13"
+      ],
+      "citation_online_date": [
+        "2025/05/13"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2505.08446"
+      ],
+      "citation_arxiv_id": [
+        "2505.08446"
+      ],
+      "citation_abstract": [
+        "The rise of large model-based AI agents has spurred interest in Multi-Agent Systems (MAS) for their capabilities in decision-making, collaboration, and adaptability. While the Model Context Protocol (MCP) addresses tool invocation and data exchange challenges via a unified protocol, it lacks support for organizing agent-level collaboration. To bridge this gap, we propose Agent-as-a-Service based on Agent Network (AaaS-AN), a service-oriented paradigm grounded in the Role-Goal-Process-Service (RGPS) standard. AaaS-AN unifies the entire agent lifecycle, including construction, integration, interoperability, and networked collaboration, through two core components: (1) a dynamic Agent Network, which models agents and agent groups as vertexes that self-organize within the network based on task and role dependencies; (2) service-oriented agents, incorporating service discovery, registration, and interoperability protocols. These are orchestrated by a Service Scheduler, which leverages an Execution Graph to enable distributed coordination, context tracking, and runtime task management. We validate AaaS-AN on mathematical reasoning and application-level code generation tasks, which outperforms state-of-the-art baselines. Notably, we constructed a MAS based on AaaS-AN containing agent groups, Robotic Process Automation (RPA) workflows, and MCP servers over 100 agent services. We also release a dataset containing 10,000 long-horizon multi-agent workflows to facilitate future research on long-chain collaboration in MAS."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

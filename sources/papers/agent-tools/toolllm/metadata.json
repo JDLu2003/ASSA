@@ -1,0 +1,80 @@
+{
+  "item": {
+    "topic": "agent-tools",
+    "id": "toolllm",
+    "arxiv": "2307.16789",
+    "kind": "arxiv-paper"
+  },
+  "capture_started_at": "2026-10-09T12:06:05.898522+00:00",
+  "path": "sources/papers/agent-tools/toolllm",
+  "requested_url": "https://arxiv.org/abs/2307.16789",
+  "pdf_url": "https://arxiv.org/pdf/2307.16789",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "78074835862d804f4bdb585ec960ff7c534ce629cb56b969414347a12035031c",
+      "bytes": 1512749
+    },
+    "paper.txt": {
+      "sha256": "ffd8ea1e9d1768e20a75a1d35049c019a2fff3d2802e162bde3a0f6d4af24dd2",
+      "bytes": 111512
+    },
+    "paper.pdf": {
+      "sha256": "295299721d67b250661fb6598bee86a2e9fe766241fdc08dd7cf389e984b4d1a",
+      "bytes": 2048075
+    },
+    "landing.html": {
+      "sha256": "75f97e7a6486b28f83934a052426266d90b795ca26b3abc2b89262d292729dae",
+      "bytes": 46117
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2307.16789",
+    "retrieved_at": "2026-10-09T12:06:39.242596+00:00",
+    "fields": {
+      "citation_title": [
+        "ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs"
+      ],
+      "citation_author": [
+        "Qin, Yujia",
+        "Liang, Shihao",
+        "Ye, Yining",
+        "Zhu, Kunlun",
+        "Yan, Lan",
+        "Lu, Yaxi",
+        "Lin, Yankai",
+        "Cong, Xin",
+        "Tang, Xiangru",
+        "Qian, Bill",
+        "Zhao, Sihan",
+        "Hong, Lauren",
+        "Tian, Runchu",
+        "Xie, Ruobing",
+        "Zhou, Jie",
+        "Gerstein, Mark",
+        "Li, Dahai",
+        "Liu, Zhiyuan",
+        "Sun, Maosong"
+      ],
+      "citation_date": [
+        "2023/07/31"
+      ],
+      "citation_online_date": [
+        "2023/10/03"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2307.16789"
+      ],
+      "citation_arxiv_id": [
+        "2307.16789"
+      ],
+      "citation_abstract": [
+        "Despite the advancements of open-source large language models (LLMs), e.g., LLaMA, they remain significantly limited in tool-use capabilities, i.e., using external tools (APIs) to fulfill human instructions. The reason is that current instruction tuning largely focuses on basic language tasks but ignores the tool-use domain. This is in contrast to the excellent tool-use capabilities of state-of-the-art (SOTA) closed-source LLMs, e.g., ChatGPT. To bridge this gap, we introduce ToolLLM, a general tool-use framework encompassing data construction, model training, and evaluation. We first present ToolBench, an instruction-tuning dataset for tool use, which is constructed automatically using ChatGPT. Specifically, the construction can be divided into three stages: (i) API collection: we collect 16,464 real-world RESTful APIs spanning 49 categories from RapidAPI Hub; (ii) instruction generation: we prompt ChatGPT to generate diverse instructions involving these APIs, covering both single-tool and multi-tool scenarios; (iii) solution path annotation: we use ChatGPT to search for a valid solution path (chain of API calls) for each instruction. To enhance the reasoning capabilities of LLMs, we develop a novel depth-first search-based decision tree algorithm. It enables LLMs to evaluate multiple reasoning traces and expand the search space. Moreover, to evaluate the tool-use capabilities of LLMs, we develop an automatic evaluator: ToolEval. Based on ToolBench, we fine-tune LLaMA to obtain an LLM ToolLLaMA, and equip it with a neural API retriever to recommend appropriate APIs for each instruction. Experiments show that ToolLLaMA demonstrates a remarkable ability to execute complex instructions and generalize to unseen APIs, and exhibits comparable performance to ChatGPT. Our ToolLLaMA also demonstrates strong zero-shot generalization ability in an out-of-distribution tool-use dataset: APIBench."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

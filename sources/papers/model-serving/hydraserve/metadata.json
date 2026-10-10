@@ -1,0 +1,83 @@
+{
+  "item": {
+    "topic": "model-serving",
+    "id": "hydraserve",
+    "arxiv": "2502.15524v2",
+    "kind": "arxiv-paper",
+    "title": "HydraServe: Minimizing Cold Start Latency for Serverless LLM Serving in Public Clouds",
+    "landing_url": "https://arxiv.org/abs/2502.15524v2",
+    "discovered_by": "all:LLM AND (all:serving OR all:serverless) AND all:performance",
+    "published": "2025-02-21T15:25:21Z",
+    "authors": [
+      "Chiheng Lou",
+      "Sheng Qi",
+      "Chao Jin",
+      "Dapeng Nie",
+      "Haoran Yang",
+      "Yu Ding",
+      "Xuanzhe Liu",
+      "Xin Jin"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:23.933140+00:00",
+  "path": "sources/papers/model-serving/hydraserve",
+  "requested_url": "https://arxiv.org/abs/2502.15524v2",
+  "pdf_url": "https://arxiv.org/pdf/2502.15524v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "715a7b865178583cc6c805e90ff4034c73c34fe82b72b14befe0891f3d319d0c",
+      "bytes": 337643
+    },
+    "paper.txt": {
+      "sha256": "dbbae4ef49594309b21a367710504868fb4b59f1824b87227fedff34dbcce826",
+      "bytes": 151825
+    },
+    "paper.pdf": {
+      "sha256": "a8e1e348e4dfe0c79b124630de318abf0f4bb021c4690d0664047379120cc590",
+      "bytes": 555640
+    },
+    "landing.html": {
+      "sha256": "3830d33da6da327c6960db574e091b8b0bcaf77f264d90c18f4c878ecc0f3a94",
+      "bytes": 42375
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2502.15524v2",
+    "retrieved_at": "2026-10-09T13:06:18.199466+00:00",
+    "fields": {
+      "citation_title": [
+        "HydraServe: Minimizing Cold Start Latency for Serverless LLM Serving in Public Clouds"
+      ],
+      "citation_author": [
+        "Lou, Chiheng",
+        "Qi, Sheng",
+        "Jin, Chao",
+        "Nie, Dapeng",
+        "Yang, Haoran",
+        "Ding, Yu",
+        "Liu, Xuanzhe",
+        "Jin, Xin"
+      ],
+      "citation_date": [
+        "2025/02/21"
+      ],
+      "citation_online_date": [
+        "2025/09/25"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2502.15524"
+      ],
+      "citation_arxiv_id": [
+        "2502.15524"
+      ],
+      "citation_abstract": [
+        "With the proliferation of large language model (LLM) variants, developers are turning to serverless computing for cost-efficient LLM deployment. However, public cloud providers often struggle to provide performance guarantees for serverless LLM serving due to significant cold start latency caused by substantial model sizes and complex runtime dependencies. To address this problem, we present HydraServe, a serverless LLM serving system designed to minimize cold start latency in public clouds. HydraServe proactively distributes models across servers to quickly fetch them, and overlaps cold-start stages within workers to reduce startup latency. Additionally, HydraServe strategically places workers across GPUs to avoid network contention among cold-start instances. To minimize resource consumption during cold starts, HydraServe further introduces pipeline consolidation that can merge groups of workers into individual serving endpoints. Our comprehensive evaluations under diverse settings demonstrate that HydraServe reduces the cold start latency by 1.7$\\times$-- 4.7$\\times$ and improves service level objective attainment by 1.43$\\times$--1.74$\\times$ compared to baselines."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

@@ -1,0 +1,198 @@
+                                                                           English       Contact us   AWS Marketplace     Support        My account
+
+
+
+                re:Invent   Discover AWS        Products       Solutions      Pricing     Resources          Search          Sign in to console       Create accoun
+
+
+
+
+     Amazon Bedrock AgentCore              Overview        Pricing    Resources         FAQs
+
+
+
+
+Generative AI     Amazon Bedrock    AgentCore
+
+
+
+Amazon Bedrock AgentCore
+The platform for production AI agents. Any framework. Any
+model. Secure at scale.
+
+
+   Get started with the AgentCore CLI                 See it in action
+
+
+
+
+One platform to build, connect and
+optimize agents
+Building an agent is fast. Connecting it to your systems, securing tool calls,
+debugging unexpected behaviors, and scaling without rebuilding
+everything, that's what slows you down. AgentCore handles the heavy
+lifting so you can get agents to market faster, scale without rearchitecting,
+and focus engineering efforts on differentiation, not back end plumbing.
+Build with any framework, any model, with security built in from the start.
+
+
+
+
+      Your agent demo took a week. Now what?
+      Get agents out of pilot and into production. Learn from leading companies already running              Close the production gap
+
+      agents at scale.
+Ship fast. Evolve on your
+terms.
+Start with LangChain, OpenAI Agents SDK,
+Claude Agent SDK, Strands SDK, or your own
+framework, and deploy with any model. The
+    Amazon Bedrock AgentCore        Overview   Pricing   Resources   FAQs
+same code that runs on your
+laptop can deploy to production with
+security built into the platform. As your needs
+change, add more capabilities without tearing
+down what you’ve built.
+                                                                                               100%
+
+Learn more
+
+
+                                                                 Download
+
+
+
+
+                                                                       Connect across your
+                                                                       stack. Control every call.
+                                                                       Your agent needs to call an MCP server, a
+                                                                       knowledge base, an internal API, and a
+                                                                       Lambda function in the same turn, and every
+                                                                       connection needs to know who's calling and
+                                                                       whether they're allowed. AgentCore helps
+                                                                       you handle the authentication and
+                                                                       access control so you focus on what your
+                                                                       agent does, rather than how it gets permission
+                                     100%
+                                                                       to do it.
+
+                                                                       Learn more
+   Download
+
+
+
+
+Debug faster. Optimize
+smarter.
+When something goes wrong,
+you can see what steps your agent took, what
+it called, and where it went off track. When
+something works, you can test variations
+against real traffic and let the data tell you
+what to ship next.
+
+Learn more
+                                                                                               100%
+
+
+
+
+                                                                 Download
+Built on AWS. Secure                                                     Ship agents with confidence on infrastructure trusted by
+
+from day one.                                                            millions of customers for their most critical workloads. Security
+                                                                         controls are enforced at the platform layer with access policies
+                                                                         verified by automated reasoning, the same technology behind
+                                           Overview                      IAM and FAQs
+                                                                                 S3. Scale when you need, stay aligned with numerous
+     Amazon Bedrock AgentCore                            Pricing     Resources
+                                                                         AWS compliance programs, and deploy across multiple regions
+                                                                         from day one.
+
+
+
+
+More time building agents. Less time
+fighting infrastructure.
+
+
+
+
+Customer stories
+
+Cox Automotive                                                           Druva
+How an enterprise scaled from zero to 17 production AI agents in under   Druva solves 68 percent of support issues without human intervention.
+a year
+                                                                         Learn more
+Learn more
+
+
+
+Thomson Reuters
+Thomson Reuters transformed platform engineering with 70%
+automation
+
+Learn more
+
+
+
+
+Why developers build                                                      Flexibility
+on AgentCore
+                                                                          Confidence and control
+
+
+
+                                                                          Breadth and depth
+
+
+
+
+Ready to take the next step?
+            Amazon Bedrock AgentCore                 Overview       Pricing      Resources      FAQs
+
+
+
+
+           Did you find what you were looking for
+           today?
+                                                                                                    Yes          No
+           Let us know so we can improve the quality of the content
+           on our pages
+
+
+
+
+    Create an AWS account                                                                                             English
+
+
+
+
+Learn
+
+
+
+Resources
+
+
+
+Developers
+
+
+
+Help
+
+
+
+
+                                                                              Back to top
+
+
+Amazon is an equal opportunity employer and does not discriminate on the basis of protected veteran
+status, disability or other legally protected status. Veterans, military spouses, and people with disabilities
+are encouraged to apply.
+
+Privacy   Site terms    Your Privacy Choices            Cookie Preferences
+
+© 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+

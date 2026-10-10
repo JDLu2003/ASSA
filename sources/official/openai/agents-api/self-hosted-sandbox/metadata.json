@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-api",
+    "id": "self-hosted-sandbox",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:01:58.660389+00:00",
+  "path": "sources/official/openai/agents-api/self-hosted-sandbox",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+  "http_status": 200,
+  "title": "Self-hosted sandboxes | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "0fc50649e97ad11618270c6e7750e8293718f61085af932c7c8e443abd25e19d",
+      "bytes": 1330
+    },
+    "page.txt": {
+      "sha256": "24df885dc0f0633edad6e44171c8059c749a9be31976a57a1f276fb221d7a4c6",
+      "bytes": 6163
+    },
+    "page.pdf": {
+      "sha256": "145f1e9ec94dda9f60e61ae5119161cff50df8b5c01d4f86cfadcc3e1d091626",
+      "bytes": 111336
+    },
+    "page.html": {
+      "sha256": "2ff5182f5a39c75bc8acb9a1e13a88ae6189f5a3909656965f13b33f2177b446",
+      "bytes": 410384
+    },
+    "page.complete.pdf": {
+      "sha256": "a73e5f97c71a7b602540026a6faedcc808e6535a979d4d0e044e45d20dd8d691",
+      "bytes": 239444
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "74f923bc59477fe555bd62859ebde80c78a1eb8775ee79de004d9f4b18afc3ba",
+      "bytes": 6334
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

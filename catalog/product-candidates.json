@@ -1,0 +1,111 @@
+{
+  "note": "Product-first discovery. Google and OpenAI candidates are links extracted from captured official HTML. AWS and Microsoft endpoints are candidates requiring live verification. Components remain distinct from standalone products.",
+  "official": [
+    {
+      "vendor": "google",
+      "product": "gemini-enterprise-agent-platform",
+      "id": "overview",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "managed-agents",
+      "id": "overview",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-runtime",
+      "id": "overview",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform-sandbox",
+      "id": "overview",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform-sandbox",
+      "id": "code-execution-overview",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/code-execution-overview",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform-sandbox",
+      "id": "computer-use",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/computer-use",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-gateway",
+      "id": "overview",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "codex-cloud",
+      "id": "overview",
+      "url": "https://developers.openai.com/codex/cloud",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "codex-cloud",
+      "id": "environments",
+      "url": "https://developers.openai.com/codex/environments/cloud-environments",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "bedrock-managed-agents",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/bedrock-managed-agents",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "bedrock-agents",
+      "id": "overview",
+      "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore-browser",
+      "id": "overview",
+      "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore-code-interpreter",
+      "id": "overview",
+      "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "agentcore-gateway",
+      "id": "overview",
+      "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "microsoft",
+      "product": "foundry-agent-service",
+      "id": "overview",
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/overview",
+      "kind": "official-web"
+    }
+  ],
+  "papers": []
+}

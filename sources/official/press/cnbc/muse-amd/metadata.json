@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "press",
+    "product": "cnbc",
+    "id": "muse-amd",
+    "url": "https://www.cnbc.com/2026/10/06/meta-muse-gives-amd-a-boost-as-ai-momentum-shifts-to-personal-agents-.html",
+    "kind": "press"
+  },
+  "path": "sources/official/press/cnbc/muse-amd",
+  "requested_url": "https://www.cnbc.com/2026/10/06/meta-muse-gives-amd-a-boost-as-ai-momentum-shifts-to-personal-agents-.html",
+  "final_url": "https://www.cnbc.com/2026/10/06/meta-muse-gives-amd-a-boost-as-ai-momentum-shifts-to-personal-agents-.html",
+  "title": "Meta Muse popularity lifts AMD stock to fresh highs as AI agents juice CPU sales",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

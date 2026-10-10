@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "github",
+    "product": "copilot-cloud-agent",
+    "id": "overview",
+    "url": "https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:24:03.128496+00:00",
+  "path": "sources/official/github/copilot-cloud-agent/overview",
+  "requested_url": "https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent",
+  "final_url": "https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-on-github",
+  "http_status": 200,
+  "title": "GitHub Copilot on GitHub.com - GitHub Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "52b59399079200b52be3caf9b9ffa7b157d1afb84c489aae3eb37ca49a285938",
+      "bytes": 12352
+    },
+    "page.txt": {
+      "sha256": "8afb89df4e8b6058491c5d4472251c06af9197f912addb75265d0cf39341fa17",
+      "bytes": 11752
+    },
+    "page.pdf": {
+      "sha256": "e549fc96f183b1005d0c447b141ca09e27caa724d339644a99c2945ae3f082ab",
+      "bytes": 395340
+    },
+    "page.html": {
+      "sha256": "decc88424b9b8c5938cdc521e7837dde7a1b0524806537d0fac9d180449a27a6",
+      "bytes": 629686
+    }
+  }
+}

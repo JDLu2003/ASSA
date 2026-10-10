@@ -1,0 +1,54 @@
+{
+  "item": {
+    "id": "seer",
+    "topic": "rl-systems",
+    "title": "Seer: Online Context Learning for Fast Synchronous LLM Reinforcement Learning",
+    "url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+    "pdf_url": "https://www.usenix.org/system/files/osdi26-qin.pdf",
+    "venue": "OSDI 2026",
+    "kind": "publisher-paper"
+  },
+  "path": "sources/papers/rl-systems/seer",
+  "capture_started_at": "2026-10-09T13:08:39.751586+00:00",
+  "status": "captured",
+  "requested_url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+  "pdf_url": "https://www.usenix.org/system/files/osdi26-qin.pdf",
+  "landing_capture": {
+    "requested_url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+    "final_url": "https://www.usenix.org/conference/osdi26/presentation/qin",
+    "http_status": 200,
+    "title": "Seer: Online Context Learning for Fast Synchronous LLM Reinforcement Learning | USENIX",
+    "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+    "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+    "review_status": "captured; relevance and completeness require source review"
+  },
+  "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+  "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+  "files": {
+    "paper.txt": {
+      "sha256": "f0cb3fe64ad2f31c7a75e5855449c6e200efc3c2ad1afa94a2ce6e5666b71122",
+      "bytes": 142272
+    },
+    "paper.pdf": {
+      "sha256": "d1c7f76dbba748925e395e488620dd4d5c9e7c20ed8a6f3b744c12a0f5fc39ff",
+      "bytes": 1102751
+    },
+    "landing.html": {
+      "sha256": "8747375ab9da3e0cf0f17754a5f0be703099ed7957a27bd2b9e986d83bb050e9",
+      "bytes": 54052
+    },
+    "landing.txt": {
+      "sha256": "f91fc7a8251a435809cab6e6dc02bd7aef77f56e8480319d9db86ddd3415639a",
+      "bytes": 2832
+    },
+    "landing.pdf.txt": {
+      "sha256": "023c296485cdbc26e6e4538723b41ca7f0526245e04308216eadba1ceb6c308f",
+      "bytes": 2674
+    },
+    "landing.pdf": {
+      "sha256": "304ac28b7e2d054be01969f0d70d1fd6f1daba00b25bc25db5314b1a51e56b22",
+      "bytes": 40295
+    }
+  },
+  "capture_finished_at": "2026-10-09T13:08:43.905995+00:00"
+}

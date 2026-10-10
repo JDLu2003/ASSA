@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "press",
+    "product": "tomshardware",
+    "id": "muse-epyc",
+    "url": "https://www.tomshardware.com/pc-components/cpus/meta-muse-runs-agents-on-amd-epyc-turin-hosts-with-two-cores-and-8gb-of-memory-ai-agent-can-pass-terminal-commands-to-ubuntu-host-system",
+    "kind": "press"
+  },
+  "path": "sources/official/press/tomshardware/muse-epyc",
+  "requested_url": "https://www.tomshardware.com/pc-components/cpus/meta-muse-runs-agents-on-amd-epyc-turin-hosts-with-two-cores-and-8gb-of-memory-ai-agent-can-pass-terminal-commands-to-ubuntu-host-system",
+  "final_url": "https://www.tomshardware.com/pc-components/cpus/meta-muse-runs-agents-on-amd-epyc-turin-hosts-with-two-cores-and-8gb-of-memory-ai-agent-can-pass-terminal-commands-to-ubuntu-host-system",
+  "title": "Meta Muse runs agents on AMD EPYC Turin hosts with two cores and 8GB of memory",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

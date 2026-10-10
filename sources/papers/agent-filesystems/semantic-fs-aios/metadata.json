@@ -1,0 +1,91 @@
+{
+  "item": {
+    "topic": "agent-filesystems",
+    "id": "semantic-fs-aios",
+    "arxiv": "2410.11843v5",
+    "kind": "arxiv-paper",
+    "title": "From Commands to Prompts: LLM-based Semantic File System for AIOS",
+    "landing_url": "https://arxiv.org/abs/2410.11843v5",
+    "discovered_by": "all:agent AND (all:filesystem OR all:\"file system\")",
+    "published": "2024-09-23T08:39:16Z",
+    "authors": [
+      "Zeru Shi",
+      "Kai Mei",
+      "Mingyu Jin",
+      "Yongye Su",
+      "Chaoji Zuo",
+      "Wenyue Hua",
+      "Wujiang Xu",
+      "Yujie Ren",
+      "Zirui Liu",
+      "Mengnan Du",
+      "Dong Deng",
+      "Yongfeng Zhang"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:01:10.805921+00:00",
+  "path": "sources/papers/agent-filesystems/semantic-fs-aios",
+  "requested_url": "https://arxiv.org/abs/2410.11843v5",
+  "pdf_url": "https://arxiv.org/pdf/2410.11843v5",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "b7f4b1055129616a1201c076cf850566504b43ab84364f415cc52880b9f2c883",
+      "bytes": 10130743
+    },
+    "paper.txt": {
+      "sha256": "803d250d7ae4b983545f84171a6366e13765b908b8aa993a68b565866a06ca14",
+      "bytes": 111377
+    },
+    "paper.pdf": {
+      "sha256": "ad0e9bdd30eef0419fba4912c45c95981911626b9388faab7334742a8f9e1448",
+      "bytes": 9225367
+    },
+    "landing.html": {
+      "sha256": "f49168b56a756e4bf7a0bb210bf16cbdd26efd3c6e3059da81dab4f006fda5f0",
+      "bytes": 45031
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2410.11843v5",
+    "retrieved_at": "2026-10-09T13:06:18.702335+00:00",
+    "fields": {
+      "citation_title": [
+        "From Commands to Prompts: LLM-based Semantic File System for AIOS"
+      ],
+      "citation_author": [
+        "Shi, Zeru",
+        "Mei, Kai",
+        "Jin, Mingyu",
+        "Su, Yongye",
+        "Zuo, Chaoji",
+        "Hua, Wenyue",
+        "Xu, Wujiang",
+        "Ren, Yujie",
+        "Liu, Zirui",
+        "Du, Mengnan",
+        "Deng, Dong",
+        "Zhang, Yongfeng"
+      ],
+      "citation_date": [
+        "2024/09/23"
+      ],
+      "citation_online_date": [
+        "2025/03/19"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2410.11843"
+      ],
+      "citation_arxiv_id": [
+        "2410.11843"
+      ],
+      "citation_abstract": [
+        "Large language models (LLMs) have demonstrated significant potential in the development of intelligent applications and systems such as LLM-based agents and agent operating systems (AIOS). However, when these applications and systems interact with the underlying file system, the file system still remains the traditional paradigm: reliant on manual navigation through precise commands. This paradigm poses a bottleneck to the usability of these systems as users are required to navigate complex folder hierarchies and remember cryptic file names. To address this limitation, we propose an LLM-based semantic file system ( LSFS ) for prompt-driven file management. Unlike conventional approaches, LSFS incorporates LLMs to enable users or agents to interact with files through natural language prompts, facilitating semantic file management. At the macro-level, we develop a comprehensive API set to achieve semantic file management functionalities, such as semantic file retrieval, file update monitoring and summarization, and semantic file rollback). At the micro-level, we store files by constructing semantic indexes for them, design and implement syscalls of different semantic operations (e.g., CRUD, group by, join) powered by vector database. Our experiments show that LSFS offers significant improvements over traditional file systems in terms of user convenience, the diversity of supported functions, and the accuracy and efficiency of file operations. Additionally, with the integration of LLM, our system enables more intelligent file management tasks, such as content summarization and version comparison, further enhancing its capabilities."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

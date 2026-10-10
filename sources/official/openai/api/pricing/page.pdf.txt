@@ -1,0 +1,56 @@
+Pricing
+     Copy Page
+
+
+
+Flagship models                                                Standard      Batch     Flex       Fast     Ultrafast
+Our latest models
+Prices per 1M tokens.
+                              Short context                                                   Long context
+
+Model                         Input        Cached input      Cache writes     Output          Input      Cached input
+
+
+gpt-6-astra                   $10.00       $1.00             $12.50           $50.00          $20.00     $2.00
+
+gpt-6.1-sol                   $2.00        $0.10             $2.50            $10.00          $4.00      $0.20
+
+gpt-6-luna                    $0.10        $0.01             $0.125           $0.50           $0.20      $0.02
+
+
+
+  All models
+
+
+Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March
+5, 2026. FedRAMP endpoints are also charged a 10% uplift. Priority processing was renamed Fast mode on July
+30, 2026. GPT-5.6 Sol’s promotional pricing is available at least through November 21, 2026.
+
+
+
+
+Cyber models
+Our latest Daybreak models.
+Prices per 1M tokens.
+                   Short context                                                              Long context
+
+Model              Input           Cached input      Cache writes         Output              Input              Cached
+
+
+gpt-5.6-sol        $4.00           $0.40             $5.00                $20.00              $8.00              $0.80
+
+gpt-5.6-
+                   $12.50          $1.25             $15.625              $75.00              -                  -
+cyber
+
+
+  All models
+
+
+Multimodal models
+
+GPT-Live sessions
+                                                                                            Ask AI
+GPT-Live 1 voice sessions are billed per second, without rounding up to a whole minute. Backend
+model and tool usage is charged separately.
+

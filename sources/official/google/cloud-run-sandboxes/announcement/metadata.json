@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "cloud-run-sandboxes",
+    "id": "announcement",
+    "url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:16.600409+00:00",
+  "path": "sources/official/google/cloud-run-sandboxes/announcement",
+  "requested_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+  "final_url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+  "http_status": 200,
+  "title": "Google Cloud Run sandboxes are in public preview | Google Cloud Blog",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "e1083842a5ef94fca1407ac449e69f5fdcd6e835ea58661ab04c4f1df4a2b55c",
+      "bytes": 9438
+    },
+    "page.txt": {
+      "sha256": "62f6e99b5ee01cdaefc3b1e1728bac6ce74cc0a93caa4d43e6c661b6a0bf99c5",
+      "bytes": 7492
+    },
+    "page.pdf": {
+      "sha256": "c7bfb24e21a7080624976992563ee7f9a27649fa046d647baf181fd14be120ac",
+      "bytes": 619092
+    }
+  }
+}

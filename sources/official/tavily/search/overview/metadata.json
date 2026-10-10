@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "tavily",
+    "product": "search",
+    "id": "overview",
+    "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:04:52.645486+00:00",
+  "path": "sources/official/tavily/search/overview",
+  "requested_url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+  "final_url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+  "http_status": 200,
+  "title": "Tavily Search - Tavily Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "9081fdf3180efaa0fa9f026fca315744a55a50f811a8baf13f07072e8d45d464",
+      "bytes": 20317
+    },
+    "page.txt": {
+      "sha256": "4b9d90c98c1b8fa4a0aacbf3ecb91e574f172e3e3f9c4ca32f2ca02dbf813062",
+      "bytes": 15046
+    },
+    "page.pdf": {
+      "sha256": "8f346a1b4e7d106ae1e4d8c3c88330d1c305ed1eca7e998ed36328a9b63e5f31",
+      "bytes": 750452
+    }
+  }
+}

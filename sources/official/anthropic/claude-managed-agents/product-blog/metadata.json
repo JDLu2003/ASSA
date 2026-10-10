@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-managed-agents",
+    "id": "product-blog",
+    "url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:00.602761+00:00",
+  "path": "sources/official/anthropic/claude-managed-agents/product-blog",
+  "requested_url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+  "final_url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+  "http_status": 200,
+  "title": "The evolution of agentic surfaces: building with Claude Managed Agents | Claude by Anthropic",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "c8626db9694534b3e68edc3e75d98fa29212675bcedd806ca344990d79ca0eb8",
+      "bytes": 22067
+    },
+    "page.txt": {
+      "sha256": "44305986956f0680afdaec898c2b25d742f366e7420f0e57b0d7ba409bb88fb3",
+      "bytes": 19215
+    },
+    "page.pdf": {
+      "sha256": "c63abab89f9280eae6e0dc647615bd22433a955a0e812ebb6914fb2f4b472760",
+      "bytes": 700236
+    }
+  }
+}

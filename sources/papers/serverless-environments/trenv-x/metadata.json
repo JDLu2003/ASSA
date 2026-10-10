@@ -1,0 +1,95 @@
+{
+  "item": {
+    "topic": "serverless-environments",
+    "id": "trenv-x",
+    "arxiv": "2509.09525v2",
+    "kind": "arxiv-paper",
+    "title": "TrEnv-X: Transparently Share Serverless Execution Environments Across Different Functions and Nodes",
+    "landing_url": "https://arxiv.org/abs/2509.09525v2",
+    "discovered_by": "all:agent AND all:serverless",
+    "authors": [
+      "Jialiang Huang",
+      "Teng Ma",
+      "Zheng Liu",
+      "Sixing Lin",
+      "Kang Chen",
+      "Jinlei Jiang",
+      "Xia Liao",
+      "Yingdi Shan",
+      "Yongwei Wu",
+      "Ning Zhang",
+      "Mengting Lu",
+      "Tao Ma",
+      "Haifeng Gong",
+      "Mingxing Zhang"
+    ],
+    "published": "2025-09-11T15:06:03Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:48.731849+00:00",
+  "path": "sources/papers/serverless-environments/trenv-x",
+  "requested_url": "https://arxiv.org/abs/2509.09525v2",
+  "pdf_url": "https://arxiv.org/pdf/2509.09525v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "ca7ec3c1a9758d5c5cebdf0643e5ce9f39d847b62378d49dc32be38603bc7d44",
+      "bytes": 1661604
+    },
+    "paper.txt": {
+      "sha256": "5acacd57854aae9f56b4d65640ea05f03287d32af048d73d5232e1021e9d9bf8",
+      "bytes": 169460
+    },
+    "paper.pdf": {
+      "sha256": "7bfb6c09dda4c86f8b5faef64759172a676be96281b019046088be8444e9b4e7",
+      "bytes": 3330135
+    },
+    "landing.html": {
+      "sha256": "51e4d56a08d9678b443355ceac0de251617a3caab418677f72f8639204f9e410",
+      "bytes": 43646
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2509.09525v2",
+    "retrieved_at": "2026-10-09T13:06:19.091323+00:00",
+    "fields": {
+      "citation_title": [
+        "TrEnv-X: Transparently Share Serverless Execution Environments Across Different Functions and Nodes"
+      ],
+      "citation_author": [
+        "Huang, Jialiang",
+        "Ma, Teng",
+        "Liu, Zheng",
+        "Lin, Sixing",
+        "Chen, Kang",
+        "Jiang, Jinlei",
+        "Liao, Xia",
+        "Shan, Yingdi",
+        "Wu, Yongwei",
+        "Zhang, Ning",
+        "Lu, Mengting",
+        "Ma, Tao",
+        "Gong, Haifeng",
+        "Zhang, Mingxing"
+      ],
+      "citation_date": [
+        "2025/09/11"
+      ],
+      "citation_online_date": [
+        "2026/03/21"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2509.09525"
+      ],
+      "citation_arxiv_id": [
+        "2509.09525"
+      ],
+      "citation_abstract": [
+        "Serverless computing is renowned for its computation elasticity, yet its full potential is often constrained by the requirement for functions to operate within local and dedicated background environments, resulting in limited memory elasticity. To address this limitation, this paper introduces TrEnv-X, a co-designed integration of the serverless platform with the operating system and CXL/RDMA-based remote memory pools. TrEnv-X's core innovations are repurposable sandboxes, which can be shared across different functions to decrease the associated creation overhead, and OS-level memory templates, which enable rapid state restoration from CXL/RDMA-based remote memory pools. To further demonstrate TrEnv-X's versatility, we generalize its design from traditional containers for microVM-based agent workloads and introduce new optimizations, including browser sharing and a page cache bypassing mechanism. Our evaluation shows that TrEnv-X achieves up to 7x reduction in P99 latency and 48% memory savings for container-based functions. When applied to LLM agents, it reduces the P99 latency by up to 58% and memory usage by 61% compared to state-of-the-art systems like E2B."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "meta",
+    "product": "muse",
+    "id": "safety",
+    "url": "https://security.muse.ai/",
+    "kind": "official-web"
+  },
+  "path": "sources/official/meta/muse/safety",
+  "requested_url": "https://security.muse.ai/",
+  "final_url": "https://security.muse.ai/",
+  "title": "How We Built Safety Into Muse",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

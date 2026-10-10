@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "e2b",
+    "product": "sandbox",
+    "id": "persistence",
+    "url": "https://e2b.dev/docs/sandbox/persistence",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:04:41.967736+00:00",
+  "path": "sources/official/e2b/sandbox/persistence",
+  "requested_url": "https://e2b.dev/docs/sandbox/persistence",
+  "final_url": "https://docs.e2b.dev/sandbox/persistence",
+  "http_status": 200,
+  "title": "Sandbox persistence - E2B Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "c89034ead05c7e74dee75a1eb8c6f314d456de91700685e5aec70a5f1b74ae78",
+      "bytes": 11200
+    },
+    "page.txt": {
+      "sha256": "b6459fccbbe7308a3f1eb3cc29dc9910a8e409244cdf7b3f74af78aca10dd9ed",
+      "bytes": 10928
+    },
+    "page.pdf": {
+      "sha256": "acfb8ab0ed2e191d26934aac49d730d7263ee13bd87e196a00a84475f49fbdf2",
+      "bytes": 197136
+    }
+  }
+}

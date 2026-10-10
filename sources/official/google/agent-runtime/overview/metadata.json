@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "agent-runtime",
+    "id": "overview",
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:19:36.482344+00:00",
+  "path": "sources/official/google/agent-runtime/overview",
+  "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+  "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime",
+  "http_status": 200,
+  "title": "Agent Runtime  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "7ad6090fdfc4220b0e18065f91923e890b97fe779372f1758cb4745e5ddcf7b2",
+      "bytes": 17419
+    },
+    "page.txt": {
+      "sha256": "a7ef18bbd21439b4f29b2e21a27b919fd0cb32b62a8a7865b64aa3764b42ce3e",
+      "bytes": 8799
+    },
+    "page.pdf": {
+      "sha256": "21720e49a55e580d9d6b80459f49e3ebc3c7630ebddb3289289ef0ad3ba9388a",
+      "bytes": 282460
+    },
+    "page.html": {
+      "sha256": "6744c1e23ee975850ad53fa0abae6a47c5a37da281e6266814e8aed7c05059a3",
+      "bytes": 252672
+    }
+  }
+}

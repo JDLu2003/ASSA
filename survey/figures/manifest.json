@@ -1,0 +1,140 @@
+[
+  {
+    "file": "tab-01-harness-term-tab-harness-names",
+    "figure": "表 1",
+    "page": "harness-term",
+    "svg": false
+  },
+  {
+    "file": "fig-04-managed-f4",
+    "figure": "图 4",
+    "page": "managed",
+    "svg": true
+  },
+  {
+    "file": "tab-02-terms-fig-terms",
+    "figure": "表 2",
+    "page": "terms",
+    "svg": false
+  },
+  {
+    "file": "fig-14-model-fig-model",
+    "figure": "图 14",
+    "page": "model",
+    "svg": true
+  },
+  {
+    "file": "fig-15-evolution-f15",
+    "figure": "图 15",
+    "page": "evolution",
+    "svg": true
+  },
+  {
+    "file": "fig-18-landscape-fig-donuts",
+    "figure": "图 18",
+    "page": "landscape",
+    "svg": false
+  },
+  {
+    "file": "tab-03-landscape-tab-landscape",
+    "figure": "表 3",
+    "page": "landscape",
+    "svg": false
+  },
+  {
+    "file": "fig-21-harness-f21",
+    "figure": "图 21",
+    "page": "harness",
+    "svg": true
+  },
+  {
+    "file": "fig-24-session-f24",
+    "figure": "图 24",
+    "page": "session",
+    "svg": true
+  },
+  {
+    "file": "fig-25-session-f25",
+    "figure": "图 25",
+    "page": "session",
+    "svg": true
+  },
+  {
+    "file": "fig-28-inference-fig-price",
+    "figure": "图 28",
+    "page": "inference",
+    "svg": true
+  },
+  {
+    "file": "fig-29-environment-fig-iso",
+    "figure": "图 29",
+    "page": "environment",
+    "svg": true
+  },
+  {
+    "file": "fig-31-environment-fig-cold",
+    "figure": "图 31",
+    "page": "environment",
+    "svg": true
+  },
+  {
+    "file": "fig-38-deltabox-fig-db-range",
+    "figure": "图 38",
+    "page": "deltabox",
+    "svg": true
+  },
+  {
+    "file": "fig-43-deltabox-fig-db-event",
+    "figure": "图 43",
+    "page": "deltabox",
+    "svg": true
+  },
+  {
+    "file": "fig-46-tools-fig-search",
+    "figure": "图 46",
+    "page": "tools",
+    "svg": true
+  },
+  {
+    "file": "fig-50-workload-f50",
+    "figure": "图 50",
+    "page": "workload",
+    "svg": true
+  },
+  {
+    "file": "fig-52-workload-fig-image",
+    "figure": "图 52",
+    "page": "workload",
+    "svg": true
+  },
+  {
+    "file": "fig-53-cost-fig-bill",
+    "figure": "图 53",
+    "page": "cost",
+    "svg": true
+  },
+  {
+    "file": "fig-55-cost-f55",
+    "figure": "图 55",
+    "page": "cost",
+    "svg": true
+  },
+  {
+    "file": "fig-60-evaluation-fig-bench",
+    "figure": "图 60",
+    "page": "evaluation",
+    "svg": true
+  },
+  {
+    "file": "fig-63-evaluation-fig-audit",
+    "figure": "图 63",
+    "page": "evaluation",
+    "svg": true
+  },
+  {
+    "file": "fig-67-training-f67",
+    "figure": "图 67",
+    "page": "training",
+    "svg": true
+  }
+]

@@ -1,0 +1,219 @@
+            Build, delegate,
+             and steer right
+           from your browser
+Explore ideas, fix bugs, and shape changes. Hand off work end to end, or structure
+ what you want before code ships. Coordinate changes across repos in a single
+                     session. Run recurring tasks on a schedule.
+
+
+                                     Try Kiro Web ↗
+
+
+                   Available for Kiro Pro, Pro+, Pro Max, and Power users.
+Assign a goal, review the result
+
+Describe what you need. Kiro builds a plan, spins up a sandboxed environment, and works through it end to end, delivering a
+pull request you can review. No intermediate approvals, no step-by-step confirmation. You define the outcome, Kiro decides
+how to get there.
+
+
+
+
+From intent to verified code
+
+Turn on spec mode and shape the work before execution starts. Kiro expands it into structured requirements with acceptance
+criteria, catches ambiguities and conflicts, generates a technical design and implementation plan. Intent stays traceable from
+requirements through to the pull request.
+Coordinate changes across repos, wherever they live
+
+Pick repos from GitHub, GitLab, or both. Kiro coordinates edits and pull requests in one session, from shared libraries to
+dependent services and clients.
+
+
+
+
+From issue to pull request, sharper every session
+Assign work from issues, review PRs with comments, and Kiro addresses them. Steering files, hooks, custom agents, and skills
+load your coding conventions, architecture patterns, and preferences automatically and stay active throughout your session.
+Feedback and instructions carry forward.
+
+
+
+
+Recurring work, on your schedule
+
+Create an automation, select repos and set a schedule. Kiro runs it on that cadence in its own sandbox and opens pull requests
+with the results. No manual session start. Review when you're ready, the next run is already queued.
+Secure by default
+
+Every session runs in its own isolated sandbox. Kiro clones your repos and configures the environment from your Dockerfile or
+detected project settings. Your settings control what the agent can reach: network access, environment variables, secrets, and
+MCP servers.
+
+
+
+
+                                                           Common questions
+
+                          How is Kiro Web different from Kiro IDE, CLI, and Kiro Crew?
+
+
+
+                          What are cloud sessions?
+
+
+
+                          What is an autonomous agent?
+
+
+
+                          What is Kiro Web?
+
+
+
+                          How does Kiro Web work?
+
+
+
+                          How do I get started with Kiro Web?
+
+
+
+                          What if I don’t use autonomous mode?
+
+
+
+                          What can I do in autonomous mode?
+
+
+
+                          How is spec mode different from autonomous mode?
+
+
+
+                          Can I work across multiple repositories in one session?
+
+
+
+                          How can I work with Kiro directly from GitHub?
+
+
+
+                          How do I work with Kiro directly from GitLab?
+
+
+
+                          What are cloud automations?
+How do I create an automation?
+
+
+
+Can I edit, stop or pause an automation?
+
+
+
+How does Kiro Web work with Kiro IDE or CLI?
+
+
+
+What is a sandbox?
+
+
+
+How do I steer in Kiro Web?
+
+
+
+Will Kiro Web change my repositories automatically?
+
+
+
+Who has access to Kiro Web?
+
+
+
+Is Kiro Web included in my current plan or will I be charged extra?
+
+
+
+What are steering files and learnings?
+
+
+
+How do Kiro powers work with Kiro Web?
+
+
+
+Does my organization need to enable cloud sessions separately?
+
+
+
+Can I turn Kiro Web off?
+
+
+
+Does Kiro use my code to train models?
+
+
+
+                                 View docs
+                            Bring your next idea, bug,
+                              or change to Kiro Web
+                                                                        Hand off your next task ↗
+
+
+                                                        Available for Kiro Pro, Pro+, Pro Max, and Power users.
+
+
+
+
+                                                                                             PRODUCT              FOR               SOCIAL
+
+                                                                                             About Kiro           Enterprise
+
+                                                                                             Agents               Startups
+
+                                                                                             IDE                  Students
+
+                                                                                             CLI
+
+                                                                                             Web
+
+                                                                                             Mobile
+
+                                                                                             Crew
+
+                                                                                             Pricing
+
+                                                                                             Downloads
+
+
+
+                                                                                             COMMUNITY            RESOURCES
+
+                                                                                             Overview             Docs
+
+                                                                                             Ambassadors          Blog
+
+                                                                                             Case studies         Changelog
+
+                                                                                             Discord              FAQs
+
+                                                                                             Events               Report a bug
+
+                                                                                             Powers               Suggest an idea
+
+                                                                                             Shop                 Billing support
+
+                                                                                             Showcase
+
+
+
+
+Site Terms   License   Responsible AI Policy   Legal   Privacy Policy   Cookie Preferences
+
+
+
+
+      ENGLISH
+

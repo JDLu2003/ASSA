@@ -1,0 +1,233 @@
+                                                                   English   Preferences    Contact Us Feedback
+
+
+                        Get started       Service guides    Developer tools        AI resources
+
+
+
+Amazon Bedrock                                 Documentation        Amazon Bedrock AgentCore      Developer Gu…
+
+AgentCore
+Developer Guide                                Host agent or tools
+Overview
+                                               with Amazon Bedrock
+Supported AWS Regions                          AgentCore Runtime
+Get started with AgentCore
+                                                     PDF              RSS          Markdown
+AgentCore harness
+
+Understand the available interfaces for              Agent Setup             Focus mode
+using AgentCore
+AgentCore Runtime: Host agent or
+tools
+
+   How it works
+   Understand the AgentCore
+                                               Did this page help you?
+   Runtime service contract
+                                                     Yes             No
+   IAM Permissions for AgentCore
+   Runtime                                     Provide feedback
+   Get started with AgentCore
+   Runtime
+
+   Optimize your agent
+
+   Use any agent framework                     Amazon Bedrock AgentCore Runtime provides a secure,
+   Use any foundation model                    serverless and purpose-built hosting environment for
+   Deploy MCP servers                          deploying and running AI agents or tools. It offers the
+   Stateful MCP features                       following benefits:
+
+   Deploy A2A servers
+                                               Framework agnostic
+   Deploy AG-UI servers                           AgentCore Runtime lets you transform any local agent
+   Use isolated sessions for agents               code to cloud-native deployments with a few lines of
+   File system configurations                     code no matter the underlying framework. Works
+   Handle asynchronous and long                   seamlessly with popular frameworks like LangGraph,
+   running agents                                 Strands, and CrewAI. You can also leverage it with
+   Stream agent responses                         custom agents that don’t use a specific framework.
+
+   Bidirectional streaming                     Model flexibility
+   Pass custom headers                            AgentCore Runtime works with any Large Language
+   Authenticate and authorize with                Model, such as models offered by Amazon Bedrock,
+   Inbound Auth and Outbound                      Anthropic Claude, Google Gemini, and OpenAI.
+   Auth
+   AgentCore Runtime versioning                Protocol support
+   and endpoints
+
+   Invoke an agent
+                      AgentCore Runtime
+                                   English lets Preferences
+                                                agents communicate
+                                                            Contact with other
+                                                                    Us Feedback
+                      agents and tools via Model Context Protocol (MCP) or
+Get started            Agent to Agent
+              Service guides          (A2A).
+                                 Developer tools    AI resources
+
+                   Session isolation
+                      In AgentCore Runtime, each user session runs in a
+                      dedicated microVM with isolated CPU, memory, and
+                      filesystem resources. This helps create complete
+                      separation between user sessions, safeguarding stateful
+                      agent reasoning processes and helps prevent cross-
+                      session data contamination. After session completion,
+                      the entire microVM is terminated and memory is
+                      sanitized, delivering deterministic security even when
+                      working with non-deterministic AI processes.
+
+                   Compute type choice
+                      AgentCore Runtime offers two compute types. Choose
+                      microVMs for fully managed, serverless sessions that
+                      start instantly and scale on demand, where you pay only
+                      for what you use. Choose Instances to run agents on
+                      AWS managed Amazon EC2 infrastructure in your own
+                      account. Instances support persistent, multi-day
+                      sessions, GPU-accelerated workloads, and multiple
+                      collaborating agents on a shared instance. For more
+                      information, see Run agents on Instances with capacity
+                      providers.
+
+                   Extended execution time
+                      AgentCore Runtime supports both real-time interactions
+                      and long-running workloads, enabling complex agent
+                      reasoning and asynchronous workloads that might
+                      involve multi-agent collaboration or extended problem-
+                      solving sessions. Sessions run for up to 8 hours on
+                      microVMs, or up to 14 days on Instances. For more
+                      information, see Configure Amazon Bedrock AgentCore
+                      lifecycle settings.
+
+                   Persistent filesystems
+                      Runtime supports persisting filesystem state across
+                      session stop/resume cycles. The agent’s files, installed
+                      packages, and build artifacts can survive session stops
+                      without external storage.
+
+                   Consumption-based pricing model
+                      Runtime implements consumption-based pricing that
+                      charges only for resources actually consumed. Unlike
+                      allocation-based models that require pre-selecting
+                      resources, Runtime
+                                   Englishdynamically  provisions
+                                              Preferences         what’s
+                                                              Contact Us Feedback
+                      needed without requiring right-sizing. The service aligns
+Get started            CPU billingDeveloper
+              Service guides       with actual active AI
+                                            tools     processing
+                                                         resources - typically
+                      eliminating charges during I/O wait periods when agents
+                      are primarily waiting for LLM responses - while
+                      continuously maintaining your session state.
+
+                   Built-in authentication
+                      AgentCore Runtime, powered by AgentCore Identity,
+                      assigns distinct identities to AI agents and seamlessly
+                      integrates with your corporate identity provider such as
+                      Okta, Microsoft Entra ID, or Amazon Cognito, enabling
+                      your end users to authenticate into only the agents they
+                      have access to. In addition, Runtime lets outbound
+                      authentication flows to securely access third-party
+                      services like Slack, Zoom, and GitHub - whether
+                      operating on behalf of users or autonomously (using
+                      either OAuth or API keys).
+
+                   Agent-specific observability
+                      AgentCore Runtime provides specialized built-in tracing
+                      that captures agent reasoning steps, tool invocations,
+                      and model interactions, providing clear visibility into
+                      agent decision-making processes, a critical capability for
+                      debugging and auditing AI agent behaviors.
+
+                   Enhanced payload handling
+                      AgentCore Runtime can process 100MB payloads
+                      enabling seamless processing of multiple modalities
+                      (text, images, audio, video), with rich media content or
+                      large datasets.
+
+                   Bidirectional streaming
+                      AgentCore Runtime supports both HTTP API calls and
+                      persistent WebSocket connections for real-time
+                      bidirectional streaming, enabling interactive
+                      applications with immediate response feedback and
+                      maintained conversation context.
+
+                   Unified set of agent-specific capabilities
+                      AgentCore Runtime is delivered through a single,
+                      comprehensive SDK that provides streamlined access to
+                      the complete AgentCore capabilities including Memory,
+                      Tools, and Gateway. This integrated approach eliminates
+                      the integration work typically required when building
+                      equivalent agent infrastructure from disparate
+                      components.
+                                     English    Preferences     Contact Us Feedback
+                            Note
+
+Get started                A newer
+              Service guides       platform
+                                Developer   version,AIV2,
+                                          tools           is available. It starts
+                                                       resources
+                            your agent from a snapshot to keep cold starts fast
+                            and consistent regardless of concurrency or image
+                            size, and to lower cost for always-on or bursty
+                            agents. For more information, see Platform
+                            versions.
+
+
+                   Topics
+
+                        How it works
+                        Understand the AgentCore Runtime service contract
+                        IAM Permissions for AgentCore Runtime
+                        Get started with AgentCore Runtime
+                        Optimize your agent for Amazon Bedrock AgentCore
+                        Runtime V2
+                        Use any agent framework
+                        Use any foundation model
+                        Deploy MCP servers in AgentCore Runtime
+                        Stateful MCP server features
+                        Deploy A2A servers in AgentCore Runtime
+                        Deploy AG-UI servers in AgentCore Runtime
+                        Use isolated sessions for agents
+                        File system configurations for AgentCore Runtime
+                        Handle asynchronous and long running agents with
+                        Amazon Bedrock AgentCore Runtime
+                        Stream agent responses
+                        Bidirectional streaming
+                        Pass custom headers to Amazon Bedrock AgentCore
+                        Runtime
+                        Authenticate and authorize with Inbound Auth and
+                        Outbound Auth
+                        AgentCore Runtime versioning and endpoints
+                        Invoke an AgentCore Runtime agent
+                        Shell execution
+                        Observe agents in Amazon Bedrock AgentCore Runtime
+                        Security best practices for AgentCore Runtime
+                        Troubleshoot AgentCore Runtime
+                                                                                  English       Preferences         Contact Us Feedback
+
+
+                                 Get started             Next
+                                                   Service    topic: How
+                                                           guides         it works
+                                                                      Developer tools                   AI resources
+
+                                                            Previous topic: Understand the available interfaces for using
+Get Started                          Service Guides AgentCore
+                                                         Developer Tools                            Helpful Links
+                                                                                                                                 Top
+AWS Hands-On                         Choosing a generative          AWS Code Example                Download the AWS
+Tutorials                            AI service                     Library                         Docs MCP Server
+AWS Solutions                        AWS service guides             AWS CLI                         Sign into the AWS
+Library                              AWS CLI Tutorials on           AWS Builder Center              Console
+AWS Decision Guides                  GitHub                         AWS Developer Tools             AWS re:Post
+                                                                    Blog
+
+
+Privacy     |   Site terms   |    Cookie preferences   |   © 2026, Amazon Web Services, Inc. or its affiliates. All rights
+
+reserved.        English
+

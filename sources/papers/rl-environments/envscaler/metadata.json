@@ -1,0 +1,79 @@
+{
+  "item": {
+    "topic": "rl-environments",
+    "id": "envscaler",
+    "arxiv": "2601.05808v2",
+    "kind": "arxiv-paper",
+    "title": "EnvScaler: Scaling Tool-Interactive Environments for LLM Agent via Programmatic Synthesis",
+    "landing_url": "https://arxiv.org/abs/2601.05808v2",
+    "discovered_by": "all:LLM AND all:\"reinforcement learning\" AND (all:environment OR all:sandbox) AND (all:system OR all:infrastructure)",
+    "authors": [
+      "Xiaoshuai Song",
+      "Haofei Chang",
+      "Guanting Dong",
+      "Yutao Zhu",
+      "Ji-Rong Wen",
+      "Zhicheng Dou"
+    ],
+    "published": "2026-01-09T14:32:06Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:43.868310+00:00",
+  "path": "sources/papers/rl-environments/envscaler",
+  "requested_url": "https://arxiv.org/abs/2601.05808v2",
+  "pdf_url": "https://arxiv.org/pdf/2601.05808v2",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "64a7dde75d563eb3091e72f7c98716492a20d698fce96205ab57016b9b4ced27",
+      "bytes": 1129245
+    },
+    "paper.txt": {
+      "sha256": "fbb40f368d2e947c4de9f410f5f3912a80e42eab0534083ed06fe859f3fe070b",
+      "bytes": 214105
+    },
+    "paper.pdf": {
+      "sha256": "e5a8e9b3ae58b14ddf50fd4eeecd2bfc407b396f3ecd5b31f9b511270fc169ef",
+      "bytes": 1795884
+    },
+    "landing.html": {
+      "sha256": "c5d7394b03cacc2e2d1231b05f15b77774af44860de0469b04456482f63b8291",
+      "bytes": 42330
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2601.05808v2",
+    "retrieved_at": "2026-10-09T13:06:19.302646+00:00",
+    "fields": {
+      "citation_title": [
+        "EnvScaler: Scaling Tool-Interactive Environments for LLM Agent via Programmatic Synthesis"
+      ],
+      "citation_author": [
+        "Song, Xiaoshuai",
+        "Chang, Haofei",
+        "Dong, Guanting",
+        "Zhu, Yutao",
+        "Wen, Ji-Rong",
+        "Dou, Zhicheng"
+      ],
+      "citation_date": [
+        "2026/01/09"
+      ],
+      "citation_online_date": [
+        "2026/04/17"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2601.05808"
+      ],
+      "citation_arxiv_id": [
+        "2601.05808"
+      ],
+      "citation_abstract": [
+        "Large language models (LLMs) are expected to be trained to act as agents in various real-world environments, but this process relies on rich and varied tool-interaction sandboxes. However, access to real systems is often restricted; LLM-simulated environments are prone to hallucinations and inconsistencies; and manually built sandboxes are hard to scale. In this paper, we propose EnvScaler, an automated framework for scalable tool-interaction environments via programmatic synthesis. EnvScaler comprises two components. First, SkelBuilder constructs diverse environment skeletons through topic mining, logic modeling, and quality evaluation. Then, ScenGenerator generates multiple task scenarios and rule-based trajectory validation functions for each environment. With EnvScaler, we synthesize 191 environments and about 7K scenarios, and apply them to Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL) for Qwen3 series models. Results on three benchmarks show that EnvScaler significantly improves LLMs' ability to solve tasks in complex environments involving multi-turn, multi-tool interactions. We release our code and data at https://github.com/RUC-NLPIR/EnvScaler."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

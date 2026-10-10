@@ -1,0 +1,49 @@
+Architecture
+Understand the harness, environment, and application server.
+    Copy Page
+
+
+
+OpenAI runs the agent harness. Your application sends it work and receives results. Add an
+environment when the agent needs compute or files.
+
+
+The pieces
+    Harness: The OpenAI-hosted Codex instance that runs the model and tool loop and
+    maintains the agent’s session.
+    Environment: Where the agent runs commands, executes code, and works with files. An
+    environment can be a remote sandbox, your laptop, a Docker container, or an AWS Lambda
+    function.
+    Application server: Your code that connects the agent to your product. It submits tasks,
+    receives events, and handles function tools. When you provide the environment, your code
+    also manages its lifecycle.
+
+
+Start with the pieces your task needs. The harness can work without an environment, and your
+application can receive progress through streaming or webhooks.
+
+
+Start without an environment
+An agent that answers questions or uses tools to access external services may not need its own
+compute or files. Set environment.type to none . This fragment shows the environment
+setting. Session creation also needs an agent and initial input:
+
+
+     1   {
+     2       "environment": {
+     3         "type": "none"
+     4       }
+     5   }
+
+
+
+Your application sends input to a session. The harness calls the model, uses the configured tools,
+and returns results. OpenAI maintains the session for later work.
+
+The harness can call remote MCP tools directly. For function tools, your code receives each call,
+runs the function, and returns its result.
+
+Without an environment, the built-in Bash and apply-patch tools, workspace files, and executor
+                                                                                            Ask AI
+MCPs are unavailable.
+

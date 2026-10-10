@@ -1,0 +1,83 @@
+{
+  "item": {
+    "topic": "rl-systems",
+    "id": "rhymerl",
+    "arxiv": "2508.18588v1",
+    "kind": "arxiv-paper",
+    "title": "History Rhymes: Accelerating LLM Reinforcement Learning with RhymeRL",
+    "landing_url": "https://arxiv.org/abs/2508.18588v1",
+    "discovered_by": "all:RhymeRL",
+    "authors": [
+      "Jingkai He",
+      "Tianjian Li",
+      "Erhu Feng",
+      "Dong Du",
+      "Qian Liu",
+      "Tao Liu",
+      "Yubin Xia",
+      "Haibo Chen"
+    ],
+    "published": "2025-08-26T01:42:46Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:30.269514+00:00",
+  "path": "sources/papers/rl-systems/rhymerl",
+  "requested_url": "https://arxiv.org/abs/2508.18588v1",
+  "pdf_url": "https://arxiv.org/pdf/2508.18588v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "9024b6c80e85d923509d97ae26f93a5d382081ee747266f816370047dd8e13db",
+      "bytes": 2724085
+    },
+    "paper.txt": {
+      "sha256": "539b026ca04de0dd58defbe51bf24db777478b4685443c6efeea67b0b59c0013",
+      "bytes": 140722
+    },
+    "paper.pdf": {
+      "sha256": "204ffbafadf18e9807cee98a009887a164942f75099b4fa6f2951bb4b665a158",
+      "bytes": 3443377
+    },
+    "landing.html": {
+      "sha256": "4176073e4d1bc4932c4c68b39f720c1c346d84928f8407a707d38640d331d9f3",
+      "bytes": 44101
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2508.18588v1",
+    "retrieved_at": "2026-10-09T13:06:18.607617+00:00",
+    "fields": {
+      "citation_title": [
+        "History Rhymes: Accelerating LLM Reinforcement Learning with RhymeRL"
+      ],
+      "citation_author": [
+        "He, Jingkai",
+        "Li, Tianjian",
+        "Feng, Erhu",
+        "Du, Dong",
+        "Liu, Qian",
+        "Liu, Tao",
+        "Xia, Yubin",
+        "Chen, Haibo"
+      ],
+      "citation_date": [
+        "2025/08/26"
+      ],
+      "citation_online_date": [
+        "2025/08/26"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2508.18588"
+      ],
+      "citation_arxiv_id": [
+        "2508.18588"
+      ],
+      "citation_abstract": [
+        "With the rapid advancement of large language models (LLMs), reinforcement learning (RL) has emerged as a pivotal methodology for enhancing the reasoning capabilities of LLMs. Unlike traditional pre-training approaches, RL encompasses multiple stages: rollout, reward, and training, which necessitates collaboration among various worker types. However, current RL systems continue to grapple with substantial GPU underutilization, due to two primary factors: (1) The rollout stage dominates the overall RL process due to test-time scaling; (2) Imbalances in rollout lengths (within the same batch) result in GPU bubbles. While prior solutions like asynchronous execution and truncation offer partial relief, they may compromise training accuracy for efficiency. Our key insight stems from a previously overlooked observation: rollout responses exhibit remarkable similarity across adjacent training epochs. Based on the insight, we introduce RhymeRL, an LLM RL system designed to accelerate RL training with two key innovations. First, to enhance rollout generation, we present HistoSpec, a speculative decoding inference engine that utilizes the similarity of historical rollout token sequences to obtain accurate drafts. Second, to tackle rollout bubbles, we introduce HistoPipe, a two-tier scheduling strategy that leverages the similarity of historical rollout distributions to balance workload among rollout workers. We have evaluated RhymeRL within a real production environment, demonstrating scalability from dozens to thousands of GPUs. Experimental results demonstrate that RhymeRL achieves a 2.6x performance improvement over existing methods, without compromising accuracy or modifying the RL paradigm."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

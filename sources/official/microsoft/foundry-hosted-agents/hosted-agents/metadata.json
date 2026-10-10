@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "microsoft",
+    "product": "foundry-hosted-agents",
+    "id": "hosted-agents",
+    "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:02:31.482509+00:00",
+  "path": "sources/official/microsoft/foundry-hosted-agents/hosted-agents",
+  "requested_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+  "final_url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+  "http_status": 200,
+  "title": "Hosted agents in Foundry Agent Service - Microsoft Foundry | Microsoft Learn",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "2cddeb45c3ca92ad30105bb38218bb1680c252e618342d9f92d681c0cfc13753",
+      "bytes": 35513
+    },
+    "page.txt": {
+      "sha256": "4f86eddb289943cc37b4f82d531e570c3b4fac42992ca0571d47fc73102d7f9c",
+      "bytes": 24844
+    },
+    "page.pdf": {
+      "sha256": "a7181c752e9d1cbcdf73edb7cb647d5edd9f0da8af5a7ce30f3975ac532cc066",
+      "bytes": 518189
+    }
+  }
+}

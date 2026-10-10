@@ -1,0 +1,19 @@
+{
+  "run_at": "2026-10-09T13:57:03.941923+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gemini-enterprise-agent-platform",
+        "id": "agent-evaluation-zh-cn",
+        "kind": "official-documentation",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn"
+      },
+      "capture_started_at": "2026-10-09T13:57:02.804431+00:00",
+      "path": "sources/official/google/gemini-enterprise-agent-platform/agent-evaluation-zh-cn",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn\nCall log:\n  - navigating to \"https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T13:57:03.178600+00:00"
+    }
+  ]
+}

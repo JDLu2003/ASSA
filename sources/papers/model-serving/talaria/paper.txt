@@ -1,0 +1,1383 @@
+                                             Talaria: Session-Aware Serverless Serving of Hundred-Billion-Parameter LLMs
+
+
+                                             Utopia Meng               Unicornt Zhao                  Derek Li                   Goalen Gao                    Frank Du
+                                             2197096044@qq.com        unicornt@unicornt.xyz        940619089@qq.com             94205123@qq.com            1093782566@qq.com
+
+
+
+
+                                                                  Abstract                                     paServe, MuxServe, and Aegaeon multiplex or fast-switch
+                                                                                                               models on pooled resources [5, 7, 8]. These techniques make
+                                         Serverless multi-model LLM systems multiplex popularity-
+                                                                                                               model residency a first-class concern, but their placement and
+                                         skewed model catalogs over shared GPU pools, yet typically
+                                                                                                               scheduling abstractions do not explicitly preserve continuity
+                                         schedule each request independently. Tool-using agents break
+                                                                                                               across calls in an agent session. Large models intensify this
+                                         this abstraction: a session repeatedly calls an LLM across
+arXiv:2607.17181v1 [cs.DC] 19 Jul 2026
+
+
+
+
+                                                                                                               gap: when the aggregate working set exceeds HBM capacity,
+                                         short tool gaps, carries a long reusable KV prefix, and is
+                                                                                                               a placement miss can trigger weight loading together with
+                                         judged by session completion time (SCT). Load-only rout-
+                                                                                                               KV restoration or prefix recomputation.
+                                         ing can separate a continuation from both its model and KV
+                                                                                                                  Tool-using agents expose why a request alone is an insuffi-
+                                         state, while round-based model multiplexing can delay even
+                                                                                                               cient scheduling unit. A user task alternates between model
+                                         a correctly placed continuation until the target model’s next
+                                                                                                               calls and tool execution, carrying state from one call to the
+                                         slot. Both failures are especially costly for hundred-billion-
+                                                                                                               next [9–12]. Across 445 SWE-Bench Verified sessions [13]
+                                         parameter models: their weights constrain residency, while
+                                                                                                               (7,386 calls), median session depth is 11 model calls (p95:
+                                         long-context KV is expensive to reconstruct or move.
+                                                                                                               49). Prompt-length measurements (n = 5,697) have a me-
+                                            We present Talaria, a session-aware serverless multi-
+                                                                                                               dian of 25K tokens (p95: 105K), and 96.8% of measured
+                                         model serving system that makes session continuity a joint
+                                                                                                               continuations (n = 5,270) reuse more than half of the prior
+                                         placement-and-admission decision. Its router ranks place-
+                                                                                                               call’s prefix. The median tool-use gap is only 0.39 s—over
+                                         ments by model residency, KV locality, and instance pressure,
+                                                                                                               an order of magnitude shorter than the 4.3 s needed to recom-
+                                         while soft reservations account for likely returns in the last
+                                                                                                               pute a median-length prefix on Qwen3-235B/TP=8. These
+                                         serving instance’s admission budget. Session-prefill (SP) ad-
+                                                                                                               timescales create a continuity window: continuations return
+                                         mits budget-eligible continuations before the active model slot
+                                                                                                               quickly, so preserving their large, mostly reusable prefixes
+                                         closes. An instance-local substrate keeps HBM addresses sta-
+                                                                                                               can avoid seconds of recomputation. Treating each return as a
+                                         ble, preserves host-restorable KV, and stages weights across
+                                                                                                               fresh request repeatedly incurs avoidable state-recovery cost
+                                         model switches.
+                                                                                                               across a session.
+                                            On a single TP=8 server, we replay 30 SWE-Bench model-
+                                                                                                                  Per-call scheduling therefore misaligns with session com-
+                                         sessions (960 calls) over three models, each with more than
+                                                                                                               pletion time along two coupled dimensions. Spatial mis-
+                                         100B total parameters. Against an otherwise identical round
+                                                                                                               match: a router using only load or queue length may send
+                                         scheduler with SP, host-KV restoration, and D2D staging dis-
+                                                                                                               a continuation to the least-loaded instance, which may hold
+                                         abled, Talaria cuts p50 SCT from 1000 s to 189 s and p95
+                                                                                                               neither the target weights nor the session KV; for long-context
+                                         from 2296 s to 867 s, speedups of 5.3× and 2.6×.
+                                                                                                               sessions, KV movement or prefix recomputation can exceed
+                                                                                                               the queueing delay it avoids. Temporal mismatch: even
+                                         1     Introduction                                                    when routing is correct, a multi-model scheduler that rotates
+                                                                                                               through models in fixed-length rounds [5] may defer a return-
+                                         Modern LLM serving platforms host popularity-skewed                   ing session until the next slot for that model—KV locality
+                                         model catalogs on shared GPU clusters: a few hot models               is preserved spatially but squandered on the time axis. Un-
+                                         carry stable traffic, while a long tail is invoked only inter-        der prefill/decode disaggregation, the same locality problem
+                                         mittently [1–5]. Statically reserving GPUs for every model            spans tiers: the returning session enters through a prefill path,
+                                         wastes accelerator capacity on the tail, motivating serverless        while reusable KV is valuable on the decode side.
+                                         multi-model serving: demand-driven opening, closing, and                 These failure modes compound. KV-aware routing can pre-
+                                         time-sharing of models over pooled GPUs. ServerlessLLM                serve the right state yet still leave a continuation waiting until
+                                         optimizes cluster placement and cold-start loading [6]; Al-           the target model’s next slot; mid-slot admission can exploit
+
+
+                                                                                                           1
+   Cluster
+                                                                       Router                                                          turn n out           turn n+1 in
+    layer
+
+
+
+
+                                                                                          Instance 3                        Instance 4
+                         Instance 1          Instance 2
+                                                                                          slot   P    D   SP      D                  slot   P       D    SP    D
+
+
+                                                                                                      Model D                                    Model F
+                          Model A             Model A                                Model C
+                                                                                                     (activate)
+                                                                                                                             Model E
+                                                                                                                                                (activate)
+   Instance
+     layer
+
+
+                          KV Cache            KV Cache                                    KV Cache                                   KV Cache           w
+
+
+                                                                                                     KV migration mooncake backend
+
+
+               Hot Pool                           stable hot models         Cold Pool                                                       multi-model slots + SP
+
+                                                               dynamic placement
+
+
+
+    Memory
+                                           Multi-model Memory Substrate (HKVR · HBM Allocator · D2D Accelerate)
+   substrate
+
+
+               request                telemetry updates                  KV migration                          soft reservation                         kv cache hit
+
+
+Figure 1: Talaria architecture. The router preserves return affinity across hot and cold pools; SP admits eligible mid-slot returns,
+while each cold-pool instance preserves restorable KV across model switches.
+
+
+preserved state only when routing has placed the continuation                      cause policies change completion times. Against an otherwise
+on the right instance. The cluster layer must land a return on                     identical round scheduler with SP, host-KV restoration, and
+a useful instance, and the instance layer must expose a timely                     D2D staging disabled, Talaria’s instance-local mechanisms
+execution opportunity.                                                             cut p50 session completion time from 1000 s to 189 s and
+   We present Talaria, a serverless multi-model LLM infer-                         p95 from 2296 s to 867 s—speedups of 5.3× and 2.6×. On a
+ence system for agentic workloads (Figure 1). Talaria realizes                     separate two-worker testbed, residency-aware routing reduces
+session continuity through coordinated placement, admission,                       high-load avoidable model opens from 37 to 1 and TTFT p95
+and state restoration. At deployment time, it configures a hot                     from 8.07 s to 5.28 s versus least-pressure routing.
+pool of pinned single-model instances and a cold pool whose                           This paper makes three contributions.
+instances token-level time-share a set of long-tail models.
+A session-aware router uses soft reservations to account for                          • Session continuity as a scheduling abstraction. We
+likely returns in the serving instance’s next eligible model-slot                       identify session continuity as the missing unit in server-
+budget (§3.3); calls without a usable reservation are placed                            less multi-model serving for agents. From 445 agent ses-
+by ranking candidate instances according to model residency,                            sions, we quantify the depth, return timing, and reusable
+KV residency, and pressure. Within each cold-pool slot, co-                             state that make request-level scheduling costly, then iso-
+located prefill/decode execution enables session-prefill (SP)                           late spatial placement and temporal admission with con-
+to admit eligible returns mid-slot, reusing device-resident                             trolled experiments.
+KV or restoring host-restorable KV while the model remains
+active. A per-instance memory substrate coordinates HBM                               • Joint session-continuity scheduling. At the cluster
+allocation, host-side KV state, and weight staging to reduce                            layer, soft reservation accounts for likely returns without
+the switching and restoration costs charged to each round.                              pinning device KV; at the instance layer, SP provides
+                                                                                        budgeted mid-slot admission. The two mechanisms ad-
+  On a single TP=8 server, we replay ten SWE-Bench is-                                  dress complementary failure modes along the same re-
+sues across Qwen3-235B, GLM5-nvfp4, and Qwen3.5-122B-                                   turn path.
+A10B, yielding 30 model-sessions and 960 calls. For each
+model-session, fixed replay holds request bodies, model and                           • Switch-resilient instance substrate. A stable HBM
+session IDs, per-session call order, completion-token counts,                           layout and host-restorable KV preserve usable session
+and return gaps constant across configurations. This prevents                           state across model switches; opportunistic D2D staging
+agent-path divergence; global interleaving may still differ be-                         reduces the switching cost charged to each round.
+
+
+                                                                           2
+                    (a) Session depth           (b) Inter-call gap             (c) Context length
+          100                                                                                                therefore dominate the latency of an entire session turn.
+          75                                                                                                    Taken together, these properties mean that agent serving is
+CDF (%)
+
+
+
+
+                                                                                                             not scheduling a stream of independent requests. It is schedul-
+          50        p50=11                      p50=0.39s                       p50=25K
+                             p95=49                  p95=1.3s                             p95=105K
+                                                                                                             ing a stateful session whose KV state, target model, and return
+          25
+                                                                                                             timing persist across calls and must be tracked explicitly by
+           0
+                0     25   50     75   100 0           2         4         0     50   100   150    200
+                                                                                                             the serving system.
+                LLM calls per session              Tool gap (s)                Prompt tokens (K)
+                SWE-Bench Verified · 445 sessions, 7,386 calls · prompt n=5,697 · prefix n=5,270
+
+                                                                                                             2.2 Spatial mismatch: routing to the wrong in-
+Figure 2: SWE-Bench Verified sessions are deep (median 11                                                        stance
+calls), fast-returning (median gap 0.39 s), and long-context
+(median 25K tokens). Axes truncate at 100 calls, 5 s, and                                                    Current serverless routers schedule at request granularity,
+200K tokens; the gap CDF excludes five >30 s environment-                                                    commonly using load, queue length, or model-load cost as
+startup intervals.                                                                                           the routing signal [5, 6]. This is a poor proxy for a returning
+                                                                                                             agent call because the fastest instance for the cluster may be
+                                                                                                             the slowest instance for that session.
+2           Background and Motivation                                                                           Consider two instances in the same cold pool. Instance A is
+                                                                                                             currently serving the target model and still holds the session’s
+We first characterize agent sessions in a real agent trace                                                   reusable KV prefix, but has a short queue. Instance B is idle,
+(§2.1), then show how request-level placement loses spatial                                                  but may hold neither the target model nor the session KV. A
+locality (§2.2) and how round-based multi-model scheduling                                                   least-load or round-robin router sends the returning call to B
+loses temporal locality (§2.3). We close with the memory-                                                    because its queue is shorter. For this session, B must first
+management requirements that make session-aware schedul-                                                     make the target model resident if needed, then reconstruct the
+ing implementable (§2.4).                                                                                    prefix. The recomputation alone costs 4.3 s TTFT on Qwen3-
+                                                                                                             235B/TP=8.
+                                                                                                                Instance A may incur queueing or wait until the target
+2.1                 Agent sessions are stateful
+                                                                                                             model’s next slot, whereas B must additionally activate the
+We define an agent session as a single user task: the agent                                                  model and recover the prefix. Because recovery cost grows
+issues a sequence of model calls interleaved with tool invoca-                                               with context length, a shorter queue on B does not imply a
+tions until the task completes. This request pattern follows the                                             faster return. A load-only router cannot see this asymmetry.
+agent execution model introduced by tool-use and software-                                                      KV-aware routing [14–16] narrows the gap, but it is still
+engineering agents [9–11]. We characterize 445 completed                                                     incomplete for multi-model serving. Knowing where the ses-
+agent executions of SWE-Bench Verified tasks [13], total-                                                    sion KV lives is not enough if the router cannot also tell
+ing 7,386 LLM calls. Prompt length is available for 5,697                                                    whether the target model is resident and whether the instance
+calls and reusable-prefix overlap for 5,270 continuations. We                                                can accept a prefill soon. Good placement therefore requires
+combine these traces with measured Qwen3-235B and GLM5-                                                      joint visibility into model residency, KV residency, and in-
+nvfp4 profiles to quantify recovery cost. Figure 2 summarizes                                                stance pressure. This visibility must also be session-scoped:
+session depth, tool gaps, and prompt lengths.                                                                the router must remember which instance just served a ses-
+   Session depth. The median session issues 11 model calls,                                                  sion and treat the next call as a likely continuation, not as an
+with a p95 of 49 and a maximum of 187. A request-level                                                       unrelated arrival.
+scheduler therefore sees one user task as many unrelated ar-
+rivals, hiding the prefix reuse and timing dependence between                                                2.3 Temporal mismatch: admitting at the
+consecutive calls.
+                                                                                                                 wrong time
+   Short inter-call gaps. The median tool-use gap is only
+0.39 s, with a p95 of 1.32 s. This is more than ten times                                                    Correct placement is not sufficient if the instance scheduler
+shorter than recomputing the median-length prefix, as mea-                                                   exposes no time window in which the returning session can
+sured below. A return therefore often arrives while its prior                                                run. A cold-pool instance that time-shares models in fixed
+state remains worth preserving, whether it is still in HBM or                                                rounds may preserve the session KV in space while failing to
+restorable from host memory.                                                                                 use it in time.
+   Continuation inputs. Prompts are long and highly repeti-                                                     Consider a round-based token-level scheduler such as Ae-
+tive: the median call has 25K prompt tokens, the p95 reaches                                                 gaeon [5]. The decode side commits to one active model
+105K, and 96.8% of measured continuations reuse more than                                                    for a slot. After a session finishes a decode step and enters
+half of the previous call’s prefix. Recomputing a 25K-token                                                  a tool call, the scheduler may move on to another model.
+prefix on Qwen3-235B/TP=8 costs 4.3 s TTFT at p50; at                                                        When the tool returns 0.39 s later, the session’s KV can still
+100K tokens, it reaches 10.9 s. A single misplaced return can                                                be resident in HBM, but its model window may have closed.
+
+
+                                                                                                         3
+The session then waits for that model’s next slot—up to one            slot admission to matter. The memory layer must therefore
+round—before it can resume.                                            manage device memory, host KV state, and weight movement
+   Systems that disaggregate prefill and decode [17–19] ex-            as one substrate rather than as independent mechanisms.
+pose an analogous cross-tier mismatch: the return enters
+through a prefill path while its reusable state is valuable on
+the decode side. Talaria focuses on co-located prefill/decode;
+extending its admission contract across tiers requires coordi-         3     Design
+nated KV ownership (§7).
+   The failure is temporal rather than spatial: the state may be
+in the right place, but the scheduler cannot admit the session         3.1    System Overview
+while it is still useful. Request-level autoscaling does not
+solve this problem because it requeues the returning session           At a high level, Talaria separates multi-model agent serving
+as a fresh request, losing the continuity established by the           into a control plane and a data plane. The control plane—a
+router. What is needed is mid-slot admission: a returning              unified router—decides where each session call should land.
+session should be able to re-enter the current model window            The data plane—a set of hot and cold inference instances—
+and reuse preserved KV before the scheduler rotates away.              executes those calls while maintaining the local budget and
+                                                                       telemetry contracts that the router’s decisions assume.
+2.4    Multi-model memory management                                     The router creates a soft reservation when a completed
+                                                                       call enters tool execution. It records the serving instance,
+The router and scheduler above assume that model and KV                model, and reusable-prefix handle and charges that instance’s
+state can be moved, kept valid, and restored within a bounded          admission budget for a likely return. If the session returns
+time. Existing LLM serving systems already show that KV                before the lease expires and the target remains healthy, the
+layout, paging, and virtual memory are central to serving per-         router sends it back to that instance, where SP can admit it
+formance [20–22]. In large multi-model serving, the require-           while the KV is device-resident or host-restorable. Requests
+ment is tighter: freeing HBM for one model can invalidate              without a usable reservation take the normal cost path, which
+reusable KV, while slow weight movement consumes the                   weighs instance pressure, KV recovery, and model activation.
+same round budget that mid-slot admission relies on. Memory            The router never touches token-level execution.
+management becomes part of the scheduling substrate.
+                                                                          Instances are split into a hot pool and a cold pool. Hot-
+    HBM capacity. Weights are only part of a model’s device
+                                                                       pool instances obey a single invariant: each pins one model
+footprint. Each model also brings runtime structures such as
+                                                                       and never switches, eliminating switching tail latency for sta-
+CUDA graphs, FlashInfer workspaces, and KV pool regions.
+                                                                       ble traffic. Cold-pool instances time-share multiple long-tail
+If each model allocates these regions independently, the foot-
+                                                                       models using round-based scheduling. Each model slot has
+prints accumulate even when request load is low, leaving too
+                                                                       the structure P → D1 → (SP → D)∗ → Dfin : queued prefill,
+little HBM for useful KV or for staging the next model.
+                                                                       initial decode, zero or more interleaved SP (session-prefill)
+    Host-side KV consistency. Cold-pool switching often re-            / decode pairs, and final decode. Each SP step batch-admits
+quires session KV to leave HBM and later return. The system            eligible returns that fit the remaining prefill budget, enabling
+must know which model owns each KV block, whether the                  preserved-prefix reuse without a model switch; excess returns
+block is still valid, and whether the current copy is on de-           remain queued for a later opportunity.
+vice or host. Without this metadata, the serving stack can
+restore stale KV and produce incorrect output, or miss a valid            Beneath the instance scheduler, a multi-model memory sub-
+host-side copy and recompute a long prefix unnecessarily.              strate manages the HBM and host memory of each inference
+    Switch latency. Model switching directly consumes the              instance, addressing the layout, host-KV, and switch-latency
+round budget that the scheduler relies on for TTFT and TPOT.           constraints identified in §2.4. It provides a stable HBM lay-
+A large-model switch may include weight loading, kernel                out, persists session KV across model switches, and reduces
+reinitialization, and KV-pool reorganization, each of which            switch cost through weight staging. The router observes this
+can be second-scale. In our fixed-replay measurements, a               substrate through telemetry such as memory pressure and
+logical TP=8 H2D-only switch has a 1.50 s p50 and a 1.52 s             staging slack; the instance scheduler uses it to restore KV and
+mean (§5.6). This consumes a substantial fraction of a 10 s            switch models within the round budget.
+TTFT budget. If switching occupies a large fraction of the                One ownership boundary holds across the design: the router
+round, time-sharing stops being a multiplexing benefit and             reasons about cluster placement but never executes tokens,
+becomes a throughput tax.                                              while each instance enforces local execution and memory
+    These constraints are coupled. Bounded switching requires          budgets without reconstructing cluster-wide demand. Pinned
+spare HBM for staging; KV restoration requires host-side               hot instances avoid the switch path; cold instances expose the
+consistency; and both must complete quickly enough for mid-            telemetry and actuation needed for multiplexing.
+
+
+                                                                   4
+                       model call                 tool execution                state recovery           is near the p90 tool gap in our traces. The reservation is an
+      Timeline
+                           session                                                                       admission lease, not a GPU-KV pin or an execution guarantee:
+                           returns
+                                                                                                         while live, it charges one configured admission unit against
+      Model Call 1      tool          Model Call 2
+      (Instance A)   execution    (Instance A, KV hit)                                                   the serving instance’s next eligible model-slot budget.
+                          soft reservation τ                                                                When the next call for the same session and model arrives,
+                                     (a) With soft reservation
+                                                                                                         the router checks that the lease is live, the instance is healthy,
+                                 router sees A as loaded → routes to Instance B
+                                                                                                         and the prefix remains device-resident or host-restorable. A
+      Model Call 1      tool                                                          Model Call 2
+                                    state recovery (KV migration / recompute)
+      (Instance A)   execution                                                        (Instance B)       successful lookup consumes the lease and routes the call to
+                                    (b) Without soft reservation                                         that instance. A successor lease is installed only after this call
+                                                                                                         completes; routing does not refresh the old lease. If any check
+Figure 3: Soft reservation preserves return affinity to an in-
+                                                                                                         fails, the router discards the lease and falls back to normal
+stance with device-resident or host-restorable state; it does
+                                                                                                         residency-aware placement.
+not pin device KV.
+                                                                                                            The lease reduces the chance that unrelated arrivals con-
+                                                                                                         sume all predicted admission capacity during a tool gap, but it
+3.2       Configured Hot-Cold Pool Organization                                                          cannot guarantee same-slot admission or a TTFT deadline: the
+                                                                                                         next prompt suffix and concurrent returns are unknown when
+Hot-pool instances pin a single model and never switch; this                                             the lease is created. KV may also move from device to the
+eliminates switching tail latency on stable, high-throughput                                             host registry under memory pressure. Reservation therefore
+traffic. Cold-pool instances time-share long-tail models                                                 preserves bounded affinity and accounts for likely demand; it
+through round-based scheduling (§3.4).                                                                   does not guarantee device residency. Longer leases preserve
+   Our prototype configures pool membership at deployment                                                more affinity but hold budget longer and can reduce model
+time. Within the cold pool, the router prefers instances that                                            residency hit rate; §5.4 measures this tradeoff.
+already hold the requested model and session prefix, subject
+to admission and HBM constraints. This concentrates de-
+                                                                                                         Placement for non-reserved requests. Requests without
+mand on useful state and avoids needless model opens; if
+                                                                                                         an active reservation—new sessions and sessions whose reser-
+the preferred instance fails admission, cost ranking selects
+                                                                                                         vation has expired—are placed by a cost-ranking policy. The
+another feasible cold instance or invokes the configured over-
+                                                                                                         router scores each candidate instance i by
+load policy. These are per-call placement decisions and do
+not reclassify instances.                                                                                                         req
+                                                                                                                  Cost(r, i) = ∆Rbi (r) + CbiKV (r) + Cbiact (mr ),    (1)
+   This configured split separates stable high-demand service
+from the multi-model tail while keeping the continuity mech-                                             where all terms are in latency units. The three terms charge in-
+anisms independent of a particular pool-sizing controller. The                                           cremental queue/prefill/decode work, KV recovery, and model
+telemetry used for placement could also drive promotion and                                                                             req
+                                                                                                         activation exactly once. ∆Rbi contains only the incremen-
+demotion, but dynamic pool reallocation is outside the current                                           tal queue, prefill, and decode work introduced by r. State
+prototype and evaluation.                                                                                recovery and model activation are excluded from this term
+                                                                                                         and charged once by the remaining terms. CbiKV is zero for a
+3.3       Session-Aware Residency Routing                                                                device-resident prefix, the measured H2D restore cost for a
+                                                                                                         host-restorable prefix, and the profiled recomputation cost oth-
+The router assigns each session call to an inference instance                                            erwise. Cbiact is zero when mr is active, the advertised switch
+with two objectives: preserve KV locality from the previous                                              cost when its state is resident or staged, and the measured full-
+call, and respect model and memory capacity constraints. The                                             open cost otherwise. Partial staging changes the activation
+two objectives have different time horizons. A session prefix                                            estimate rather than adding a second model-open penalty.
+is reusable when a model call completes, but it may move to                                                 The router refreshes its per-model latency profiles from
+host or be evicted while the session executes a tool. Preserving                                         recent round summaries using an exponentially weighted
+or restoring that locality is therefore time-sensitive. Capacity                                         moving average. The in-flight overlay in §4.1 adds calls and
+constraints depend on model residency and aggregate round                                                reservations forwarded since the latest snapshot. For each can-
+pressure, which evolve over scheduling windows rather than                                               didate, the router simulates the resulting round load and HBM
+a single routing decision.                                                                               use, retaining it only if both configured admission checks
+                                                                                                         pass. These are predictive overload controls rather than hard
+Soft reservation for returning sessions. The router creates                                              TTFT guarantees under stale telemetry. Miscalibration affects
+a soft reservation only after a model call completes. From the                                           placement quality, while deadline-risk telemetry makes an un-
+completion metadata, it records the session id, model, serving                                           derestimated instance less attractive in subsequent decisions.
+instance, reusable-prefix handle, and expiry time texp = tdone +                                            KVi (s) is valid when instance i reports session s’s prefix as
+τ. We choose τ = 1 s from the sensitivity sweep in §5.4; it                                              either device-resident or host-restorable through HKVR with
+
+
+                                                                                                     5
+Algorithm 1 Session-aware residency routing.                                            P   Prefill              D     Decode                    Model A             Model B
+Require: Request r for session sr , model mr ; instance snap-            Timeline
+                                                                                                tool call         tool call     slot
+    shots and gateway queue/reservation overlay                                                 returns           returns     boundary
+
+ 1: // Consume a lease created by the previous completion
+                                                                                    P       D       SP       D        SP      D              P            D   SP     D
+ 2: if sr has live lease (sr , mr , h, k,texp ) then
+                                                                                                   TTFT              TTFT           switch                    TTFT
+ 3:    if h is healthy and KVh (sr ) is valid then
+                                                                                                                       (a) With SP admission.
+ 4:       consume lease; route r to h                                                           tool call
+                                                                                                returns                                                                        next round
+ 5:       return
+ 6:    else                                                                         P                         D                              P                 D                  P
+
+ 7:       discard lease                                                                                                             switch
+                                                                                                                                  TTFT waits full round
+                                                                                                                                                                         switch
+
+
+
+
+ 8:    end if                                                                                               (b) Without SP (round-level scheduler).
+
+ 9: end if
+10: // Cost-based placement                                              Figure 4: Cold-pool slot structure. SP opens mid-slot prefill
+11: C ← 0/                                                               windows for eligible continuations before the scheduler ro-
+12: for all instances i do                                               tates away.
+13:    simulate request, KV, activation, round, and HBM costs
+
+14:   if round-admission and HBM checks pass then                        useful instances, while the feasibility filter redirects overflow
+15:      if i needs no fresh replica or Eq. (2) passes then              to nodes with sufficient round budget and staging slack (re-
+16:          C ← C ∪ {i}                                                 maining capacity for D2D pre-staging, defined in §3.5).
+17:      end if
+18:   end if
+19: end for
+                                                                         3.4 Cold-Pool Scheduler with Session-Prefill
+20: if C = 0/ then                                                           (SP) Admission
+21:    invoke the configured gateway overload policy                     Cold-pool instances must share a GPU group across multi-
+22:    return                                                            ple models while still serving agent sessions with short tool
+23: end if
+                                                                         gaps. The evaluated design co-locates prefill and decode on
+24: i∗ ← arg mini∈C Cost(r, i)
+                                                                         the same GPU group, avoiding a cross-tier KV handoff on
+25: route r to i∗
+                                                                         each turn. A round-based multi-model scheduler then faces a
+26: return
+                                                                         second problem: a session returning from a tool call after its
+                                                                         model’s slot has closed must wait until the next full rotation
+an agreed prefix. A new model replica is opened on instance j            even when its prefix remains reusable. The SP stage resolves
+only when the predicted demand benefit exceeds the opening               both: by staying non-P/D-disaggregated it avoids per-turn
+cost:                                                                    KV handoff, and by opening a mid-slot admission window it
+                                                                         captures eligible returns before the active model slot closes.
+           gain(m, j) > Tswap (m, j) + µ j ∆Wm + νm ,         (2)           Talaria implements a non-P/D-disaggregated token-level
+                                                                         scheduler for the cold pool. A cold-pool instance serves sev-
+where gain(m, j) is the latency-equivalent benefit of opening            eral models on the same tensor-parallel group, executing only
+the replica: the predicted reduction in queued or spillover              one model at any instant. Time is organized into rounds; each
+demand for model m over the next control window, computed                active model receives one slot per round, and the instance
+from the router’s observed arrivals and reserved returns. Tswap          switches models only at slot boundaries. A slot begins with a
+is the switch latency, ∆Wm is the added HBM footprint, µ j               queued-prefill phase P, which admits ordinary work already
+is the instance-specific HBM pressure price, and νm is a per-            waiting when the slot opens, and an initial decode phase D1 .
+replica penalty against unjustified expansion. µ j has units of          Zero or more session-prefill/decode pairs may follow before
+latency per GiB and converts added HBM footprint into a                  a final decode phase:
+latency-equivalent cost using instance j’s current memory
+                                                                                                               ∗
+pressure and staging slack.                                                           P → D1 → SP → D → Dfin .
+   Algorithm 1 handles call arrival only. The completion hook
+in §4.1 installs a lease for a possible subsequent call. The lease       An SP opportunity occurs only at a decode boundary; it does
+accounts for a likely return and preserves instance affinity;            not preempt an executing kernel. A call is SP-eligible when
+SP provides a budgeted opportunity to consume that return                it targets the active model, is a continuation that arrived after
+while the model slot remains open. Neither mechanism alone               P, and has a device-resident or host-restorable prefix on this
+guarantees same-slot admission. Within the configured cold               instance. At the k-th opportunity, the scheduler forms the
+pool, model-residency preference concentrates demand on                  eligible set Em,k and selects a bounded batch Bm,k ⊆ Em,k
+
+
+                                                                     6
+whose predicted prefill, restore, and HBM costs fit the budget               remaining slot budget. The key departure from a standard
+remaining after protected decode. Calls that do not fit remain               round-based scheduler is the SP step: whenever an eligible
+queued for a later SP opportunity or the next model slot. After              continuation returns during a slot, it is queued for the next
+the batch completes, decode resumes for all in-flight requests.              SP opportunity rather than immediately deferred until the
+The final decode phase Dfin is the drain interval after the                  next slot for that model. At that opportunity, the scheduler
+last SP opportunity in the slot: the scheduler stops admitting               admits only the bounded subset that fits the remaining bud-
+new prefill but spends the remaining protected budget on in-                 get; it never delays protected decode to admit an unbounded
+flight decode before switching models. New sessions do not                   return batch. Decode then resumes for all in-flight sessions,
+bypass P through SP. The slot closes when the round budget                   including newly admitted continuations. This interleaving
+is exhausted or the scheduler decides to switch models. A                    can repeat multiple times within a slot as successive tool calls
+round on instance i is therefore                                             complete, preserving useful locality and avoiding an unneces-
+                                                                           sary next-slot wait. A continuation that arrives after the slot
+    Ri = ∑        Pm + D1,m + ∑k (SPm,k + Dm,k ) + Dm,fin                    closes, or does not fit before the final decode phase, waits for
+         m∈Miactive                                                          the next slot of the same model.
+         +     ∑ Sm→m′ ,                                          (3)           Best-effort prefill does not mean silently deferring work.
+             (m→m′ )                                                         When the protected decode budget leaves insufficient prefill
+                                                                             time, or when cumulative pressure pushes the round past the
+where SPm,k = Tbp f (Bm,k ) + Tbrestore (Bm,k ) is the batched prefill       TTFT bound, the instance reports the shortfall through struc-
+and restore cost at the k-th opportunity, and Sm→m′ is the                   tured telemetry—staging slack (remaining capacity for D2D
+switch cost exposed by the memory substrate (§3.5). The                      pre-staging, detailed in §3.5) and deadline-risk counters—
+switch estimate is updated from staging coverage and dirty-                  rather than hiding overload by rolling work into later rounds.
+chunk telemetry rather than treated as a static model constant.              The router reacts by spilling traffic to another instance, open-
+                                                                             ing a replica, or applying the configured admission-control
+Decode-share budget. The round scheduler controls aver-                      policy.
+age token cadence; it does not claim a hard deadline for every
+inter-token gap. Let dm be the number of decode iterations                   3.5    Multi-Model Memory Substrate
+reserved for model m in a predicted round, and let tmD be its
+profiled decode-step time. Define                                            The router and cold-pool scheduler decide where and when
+                                                                             model weights and session KV should reside. They rely on
+                         Um = Ri − dmtmD                                     a memory substrate that makes these placement decisions
+                                                                             executable within the round budget. The substrate exposes
+as all predicted time in the round not spent on m’s decode                   three capabilities to the rest of Talaria.
+iterations, including its own P/SP phases, other model slots,                   Stable HBM layout. Cold-pool instances switch among
+and switches. For a sequence that remains active throughout                  models whose weights, KV pools, runtime buffers, and graph
+the round, the predicted average time per token is Ri /dm . To               state all compete for HBM. The substrate gives each instance a
+keep this average below T TPOT , the scheduler requires                      stable multi-model layout: structural regions can be released,
+                                                                             reused, and rebound across switches without fragmenting
+                    dm T TPOT − tmD ≥ Um .
+                                   
+                                                            (4)
+                                                                             device memory or invalidating the runtime state needed to
+If T TPOT ≤ tmD , the target is infeasible for that model profile.           serve the next slot.
+The scheduler reserves the corresponding dm decode itera-                       Persistent session KV. Switching away from a model may
+tions before assigning the remaining slot budget to P and SP.                reclaim its device KV region, but a returning session still
+Intuitively, protected decode establishes the target average                 needs the prefix it produced before the tool call. The substrate
+token cadence; prefill and SP share only the time left after                 therefore maintains a host-side KV registry that stores valid
+that reservation. The round itself is bounded by the TTFT                    session prefixes across model switches and restores them to
+budget with a safety margin:                                                 device memory when the session returns. The registry is part
+                                                                             of the correctness boundary: it must not expose a prefix unless
+                       Ri ≤ γTTTFT ,    γ < 1.                    (5)        all tensor-parallel ranks agree on the same valid blocks.
+                                                                                Reduced switch cost. Model switching consumes the same
+This round-length constraint bounds predicted model revisit                  round budget that SP admission depends on. The substrate
+time; it is not by itself a hard TTFT guarantee because queue-               stages future model weights while the current model is serv-
+ing across rounds and estimation error can still violate the                 ing, then uses device-to-device movement for the staged por-
+target.                                                                      tion at switch time and falls back to host-to-device loading
+   Prefill arrivals and prompt lengths are unknown when a                    only for uncovered chunks. The router sees the remaining
+round begins, so prefill is treated as best-effort within the                staging capacity as staging slack; when that slack is low, the
+
+
+                                                                         7
+instance becomes a worse target for additional traffic. Staging                                 Self-managed vram
+                                                                                                   Bump                       Pytorch
+slack is therefore both a memory signal and a switch-cost                                                                                         TMS / VMM
+                                                                                 model             kv cache     runtime                        CUDA graph pool
+signal: lower slack predicts a larger uncovered H2D fraction                     region             region       region
+                                                                                                                                other
+                                                                                                                                               token-to-slot table
+on the next switch.
+                                                                                                                                                pytorch inductor
+   These capabilities form the contract between scheduling                         gather kernel D2D
+                                                                                                                                                   activation
+and implementation: the instance reports measured restore                         layer first kv cache buffer
+                                                                                                                                                 NCCL buffer
+and switch estimates, and the router and SP scheduler charge                    L0-k                             chunk       chunk
+those estimates to their admission budgets. Section 4 de-                                                                                       CUDA runtime
+                                                                                L1-k                             chunk       chunk
+scribes how Talaria implements the lease and memory sub-
+                                                                                   chunks can be preempted (valid D2D, dirty H2D)
+strate.
+                                                                                                                                                  flashinfer
+                                                                                L0-v                             chunk       chunk                workspace
+
+
+                                                                                L1-v                             chunk       chunk              decode input
+4    Implementation                                                                                                                                buffer
+                                                                                       layer head first                layer tail first
+                                                                            fallback
+We implement Talaria on SGLang [23] as a stateful Go gate-                    H2D                dispatch kernel H2D
+
+way (5.5K lines) and an extended inference engine (15K lines)
+                                                                                              Host model weight                           Switch accelerate
+that adds session caching, HKVR, SP scheduling, and staged
+switching. We additionally adapt 1.4K lines of SGLang’s
+existing TMS support for per-model memory reclamation.                    Figure 5: Bump-managed HBM layout. Stable regions pre-
+The gateway maintains session leases and routing telemetry;               serve pointers across switches; clean staged chunks move by
+each engine instance implements the instance-local cache,                 D2D and dirty chunks reload from host.
+scheduling, and memory contracts.
+
+                                                                          finishes, the wrapper saves the request-pool slot, commit-
+4.1 Router State and Session Cache Integra-                               ted KV length, radix lock state, and any architecture-specific
+    tion                                                                  cache state. On the next turn, it restores that slot before prefix
+                                                                          matching, so the existing scheduler sees a prefix hit without a
+The gateway extracts a stable session id from the agent run-
+                                                                          separate token path. The same finish path checkpoints aligned
+time and keeps a session table keyed by that id. Each entry
+                                                                          KV blocks to HKVR when host KV is enabled. Instance
+records the last serving instance, model, observed KV length,
+                                                                          telemetry reports the fields the gateway needs for routing:
+last-use time, and a soft-reservation lease. After a request
+                                                                          loaded models, cached sessions, model queues, round remain-
+finishes, the gateway updates the entry from response usage
+                                                                          ing time, deadline risk, KV occupancy, and free staging bytes.
+metadata and installs a lease on the serving instance. Before
+routing the next call, it overlays its local in-flight queue on top
+of the latest instance snapshot, so recent forwards and reser-            4.2     Bump-Managed HBM Layout
+vations affect admission immediately instead of waiting for
+the next telemetry poll. Instance snapshots are versioned and             A cold-pool instance switches among models whose weights,
+refreshed on the control-plane heartbeat; if a snapshot is stale          KV tensors, CUDA graphs, runtime workspaces, and book-
+or the instance misses a heartbeat, the gateway can still honor           keeping state all occupy HBM. Rebuilding these objects on
+live reservations only when the instance passes the health                every activation would recapture CUDA graphs, reinitialize
+check, but it excludes that instance from new non-reserved                attention backends, rebuild KV-pool shells, and fragment Py-
+placements until fresh telemetry arrives.                                 Torch’s caching allocator. Talaria therefore removes the large
+   The lease is represented as (s, m, i, k,texp ): session s, model       structural regions from the caching allocator and places them
+m, reserved instance i, prefix handle k, and expiry time texp .           in one managed HBM buffer. For PyTorch-owned per-model
+A live lease contributes one configured admission-unit charge             objects, it uses SGLang’s existing torch_memory_saver
+to the gateway’s local load overlay. On a matching return, the            (TMS) integration, a VMM-based physical-page manager
+gateway consumes the lease before forwarding the call to i;               that preserves virtual addresses while reclaiming physical
+the completion hook may later install a successor lease. If the           pages. Talaria adapts that mechanism with per-model tags
+lease expires, the instance becomes unhealthy, or the prefix is           and switch-time pause/resume calls, so CUDA-graph and run-
+no longer restorable, the call falls back to normal placement.            time allocations can be parked with the model that owns them.
+Because the next suffix length is unknown at reservation time,            TMS is a memory mechanism below the scheduler, not the
+this charge is capacity accounting rather than a hard latency             scheduling abstraction itself.
+guarantee.                                                                   The bump buffer uses a fixed layout: weights and KV
+   Each SGLang instance makes the prefix handle executable                data grow upward from the low-address end, runtime buffers
+through a session-aware prefix-cache wrapper. When a turn                 are anchored at the high-address end, and the gap between
+
+
+                                                                      8
+them forms the KV pool. This layout lets buffer-like regions            the agreement. Third, every model switch drains outstanding
+be shared across models without static per-model partitions.            D2H events before freeing the active kv_cache region. Since
+TMS covers the PyTorch-managed objects that cannot sim-                 D2H is issued as turns finish rather than batched at switch
+ply be rebound into the bump buffer, including CUDA-graph               time, this barrier usually waits only for the final tail blocks.
+pools and per-model runtime metadata. When a model is
+parked, TMS releases their physical pages while preserving
+virtual addresses; on restore, the same addresses are remapped,         4.4    D2D-Staged Switching
+so captured kernel pointers remain valid.                               Reloading a multi-hundred-GB model from host at the switch
+   Switching from model m to m′ then reduces to releasing               boundary would spend the same round budget that SP relies
+the active kv_cache region, resizing the weights region for             on. Talaria instead pre-stages the next model’s weights into
+m′ , and rebinding m′ ’s parameter tensors to views in the bump         unused HBM while the current model is serving, then uses
+buffer. The engine caches each model’s CUDA graph, atten-               D2D movement for the staged fraction at switch time. The
+tion backend, and KV-pool shell, and recaptures only if a               staging surface is the high-address tail of each KV layer block;
+restore-time pointer check detects an address change. The               the KV allocator reuses low addresses first, keeping those tails
+check compares the base addresses of the weight, KV, graph-             clean under normal allocation pressure.
+pool, and runtime buffer regions. Once the bump layout is                  Staging is opportunistic and correctness-preserving. The
+stable, the common switch path reuses captured kernels di-              staging manager writes weights into fixed-size chunks and
+rectly and avoids cudaFree/cudaMalloc churn. The stable                 marks a chunk dirty if a concurrent prefill allocation takes
+addresses keep cached CUDA graphs and runtime objects                   rows that overlap the chunk’s staging range. During an active
+valid across model switches.                                            H2D write, the allocator skips the chunk’s row range to avoid
+                                                                        reading partially written data. At switch time, the gather plan
+4.3    Host KV Registry                                                 copies only clean staged chunks with D2D and reloads dirty
+                                                                        or missing chunks from host.
+Switching away from a model may reclaim its device KV                      This protocol makes the expensive H2D component scale
+region, but returning sessions still need the prefix produced           with the uncovered weight fraction; the total switch still in-
+before the tool call. HKVR stores this state in a unified pinned-       cludes D2D gathering for staged chunks. It also gives the
+memory pool shared across attention layouts. MHA models                 router a simple signal: staging slack, the remaining HBM
+allocate paired K/V slabs, MLA models allocate latent-state             space that can be used to pre-stage a future switch. When slack
+slabs, and Mamba-style models allocate recurrent-state slabs.           falls, the instance becomes a worse target for more traffic in
+All slabs return to the same pool when evicted, so host mem-            the residency cost model; Section 5.6 separates the full-D2D,
+ory is not statically partitioned by model or architecture.             partial, and H2D fallback paths. Together, the router lease,
+   HKVR checkpoints aligned KV blocks asynchronously                    bump layout, HKVR, and D2D staging realize the substrate
+when a request finishes or a session enters a tool gap. Each            contract exposed to the design: stable residency, restorable
+block is keyed by the model name and cumulative prefix                  session state, and measured switch-cost telemetry.
+hash, matching the radix tree’s chunk granularity. On re-
+turn, the scheduler allocates new device slots, restores the
+agreed prefix through H2D layer-first/page-first transfer ker-          5     Evaluation
+nels, and recomputes only the unconfirmed tail. This path
+reuses SGLang’s KV movement kernels for MHA. MLA and                    We evaluate Talaria with fixed replay as the primary evidence
+Mamba share the registry metadata and slab allocator, while             and targeted mechanism measurements for effects that a single
+architecture-specific completeness checks may decline a re-             replay cannot separate. Fixed replay holds the application-
+store rather than publish partial state. The router sees a com-         level call trace constant, so policy differences are not con-
+mon device/host/missing state; the instance decides whether             founded by the agent choosing a different tool path. We ask
+the architecture-specific state is restorable.                          five questions: (1) do the mechanisms improve end-to-end
+   Three invariants keep HKVR safe under concurrent serving.            session completion, (2) does residency-aware routing avoid
+First, transfer pins are separated from radix ownership: DMA            misplaced model opens, (3) what is the cost/benefit of soft
+pins prevent reclaiming blocks in use, while radix references           reservation, (4) does SP capture returns within an active slot,
+track whether prefix metadata still points to a block. Second,          and (5) does the memory substrate reduce switch cost without
+HKVR exposes a prefix only after TP ranks agree on the                  exceeding HBM capacity?
+same valid common prefix. A disagreement is handled con-
+servatively: the restore tracker truncates the published prefix         5.1    Methodology
+to the longest common block range shared by all ranks and
+marks the inconsistent tail for recomputation. Partial or in-           The main replay is captured from Claude Code running ten
+consistent tails remain private until a later checkpoint extends        Astropy issues from SWE-Bench Verified [13]. We replay
+
+
+                                                                    9
+each issue once on Qwen3-235B, GLM5-nvfp4, and Qwen3.5-                                                                                 TP=8 fixed replay
+                                                                                                        1.0
+122B-A10B, yielding 30 model-session executions and 960
+                                                                                                        0.8
+calls. Reusing the ten task identities across three model pro-
+files enables paired, within-trace policy comparisons; the per-                                         0.6
+
+
+
+
+                                                                          CDF
+session plot shows every observation.
+                                                                                                        0.4
+
+   For each model-session, every configuration replays the                                              0.2
+same request bodies under the same model and session IDs, in
+                                                                                                        0.0
+the same per-session call order, and with the same completion-
+                                                                                                                              102                             103
+token count for each call. The replay is closed-loop: after a                                                                     Session completion time (s)
+call finishes, the next waits for the same recorded tool gap                                                                    Talaria   no-HKVR      Round-only
+                                                                                                                                no-SP       H2D-only
+after a 10 s cap. The cap affects 20 of 960 calls. Global inter-
+leaving may differ across configurations because completion
+times differ. The resulting trace targets the long-context, short-        Figure 6: End-to-end SCT on the TP=8 fixed replay. Talaria
+return-gap regime for which session continuity matters most.              cuts p50 SCT from 1000 s to 189 s relative to the Round-only
+Large-model runs use one TP=8 server with eight 183 GiB                   ablation.
+GPUs, 2 TB host memory, dual-socket x86 CPUs, and eight
+400 Gb/s network adapters. Each run performs the same pre-                                                                    Reverse ablations on the same trace
+window warmup; all measurements exclude warmup.                                                         2400
+
+
+
+                                                                          Session completion time (s)
+   We compare Talaria’s instance-local configuration (SP,                                               1800
+HKVR, and D2D staging) with reverse ablations. no-SP dis-
+ables mid-slot session-prefill admission while keeping HKVR                                             1200
+and D2D staging. no-HKVR keeps SP and D2D staging but                                                                                                                1000s
+disables host-restorable KV. H2D-only keeps SP and HKVR                                                  600                        623s
+                                                                                                                                               486s
+but disables D2D weight staging, so switches reload from host
+                                                                                                                     189s                                   194s
+memory. Round-only disables SP, HKVR, and D2D staging                                                         0
+and serves the same trace with the otherwise identical round                                                        Talaria         no-SP     no-HKVR   H2D-only    Round-only
+scheduler and host-to-device model reloads. Round-only is
+the controlled all-off baseline within the same engine.                   Figure 7: SCT for all 30 model-sessions on the same replay;
+                                                                          boxes show the interquartile range under the nearest-rank
+   Router-policy experiments use two TP=4 workers to create               empirical definition. Each point is one of ten issues executed
+real placement choices. They replay a 120-call, 30-model-                 on one model.
+session subset under three relative offered-load regimes. The
+trace preserves session ids, return gaps, model order, and
+reusable-prefix lengths, but maps the large models to Qwen3-
+                                                                          5.2                                     End-to-End Session Completion
+32B, Qwen2.5-32B-Instruct, and Qwen3.5-35B-A3B. This
+split is intentional: TP=8 evaluates instance-local mechanisms
+                                                                          Figures 6 and 7 show the SCT distribution for the TP=8 fixed-
+under large-model memory pressure, while TP=4 isolates
+                                                                          replay configurations. All rows replay the same 960 calls over
+placement decisions. Together, the two testbeds separate in-
+                                                                          the same 30 sessions.
+stance execution from cluster placement without conflating
+their effects.                                                               Relative to Round-only, Talaria’s instance-local configura-
+                                                                          tion reduces p50 SCT from 1000 s to 189 s and p95 SCT from
+   The primary metric is session completion time (SCT), mea-              2296 s to 867 s, delivering 5.3× and 2.6× speedups. The p50
+sured from a model-session’s first call to its final response.            TTFT falls from 13.44 s to 0.55 s. The reverse ablations show
+We also report TTFT, switch latency, round composition, and               each mechanism’s marginal effect with the others enabled;
+HBM footprint. TTFT is schedule-aware: it starts at the in-               these effects are not additive. Round-only combines next-slot
+tended enqueue time and therefore includes admission delay.               waiting with prefix recomputation after reusable KV is lost.
+For raw replay distributions, percentiles use the nearest-rank            SP provides the largest p50 marginal contribution, reducing
+empirical definition: for N observations, pq is the observation           SCT from 623 s to 189 s by admitting eligible returns within
+at rank ⌈qN/100⌉; targeted TP=4 experiments retain their                  the active model slot. HKVR reduces p50 SCT from 486 s
+original harness summaries. The main trace intentionally runs             to 189 s and TTFT p95 from 26.33 s to 14.17 s. D2D staging
+at high pressure to expose differences in how the policies pre-           leaves p50 SCT nearly unchanged (194 s to 189 s) but reduces
+serve session state while per-session call order, bodies, and             p95 from 933 s to 867 s; §5.6 isolates its switch path. Talaria
+recorded gaps remain fixed.                                               improves 29 of 30 paired model-sessions.
+
+
+                                                                     10
+                (a) High-load TTFT                                        (b) Cold opens                                   (a) Locality tradeoff                                     (b) Returning TTFT
+      1.0                                                                                                                                                                   2.25
+                                                                                                                    80                                                                                  p50
+
+
+
+
+                                        Avoidable cold opens
+                                                               40                                                                                                           2.00                        p95
+
+
+
+
+                                                                                                                                                       Returning TTFT (s)
+      0.8
+                                                                                                                    60                                                      1.75
+                                                               30
+
+
+
+
+                                                                                                         Rate (%)
+      0.6
+CDF
+
+
+
+
+                                                                                                                                                                            1.50             -35% p50
+                                                               20                                                   40
+      0.4
+                                                                                                                                                                            1.25
+                                                               10                                                   20
+      0.2                                                                                                                                                                   1.00
+
+                                                                0                                                    0                                                      0.75
+      0.0
+            0    2     4    6     8                                 low       medium       high                           0 0.5 1   2              5                               0 0.5 1     2           5
+                     TTFT (s)                                                                                             Reservation timeout τ (s)                                Reservation timeout τ (s)
+                                                                                                           same instance                 unused-lease proxy
+                     Least-pressure   Session-sticky                       Full router                     model-residency hit
+
+
+Figure 8: Two-worker TP=4 placement over 120 calls. The                                                Figure 9: TP=4 reservation-timeout sweep. A 1 s lease gives
+full router nearly eliminates avoidable model opens while                                              the lowest returning-call p95; extending to 5 s trades model
+controlling high-load TTFT.                                                                            residency for higher return locality.
+
+
+                                                                                                       5.4               Soft-Reservation Tradeoff
+5.3         Spatial Placement: Router Policy                                                           Soft reservation adds a temporal decision to router placement:
+                                                                                                       after a session leaves for a tool call, the gateway leases ca-
+                                                                                                       pacity for a bounded interval τ instead of making the next
+Figure 8 compares three routing stacks on the same 120-                                                call compete as an unrelated arrival. The TP=4 sensitivity run
+call trace. Least-pressure chooses the least-loaded worker                                             sweeps τ ∈ {0, 0.5, 1, 2, 5} s and reports same-instance return
+for each call. Session-sticky pins a session to its first worker.                                      rate, model-residency hit rate, returning-call TTFT, model
+The full router combines residency cost ranking with soft                                              opens, and an unused-lease proxy. The proxy counts reserved
+reservations, matching the prototype policy; §5.4 separately                                           returns that did not produce a timely same-instance hit; it does
+sweeps the reservation timeout. We count an avoidable cold                                             not measure how long a live lease occupied capacity.
+open when the selected worker must open the requested model                                               With τ = 0, returning sessions still use residency-aware cost
+even though another worker already has that model resident.                                            ranking, but no capacity is held: 56.2% return to the same
+                                                                                                       worker and 43.8% miss the device-KV proxy. A 1 s lease
+   Least-pressure frequently selects a worker that must reopen                                         raises same-worker returns to 67.7% and lowers returning-call
+the requested model. Session-sticky preserves affinity but                                             TTFT p50/p95 from 1.51/2.11 s to 0.99/1.91 s, the lowest p95
+cannot trade it against model residency and queue pressure.                                            in the sweep. This gain uses additional placement capacity:
+The full router eliminates avoidable opens at low and medium                                           relative to τ = 0, model-residency hits fall from 72.5% to
+load and leaves one at high load. At medium load, TTFT                                                 60.8%, model opens rise from 33 to 47, and the unused-lease
+p50 is 0.36 s, versus 1.67 s for least-pressure and 2.29 s for                                         proxy is 50%. Extending the lease to 5 s raises same-worker
+session-sticky. At high load, it retains 97.8% of returning calls                                      returns further to 79.2%, but provides similar TTFT while
+on the same worker, reduces avoidable opens from 37 (least-                                            model-residency hits fall to 53.3% and model opens rise to 56.
+pressure) and 5 (session-sticky) to 1, and cuts TTFT p95 from                                          We therefore use 1 s as the operating point that best balances
+8.07 s and 6.23 s to 5.28 s.                                                                           return locality and model residency for this workload; τ is a
+                                                                                                       workload-dependent policy knob.
+   The placement gains translate most clearly once model
+opens and queue pressure matter. At medium load, full rout-
+                                                                                                       5.5               Temporal Placement: SP Admission
+ing improves SCT p50/p95 to 6.28/12.74 s from 11.01/19.59 s
+for least-pressure and 10.97/19.28 s for session-sticky. At                                            SP addresses the temporal mismatch inside a model slot: a re-
+high load, it lowers p95 to 21.31 s from 31.29 s for least-                                            turning session should not wait for the next full prefill window
+pressure and 23.03 s for session-sticky; its 17.44 s p50 is                                            when the current slot can admit its reusable prefix. Figures 10
+slightly above sticky’s 16.33 s. At low load, eliminating avoid-                                       and 11 compare Talaria with no-SP on the same fixed replay,
+able opens does not translate into an SCT gain: full-router                                            keeping request bodies, arrival gaps, HKVR, D2D staging,
+p50/p95 is 7.39/15.81 s, versus 6.82/11.31 s for least-pressure                                        and the router fixed.
+and 5.62/13.68 s for session-sticky. Thus residency-aware                                                 With all other mechanisms fixed, SP lowers p50 TTFT
+placement yields its clearest SCT benefit at medium load; at                                           from 4.60 s to 0.55 s and p95 from 20.5 s to 14.2 s. Within
+high load it improves p95 but not p50, while at low load it                                            Talaria’s 200 rounds, SP admits 316 return-handling events
+eliminates model opens without an SCT gain.                                                            into the active slot and parks 345, an admission rate of 47.8%.
+
+
+                                                                                                  11
+                                    (a) Admission                                           (b) Handling                                                        (a) Latency                                                      (b) Paths
+                                                                                     4                                                            1.0                                                         1.0
+                                                                                         Admitted
+                                              48%                                        Deferred
+
+
+
+
+                                                             Handling events/round
+                       50
+Within-policy events
+
+
+
+
+                                                                                                                                                                                                                                              36%
+
+
+
+
+                                                               (not unique calls)
+                                                                                                                                                  0.8
+                                                                                     3
+   admitted (%)
+
+
+
+
+                       40                                                                                                                                              1497 ms
+                                                                                                       1.7
+                                                                                                                                                  0.6
+                       30
+
+
+
+
+                                                                                                                          CDF
+                                                                                     2
+                                                                                                                                                                                                              0.5         100%
+                                                                                                                                                                                                                                              36%
+                       20                                                                                                                         0.4
+                                                                                     1   1.8                                                                  984 ms
+                       10                                                                              1.6
+                                                                                                                                                  0.2
+                                                                                                                                                                       H2D-only                                                               28%
+                                  0%
+                        0                                                            0                                                                                 Talaria
+                                  no-SP       Talaria                                    no-SP        Talaria                                     0.0                                                         0.0
+                                                                                                                                                        102            103                                               H2D-only         Talaria
+                                                                                                                                                          Switch latency (ms)
+Figure 10: SP handling events on the TP=8 fixed replay. Ta-
+laria admits 47.8% of its recorded return-handling events                                                                                                                                                                  D2D      Partial    H2D
+within the active model slot.
+                                                                                                                          Figure 12: Logical TP=8 switch latency, computed as the max-
+                                                        Per-call TTFT                                                     imum across ranks. Each configuration contains 600 logical
+           1.0              p95
+                                                                                                                          switches; paths use the worst-rank classification. Staging cuts
+           0.8
+                                                                                                                          p50 by 34%.
+           0.6
+CDF
+
+
+
+
+                                                                                                                                                           (a) Composition                                                   (b) Aggregate
+           0.4
+                                                                                                                                                  1.0                                                         2000
+                                                                                                                                                                                                                             Switch -38%
+
+
+
+
+                                                                                                                                                                                   Aggregate round time (s)
+                                                                                                                                                                                                                          1753s
+           0.2                                                                           no-SP (p95=20.5s)                                                                                                                             1632s
+                                                                                                                          Fraction of wall time
+                                                                                                                                                                             35%
+                                                                                         Talaria (p95=14.2s)                                             52%                                                  1500
+           0.0
+                       0.1                          1                                      10                   60
+                                                          TTFT (s)                                                                                0.5                                                         1000
+
+                                                                                                                                                                             65%
+Figure 11: SP TTFT impact on the same replay. Mid-slot                                                                                                   48%                                                   500
+admission lowers per-call TTFT.
+                                                                                                                                                  0.0                                                               0
+                                                                                                                                                        H2D-only         Talaria                                         H2D-only              Talaria
+Talaria records none of the 123 host-cache capacity misses
+and 2,532 architecture-specific restore skips observed with                                                                                                                        Active                               Switch
+no-SP. These are schedule-dependent diagnostics, not unique-
+call outcomes; all 960 calls complete in both configurations.                                                             Figure 13: Round-time composition for Talaria and H2D-only.
+A parked request may also appear in multiple rounds, so we                                                                D2D staging reduces aggregate switch time by 38%.
+normalize handling events within each policy and use TTFT,
+measured over the common call set, as the direct cross-policy
+result.                                                                                                                   ing 36.0% falls back to H2D at a 2011 ms p50. The staged
+                                                                                                                          common path therefore delivers the largest speedup, while
+                                                                                                                          partial coverage retains a proportional benefit. Active writes
+5.6 Memory Substrate: Switch and HBM Cost
+                                                                                                                          dirty some staged chunks, causing the correctness guard to
+Across the replay, D2D staging reduces aggregate switch time                                                              reload them from host and accounting for the heavier tail.
+by 38% and switch share from 51.7% to 34.6%. Figure 12                                                                    H2D-only also records 39 host-cache capacity misses and
+isolates the switch path by comparing Talaria with H2D-only,                                                              1,704 Mamba restore skips, versus zero for Talaria. These
+which keeps SP and HKVR enabled but reloads weights from                                                                  schedule-dependent diagnostics capture downstream cache
+host memory.                                                                                                              interactions; the logical-switch distribution is the direct path
+   Each logical switch emits one record per TP rank; we re-                                                               comparison.
+port the maximum rank latency because the scheduler resumes                                                                  Figure 13 shows the same effect at round granularity. H2D-
+only after all ranks finish. At this granularity, D2D staging im-                                                         only spends 51.7% of round wall time in switching, while
+proves the center of the distribution but exposes a tail tradeoff                                                         Talaria spends 34.6%; total switch time drops from 907 s to
+under high KV pressure: p50 falls from 1497 ms to 984 ms                                                                  565 s. Talaria’s aggregate round wall time is also lower (1632 s
+and mean from 1521 ms to 1071 ms, while p95 rises from                                                                    versus 1753 s). Because SP and HKVR already preserve the
+2133 ms to 2679 ms. Full D2D switches, 27.7% of the ob-                                                                   common return path, the 38% switch-time reduction has a
+served mix, complete in 106 ms at p50; partial D2D plus                                                                   larger effect on tail SCT than on p50: p50 changes from 194 s
+H2D accounts for 36.3% at a 1000 ms p50, and the remain-                                                                  to 189 s, while p95 falls from 933 s to 867 s.
+
+
+                                                                                                                     12
+                                                      Active       Switch                                        System                Unit        Model route KV route    Agent return
+                                                          (a) Talaria                                            Aegaeon [5]       request/token      Yes        No        next model slot
+Round time (ms)
+
+
+
+
+                  30000                                                                                          Preble [16]          prompt          No         Yes       request arrival
+                                                                                                                 Mooncake [15]       KV object        No         Yes       storage restore
+                  20000                                                                                          ServerlessLLM [6]    request         Yes        No           cold start
+                                                                                                                 Talaria              session         Yes        Yes      reservation + SP
+                  10000
+
+                        0
+                                                                                                              Table 1: Placement signals and cross-call return handling.
+                            0     25      50         75          100     125        150      175
+
+                                                     (b) Round-only
+Round time (ms)
+
+
+
+
+                  30000                                                                                      6    Related Work
+                  20000
+                                                                                                             Table 1 distinguishes KV-aware placement (“KV route”) from
+                  10000
+                                                                                                             internal KV synchronization: only the former lets residency
+                        0
+                            0       50         100         150         200         250        300
+                                                                                                             change which instance receives a return.
+                                                          Round index                                        Serverless and multi-model LLM serving. Classical
+                                                                                                             prediction-serving systems focus on model lookup, batching,
+Figure 14: Per-round composition for Talaria and Round-only.                                                 replication, pipeline provisioning, and interference control
+The combined mechanisms reduce switch share and round                                                        under request-level latency objectives [24–29]. Serverless
+count.                                                                                                       systems similarly hide placement behind a request/function
+                                                                                                             abstraction whose state is short-lived relative to model execu-
+                                                                                                             tion [30]. LLM serving makes weights and KV cache persis-
+                                                                                                             tent serving state. ServerlessLLM optimizes checkpoint load-
+                            183 GiB cap                                                                      ing and migration for on-demand LLM inference, and Spot-
+                  180                                                                                        Serve adapts serving to preemptible GPU availability [6, 31];
+                                                      peak 177.1 GiB
+HBM used (GiB)
+
+
+
+
+                                                                                                             AlpaServe and MuxServe multiplex multi-model or model-
+                                                                                                             parallel inference on shared GPUs [7, 8]; Aegaeon targets
+                  170
+                                                                                                             long-tail LLM marketplaces with token-level auto-scaling [5].
+                                                                                                             These systems multiplex models and requests. Talaria instead
+                                                                         Talaria          H2D-only           treats the session as the scheduling object: a router must
+                                                                         no-SP            Round-only
+                                                                                                             preserve model and KV residency across tool gaps, and a
+                                                                         no-HKVR          183 GiB cap
+                  160                                                                                        cold-pool instance must admit the returning session before
+                        0         50      100             150          200         250       300             the locality expires.
+                                                      Round index
+                                                                                                             Adapter and fine-tuned-model serving. S-LoRA, Punica,
+Figure 15: HBM footprint under the bump allocator. Runs                                                      and dLoRA make large catalogs of LoRA adapters practical
+remain below the 183 GiB device cap. Curves show per-round                                                   by sharing a resident base model, paging adapter state, or
+averages; the annotation is the maximum across all configura-                                                dynamically migrating requests and adapters [3, 4, 32]. These
+tions.                                                                                                       systems reduce the cost of serving many fine-tuned variants
+                                                                                                             of a base model. Talaria targets the complementary full-model
+                                                                                                             setting: the active model itself may switch, and a returning
+                                                                                                             session’s KV must remain usable across tool gaps and model
+                                                                                                             residency changes.
+   Figure 14 shows the combined effect over time. Round-only
+carries a persistent switch band because every slot-boundary                                                 Memory management for LLM serving. PagedAttention,
+model change reloads from host memory. Talaria’s SP, HKVR,                                                   vAttention, FlexGen, LoongServe, InfiniGen, and Infinite-
+and staging mechanisms jointly reduce switch share and the                                                   LLM improve LLM serving by reducing KV fragmentation,
+number of rounds; this comparison does not attribute the                                                     exploiting virtual memory, offloading cache state, or distribut-
+difference to staging alone. Curves use an 11-round moving                                                   ing long-context KV across memory tiers [20–22, 33–35].
+average for visual clarity and retain separate round-index axes                                              These systems optimize the memory hierarchy for active re-
+because the configurations execute 200 and 339 rounds.                                                       quests or long contexts. Talaria uses memory management
+                                                                                                             for a different scheduling contract: a model can leave the
+  Figure 15 shows device footprint across configurations.                                                    GPU without losing a returning session’s prefix, and a future
+The peak observed HBM use is 177.1 GiB, below the 183 GiB                                                    model switch can be prepared while the current model is still
+device cap. This confirms that the managed layout, restorable                                                serving.
+KV, and weight staging remain within the device-memory                                                       Execution engines and phase-aware scheduling. Orca,
+budget throughout the replay.                                                                                vLLM, Sarathi-Serve, FastServe, DeepSpeed-FastGen, and
+
+
+                                                                                                        13
+NanoFlow improve utilization of a loaded model through                 paired model-sessions. SP lowers p50 TTFT from 4.60 s to
+iteration-level scheduling, KV paging, chunked prefill, pre-           0.55 s, while D2D staging cuts p50 logical-switch latency
+emption, dynamic split-fuse scheduling, and intra-device over-         by 34% and aggregate switch time by 38%. On the two-
+lap [20, 36–40]. Splitwise, DistServe, and TetriInfer separate         worker placement testbed, the router eliminates every avoid-
+prefill and decode resources, and TokenScale autoscales such           able model open at low and medium load and leaves only one
+deployments using token velocity [17–19, 41]. Talaria is com-          at high load.
+plementary: it coordinates model switching, session returns,              The design intentionally keeps the router out of the token
+and memory pressure across many models. Its evaluated co-              data path. Weight and KV transfers are executed by instances,
+located design avoids adding a cross-tier KV handoff to each           while the router uses telemetry to decide when those trans-
+session turn.                                                          fers are worth paying. This separation is what lets Talaria
+KV reuse and cache-aware routing. CachedAttention                      combine cluster-level placement with instance-level execu-
+and SGLang reuse conversation or structured-program pre-               tion contracts: the router selects an instance using model
+fixes through KV hierarchy and RadixAttention [14, 23]. Hy-            residency, KV availability, and pressure; that instance restores
+dragen accelerates shared-prefix attention, CacheGen and               KV and activates or stages models as needed.
+CacheBlend reduce the cost of moving or composing reusable
+KV, and LMCache provides a KV-cache layer for enterprise-              Limitations and future work. Our current evidence com-
+scale serving [42–45]. Mooncake and MemServe expose                    bines controlled large-model execution on one TP=8 server
+KV cache as a disaggregated cluster resource, while Preble,            with isolated placement experiments on two workers. Broader
+DualMap, and Llumnix use cache-aware routing or migration              workload and cluster-scale evaluation are the next empirical
+to balance locality and load [15, 16, 46–48]. Talaria builds on        steps. On the mechanism side, workload-adaptive lease and
+the same principle that KV is schedulable state, but the rout-         host-cache policies, remote-KV integration, dynamic hot-cold
+ing decision also depends on model residency, round pressure,          pool reallocation, and P/D-disaggregated admission are nat-
+and observed session-return timing.                                    ural extensions. D2D staging improves the p50 and mean
+Serving agentic programs. ReAct, Toolformer, ReWOO,                    switch path under high KV pressure; reducing dirty-chunk
+Reflexion, and AutoGen popularized tool-interleaved, reflec-           fallbacks can extend these gains to p95.
+tive, and multi-agent language-model execution, and SWE-
+agent shows that software-engineering agents repeatedly call
+                                                                       References
+models while interacting with a repository and test envi-
+ronment [9–11, 49–51]. SGLang, Parrot, Pie, Autellix, and
+                                                                        [1] Stanford Institute for Human-Centered Artificial Intel-
+Continuum then show that such programs expose reusable
+                                                                            ligence. The 2025 ai index report. Technical report,
+prefixes, control flow, inter-request dataflow, and KV life-
+                                                                            Stanford University, 2025.
+times that should be scheduled above the single-request
+level [12, 23, 52–54]. Talaria consumes that session-level              [2] Avijit Ghosh, Lucie-Aimée Kaffee, Yacine Jernite, and
+structure at a complementary layer: placement and execu-                    Irene Solaiman. State of open source on hugging face:
+tion across a serverless multi-model pool. Here, models may                 Spring 2026. Hugging Face Blog, 2026.
+be hot or cold, and the router must jointly decide whether to
+reuse a model replica, restore session state, or recompute a            [3] Ying Sheng, Shiyi Cao, Dacheng Li, Coleman Hooper,
+prefix.                                                                     Nicholas Lee, Shuo Yang, Christopher Chou, Banghua
+                                                                            Zhu, Lianmin Zheng, Kurt Keutzer, Joseph E. Gonza-
+                                                                            lez, and Ion Stoica. S-LoRA: Serving thousands of
+7   Conclusion                                                              concurrent LoRA adapters. In Proceedings of Machine
+                                                                            Learning and Systems (MLSys), 2024.
+This paper presented Talaria, a serverless multi-model serv-
+ing system for agentic workloads. Serving an agent session              [4] Bingyang Wu, Ruidong Zhu, Zili Zhang, Peng Sun, Xu-
+requires tracking both session state—KV locality and return                 anzhe Liu, and Xin Jin. dLoRA: Dynamically orches-
+timing—and instance state—model residency and pressure.                     trating requests and adapters for LoRA LLM serving. In
+Request-level placement and slot-boundary admission lose                    Proceedings of the 18th USENIX Symposium on Operat-
+continuity in different ways. Talaria addresses them with                   ing Systems Design and Implementation (OSDI), pages
+soft reservation at the router and session-prefill (SP) at the              911–927, 2024.
+cold-pool scheduler. An instance-local substrate preserves
+restorable KV and stages weights across model switches.                 [5] Yuxing Xiang, Xue Li, Kun Qian, Yufan Yang, Diwen
+   On the fixed TP=8 replay, the instance-local mechanisms                  Zhu, Wenyuan Yu, Ennan Zhai, Xuanzhe Liu, Xin Jin,
+deliver 5.3× and 2.6× speedups in p50 and p95 SCT relative                  and Jingren Zhou. Aegaeon: Effective gpu pooling for
+to the internal Round-only ablation, and improve 29 of 30                   concurrent llm serving on the market. In Proceedings
+
+
+                                                                  14
+     of the ACM SIGOPS 31st Symposium on Operating Sys-                   and Pengfei Zuo. Cost-efficient large language model
+     tems Principles (SOSP), 2025.                                        serving for multi-turn conversations with CachedAtten-
+                                                                          tion. In Proceedings of the 2024 USENIX Annual Tech-
+ [6] Yao Fu, Leyang Xue, Yeqi Huang, Andrei-Octavian                      nical Conference (USENIX ATC), 2024.
+     Brabete, Dmitrii Ustiugov, Yuvraj Patel, and Luo Mai.
+     ServerlessLLM: Low-latency serverless inference for             [15] Ruoyu Qin, Zheming Li, Weiran He, Jialei Cui, Heyi
+     large language models. In Proceedings of the 18th                    Tang, Feng Ren, Teng Ma, Shangming Cai, Yineng
+     USENIX Symposium on Operating Systems Design and                     Zhang, Mingxing Zhang, Yongwei Wu, Weimin Zheng,
+     Implementation (OSDI), 2024.                                         and Xinran Xu. Mooncake: Trading more storage for
+                                                                          less computation – a KVCache-centric architecture for
+ [7] Zhuohan Li, Lianmin Zheng, Yinmin Zhong, Vincent                     serving LLM chatbot. In Proceedings of the 23rd
+     Liu, Ying Sheng, Xin Jin, Yanping Huang, Zhifeng Chen,               USENIX Conference on File and Storage Technologies
+     Hao Zhang, Joseph E. Gonzalez, and Ion Stoica. Al-                   (FAST), 2025.
+     paServe: Statistical multiplexing with model parallelism
+     for deep learning serving. In Proceedings of the 17th           [16] Vikranth Srivatsa, Zijian He, Reyna Abhyankar, Dong-
+     USENIX Symposium on Operating Systems Design and                     ming Li, and Yiying Zhang. Preble: Efficient distributed
+     Implementation (OSDI), 2023.                                         prompt scheduling for LLM serving, 2024.
+
+ [8] Jiangfei Duan, Runyu Lu, Haojie Duanmu, Xiuhong                 [17] Pratyush Patel, Esha Choukse, Chaojie Zhang, Aashaka
+     Li, Xingcheng Zhang, Dahua Lin, Ion Stoica, and Hao                  Shah, Iñigo Goiri, Saeed Maleki, and Ricardo Bianchini.
+     Zhang. MuxServe: Flexible spatial-temporal multiplex-                Splitwise: Efficient generative LLM inference using
+     ing for multiple LLM serving, 2024.                                  phase splitting. In Proceedings of the 51st Annual Inter-
+                                                                          national Symposium on Computer Architecture (ISCA),
+ [9] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak                     2024.
+     Shafran, Karthik Narasimhan, and Yuan Cao. ReAct:
+     Synergizing reasoning and acting in language models.            [18] Yinmin Zhong, Shengyu Liu, Junda Chen, Jianbo Hu,
+     In Proceedings of the 11th International Conference on               Yibo Zhu, Xuanzhe Liu, Xin Jin, and Hao Zhang. Dist-
+     Learning Representations (ICLR), 2023.                               Serve: Disaggregating prefill and decoding for goodput-
+                                                                          optimized large language model serving. In Proceedings
+[10] Timo Schick, Jane Dwivedi-Yu, Roberto Dessì, Roberta                 of the 18th USENIX Symposium on Operating Systems
+     Raileanu, Maria Lomeli, Luke Zettlemoyer, Nicola Can-                Design and Implementation (OSDI), 2024.
+     cedda, and Thomas Scialom. Toolformer: Language
+     models can teach themselves to use tools. In Advances           [19] Cunchen Hu, Heyang Huang, Liangliang Xu, Xusheng
+     in Neural Information Processing Systems (NeurIPS),                  Chen, Jiang Xu, Shuang Chen, Hao Feng, Chenxi Wang,
+     2023.                                                                Sa Wang, Yungang Bao, Ninghui Sun, and Yizhou Shan.
+                                                                          Inference without interference: Disaggregate LLM in-
+[11] John Yang, Carlos E. Jimenez, Alexander Wettig, Kil-                 ference for mixed downstream workloads, 2024.
+     ian Lieret, Shunyu Yao, Karthik Narasimhan, and Ofir
+     Press. SWE-agent: Agent-computer interfaces enable              [20] Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying
+     automated software engineering. In Advances in Neural                Sheng, Lianmin Zheng, Cody Hao Yu, Joseph E. Gonza-
+     Information Processing Systems (NeurIPS), 2024.                      lez, Hao Zhang, and Ion Stoica. Efficient memory man-
+                                                                          agement for large language model serving with page-
+[12] Michael Luo, Xiaoxiang Shi, Colin Cai, Tianjun Zhang,                dattention. In Proceedings of the ACM SIGOPS 29th
+     Justin Wong, Yichuan Wang, Chi Wang, Yanping Huang,                  Symposium on Operating Systems Principles (SOSP),
+     Zhifeng Chen, Joseph E. Gonzalez, and Ion Stoica.                    2023.
+     Autellix: An efficient serving engine for llm agents as
+     general programs, 2025.                                         [21] Ramya Prabhu, Ajay Nayak, Jayashree Mohan, Ra-
+                                                                          machandran Ramjee, and Ashish Panwar. vAttention:
+[13] Carlos E. Jimenez, John Yang, Alexander Wettig,                      Dynamic memory management for serving LLMs with-
+     Shunyu Yao, Kexin Pei, Ofir Press, and Karthik R.                    out PagedAttention, 2024.
+     Narasimhan. SWE-bench: Can language models resolve
+     real-world GitHub issues? In Proceedings of the 12th            [22] Ying Sheng, Lianmin Zheng, Binhang Yuan, Zhuohan
+     International Conference on Learning Representations                 Li, Max Ryabinin, Daniel Y. Fu, Zhiqiang Xie, Beidi
+     (ICLR), 2024.                                                        Chen, Clark Barrett, Joseph E. Gonzalez, Percy Liang,
+                                                                          Christopher Ré, Ion Stoica, and Ce Zhang. FlexGen:
+[14] Bin Gao, Zhuomin He, Puru Sharma, Qingxuan Kang,                     High-throughput generative inference of large language
+     Djordje Jevdjic, Junbo Deng, Xingkun Yang, Zhou Yu,                  models with a single GPU. In Proceedings of the 40th
+
+
+                                                                15
+     International Conference on Machine Learning (ICML),            [31] Xupeng Miao, Chunan Shi, Jiangfei Duan, Xiaoli Xi,
+     2023.                                                                Dahua Lin, Bin Cui, and Zhihao Jia. SpotServe: Serv-
+                                                                          ing generative large language models on preemptible
+[23] Lianmin Zheng, Liangsheng Yin, Zhiqiang Xie, Chuyue                  instances. In Proceedings of the ACM International
+     Sun, Jeff Huang, Cody Hao Yu, Shiyi Cao, Christos                    Conference on Architectural Support for Programming
+     Kozyrakis, Ion Stoica, Joseph E. Gonzalez, Clark Bar-                Languages and Operating Systems (ASPLOS), 2024.
+     rett, and Ying Sheng. SGLang: Efficient execution
+     of structured language model programs. In Advances              [32] Lequn Chen, Zhiqiang Ye, Yilong Wu, Danyang Zhuo,
+     in Neural Information Processing Systems (NeurIPS),                  Luis Ceze, Arvind Krishnamurthy, and Tianqi Zhang.
+     2024.                                                                Punica: Multi-tenant LoRA serving. In Proceedings of
+                                                                          Machine Learning and Systems (MLSys), 2024.
+[24] Christopher Olston, Noah Fiedel, Kiril Gorovoy,
+     Jeremiah Harmsen, Li Lao, Fangwei Li, Vinu                      [33] Bingyang Wu, Shengyu Liu, Yinmin Zhong, Peng Sun,
+     Rajashekhar, Sukriti Ramesh, and Jordan Soyke.                       Xuanzhe Liu, and Xin Jin. LoongServe: Efficiently
+     TensorFlow-Serving: Flexible, high-performance ML                    serving long-context large language models with elastic
+     serving, 2017.                                                       sequence parallelism, 2024.
+
+[25] Daniel Crankshaw, Xin Wang, Guilio Zhou, Michael J.             [34] Wonbeom Lee, Jungi Lee, Junghwan Seo, and Jaewoong
+     Franklin, Joseph E. Gonzalez, and Ion Stoica. Clipper:               Sim. InfiniGen: Efficient generative inference of large
+     A low-latency online prediction serving system. In Pro-              language models with dynamic KV cache management.
+     ceedings of the 14th USENIX Symposium on Networked                   In Proceedings of the 18th USENIX Symposium on Op-
+     Systems Design and Implementation (NSDI), 2017.                      erating Systems Design and Implementation (OSDI),
+                                                                          2024.
+[26] Haichen Shen, Lequn Chen, Yuchen Jin, Liangyu Zhao,
+                                                                     [35] Bin Lin, Chen Zhang, Tao Peng, Hanyu Zhao, Wen-
+     Bingyu Kong, Matthai Philipose, Arvind Krishnamurthy,
+                                                                          cong Xiao, Minmin Sun, Anmin Liu, Zhipeng Zhang,
+     and Ravi Sundaram. Nexus: A GPU cluster engine for
+                                                                          Lanbo Li, Xiafei Qiu, Shen Li, Zhigang Ji, Tao Xie,
+     accelerating DNN-based video analysis. In Proceed-
+                                                                          Yong Li, and Wei Lin. Infinite-LLM: Efficient LLM ser-
+     ings of the 27th ACM Symposium on Operating Systems
+                                                                          vice for long context with DistAttention and distributed
+     Principles (SOSP), pages 322–337, 2019.
+                                                                          KVCache, 2024.
+[27] Daniel Crankshaw, Gur-Eyal Sela, Corey Zumar, Xi-               [36] Gyeong-In Yu, Joo Seong Jeong, Geon-Woo Kim, Soo-
+     angxi Mo, Joseph E. Gonzalez, Ion Stoica, and Alexey                 jeong Kim, and Byung-Gon Chun. Orca: A distributed
+     Tumanov. InferLine: Latency-aware provisioning and                   serving system for transformer-based generative mod-
+     scaling for prediction serving pipelines. In Proceed-                els. In Proceedings of the 16th USENIX Symposium on
+     ings of the 11th ACM Symposium on Cloud Computing                    Operating Systems Design and Implementation (OSDI),
+     (SoCC), 2020.                                                        2022.
+[28] Francisco Romero, Qian Li, Neeraja J. Yadwadkar, and            [37] Amey Agrawal, Nitin Kedia, Ashish Panwar, Jayashree
+     Christos Kozyrakis. INFaaS: Automated model-less                     Mohan, Nipun Kwatra, Bhargav S. Gulavani, Alexey
+     inference serving. In Proceedings of the 2021 USENIX                 Tumanov, and Ramachandran Ramjee.             Taming
+     Annual Technical Conference (USENIX ATC), pages                      Throughput-Latency tradeoff in LLM inference with
+     397–411, 2021.                                                       Sarathi-Serve. In Proceedings of the 18th USENIX Sym-
+                                                                          posium on Operating Systems Design and Implementa-
+[29] Arpan Gujarati, Reza Karimi, Safya Alzayat, Wei Hao,
+                                                                          tion (OSDI), 2024.
+     Antoine Kaufmann, Ymir Vigfusson, and Jonathan
+     Mace. Serving DNNs like clockwork: Performance                  [38] Bingyang Wu, Yinmin Zhong, Zili Zhang, Gang Huang,
+     predictability from the bottom up. In Proceedings of the             Xuanzhe Liu, and Xin Jin. FastServe: Fast distributed
+     14th USENIX Symposium on Operating Systems Design                    inference serving for large language models. In Pro-
+     and Implementation (OSDI), 2020.                                     ceedings of the 17th USENIX Symposium on Operating
+                                                                          Systems Design and Implementation (OSDI), 2023.
+[30] Mohammad Shahrad, Rodrigo Fonseca, Inigo Goiri, Go-
+     har Chaudhry, Paul Batum, Jason Cooke, Eduardo Lau-             [39] Connor Holmes, Masahiro Tanaka, Michael Wyatt, Am-
+     reano, Colby Tresness, Mark Russinovich, and Ricardo                 mar Ahmad Awan, Jeff Rasley, Samyam Rajbhandari,
+     Bianchini. Serverless in the wild: Characterizing and                Reza Yazdani Aminabadi, Heyang Qin, Arash Bakhtiari,
+     optimizing the serverless workload at a large cloud                  Lev Kurilenko, and Yuxiong He. DeepSpeed-FastGen:
+     provider. In Proceedings of the 2020 USENIX Annual                   High-throughput text generation for LLMs via dynamic
+     Technical Conference (USENIX ATC), 2020.                             splitfuse, 2024.
+
+
+                                                                16
+[40] Kan Zhu, Yilong Zhao, Liang Zhao, Gan Zuo, Yile Gu,             [50] Noah Shinn, Federico Cassano, Ashwin Gopinath,
+     Dedong Xie, Yufei Gao, Qinyu Xu, Tian Tang, Zihao                    Karthik Narasimhan, and Shunyu Yao. Reflexion: Lan-
+     Ye, Keisuke Kamahori, Chien-Yu Lin, Stephanie Wang,                  guage agents with verbal reinforcement learning. In
+     Arvind Krishnamurthy, and Baris Kasikci. NanoFlow:                   Advances in Neural Information Processing Systems
+     Towards optimal large language model serving through-                (NeurIPS), 2023.
+     put, 2024.
+                                                                     [51] Qingyun Wu, Gagan Bansal, Jieyu Zhang, Yiran Wu,
+[41] Ruiqi Lai, Hongrui Liu, Chengzhi Lu, Zonghao Liu,                    Beibin Li, Erkang Zhu, Li Jiang, Xiaoyun Zhang,
+     Siyu Cao, Siyang Shao, Yixin Zhang, Luo Mai, and                     Shaokun Zhang, Jiale Liu, Ahmed Hassan Awadallah,
+     Dmitrii Ustiugov. TokenScale: Timely and accurate                    Ryen W. White, Doug Burger, and Chi Wang. AutoGen:
+     autoscaling for disaggregated LLM serving with token                 Enabling next-gen LLM applications via multi-agent
+     velocity, 2025.                                                      conversation, 2023.
+[42] Jordan Juravsky, Bradley Brown, Ryan Ehrlich, Daniel Y.         [52] Chaofan Lin, Zhenhua Han, Chengruidong Zhang,
+     Fu, Christopher Ré, and Azalia Mirhoseini. Hydragen:                 Yuqing Yang, Fan Yang, Chen Chen, and Lili Qiu. Par-
+     High-throughput LLM inference with shared prefixes,                  rot: Efficient serving of LLM-based applications with
+     2024.                                                                semantic variable. In Proceedings of the 18th USENIX
+                                                                          Symposium on Operating Systems Design and Imple-
+[43] Yuhan Liu, Hanchen Li, Yihua Cheng, Siddhant Ray,
+                                                                          mentation (OSDI), pages 929–945, 2024.
+     Yuyang Huang, Qizheng Zhang, Kuntai Du, Jiayi Yao,
+     Shan Lu, Ganesh Ananthanarayanan, Michael Maire,                [53] In Gim, Zhiyao Ma, Seung-seob Lee, and Lin Zhong.
+     Henry Hoffmann, Ari Holtzman, and Junchen Jiang.                     Pie: A programmable serving system for emerging LLM
+     CacheGen: KV cache compression and streaming for                     applications. In Proceedings of the ACM SIGOPS 31st
+     fast large language model serving. In Proceedings of                 Symposium on Operating Systems Principles (SOSP),
+     the ACM SIGCOMM Conference, 2024.                                    2025.
+[44] Jiayi Yao, Hanchen Li, Yuhan Liu, Siddhant Ray, Yi-             [54] Hanchen Li, Runyuan He, Qiuyang Mang, Qizheng
+     hua Cheng, Qizheng Zhang, Kuntai Du, Shan Lu, and                    Zhang, Huanzhi Mao, Xiaokun Chen, Hangrui Zhou,
+     Junchen Jiang. CacheBlend: Fast large language model                 Alvin Cheung, Joseph E. Gonzalez, and Ion Stoica.
+     serving for RAG with cached knowledge fusion, 2024.                  Continuum: Efficient and robust multi-turn llm agent
+[45] Yihua Cheng, Yuhan Liu, Jiayi Yao, Yuwei An, Xi-                     scheduling with kv cache time-to-live, 2025.
+     aokun Chen, Shaoting Feng, Yuyang Huang, Samuel
+     Shen, Kuntai Du, and Junchen Jiang. LMCache: An                 A    Trace and Replay Details
+     efficient KV cache layer for enterprise-scale LLM infer-
+     ence, 2025.                                                     Session boundaries. A session is one agent task. The trace
+                                                                     starts at the first model call issued for that task and ends at
+[46] Cunchen Hu, Heyang Huang, Junhao Hu, Jiang Xu,
+                                                                     the final model response before the task terminates. We de-
+     Xusheng Chen, Tao Xie, Chenxi Wang, Sa Wang, Yun-
+                                                                     fine the inter-call gap as the wall-clock interval between a
+     gang Bao, Ninghui Sun, and Yizhou Shan. MemServe:
+                                                                     model response and the next model enqueue. This interval
+     Context caching for disaggregated LLM serving with
+                                                                     includes tool execution and agent/runtime orchestration, so it
+     elastic memory pool, 2024.
+                                                                     is not a pure tool-execution measurement. Harness startup and
+[47] Ying Yuan, Pengfei Zuo, Bo Wang, Zhangyu Chen,                  teardown fall outside the session boundary. Across the 6,941
+     Zhipeng Tan, and Zhou Yu. DualMap: Enabling both                possible consecutive-call intervals, 6,294 have a complete
+     cache affinity and load balancing for distributed LLM           timestamp pair; the remaining 647 do not. The characteri-
+     serving, 2026.                                                  zation plot further excludes five >30 s environment-startup
+                                                                     intervals, leaving 6,289 gaps for the reported distribution.
+[48] Biao Sun, Ziming Huang, Hanyu Zhao, Wencong Xiao,
+     Xinyi Zhang, Yong Li, and Wei Lin. Llumnix: Dynamic
+     scheduling for large language model serving. In Pro-            Prefix reuse. For consecutive calls within a session, prefix
+     ceedings of the 18th USENIX Symposium on Operating              reuse is measured after tokenization as the longest common
+     Systems Design and Implementation (OSDI), 2024.                 prefix between the new prompt and the prior prompt plus
+                                                                     generated response that remains in the session context. The
+[49] Binfeng Xu, Zhendong Peng, Bowen Lei, Subhabrata                resulting prefix length quantifies the amount of reusable work.
+     Mukherjee, Yu Liu, and Dongkuan Xu. ReWOO: De-                  Whether a return actually reuses device KV, restores host KV,
+     coupling reasoning from observations for efficient aug-         or recomputes the prefix also depends on cache residency,
+     mented language models, 2023.                                   validity, and capacity at return time.
+
+
+                                                                17
+Replay inputs. The 445-session characterization trace sup-               whose first generated tokens are known; after a forced model
+ports the distributions and recovery-cost estimates in §2.1.             switch and HKVR restore, the client compares the generated
+Each available record contains the session id, call index,               prefix with the expected sequence and records whether the
+model id, enqueue timestamp, prompt and output tokens,                   cache hit came from device or host state. Large-model stress
+reusable-prefix tokens, and inter-call gap. The recovery-cost            runs enable the same runtime checks under round scheduling:
+estimates combine these records with model-specific prefill              TP-prefix disagreement truncates the exposed prefix, stale
+profiles measured on the testbed.                                        or uncommitted DMA blocks are never published to radix
+   The TP=8 fixed replay is a separate 960-call workload.                metadata, and staged weight chunks marked dirty are reloaded
+Across configurations, each model-session uses the same re-              from host rather than copied through D2D. These tests ex-
+quest bodies, model and session ids, per-session call order,             ercise the guards; performance claims use the workloads in
+completion-token counts, and recorded inter-call gaps. The               §5.
+replay caps each gap at 10 s, affecting 20 of 960 calls. It is
+closed-loop: each next call is released after the preceding call
+completes and its capped gap elapses, so global interleaving             C    HKVR Transfer Layouts
+may differ as configurations finish calls at different times. The
+TP=4 router experiments use a separate 120-call, 30-model-               HKVR separates the scheduler-visible cache state from the
+session subset and map its model ids to the models on that               physical layout used to move KV bytes. The router only ob-
+testbed (§5.1).                                                          serves whether a prefix is device-resident, host-restorable,
+                                                                         or missing. The restore path below that interface packs and
+                                                                         unpacks KV pages through layout-aware transfer kernels.
+Timing telemetry. Replay logs keep request-local TTFT                       Layer-first and page-first movement. SGLang’s KV
+and schedule-aware TTFT in the same schema. The latter                   movement path supports two equivalent views of the same log-
+starts at the replay scheduler’s intended enqueue time, so               ical prefix. In a layer-first (LF) layout, host slabs are grouped
+it includes any replay-side admission delay. Unless stated               by model layer, then by page within that layer; this matches
+otherwise, the paper reports schedule-aware TTFT. Round                  the device-side KV cache layout used by attention kernels
+summaries use a mutually exclusive decomposition, wall_ms                and makes a layer’s pages contiguous for DMA. In a page-
+= active_ms + switch_ms. Phase counters such as prefill,                 first (PF) layout, the host representation is grouped by logical
+decode, H2D, and D2H are diagnostic subviews inside active               prefix page, with the per-layer fragments for that page stored
+slots; they can overlap and are not summed into wall time.               under one page descriptor. PF is useful for registry operations
+                                                                         because the prefix can be committed, invalidated, or restored
+B    Correctness Conditions                                              at page granularity. HKVR records the logical prefix as pages
+                                                                         and invokes LF/PF transfer kernels to translate between the
+Talaria relies on three implementation-level conditions when             registry view and the active device layout. LF/PF are data-
+moving state across HBM and host memory.                                 movement layouts; HKVR is the consistency and naming
+   Prefix agreement. Each tensor-parallel rank reports its               layer above them.
+committed prefix length and cumulative prefix hash at page                  Attention-layout metadata. Each HKVR entry carries
+boundaries. HKVR exposes only the longest page-aligned pre-              a compact layout descriptor: model id, TP rank, prefix hash,
+fix on which all ranks agree for the same model. If a rank lags          committed token length, page size, dtype, attention family, and
+or hashes diverge, HKVR publishes the last agreed boundary               slab shape. MHA models store paired K/V slabs, while MLA
+and marks the remaining suffix for recomputation. This makes             models use latent-state slabs. Supported Mamba-style paths
+TP disagreement a reuse loss rather than a correctness risk.             register recurrent and auxiliary state through architecture-
+   Lifetime separation. Radix-tree ownership and DMA                     specific descriptors rather than treating that state as KV
+transfer pins are tracked separately. A block can remain                 slabs. The router-visible states remain device-resident, host-
+pinned until an asynchronous copy finishes even if the radix             restorable, or missing across these families, but transfer and
+tree no longer references it; conversely, radix metadata cannot          completeness checks are architecture-specific. HKVR pub-
+expose a block whose DMA copy has not completed.                         lishes restorable state only when that state is complete and
+   Switch barrier. Before a model’s active kv_cache region               the agreement rule in §B holds; otherwise the unconfirmed
+is released, the scheduler drains outstanding D2H events for             suffix is recomputed.
+prefixes that may be restored later. The barrier is scoped to the
+outgoing model, so unrelated models do not block the switch
+                                                                         D    Switch Timeline Instrumentation
+path.
+                                                                         The implementation records one SWITCH_TIMING line per TP
+Validation protocol. We exercise these guards at two lev-                rank for every model switch. Each rank’s timer starts after
+els. Synthetic switch/restore tests use deterministic prompts            pre-switch diagnostic probes. The instrumented latency of a
+
+
+                                                                    18
+logical switch is the maximum across its TP ranks; the phase              rank-level records: 14,952 D2D-full, 102 partial D2D+H2D,
+breakdown below instead reports rank-level records so that                and 16 full-H2D fallbacks. These records hit the cached KV
+per-rank work remains visible. A switch follows five ordered              shell and CUDA graph, so the tail is driven by uncovered
+phases.                                                                   weight bytes rather than runtime recapture. D2D-full switches
+   Phase 1: save and teardown. The instance drains outstand-              have a p50 D2D gather-sync time of 18.3 ms; partial switches
+ing HKVR D2H writes for the outgoing model, cancels stale                 add H2D synchronization with a p50 of 696.2 ms for uncov-
+H2D restores, saves the CUDA-graph and KV-pool handles,                   ered chunks. Dirty chunks arise when active KV allocations
+releases runtime buffers, parks the outgoing radix tree, and              overlap the staging range, and the guard reloads those chunks
+pauses the outgoing model’s per-model TMS tags.                           from host rather than copying unsafe D2D sources.
+   Phase 2: open target weights. The instance waits for any
+outstanding pre-staging work, verifies the staging bitmap,                Model-specific weight postprocessing. Some models ex-
+updates the active model configuration, resolves the CPU-side             pose runtime weights that are not a byte-for-byte copy of the
+model entry, and opens the target weights either through D2D              raw checkpoint tensors. In our GLM runs, the quantized post-
+gather, partial D2D plus H2D top-up, or full H2D fallback.                load path materializes packed and derived tensors on the GPU
+   Phase 3: restore the KV shell. The scheduler checks                    after the first open. The switch path therefore treats the post-
+whether the target model’s KV-pool shell can be reused under              processed physical layout as the stable representation: after
+the current weight-region size, page size, and capacity. A hit            finalization, it writes the processed tensors back to the host-
+rebinds the cached shell; a miss rebuilds the pool under the              side model entry and uses that layout for later H2D or D2D
+target model’s TMS tag.                                                   reloads. This keeps region sizing and staged-byte account-
+   Phase 4: restore runtime and graph state. The instance                 ing aligned with the physical parameter and persistent-buffer
+restores a cached attention backend and CUDA graph when                   order used by the active model.
+the KV shell and graph pointers match; otherwise it rebuilds
+runtime buffers and recaptures graphs.
+   Phase 5: publish references. The instance propagates the               E    Policy Knobs
+new model, allocator, KV, radix, and telemetry references back
+                                                                          Reservation timeout τ. We select τ = 1 s from the sensi-
+to the scheduler and worker. This phase is intentionally small:
+                                                                          tivity sweep in §5.4; it is near the p90 inter-call gap in the
+large memory movement has already completed in Phase 2.
+                                                                          characterization trace. Expired sessions fall back to normal
+           Phase    D2D full     D2D + H2D      H2D-only
+                                                                          residency-aware placement.
+                    p50 p95       p50    p95    p50     p95                  Bump memory fraction. The component experiments use
+           P1       26.2 34.7     26.9   30.9   21.9   31.7               mem-fraction-bump=0.8, reserving most HBM for the man-
+           P2      109.6 244.8   995.8 1819.8 2570.6 3142.2               aged layout while leaving headroom for runtime allocations
+           P3        0.5   2.0     0.5    1.2    0.8    1.9
+           P4        8.6 20.3      8.3   20.0    7.7   16.4               and a safety margin.
+           P5        0.2   0.3     0.2    0.3    0.2    0.3                  Admission margin γ. Cold-pool rounds are bounded below
+           Total   149.8 298.9 1041.2 1854.6 2608.6 3170.6                the configured TTFT target with γ < 1, after accounting for
+                                                                          switching and restore overhead. This knob is an admission-
+Table 2: Per-rank five-phase switch timing in a separate com-             control margin; absolute target attainment still depends on the
+ponent stress run (ms).                                                   offered load and provisioning level.
+                                                                             Replica penalty νm . The router uses a per-model replica
+   Table 2 reports a separate TP=8 component stress run, not              penalty to avoid opening replicas for transient bursts whose
+the 600 logical switches per configuration in Figure 12. D2D-             benefit does not cover switch and memory cost.
+full and D2D+H2D use steady-state rank-level records after
+excluding warm-up and instrumentation outliers (n = 14,952
+and n = 102); H2D-only uses rank-level records from a no-
+D2D stress run (n = 2,104). The table shows why staging
+helps: phases other than weight opening are already small
+under cache hits, so the switch path is dominated by Phase 2.
+Full D2D staging reduces the p50 Phase 2 cost from 2.57 s to
+110 ms, while partial staging lands between the two according
+to the uncovered H2D fraction.
+
+Path classification. Each rank-level record also identifies
+the load path, staged-byte coverage, dirty staging bytes, and
+D2D/H2D gather times. In the TP=8 staged run used for the
+first two path groups of Table 2, the filtered set contains 15,070
+
+
+                                                                     19
+

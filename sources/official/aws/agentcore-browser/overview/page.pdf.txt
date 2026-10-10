@@ -1,0 +1,181 @@
+.com/contact-us/?cmpid=docs_headercta_contactus)
+
+?hidden_service_name=bedrock-agentcore&topic_url=https%3A%2F%2Fdocs.aws.amazon.com%2Fbedrock-agentcore%2Flatest%2Fdevguide%2Fbrowser-tool.html)
+                                                         Get started       Service guides       Developer tools        AI resources
+                                                         (#)               (#)                  (#)                    (#)
+   (https://docs.aws.amazon.com)
+
+
+
+     Amazon Bedrock                                      Documentation
+                                                                                                      Amazon Bedrock AgentCore
+                                                                                                      (https://docs.aws.amazon.com/bedrock-   Developer Guid
+     AgentCore                                           (https://docs.aws.amazon.com/index.html)
+                                                                                                      agentcore/index.html)
+     Developer Guide
+
+
+
+
+    Overvie (what-is-bedrock-
+                                                         Interact with web applications
+    w       agentcore.html)
+                                                         using Amazon Bedrock
+                                                         AgentCore Browser
+    Supported AWS         (agentcore-
+    Regions               regions.html)
+
+    Get started with    (agentcore-get-
+    AgentCore           started-cli.html)                      PDF (/pdfs/bedrock-agentcore/latest/devguide/bedrock-agentcore-dg.pdf#browser-tool)
+    AgentCore harness(harness.html)
+                                                               RSS (bedrock-agentcore-dg.rss)             Markdown (browser-tool.md)
+    Understand the available          (develop-
+    interfaces for using              agents.htm
+                                                               Agent Setup             Focus mode
+    AgentCore                         l)
+
+    AgentCore Runtime:          (agents-tools-
+    Host agent or tools         runtime.html)
+
+    AgentCore Memory: Add                  (memory.
+    memory to your agent                   html)         Did this page help you?
+    AgentCore Gateway(gateway.html)
+                                                               Yes               No
+    AgentCore Identity: Provide               (identi
+    identity management for agent             ty.htm
+                                                         Provide feedback (https://docs.aws.amazon.com/feedback/doc-feedback.html?
+    applications                              l)
+                                                         hidden_service_name=bedrock-agentcore&topic_url=https%3A%2F%2Fdocs.aws.amazon.com%2Fbedrock-
+    AgentCore payments: Enable                (paym      agentcore%2Flatest%2Fdevguide%2Fbrowser-tool.html)
+    secure microtransaction                   ents.ht
+    payments for AI agents                    ml)
+
+    AgentCore Code                   (code-
+    Interpreter: Execute code        interpreter-
+    and analyze data                 tool.html)          The Amazon Bedrock AgentCore Browser provides a secure, isolated browser
+    AgentCore Browser: interact(browser-                 environment for your agents to interact with web applications. It runs in a
+    with web applications      tool.html)                containerized environment, keeping web activity separate from your system. It
+        Get started with  (browser-                      includes security features such as session isolation, built-in observability through live
+        AgentCore Browser quickstart.htm                 viewing, CloudTrail logging, and session replay capabilities.
+                                l)
+
+        Fundam (browser-resource-session-
+        entals management.html)
+
+        Observabili (browser-
+        ty          observability.html)
+
+        Features(browser-features.html)
+
+        File system (browser-filesystem-
+        configuration configurations.html)
+        s
+
+        Troubleshoot      (browser-tool-
+        AgentCore         troubleshooting.ht
+        Browser           ml)
+
+    AgentCore Observability:               (observab
+    Observe your agents and                ility.html)
+    resources
+
+    AgentCore MCP Server:            (mcp-
+    Vibe coding with your            getting-
+coding assistant               started.htm
+                               l)
+
+Policy in AgentCore: Control          (policy.h   The Amazon Bedrock AgentCore Browser provides session-based web browsing with
+Agent Interactions                    tml)
+                                                  comprehensive observability. The workflow consists of four key steps:
+AgentCore Evaluations:     (evaluatio
+Evaluate agent performance ns.html)                1. Create a Browser Tool
+AgentCore                 (optimization.htm           You start by creating a Browser Tool enabling web browsing capabilities for your
+optimization              l)                          agent to interact with web applications, fill forms, navigate websites, and extract
+AWS Agent Registry: Centrally          (registr       information in a fully managed environment. You can choose between the AWS
+catalog and discover AI                y.html)        managed Browser (aws.browser.v1) for quick setup, or create a custom browser
+Resources                                             with advanced features like session recording, custom network settings, and
+AgentCore CLI       (agentcore-cli-                   specific IAM execution roles.
+reference           reference.html)
+                                                   2. Start a browser session
+AgentCore Python (agentcore-python-
+SDK reference    sdk-reference.html)                  Launch isolated sessions with configurable timeouts (default: 15 minutes,
+                                                      maximum: 8 hours). Run multiple sessions simultaneously.
+AgentCore            (agentcore-
+TypeScript SDK       typescript-sdk-               3. Interact with the browser
+reference            reference.html)
+                                                      Once a session is started, you can interact with the browser using WebSocket-
+Security(security.html)                               based streaming APIs. The Automation endpoint enables your agent to perform
+Tagging resources(tagging.html)                       browser actions such as navigating to websites, clicking elements, filling out
+Quotas(bedrock-agentcore-limits.html)                 forms, taking screenshots, and more. Libraries like Strands, Nova Act, or
+                                                      Playwright can be used to simplify these interactions. Meanwhile, the Live View
+Release notes(release-notes.html)
+                                                      endpoint allows an end user to watch the browser session in real time and
+                                                      interact with it directly through the live stream.
+                                                   4. Monitor and record sessions
+                                                      All browser sessions provide built-in observability which includes Live View for
+                                                      real-time monitoring, Session recording (available for custom browsers), and
+                                                      CloudWatch metrics for real-time performance insights. Session recording
+                                                      captures DOM changes, user actions, console logs, and network events. Recorded
+                                                      sessions are stored in your Amazon S3 bucket and can be replayed through the
+                                                      AWS Console for detailed analysis capabilities including video playback, timeline
+                                                      navigation, user action tracking, and comprehensive logs for troubleshooting and
+                                                      optimization.
+
+                                                  Why use remote browsers for agent development?
+
+                                                  A remote browser runs in a separate environment rather than on the local machine.
+                                                  For agent development, remote browsers allow AI agents to interact with the web as
+                                                  humans do. Key capabilities include:
+
+                                                      Navigate websites, fill forms, click buttons, parse dynamic content
+                                                      Serverless infrastructure that scales automatically
+                                                      Visual understanding through screenshots
+                                                      Human intervention with live interactive view
+                                                      Session isolation for security
+                                                      Complex web application navigation
+                                                      Comprehensive audit capabilities
+
+                                                  Security Features
+
+                                                  The Browser Tool includes several security features to help protect your environment:
+
+                                                      Isolation: Containerized environment separate from your system
+                                                      Ephemeral sessions: Temporary sessions that reset after each use
+                                                      Automatic termination when time-to-live expires
+
+                                                  Topics
+                                                                   Get started with AgentCore Browser (./browser-quickstart.html)
+                                                                   Fundamentals (./browser-resource-session-management.html)
+                                                                   Observability (./browser-observability.html)
+                                                                   Features (./browser-features.html)
+                                                                   File system configurations for AgentCore Browser (./browser-filesystem-
+                                                                   configurations.html)
+
+                                                                   Troubleshoot AgentCore Browser (./browser-tool-troubleshooting.html)
+
+
+Get Started                                    Service Guides                          Developer Tools                            Helpful Links
+                                                                                                                                                                       Top
+AWS Hands-On Tutorials                         Choosing a generative AI                AWS Code Example Library          Download the AWS Docs MCP
+(https://aws.amazon.com/getting-               service                                 (https://docs.aws.amazon.com/code-Server
+started/hands-on/)                             (https://docs.aws.amazon.com/decision-
+                                                                                  library/latest/ug/what-is-code-                 (https://github.com/awslabs/mcp/tree/main/src/aws
+
+AWS Solutions Library                          guides/latest/decision-                 library.html)                              documentation-mcp-server)
+
+(https://aws.amazon.com/solutions/)guides/genai-guide.html)                            AWS CLI                                    Sign into the AWS Console
+AWS Decision Guides                            AWS service guides                      (https://docs.aws.amazon.com/cli/) (https://console.aws.amazon.com/)
+                                   (https://docs.aws.amazon.com/#products)
+(https://docs.aws.amazon.com/decision-                               AWS Builder Center                                           AWS re:Post
+guides/)                                       AWS CLI Tutorials on                    (https://builder.aws.com/)                 (https://repost.aws/)
+                                               GitHub                                  AWS Developer Tools Blog
+                                               (https://github.com/aws-                (https://aws.amazon.com/blogs/developer/)
+                                               samples/sample-developer-
+                                               tutorials)
+
+
+
+Privacy (https://aws.amazon.com/privacy)         |   Site terms (https://aws.amazon.com/terms)   |   Cookie preferences (#)   |    © 2026, Amazon Web Services,
+
+Inc. or its affiliates. All rights reserved.         English
+

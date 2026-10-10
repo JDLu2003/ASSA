@@ -1,0 +1,637 @@
+                                          ChronoMem: Version Control and Semantic Rollback for Large
+                                                      Language Model Agent Memory
+                                                                                Yongye Su                                                                       Wujiang Xu
+                                                                            Purdue University                                                               Rutgers University
+                                                                                  USA                                                                              USA
+                                                                           su311@purdue.edu                                                               wujiang.xu@rutgers.edu
+
+                                                                               Chaoji Zuo                                                                      Elisa Bertino
+                                                                         Rutgers University                                                                  Purdue University
+                                                                                 USA                                                                               USA
+                                                                       chaoji.zuo@rutgers.edu                                                               bertino@purdue.edu
+
+                                        Abstract                                                                                        methodologies → Natural language processing; Knowledge
+                                        LLM agents increasingly rely on long-term memory to support                                     representation and reasoning.
+                                        multi-session interaction and personalization. However, existing
+                                        agent memory systems are designed around forward-only evolution-                                Keywords
+arXiv:2607.27773v2 [cs.CL] 5 Aug 2026
+
+
+
+
+                                        continuously accumulating, consolidating, and overwriting knowledge-                            Agent Memory, Large Language Models, Version Control, Semantic
+                                        with no principled mechanism to inspect, version, or revert prior                               Rollback, Data Management
+                                        states. This makes agents brittle under corrections, concept drift,
+                                        and memory corruption, particularly after the agent has already
+                                        been exposed to subsequent information. We present ChronoMem,                                   1   Introduction
+                                        a semantic version-control layer for agentic memory, integrated                                 Large language model (LLM) agents increasingly rely on long-term
+                                        into a production-ready open-source agent framework (Agent De-                                  memory to support multi-session conversations [11, 15] and person-
+                                        velopment Kit by Google). ChronoMem commits whole-memory                                        alization [2, 9]. Modern agent frameworks extract facts, summaries,
+                                        snapshots at each memory write, maintains structured version                                    and episodic traces from interactions and persist them in external
+                                        histories, and supports natural-language rollback requests by map-                              memory stores or knowledge bases [16, 22]. Over time, this process
+                                        ping “undo” intents to concrete historical versions via hybrid lexi-                            produces a continuously evolving memory state whose updated
+                                        cal–semantic retrieval, rank fusion, and reranking. We further in-                              contents directly shape the agent’s downstream outputs. Following
+                                        troduce a post-exposure evaluation protocol that tests whether an                               recent work, long-term memory in agents is typically external-
+                                        agent can behave counterfactually after rollback-answering queries                              ized as textual traces or structured databases rather than encoded
+                                        and summarizing history as if future updates never occurred. On                                 solely in model parameters, and should therefore be evaluated un-
+                                        long-horizon conversational benchmarks augmented with evolv-                                    der incremental, multi-turn ingestion rather than in a single-block
+                                        ing memory states and rollback tasks, ChronoMem substantially                                   long-context setting [7].
+                                        improves rollback-consistent question answering and history sum-                                    However, current LLM agents typically treat long-term memory
+                                        marization relative to prompt-only and retrieval-only baselines,                                as an append-only or overwrite-only store [8]: once knowledge
+                                        while achieving strong recovery on semantic version selection. To                               is written, it is difficult to inspect its evolution, revert to a previ-
+                                        our knowledge, ChronoMem is the first open-source system and                                    ous state, or reliably “undo” a faulty update. This lack of version
+                                        benchmark for systematic, semantic, global memory rollback in                                   control and rollback makes agents vulnerable to error accumula-
+                                        LLM agents.                                                                                     tion, outdated or contradictory knowledge, and memory poison-
+                                                                                                                                        ing [1]. Recent proprietary cloud services have begun exposing
+                                        CCS Concepts                                                                                    built-in APIs for per-memory history management, but these op-
+                                        • Information systems → Data management systems; Infor-                                         erate at the level of opaque version identifiers (e.g., rollback to a
+                                        mation storage systems; Information systems applications; Informa-                              target_revision_id) and offer no public evaluation of how ver-
+                                        tion retrieval; Retrieval models and ranking; • Computing                                       sioned memory affects agent behavior [5]. This gap raises several
+                                                                                                                                        fundamental challenges: (i) Semantic targeting: How can an agent
+                                                                                                                                        map a natural-language “undo” request to the correct historical
+                                        Permission to make digital or hard copies of all or part of this work for personal or
+                                        classroom use is granted without fee provided that copies are not made or distributed           version without requiring users to know internal version IDs? (ii)
+                                        for profit or commercial advantage and that copies bear this notice and the full citation       Global vs. local rollback: What is the right rollback granularity—
+                                        on the first page. Copyrights for components of this work owned by others than the              per-memory-entry versions as exposed by managed services, or
+                                        author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+                                        republish, to post on servers or to redistribute to lists, requires prior specific permission   whole-memory snapshots needed to recover a temporally consistent
+                                        and/or a fee. Request permissions from permissions@acm.org.                                     state for downstream tasks such as global history summarization?
+                                        ACM CAIS, San Jose, CA                                                                          (iii) End-to-end consistency: When memory is backed by external
+                                        © 2026 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+                                        ACM ISBN 978-x-xxxx-xxxx-x/YYYY/MM                                                              indexes/corpora and tool calls induce side effects, how can roll-
+                                        https://doi.org/XXXXXXX.XXXXXXX                                                                 back restore a globally consistent state across local memory, remote
+ACM CAIS, May 26–29, 2026, San Jose, CA                                                              Yongye Su, Wujiang Xu, Chaoji Zuo, and Elisa Bertino
+
+
+stores, and tool-induced artifacts, given that existing rewind mech-            ChronoMem establishes a new foundation for controllable long-
+anisms are typically session-scoped, and explicitly do not restore           term memory in LLM agents, moving from passive accumulation to
+app/user-level resources nor external dependencies? 1 2                      actively managed, reversible, and semantically searchable memory
+    While rollback has been explored for web navigation and version-         states.
+control metaphors have been applied to context management in
+other settings [19, 23], to our knowledge no open-source system or           2 Related Work
+benchmark yet systematically evaluates semantic, global memory
+                                                                             2.1 LLM Agent Memory
+rollback under a post-exposure protocol over long-term conver-
+sational data. Existing long-horizon memory benchmarks assess                Long-term memory has become essential for LLM agents oper-
+memory agents along dimensions such as accurate retrieval, test-             ating across multi-session interactions. Early systems introduced
+time learning, long-range understanding, and selective forgetting,           hierarchical memory management, reflection and summarization
+but they assume a forward-evolving memory state and do not test              over stored observations, and forgetting-curve-based update mech-
+rollback-to-a-prior-global-state behavior under post-exposure eval-          anisms to enable agents to maintain context beyond fixed context
+uation [7, 11].                                                              windows [15, 16, 24]. A-Mem [20] shifted from passive storage to
+    For example, an agent may progressively update its memory with           agentic memory, where the agent itself dynamically organizes and
+new user preferences, facts, or plans that later prove incorrect, out-       links memories through structured note-linking rather than relying
+dated, or even adversarially injected. In such cases, users may wish         on fixed retrieval operations, marking a transition toward treating
+to roll back to a prior trusted memory state with a simple, natural-         memory as a first-class, self-organizing structure. Building on these
+language “undo” instruction, yet mainstream agent stacks provide             foundations, more recent works [2, 17] have scaled toward pro-
+no principled semantic mechanism for doing so. Prior work has                duction deployment, introducing scalable memory extraction and
+largely advanced agent memory in the forward direction—how to                consolidation pipelines, graph-based representations that capture
+continuously accumulate, consolidate, and retrieve evolving memo-            relational structures among conversational elements, and tempo-
+ries from natural-language interactions. In this work, we investigate        ral knowledge graphs that maintain bi-temporal models tracking
+the reverse direction: after an agent has already observed subse-            both when facts occurred and when they were ingested. These sys-
+quent interactions, can we restore a prior global memory state via           tems have been evaluated on increasingly comprehensive long-term
+semantic version control and enable counterfactual behavior—that             conversational benchmarks that test factual recall, temporal rea-
+is, “undo” at the memory-fact level as if the intervening interactions       soning, and multi-hop inference across hundreds of dialogue turns
+never occurred? Figure 1 illustrates the contrast between append-            spanning dozens of sessions [11]. Despite this progress, existing
+only memory evolution and our version-controlled memory with                 systems primarily focus on memory evolution (adding, updating,
+semantic rollback.                                                           consolidating, and selective forgetting) and typically do not expose
+    We introduce ChronoMem, a semantic version-control layer for             explicit version-control primitives that preserve whole-memory
+agentic memory, built within a production-ready and open-sourced             snapshots or enable rollback to a prior global memory state. Once
+agent framework3 . ChronoMem equips LLM agents with time-aware               a memory is overwritten or merged, prior states are often not re-
+memory snapshots, version histories, and rollback operations that            tained in an accessible, auditable form, leaving agents vulnerable
+can be driven either by explicit version identifiers or by natural-          to error accumulation and memory poisoning attacks where adver-
+language descriptions of the desired prior state.                            sarially injected entries can propagate through future retrievals [1].
+    Our contributions are as follows:                                        To our knowledge, no existing open-source system offers whole-
+                                                                             memory snapshots, commit-level versioning, or natural language
+     • We design and implement a version control abstraction for             driven semantic rollback integrated into a production-ready agent
+       LLM agent memory within an open-source production-ready               framework, which are the gaps that ChronoMem is designed to fill.
+       framework (ADK by Google), introducing global snapshots,
+       version histories, and commit semantics for agent memory,             2.2    Traceable Version Control and Rollback
+       and integrating these with a retrieval-backed persistent mem-
+       ory index backend.                                                    Rollback operations rely on traceable version control and persis-
+     • We propose the first open-source semantic global rollback             tent logging. In LLM agent memory, unlike selective forgetting
+       mechanism for agent memory that maps natural-language                 (e.g., revising beliefs to resolve contradictions), rollback is a re-
+       “undo” requests to whole-memory versions, and implement               versible state-control primitive that restores a prior memory state
+       an end-to-end rollback pipeline with verifiable integrity             and enables counterfactual behavior after the agent has already
+       checks.                                                               been exposed to later information.
+     • We introduce a systematic evaluation standard for post-                  Several works study how agent memories are edited or adapted
+       exposure semantic rollback of agent memory by augmenting              over time. Memory Sandbox exposes conversational memory as
+       long-term conversational memory benchmarks with evolv-                editable objects that users can inspect, modify, or delete, improving
+       ing memory states, updates, and rollback tasks.                       transparency but relying on manual operations [8]. Dynamic re-
+                                                                             call models introduce human-like decay and consolidation so that
+                                                                             frequently used facts remain accessible and obsolete ones fade [6].
+1 https://google.github.io/adk-docs/sessions/session/rewind/
+2 https://openai.github.io/openai-agents-python/ref/run_internal/session_    These approaches manage how memory changes, but once an up-
+persistence/                                                                 date is applied there is no automatic way to restore a prior global
+3 Agent Development Kit (ADK) by Google https://google.github.io/adk-docs/   snapshot.
+ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory                              ACM CAIS, May 26–29, 2026, San Jose, CA
+
+
+
+      Append-Only Agent Memory Evolution                                                 Agent Memory with Semantic Rollback
+                    I want to go grocery to buy some fruit                                           I want to go grocery to buy some fruit
+            mem<shopping list> (add):                                                         mem<shopping list> (add):
+     v1     Fruit                                                                        v1   Fruit
+                                  I will go Paris see my uncle                                                   I will go Paris see my uncle
+
+    v2      mem<travel>(add): Going to Paris visit uncle                                 v2   mem<travel>(add): Going to Paris visit uncle
+                                   I’d buy some Vinyl for him                                                       I’d buy some Vinyl for him
+                                          when I go shopping                                                               when I go shopping
+    v3      mem<shopping list>(add):                                                     v3   mem<shopping list>(add):
+            Vinyl for visiting uncle in Paris                                                 Vinyl for visiting uncle in Paris
+
+                                      …
+               Go back to before I planned the Paris trip.                                                             …
+                                                                                                Go back to before I planned the Paris trip.
+    v4      mem<travel>(add): user will not go Paris                                     vT   mem<travel>(ROLLBACK vT → v1)
+                               What’s on my shopping list?                                                    What’s on my shopping list?
+            mem<shopping list> (Retrieved):                                                   mem<shopping list> (Retrieved):
+     v4     Fruit                                                                        v1   Fruit
+            Vinyl for visiting uncle in Paris ❌ Wrong!                                                                    ✅ Correct!
+                                                                                                      Memory State
+                     Memory State                                                                     rolled back to v1 via
+  Agent              can’t rollback                                   Human       Agent               natural language input                  Human
+
+
+Figure 1: Comparison between append-only versus version-controlled agent memory with semantic rollback. Left: Irreversible
+memory only moves forward-reads are bound to the latest state 𝑆 (𝑣𝑇 ). Right: ChronoMem’s memory-level semantic rollback
+enables a controlled memory state versioning (𝑣𝑇 → 𝑣 1 ), rolling back to previous memory state 𝑆 (𝑣 1 ) and enforcing historical
+consistency in subsequent reads.
+
+  Work                                  Rollback Target                   Targeting Interface          Open-source-based       Public Rollback Eval
+  ChronoMem (ours)                  Global Agent Memory             Natural Language → Rollback                 ✓                         ✓
+  Vertex AI Memory Revisions       Memory-id specific revision    Revision ID (target_revision_id)              ×                         ×
+  ADK Session Rewind                 Session state/artifacts          Invocation/rewind point ID                ✓                         ×
+  OpenAI Agents Sessions             Session history items               pop_item/history ops                   ✓                         ×
+  WebRollback                        Navigation trajectory              Explicit rollback action                ×                         ✓
+
+Table 1: Scope comparison of rollback mechanisms. Vertex provides per-memory revision history and rollback via a revision
+identifier (e.g., target_revision_id) [5]. ADK rewind is session-scoped and explicitly does not restore app/user-level resources
+nor external dependencies [4]. OpenAI Agents SDK Sessions manage conversation history with operations such as pop_item for
+undoing recent turns and are released under an open-source license [14]. WebRollback evaluates rollback over navigation
+trajectories [23]. Existing long-horizon memory benchmarks (e.g., LoCoMo, MemoryAgentBench) do not test rollback-to-a-
+prior-global-memory-state behavior [7, 11].
+
+
+
+   Closer to our setting, there is emerging work on rollback for                  invariant-based coordination so that rolling back a transaction pre-
+other forms of LLM-driven state. Git-Context Controller (GCC)                     serves ACID consistency [21]. In WebRollback [23], web agents can
+treats an agent’s code context like a version-controlled filesys-                 revert to previous navigation states in a search tree and re-plan,
+tem, with commit, branch, and merge operations for reasoning                      improving robustness on complex web tasks. In industry practice,
+traces [19]. Database research proposes a middleware layer that                   Vertex AI Agent Engine added a proprietary Memory Revisions
+treats LLM-generated database transactions as removable and uses                  feature that records individual memory edits and supports rollback
+                                                                                  via a revision (version) identifier (e.g.,target_revision_id) in a
+ACM CAIS, May 26–29, 2026, San Jose, CA                                                          Yongye Su, Wujiang Xu, Chaoji Zuo, and Elisa Bertino
+
+
+managed memory bank [5]. In addition, common framework utili-              Our goal is to enable global memory version control for LLM-based
+ties such as ADK session rewind and OpenAI Agents SDK session           agent: every memory write produces a new whole-memory snapshot
+persistence can undo session-scoped history items, but do not pro-      (a commit), and rollback restores the entire long-term memory state
+vide semantic rollback over globally versioned long-term memory         to a prior snapshot. This capability is critical for post-exposure
+states [4, 13, 14]. Table 1 shows the aforementioned scope differ-      settings: after an agent has already observed later interactions,
+ence. Finally, AgentPoison shows that poisoning an agent’s mem-         we must be able to restore a historical memory state such that
+ory or knowledge base can induce persistent backdoor behaviors,         downstream behavior (QA and summarization) is counterfactual—
+underscoring the need for stronger control over what agents re-         as if post-𝑣 ∗ information never occurred.
+member [1]. Compared to these efforts, ChronoMem targets internal          ChronoMem focuses on (i) defining a systems-level abstraction
+long-term agent memory rather than database or environment state,       for global memory commits and rollback at the agent memory
+is implemented in an open-source agent framework, and focuses           boundary, and (ii) implementing a semantic control plane that maps
+specifically on semantic version selection and global rollback to       natural-language “undo” requests to concrete historical versions.
+whole-memory snapshots rather than ID-only, per-memory-entry            We do not attempt to undo arbitrary external side effects (e.g.,
+rollback or manual rewind.                                              third-party services) beyond the agent memory substrate; consis-
+                                                                        tent restoration of external systems remains application-dependent,
+                                                                        consistent with the limitations of existing rewind mechanisms [4].
+2.3    Memory Retrieval and Evaluation
+Work on long-term memory evaluation emphasizes retrieval and            3.2     Architecture Overview
+usage, not version control. LoCoMo proposes a benchmark of very
+                                                                        The Figure 2 depicts the rollback path from the data layer, index
+long, multi-session conversations and evaluates whether agents
+                                                                        layer, to the control layer. ChronoMem is implemented as a drop-in,
+can recall and use information from earlier sessions for question
+                                                                        versioned MemoryService wrapper and consists of:
+answering and event summarization [11]. MemoryAgentBench de-
+fines four competencies for memory-enabled agents-accurate re-                • LocalMemoryService (orchestrator). Intercepts memory
+trieval, test-time learning, long-range understanding, and selective            writes to create versions and persists them; exposes rollback
+forgetting-and measures performance on incremental multi-turn                   APIs such as
+tasks [7]. These benchmarks reveal that current systems struggle               rollback_to_version(version_id) deterministically
+with long-horizon memory and forgetting, even when equipped                       restores the snapshot 𝑆 (𝑣 𝑣𝑖𝑑 ) and sets HEAD := 𝑣𝑖𝑑.
+with vector databases or extended context windows. However, they               rollback_to_version_by_nl_query(query) resolves
+assume a single evolving memory state and do not consider choos-                  a natural-language rollback request 𝑞 to a target version
+ing among multiple historical memory versions or restoring a prior                𝑣ˆ via hybrid retrieval over semantic commit descriptors,
+global memory state under post-exposure rollback.                                 then invokes rollback_to_version(ˆ𝑣).
+    In contrast to prior work, ChronoMem provides a framework-                  Both APIs are atomic at the per-(app,user) scope for identifi-
+level, open-source mechanism for semantic version control and                   cation purposes and preserve the interface invariant that all
+rollback of agent memory. It maintains a versioned chronological                subsequent memory reads are scoped to the active version
+memory within ADK, maps natural-language “undo” requests to                     collections.
+concrete memory snapshots, and consistently maintains both lo-                • SQLite memory store. Persists the append-only event log,
+cal memory and retrieval-backed memory indexes. Our evaluation                  version metadata, and snapshot payloads, and maintains the
+augments long-horizon conversational memory benchmarks with                     active version pointer (HEAD).
+evolving memory states and rollback probes, and measures rollback-            • Reranker module. Refines candidate rollback versions us-
+consistent QA/summarization under post-exposure, providing the                  ing a stronger relevance model (e.g., a cross-encoder reranker).
+first systematic evaluation of semantic global rollback for versioned
+                                                                           Interface invariant. ChronoMem enforces a simple invariant at
+agent memory in long-term conversational settings.
+                                                                        the memory boundary: reads are scoped to the active version (HEAD).
+                                                                        After rollback to 𝑣 ∗ , any subsequent memory read or retrieval must
+3  System Design of ChronoMem: The Natural                              behave as if only the state at 𝑣 ∗ exists (no post-𝑣 ∗ visibility).
+   Language “Undo” Button of Agent Memory
+                                                                        3.3     Version Control and Semantic Rollback
+3.1 Goal and Scope
+                                                                        ChronoMem exposes agent memory rollback as a systems problem:
+ChronoMem provides version-controlled, reversible long-term memory      given a natural-language undo request 𝑞, select a target historical
+for LLM agents running in a modern agent framework. We tar-             version 𝑣ˆ and restore the agent’s long-term memory state so that
+get agents built on Google’s open-sourced Agent Development Kit         all subsequent memory reads are scoped to that restored state. This
+(ADK), where an agent execution is orchestrated by a runtime event      enables post-exposure counterfactual behavior: the agent may have
+loop (Runner) and persists interaction traces as session events and     observed interactions after the desired point, but after rollback it
+state, while optionally using a MemoryService to maintain search-       must behave as if only the rolled-back memory were available.
+able long-term knowledge across sessions. While ADK supports
+session-level rewind for reverting a session to a previous request         State model: versions, snapshots, and the event log. We model
+state, rewind is explicitly scoped to session-managed resources and     long-term agent memory as an append-only event log L with ex-
+does not restore app/user-level state or external dependencies [4].     plicit versions {𝑣 𝑗 } and snapshots 𝑆 (𝑣 𝑗 ), notably, we use 𝑣 𝑗 and
+ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory                                                ACM CAIS, May 26–29, 2026, San Jose, CA
+
+
+                                                                                                                 Please go back to before I
+                   I’d buy some Vinyl for him
+                                                                            Stage (3)                                planned the Paris trip.
+                          when I go shopping                          NL-Version mapping             Lexical                                       Human
+                                                                   (Hybrid Retrieval + Rerank)       string                 Query
+                                                     Human
+                  𝒆𝒕 (𝒆𝟑 )=                                                                                                 Embedding
+                                                                                                                                 Reciprocal            Cross-
+                  {type = add,
+                                                                                                                        TopK       Rank               encoder
+                   fact = "buy vinyl for uncle"}                                  Version Index                                                                 Top1
+                                                                                                                                            TopK                        v1
+      Agent                                                                                                                        Fusion            Reranker
+                  HEAD = v3                                               Full-text           Vector                    TopK        (RRF)
+                                                                        Search (FTS)        Embedding
+    Event Log 𝓛                            Snapshots {S}                   Index              Index
+  < 𝒆𝟏 , 𝒆𝟐 , 𝒆𝟑𝟑 … >                 S(v1), S(v2), S(v3)...      Index maintenance                 Index maintenance                              rollback_version_id= v1
+                                                                        Version Metadata: descriptors (d)            RollbackToVersion(rollback_version_id)
+           id               event_log
+                                                                                                                     snap = S(v1)
+              1         shopping list:+ fruit                                                                        RestoreStateFromSnapshot(snap)
+                                                                      d1 = {delta1, summary1, op1, labels1}
+              2      going to Paris visit uncle                                                                      HEAD = v1
+                                                                      d2 = {delta2, summary2, op2, labels2}          d_vid = TruncateVersionsAfter(v1)
+           3        buy vinyl for visiting uncle
+ Appended                                                             d3 = {delta3, summary3, op3, labels3}          // v2, v3 deleted
+                                     S(v3) Materialization                                                           Commit_transaction
+ event in log                                                                          …
+                                                                                                                     RemoveRetrievalBackendVId(d_vid)
+                                          delta3, summary3,
+                        Stage (1)                                                  Stage (2)                                                 Stage (4)
+                  Version Construction op3, labels3                            Version Indexing                                        Deterministic Rollback
+                   (commit-on-write)                                     (semantic commit descriptors)                               (id-based version restore)
+
+
+                                                                  Figure 2: The system architecture
+
+
+version_id interchangeably to denote a globally unique version                             Algorithm 1 CommitOnWrite(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑒)
+identifier. Each memory write generates an immutable event 𝑒𝑖                                1: // Append event and create a new version 𝑣 𝑗 (commit-on-
+appended to a serial log:                                                                       write).
+                                                                                             2: // Example: user says “I moved to NYC” ⇒ append event 𝑒 and
+                               L = ⟨𝑒 1, 𝑒 2, . . . 𝑒 𝑗 ⟩,
+                                                                                                commit corresponding new version.
+following the event-sourcing principle that historical states can                            3: begin transaction
+
+be reconstructed from the event stream [3]. For auditability and                             4: 𝑠𝑒𝑞 ← NextEventSeq(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟 )
+
+recovery, this mirrors write-ahead logging ideas (e.g., ARIES) in                            5: 𝜏 ← Now();                                             ⊲ record timestamp
+spirit, but operates at the level of logical agent-memory state rather                       6: AppendEvent(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑠𝑒𝑞, 𝜏, 𝑒)                   ⊲ immutable event log
+than page-level database recovery [12]. Each event 𝑒𝑖 is associated                             insert
+with a record timestamp 𝜏𝑖 indicating when the update is recorded.                           7: 𝑣𝑖𝑑 ← NextVersionId(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟 )
+
+   A version 𝑣 𝑗 corresponds to a whole-memory snapshot material-                            8: d ← BuildCommitDescriptor(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑠𝑒𝑞)                    ⊲
+ized from a prefix of the log:                                                                  {delta, summary, op, labels}
+                                                                                             9: 𝑠𝑛𝑎𝑝 ← MaterializeSnapshot(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑠𝑒𝑞)         ⊲ serialize
+       𝑆 (𝑣 𝑗 ) ≜ snap(⟨𝑒 1 ...𝑒𝑡 𝑗 ⟩),         𝑤ℎ𝑒𝑟𝑒 𝑡 1 < 𝑡 2 < · · · < 𝑡 𝑗                   whole-memory state (e.g., session_events)
+                                                                                            10: PersistVersion(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑣𝑖𝑑, 𝑠𝑒𝑞, 𝜏, d, 𝑠𝑛𝑎𝑝)        ⊲ store
+where snap(·) serializes the full agent-memory state required by                                metadata + snapshot payload
+downstream reasoning and 𝑡 𝑗 is the maximal event sequence num-                             11: SetHead(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑣𝑖𝑑)      ⊲ advance active version pointer
+ber associated with version. This log+snapshot design avoids re-                            12: commit transaction
+playing the entire log during rollback and trades storage for fast                          13: return 𝑣𝑖𝑑
+restoration.
+
+    Stage (1) Version construction: commit-on-write snapshots.
+                                                                                           summarizes the incremental change introduced at 𝑣 𝑗 :
+Our work ChronoMem creates a new version after each memory
+write (commit-on-write) to support fine-grained rollback targets.                                             d 𝑗 ≜ {delta 𝑗 , summary 𝑗 , op 𝑗 , labels 𝑗 }.
+Operationally, a commit appends the new event to L, materializes
+𝑆 (𝑣 𝑗 ), stores metadata, and advances the active pointer HEAD to the                     Here delta 𝑗 captures operation-level changes (e.g., added/updat-
+latest version. Algorithm 1 shows the transactional write path.                            ed/removed facts), summary 𝑗 provides a compact natural-language
+                                                                                           description, op 𝑗 denotes update types, and labels 𝑗 contains tem-
+   Stage (2) Version index: semantic commit descriptors. Ver-                              poral metadata (e.g., session index and record timestamp 𝜏). These
+sion indexing is version-level secondary index construction over                           descriptors form the retrieval surface for semantic rollback.
+semantic commit descriptors. To support natural-language rollback,                            Importantly, hybrid retrieval is performed over {d 𝑗 } (the version
+each version 𝑣 𝑗 is indexed by a semantic commit descriptor d 𝑗 that                       index), rather than over full snapshots 𝑆 (𝑣 𝑗 ) or raw events L. This
+ACM CAIS, May 26–29, 2026, San Jose, CA                                                           Yongye Su, Wujiang Xu, Chaoji Zuo, and Elisa Bertino
+
+
+Algorithm 2 RollbackToVersion(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑣𝑖𝑑)                           linear history. If a retrieval-backed index is used, we synchronize it
+ 1: begin transaction                                                   best-effort after the local state commit.
+ 2: 𝑠𝑛𝑎𝑝 ← LoadSnapshot(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑣𝑖𝑑)                                    As a last resort, ChronoMem maintains an explicit ID-based API
+ 3: RestoreStateFromSnapshot(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑠𝑛𝑎𝑝)                           (rollback_to_version(version_id)) as a primitive for version
+ 4: SetHead(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑣𝑖𝑑)                                             maintenance and reproducibility. Semantic rollback function in-
+ 5: TruncateVersionsAfter(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑣𝑖𝑑)                               terface (rollback_to_version_by_nl_query(query)) composes
+ 6: commit transaction                                                  over it: it resolves natural language query mapping 𝑞 ↦→ 𝑣ˆ via re-
+ 7: SynchronizeRetrievalBackendIfAny(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑣𝑖𝑑, 𝑠𝑛𝑎𝑝) ⊲            trieval and then invokes the same deterministic restore path. This
+    best-effort; idempotent                                             separation avoids conflating (i) selection errors with (ii) restoring
+ 8: return 𝑣𝑖𝑑                                                          correctness, and makes evaluation interpretable.
+
+
+                                                                        4     Experiment Setup
+ensures that rollback selection is version-level and computationally
+bounded by the number of commits, independent of snapshot size.         We evaluate ChronoMem on two long-horizon memory-agent bench-
+   Formally, lexical retrieval over commit descriptors scales with      marks and adapt them to a rollback setting, focusing on two down-
+the number of versions |{𝑣 𝑗 }| under inverted indexing, while dense    stream tasks: question answering and event summarization. Our
+retrieval follows vector’s approximate nearest neighbor (ANN)           experiments are designed to answer the following questions:
+search complexity bounds [18]. Thus, we search a smaller-order
+                                                                              (RQ1) Semantic version selection:
+data change log rather than the entire underlying data; the selec-
+                                                                                Given a natural-language rollback request, how accurately
+tion cost is independent of snapshot size |𝑆 (𝑣 𝑗 )|, since snapshot
+                                                                                does ChronoMem select the intended target version 𝑣 ∗ among
+payloads are accessed only after a target version is chosen.
+                                                                                historical snapshots? This is to prevent conflating task per-
+   Stage (3): NL→version mapping via hybrid retrieval. Given                    formance with the correctness of version selection.
+a natural-language rollback request 𝑞, ChronoMem selects a target             (RQ2) Rollback-consistent QA:
+version using a standard two-stage retrieval stack: lexical retrieval           After rolling back to a target memory version 𝑣 ∗ , can the
+and dense semantic retrieval in parallel over {d 𝑗 }, followed by               agent answer questions correctly as if only 𝑣 ∗ were available,
+fusion and reranking.                                                           without leaking post-𝑣 ∗ information?
+Lexical retrieval. We use SQLite FTS5 BM25-style ranking over                 (RQ3) Rollback-consistent summarization:
+commit descriptors, e.g.:                                                       After rolling back to 𝑣 ∗ , can the agent generate event sum-
+                                                                                maries that are temporally consistent with the historical
+Listing 1: Lexical retrieval over commit descriptors using                      state at 𝑣 ∗ , rather than reflecting later updates?
+SQLite FTS5 BM25 (lower bm25() is better).
+SELECT version_id, bm25(commit_desc_fts) AS bm25_score
+FROM commit_desc_fts                                                    4.1      Datasets and Usage
+WHERE commit_desc_fts MATCH 'before Paris trip conversation'
+ORDER BY bm25(commit_desc_fts) ASC, rowid ASC                             LoCoMo. It is a very long-term conversational benchmark with
+LIMIT ?;                                                                multi-session dialogues and tasks, including question answering
+                                                                        and event summarization [11]. We use LoCoMo to evaluate rollback-
+Dense retrieval. In parallel, we embed commit descriptors and
+                                                                        consistent QA and rollback-consistent history summarization.
+retrieve top-𝐾 by vector similarity.
+Fusion (RRF). We fuse the two ranked lists with Reciprocal Rank
+Fusion:                                                                    MemoryAgentBench (MAB). It evaluates memory agents under
+                              ∑︁             1                          incremental multi-turn ingestion and formalizes competencies in-
+             RRF(𝑣 𝑗 | 𝑞) =                             ,
+                                     𝑘 0 + rank𝑚 (𝑣 𝑗 )                 cluding Accurate Retrieval, Test-Time Learning, Long-Range Un-
+                              𝑚∈ {lex,sem}
+                                                                        derstanding, and Conflict Resolution [7]. We use MAB to stress
+where rank𝑚 (·) starts from 1 and 𝑘 0 is a constant (commonly set       semantic rollback under frequent updates.
+to 60 in practice).
+Reranking. Finally, ChronoMem optionally reranks the top-𝐾
+                                                                           Post-exposure rollback protocol. Both datasets are originally de-
+fused candidates with a stronger relevance model (e.g., a cross-
+                                                                        signed for forward-evolving memory. To evaluate post-exposure
+                     ˆ
+encoder) and selects 𝑣.
+                                                                        rollback, we run the agent according to two phases: (1) Exposure:
+   Stage (4): Version rollback execution (ID-based). Semantic           ingest the full interaction stream to the final state 𝑣𝑇 ; (2) Rollback:
+rollback is a control-plane operation that resolves 𝑞 to a concrete     issue a natural-language rollback request and restore to a specific
+                   ˆ The actual state transition is executed by a
+version identifier 𝑣.                                                           ˆ then execute the downstream task (QA or summarization)
+                                                                        version 𝑣;
+deterministic data-plane primitive:                                     on the restored state. This protocol enforces a counterfactual re-
+                                                                        quirement: the agent has already observed interactions after 𝑣 ∗ , but
+                                               ˆ
+                  RollbackToVersion(𝑎𝑝𝑝, 𝑢𝑠𝑒𝑟, 𝑣),
+                                                                        should behave as if only the rolled-back state were available. Here
+                               ˆ and updates HEAD. Algorithm 2
+which restores the snapshot 𝑆 (𝑣)                                       we define the ground-truth target 𝑣 ∗ by the annotated evidence
+shows the rollback path: load snapshot payload, restore the local       scope (LoCoMo) [11] and by the constructed update boundary in
+memory state, set HEAD, and truncate later versions to maintain a       incremental streams (MAB) [7].
+ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory                              ACM CAIS, May 26–29, 2026, San Jose, CA
+
+
+    Rollback query construction. To evaluate semantic rollback, we                4.3     Baselines
+construct natural-language rollback requests that specify an in-                  We compare ChronoMem (semantic global rollback) against base-
+tended historical state 𝑣 ∗ without exposing internal version iden-               lines that approximate rollback without restoring a global memory
+tifiers. For each instance, we first derive a grounded anchor from                snapshot.
+dataset annotations available at or before 𝑣 ∗ . For LoCoMo, we use
+the annotated QA evidence spans (dialog IDs containing the answer)                   Prompt-only rollback. We provide the natural-language rollback
+and session-level event annotations as anchors when available [11].               instruction together with the downstream task query, while keeping
+For MAB, we use the constructed update boundary and the as-                       the underlying memory state unchanged. This baseline evaluates
+sociated pre-update memory content as the anchor [7]. We then                     whether the LLM can implicitly infer the intended historical state
+generate rollback queries in two ways: (i) ground-truth-backed tem-               from the conversation and suppress post-𝑣 ∗ information through
+plates (e.g., “undo the update about {anchor}”; “go back to when                  instruction following alone, without structural state isolation.
+{anchor} was true”), and (ii) LLM-generated paraphrases of these tem-
+plates to increase linguistic diversity. To avoid trivializing version               Full-history prompt rollback. We include the entire interaction
+selection, we disallow explicit version IDs, timestamps, or session               history in the model input (including content after 𝑣 ∗ ) and instruct
+indices in rollback queries. We constrain LLM generation to pre-                  the model to answer “as if” rolled back. This represents a stronger
+serve the anchor semantics and discard any query whose reference                  post-exposure stress test under maximal contamination, where the
+does not uniquely identify the intended historical scope.                         model must reason over the full context and ignore information
+                                                                                  beyond the intended rollback boundary.
+
+                                                                                     Retrieval-only rollback (vector-db only). We approximate rollback
+4.2     Metrics
+                                                                                  by retrieving relevant historical memory items using dense sim-
+We report both version selection quality (RQ1) and downstream cor-                ilarity search (ANN top-𝑘) and generating answers conditioned
+rectness after semantic rollback (RQ2–RQ3) as a result of semantic                on the retrieved snippets, without restoring a versioned snapshot.
+rollback.                                                                         This baseline isolates the effect of explicit version-scoped state
+                                                                                  restoration from standard retrieval augmentation.
+  Semantic version selection (RQ1). Let 𝑣ˆ be the selected version
+and 𝑣 ∗ the ground-truth target rollback version. We evaluate:                    5      Evaluation
+                                                                                  This section presents a comprehensive empirical evaluation of
+      • Recall@1: whether 𝑣ˆ = 𝑣 ∗ .                                              ChronoMem under the rollback protocol defined in Section 4. Our
+      • Recall@𝑘: whether 𝑣 ∗ appears in the top-𝑘 retrieved candi-               goal is not only to measure task performance but to isolate and quan-
+        dates before final selection.                                             tify the architectural contribution of explicit version restoration.
+      • Scope@ 𝑘2 : temporal locality defined as Pr[|Δ| ≤ 𝑘2 ], where             Unlike standard memory-agent evaluations that assume forward-
+        Δ = |𝑣ˆ − 𝑣 ∗ | in target rollback index (or session index when           only evolution, our setting introduces a structural state transition
+        aligned).                                                                 prior to task execution; we therefore evaluate ChronoMem along
+                                                                                  two orthogonal axes: (i) the correctness of semantic version reso-
+Scope@ 𝑘2 diagnoses “near-miss” behavior when adjacent versions
+                                                                                  lution, and (ii) the behavioral correctness of the agent after state
+are semantically similar. While Recall@𝑘 measures whether the
+                                                                                  restoration. All downstream metrics are reported on the same set
+ground-truth version 𝑣 ∗ appears among the top-𝑘 retrieved candi-
+                                                                                  of rollback instances to ensure that improvements in QA or sum-
+dates, Scope@ 𝑘2 instead evaluates temporal proximity by measuring                marization are not confounded with version-selection quality.
+whether the selected version 𝑣ˆ lies within 𝑘2 steps of 𝑣 ∗ along the                Our evaluation explicitly tests whether rollback consistency can
+version timeline (i.e., |𝑣ˆ − 𝑣 ∗ | ≤ 𝑘). Thus, although both metrics             be achieved solely through reasoning or whether it requires archi-
+involve a parameter 𝑘, Recall@𝑘 reflects ranking accuracy within                  tectural support for historical state management. By comparing
+the candidate set, whereas Scope@ 𝑘2 reflects temporal locality of                ChronoMem against prompt-only and retrieval-based baselines
+the final 1 selection.                                                            with comparable backbone models, we aim to demonstrate that
+                                                                                  counterfactual correctness under post-exposure conditions can-
+   Rollback-consistent QA (RQ2). We evaluate QA outputs produced                  not be reliably obtained without explicit version-scoped memory
+after rollback using dataset ground-truth answers, reporting Exact                restoration. Unless otherwise specified, all experiments follow the
+Match and/or F1 following prior benchmark practice [11]. When                     exposure–rollback–execution protocol described in Section 4. We
+applicable, we additionally report whether the answer contains                    report results on both LoCoMo [11] and MemoryAgentBench [7],
+post-𝑣 ∗ facts, treating any reliance on later information as a rollback-         covering semantic version selection accuracy, rollback-consistent
+consistency violation.                                                            QA, and rollback-consistent summarization, and further analyze
+                                                                                  ablations and system-level overhead to characterize the trade-offs
+   Rollback-consistent summarization (RQ3). For event/history sum-                introduced by semantic version control.
+marization, we compute ROUGE-1 against reference summaries
+corresponding to the target historical scope [10]. Higher ROUGE in-               5.1     RQ1: Semantic Version Selection
+dicates that the restored memory state yields summaries consistent                We first evaluate semantic version selection independently of down-
+with the intended timeline.                                                       stream QA and summarization tasks. In this setting, no generative
+ACM CAIS, May 26–29, 2026, San Jose, CA                                                          Yongye Su, Wujiang Xu, Chaoji Zuo, and Elisa Bertino
+
+
+        Method            Recall@1 ↑      Recall@5 ↑   Scope@2 ↑         models. On LoCoMo, ChronoMem improves QA F1 over the strongest
+        BM25-only              9.3%         22.3%        13.1%           non-versioned baseline (RAG-only) for all backbones, indicating
+        Dense-only             8.7%         23.6%        12.8%           that explicit version-scoped state restoration provides benefits be-
+        Hybrid (RRF)          12.0%         28.1%        17.9%           yond standard retrieval augmentation on long-horizon conversa-
+        ChronoMem             20.5%         38.9%        31.2%           tions [11]. Notably, prompt-only rollback performs near chance,
+Table 2: Semantic version selection performance on LoCoMo.               suggesting that post-exposure contamination is difficult to over-
+                                                                         come through prompting alone once the agent has already observed
+                                                                         subsequent interactions. On MAB, where we restrict evaluation
+                                                                         to the Accurate Retrieval category due to task-scope constraints,
+      Method             Recall@1 ↑       Recall@5 ↑    Scope@2 ↑        ChronoMem again yields the strongest performance across all back-
+      BM25-only              14.1%           44.6%        23.3%          bones, confirming that deterministic global snapshot restoration
+      Dense-only             12.7%           46.4%        24.9%          is effective for counterfactual QA in an incremental, multi-turn
+      Hybrid (RRF)           24.3%           53.8%        40.5%          memory setting.
+      ChronoMem              33.4%           60.2%        58.0%
+ Table 3: Semantic version selection performance on MAB                        Method         Llama-3.1-8B     Qwen2.5-7B        Mistral-7B
+                                                                               Prompt-only         2.3%             2.8%             0.9%
+                                                                               Full-history       19.3%            20.6%            13.5%
+                                                                               RAG-only           28.9%            27.1%            19.4%
+decoding is involved; the evaluation concerns only the natural-                ChronoMem          36.1%            38.5%            31.3%
+language-to-version resolution pipeline described in Section 3.3.        Table 4: Rollback-consistent QA F1 (%) across different base
+Given a rollback query, we assess the quality of version targeting       models on LoCoMo dataset.
+using hybrid retrieval followed by cross-encoder reranking. Unless
+otherwise specified, we use Cohere Rerank-3.5 as the cross-encoder
+model throughout.4 All metrics are computed over the selected
+version identifiers without invoking the backbone LLM used for
+task execution.                                                                Method         Llama-3.1-8B     Qwen2.5-7B        Mistral-7B
+   As shown in Tables 2 and 3, ChronoMem substantially outper-                 Prompt-only         0.8%             1.2%             0.0%
+forms all baselines in Recall@1 and Recall@5 on both datasets,                 Full-history       21.3%            24.7%            14.9%
+demonstrating that rollback version selection benefits from ex-                RAG-only           35.5%            34.2%            31.0%
+plicit version-level indexing and hybrid retrieval rather than from            ChronoMem          53.8%            55.1%            44.6%
+prompt-based self-suppression or snippet-level similarity search.        Table 5: Rollback-consistent QA on MemoryAgentBench (Ac-
+On LoCoMo, ChronoMem improves Recall@1 from 12.0% (Hybrid) to            curate Retrieval subset), reported as task-specific accuracy
+20.5% and Recall@5 from 28.1% to 38.9%; similar gains are observed       (%) [7].
+on MAB (24.3%→39.4% in Recall@1, 53.8%→65.2% in Recall@5).
+The consistent improvements across both benchmarks indicate
+that explicit version-level indexing combined with temporal-aware
+reranking is critical for reliable rollback selection. Scope@2 further
+                                                                         5.3    RQ3: Rollback-Consistent Summarization
+reveals that even when exact matching fails, ChronoMem more fre-
+quently selects temporally adjacent versions (e.g., 31.2% vs. 17.9%      Tables 6 and 7 report summarization quality after semantic rollback
+on LoCoMo), suggesting that temporal-aware reranking effectively         on LoCoMo and MAB, respectively. Across all backbone models,
+disambiguates semantically similar neighboring versions. Overall,        ChronoMem achieves the best performance, indicating that explicit
+hybrid fusion alone is insufficient; the reranking stage is essential    global snapshot restoration yields summaries that are more tem-
+for resolving such cases. These results validate our system design       porally consistent with the intended historical state. On LoCoMo,
+and confirm that semantic rollback is fundamentally a version-           ChronoMem improves ROUGE-1 over the strongest non-versioned
+selection problem over structured historical states rather than a        baseline for all three backbones (e.g., 0.25 vs. 0.21 on Llama-3.1-8B).
+conventional snippet-level retrieval task.                               Prompt-only rollback performs poorly, suggesting that instruct-
+                                                                         ing the model to “ignore” post-𝑣 ∗ information is insufficient for
+5.2     RQ2: Rollback-Consistent QA                                      counterfactual summarization once the agent has been exposed to
+                                                                         subsequent interactions. Retrieval-only rollback can outperform
+Tables 4 and 5 report question-answering performance after se-
+                                                                         full-history prompting on LoCoMo, consistent with the intuition
+mantic rollback under the post-exposure protocol. In contrast to
+                                                                         that providing the entire contaminated history makes it harder for
+prompt-only baselines, which attempt to suppress post-𝑣 ∗ infor-
+                                                                         the model to maintain a clean temporal scope. On MAB En.Sum,
+mation through instruction following, and retrieval-only approx-
+                                                                         ChronoMem again yields the strongest F1 across backbones; here,
+imations, which rely on snippet-level similarity search without
+                                                                         full-history prompting outperforms retrieval-only rollback, reflect-
+restoring a global memory state, ChronoMem consistently achieves
+                                                                         ing that summarization in this setting depends on global coherence
+the best post-rollback QA performance across all three backbone
+                                                                         and cannot be reliably reconstructed from a small set of retrieved
+4 https://cohere.com/blog/rerank-3pt5                                    snippets. Overall, these results confirm that rollback-consistent
+ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory                                      ACM CAIS, May 26–29, 2026, San Jose, CA
+
+
+summarization benefits from global memory restoration and state                   Limitations
+isolation rather than from prompt-based suppression or snippet-                      Concurrency and transactional semantics. ChronoMem serializes
+level retrieval alone.                                                            commit/rollback operations with a per-user lock and relies on
+                                                                                  SQLite transactions for atomic local state transitions. However,
+      Method          Llama-3.1-8B      Qwen2.5-7B      Mistral-7B                we do not experimentally evaluate high-concurrency settings (e.g.,
+                                                                                  many simultaneous sessions/users issuing frequent commits and
+      Prompt-only          0.10             0.09            0.04
+                                                                                  rollbacks). This is particularly relevant because SQLite serializes
+      Full-history         0.17             0.13            0.11
+                                                                                  writes (single-writer at a time) and uses file-level locking; write-
+      RAG-only             0.21             0.20            0.14
+      ChronoMem            0.25             0.22            0.17                  heavy workloads may experience contention and queueing. A rig-
+                                                                                  orous evaluation of concurrency, contention, and multi-writer scal-
+Table 6: Rollback-consistent summarization task ROUGE-1                           ability (e.g., WAL/WAL2 optimizations) remains future work.
+reported in [0,1] score across different base models on Lo-
+CoMo dataset.                                                                        Linear history only (no branching/merging). Our current imple-
+                                                                                  mentation maintains a linear version history and truncates versions
+                                                                                  after a rollback (Git “reset”-style). Supporting branching timelines
+                                                                                  and merges is conceptually straightforward but is not implemented
+                                                                                  or evaluated in this work.
+      Method          Llama-3.1-8B      Qwen2.5-7B      Mistral-7B                   Benchmark adaptation and query generation. We adapt exist-
+      Prompt-only          2.0%              3.0%           0.0%                  ing long-horizon memory benchmarks to a post-exposure rollback
+      Full-history         8.0%              8.0%           1.0%                  setting and construct rollback queries using ground-truth-backed
+      RAG-only             3.0%              2.0%           0.0%                  anchors with constrained LLM paraphrasing. While this enables a
+      ChronoMem           13.0%             14.0%           7.0%                  controlled and systematic evaluation, these benchmarks were not
+Table 7: Rollback-consistent summarization on MAB                                 originally designed for versioned rollback scenarios. Consequently,
+(En.Sum), reported as F1 (%).                                                     the induced rollback query distribution may not fully capture the
+                                                                                  diversity, ambiguity, and partial specification of real-world user
+                                                                                  rollback intents.
+                                                                                     Our results therefore demonstrate the architectural soundness
+                                                                                  and robustness of semantic rollback under controlled long-horizon
+6    Conclusion                                                                   settings, rather than claiming a complete characterization of roll-
+                                                                                  back behavior in production-scale agent deployments.
+We presented ChronoMem, an open-source semantic version-control
+layer for agent memory integrated into a production-ready agent                   Acknowledgments
+framework (ADK). ChronoMemtreats long-term agent memory as
+a versioned state machine: each memory write produces a whole-                    This work is supported by the NSF award 2229876.
+memory snapshot (a commit), and rollback restores a prior global
+snapshot so that subsequent reads are scoped to the restored version              References
+                                                                                   [1] Zhaorun Chen, Zhen Xiang, Chaowei Xiao, Dawn Song, and Bo Li. 2024. Agent-
+(HEAD). This design reduces natural-language “undo” to a systems                       Poison: Red-teaming LLM Agents via Poisoning Memory or Knowledge Bases.
+problem of NL→version resolution followed by a deterministic re-                       arXiv preprint arXiv:2407.12784 (2024). https://arxiv.org/abs/2407.12784
+store primitive, rather than relying on prompting or best-effort                   [2] Prateek Chhikara, Dev Khant, Saket Aryan, Taranjeet Singh, and Deshraj Ya-
+                                                                                       dav. 2025. Mem0: Building production-ready ai agents with scalable long-term
+retrieval to suppress later information. Across two long-horizon                       memory. arXiv preprint arXiv:2504.19413 (2025).
+benchmarks adapted to a post-exposure rollback setting, ChronoMem                  [3] Martin Fowler. 2005. Event Sourcing. https://www.martinfowler.com/eaaDev/
+achieves the strongest semantic version selection performance and                      EventSourcing.html. Accessed: 2026-02-25.
+                                                                                   [4] Google Cloud. 2024. Session Rewind – Agent Development Kit (ADK) Documen-
+yields consistent downstream improvements after rollback. Com-                         tation. https://google.github.io/adk-docs/sessions/session/rewind/.
+pared to the strongest baseline without global snapshot restoration,               [5] Google Cloud. 2025. Memory Revisions in Vertex AI Agent Engine Memory
+ChronoMem improves rollback-consistent QA and summarization                            Bank. https://docs.cloud.google.com/agent-builder/agent-engine/memory-bank/
+                                                                                       revisions. Accessed: 2025-12-14.
+by approximately 10 percentage points on average across datasets                   [6] Yuki Hou, Haruki Tamoto, and Homei Miyashita. 2024. "My agent understands
+and backbone models. These results support a central takeaway:                         me better": Integrating Dynamic Human-like Memory Recall and Consolidation
+                                                                                       in LLM-Based Agents. arXiv preprint arXiv:2404.00573 (2024). https://arxiv.org/
+rollback-consistent behavior under post-exposure is primarily an ar-                   abs/2404.00573
+chitectural property enabled by explicit version-scoped state restora-             [7] Yuanzhe Hu, Yu Wang, and Julian McAuley. 2025. Evaluating Memory in LLM
+tion, not something that emerges reliably from instruction follow-                     Agents via Incremental Multi-Turn Interactions. arXiv preprint arXiv:2507.05257
+                                                                                       (2025). https://arxiv.org/abs/2507.05257
+ing or snippet-level similarity search alone. We believe ChronoMem                 [8] Ziheng Huang, Sebastian Gutierrez, Hemanth Kamana, and Stephen MacNeil.
+provides a practical foundation for controllable, auditable agent                      2023. Memory Sandbox: Transparent and Interactive Memory Management for
+                                                                                       Conversational Agents. In Adjunct Proceedings of the 36th Annual ACM Symposium
+memory in open-source agent stacks. Promising future directions                        on User Interface Software and Technology. https://arxiv.org/abs/2308.01542
+include rollback-native benchmarks with more realistic user roll-                  [9] Hao Li, Chenghao Yang, An Zhang, Yang Deng, Xiang Wang, and Tat-Seng Chua.
+back intents, branching histories beyond linear truncation, and                        2025. Hello Again! LLM-powered Personalized Agent for Long-term Dialogue.
+                                                                                       In Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the
+higher-concurrency memory backends with stronger multi-writer                          Association for Computational Linguistics: Human Language Technologies (Volume
+transactional semantics.                                                               1: Long Papers), Luis Chiruzzo, Alan Ritter, and Lu Wang (Eds.). Association for
+ACM CAIS, May 26–29, 2026, San Jose, CA                                                                             Yongye Su, Wujiang Xu, Chaoji Zuo, and Elisa Bertino
+
+
+     Computational Linguistics, Albuquerque, New Mexico, 5259–5276. doi:10.18653/           arXiv preprint arXiv:2501.13956 (2025).
+     v1/2025.naacl-long.272                                                            [18] Yongye Su, Yinqi Sun, Minjia Zhang, and Jianguo Wang. 2024. Vexless: A Server-
+[10] Chin-Yew Lin. 2004. Rouge: A package for automatic evaluation of summaries.            less Vector Data Management System Using Cloud Functions. Proc. ACM Manag.
+     In Text summarization branches out. 74–81.                                             Data 2, 3, Article 187 (May 2024), 26 pages. doi:10.1145/3654990
+[11] Adyasha Maharana, Dong-Ho Lee, Sergey Tulyakov, Mohit Bansal, Francesco           [19] Junde Wu. 2025. Git Context Controller: Manage the Context of LLM-based
+     Barbieri, and Yuwei Fang. 2024. Evaluating Very Long-Term Conversational               Agents like Git. arXiv preprint arXiv:2508.00031 (2025). https://arxiv.org/abs/
+     Memory of LLM Agents. In Proceedings of the 62nd Annual Meeting of the Associ-         2508.00031
+     ation for Computational Linguistics. Association for Computational Linguistics,   [20] Wujiang Xu, Zujie Liang, Kai Mei, Hang Gao, Juntao Tan, and Yongfeng Zhang.
+     Bangkok, Thailand. https://aclanthology.org/2024.acl-long.747/                         2025. A-Mem: Agentic Memory for LLM Agents. In NeurIPS 2025. https://
+[12] Chandrasekaran Mohan, Don Haderle, Bruce Lindsay, Hamid Pirahesh, and                  openreview.net/forum?id=FiM0M8gcct
+     Peter Schwarz. 1992. ARIES: A transaction recovery method supporting fine-        [21] Jinghan Zeng, Eugene Wu, and Sanjay Krishnan. 2024. A Simple and Fast Way
+     granularity locking and partial rollbacks using write-ahead logging. ACM Trans-        to Handle Semantic Errors in Transactions. arXiv:2412.12493 [cs.DB] https:
+     actions on Database Systems (TODS) 17, 1 (1992), 94–162.                               //arxiv.org/abs/2412.12493
+[13] OpenAI. 2024. OpenAI Agents SDK: Session Persistence Documentation. https://      [22] Zeyu Zhang, Xiaohe Bo, Chen Ma, Rui Li, Xu Chen, Quanyu Dai, Jieming Zhu,
+     openai.github.io/openai-agents-python/ref/run_internal/session_persistence/.           Zhenhua Dong, and Ji-Rong Wen. 2024. A Survey on the Memory Mechanism of
+[14] OpenAI. 2024. OpenAI Agents SDK: Sessions Documentation. https://openai.               Large Language Model based Agents. arXiv:2404.13501 [cs.AI] https://arxiv.org/
+     github.io/openai-agents-python/sessions/.                                              abs/2404.13501
+[15] Charles Packer, Vivian Fang, Shishir_G Patil, Kevin Lin, Sarah Wooders, and       [23] Zhisong Zhang, Tianqing Fang, Kaixin Ma, Wenhao Yu, Hongming Zhang, Haitao
+     Joseph_E Gonzalez. 2023. MemGPT: Towards LLMs as Operating Systems. (2023).            Mi, and Dong Yu. 2025. Enhancing web agents with explicit rollback mechanisms.
+[16] Joon Sung Park, Joseph O’Brien, Carrie Jun Cai, Meredith Ringel Morris, Percy          arXiv preprint arXiv:2504.11788 (2025).
+     Liang, and Michael S Bernstein. 2023. Generative agents: Interactive simulacra    [24] Wanjun Zhong, Lianghong Guo, Qiqi Gao, He Ye, and Yanlin Wang. 2024. Memo-
+     of human behavior. In Proceedings of the 36th annual acm symposium on user             rybank: Enhancing large language models with long-term memory. In Proceedings
+     interface software and technology. 1–22.                                               of the AAAI Conference on Artificial Intelligence, Vol. 38. 19724–19731.
+[17] Preston Rasmussen, Pavlo Paliychuk, Travis Beauvais, Jack Ryan, and Daniel
+     Chalef. 2025. Zep: a temporal knowledge graph architecture for agent memory.
+

@@ -1,0 +1,91 @@
+For the complete documentation index, see llms.txt. Markdown versions of documentation pages are available by appending .md to the page URL.
+API Dashboard
+Home
+API
+ChatGPT
+Resources
+Overview
+Models
+Agents
+Tools
+Audio & voice
+Production
+API reference
+Overview
+Agents API
+Overview
+Quickstart
+Architecture
+Configuring Agents
+Sessions
+Environments and sandboxes
+Tools and integrations
+Multi-agent
+Observability and usage
+Tracing
+Errors and recovery
+API reference
+Bedrock Managed Agents
+Agents SDK
+Overview
+Quickstart
+Agent definitions
+Models and providers
+Running agents
+Sandbox agents
+Orchestration
+Guardrails
+Results and state
+Integrations and observability
+Evaluate agent workflows
+ChatKit
+Overview
+Customize
+Widgets
+Actions
+Advanced integrations
+Choose your starting point
+Compare agent runtime options
+Add tools, skills, and prompt caching
+Copy Page
+Agents
+
+Choose a runtime, connect tools, and manage multi-step work.
+
+Agents can plan and complete tasks using tools, work with other agents, and maintain context across steps. Choose a runtime based on where you want orchestration to run and who should manage the state between tasks.
+
+Choose your starting point
+You want to	Start here
+Run an agent with the Codex harness managed by OpenAI	Agents API
+Control the agent loop in your application with reusable agents, tools, and handoffs	Agents SDK
+Work directly with model responses and control your integration	Responses API
+Add an embedded chat experience	ChatKit
+Compare agent runtime options
+	Agents API	Agents SDK	Responses API
+Use for	Long-running tasks where OpenAI manages the agent and saves its progress	Building agents with custom tools and workflows in your application	Calling models directly or building an agent from scratch
+Where the agent runs	OpenAI runs a managed Codex harness	The SDK runs inside your application	Your application, with optional hosted orchestration
+Agent integration effort	Low	Medium	High
+State between tasks	Saved session configuration, turns, and items	Your storage and SDK sessions, or Responses conversation state	Manual history, response chaining, or Conversations
+Tool execution	Service-connected tools, application function handlers, and an optional sandbox	Tools and integrations configured in your application	Hosted tools and tools your application runs
+Execution environment	OpenAI hosted sandbox, self-hosted sandbox, or no sandbox	Your runtime and sandbox provider integrations	Your own execution environment
+Start here	Agents API overview	Agents SDK overview	Responses guide
+
+The Agents API runs the Codex harness and manages the underlying agent infrastructure so you can focus on what your agents do. It includes automatic context compaction, multi-agent orchestration, programmatic tool calling, and support for MCP servers. See Architecture.
+
+The Agents SDK gives your application control over deployment, storage, approvals, and runtime integration. Its runner handles the agent loop and handoffs. See Running agents.
+
+Add tools, skills, and prompt caching
+
+Tool design, reusable skills, and prompt caching apply across agent workflows. Their configuration and lifecycle can differ by API.
+
+Start with Using tools for function calling, MCP, and hosted capabilities.
+Read Programmatic Tool Calling for orchestration with JavaScript and the configuration for each API.
+Use Skills for reusable instructions and the supported loading mechanisms.
+Read Prompt caching for shared caching behavior, then Agents API observability and usage for session accounting.
+
+An Agents API session, an SDK session, a Responses conversation, and a sandbox are different resources. Follow the state and cleanup instructions for the runtime you choose.
+
+Ask AI
+Docs agent
+
+Loading docs agent...

@@ -1,0 +1,93 @@
+{
+  "item": {
+    "topic": "agent-surveys",
+    "id": "gui-agent-survey",
+    "arxiv": "2411.18279v12",
+    "kind": "arxiv-paper",
+    "title": "Large Language Model-Brained GUI Agents: A Survey",
+    "landing_url": "https://arxiv.org/abs/2411.18279v12",
+    "discovered_by": "all:agent AND all:survey AND (all:systems OR all:infrastructure)",
+    "authors": [
+      "Chaoyun Zhang",
+      "Shilin He",
+      "Jiaxu Qian",
+      "Bowen Li",
+      "Liqun Li",
+      "Si Qin",
+      "Yu Kang",
+      "Minghua Ma",
+      "Guyue Liu",
+      "Qingwei Lin",
+      "Saravan Rajmohan",
+      "Dongmei Zhang",
+      "Qi Zhang"
+    ],
+    "published": "2024-11-27T12:13:39Z"
+  },
+  "capture_started_at": "2026-10-09T13:01:56.394080+00:00",
+  "path": "sources/papers/agent-surveys/gui-agent-survey",
+  "requested_url": "https://arxiv.org/abs/2411.18279v12",
+  "pdf_url": "https://arxiv.org/pdf/2411.18279v12",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "da7120d9109e02771f8944e6cdb61b73f9cc37006d06ac8e2b5e26516dd6c397",
+      "bytes": 12946074
+    },
+    "paper.txt": {
+      "sha256": "a1103c1a16ce4993a818dfeb2a97aab66a6404b52e2dcbec0dd68b6eb0a5e616",
+      "bytes": 928428
+    },
+    "paper.pdf": {
+      "sha256": "8419cb8f386bdc982b46ca9a4c81f5bcc026e153509ce2fc7e216fffb3950cea",
+      "bytes": 14721039
+    },
+    "landing.html": {
+      "sha256": "abf172a70f8d71624a484a27de7f18c74a4ab526df393f62ecaa8691502fe0dd",
+      "bytes": 47068
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2411.18279v12",
+    "retrieved_at": "2026-10-09T13:06:17.519595+00:00",
+    "fields": {
+      "citation_title": [
+        "Large Language Model-Brained GUI Agents: A Survey"
+      ],
+      "citation_author": [
+        "Zhang, Chaoyun",
+        "He, Shilin",
+        "Qian, Jiaxu",
+        "Li, Bowen",
+        "Li, Liqun",
+        "Qin, Si",
+        "Kang, Yu",
+        "Ma, Minghua",
+        "Liu, Guyue",
+        "Lin, Qingwei",
+        "Rajmohan, Saravan",
+        "Zhang, Dongmei",
+        "Zhang, Qi"
+      ],
+      "citation_date": [
+        "2024/11/27"
+      ],
+      "citation_online_date": [
+        "2025/05/06"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2411.18279"
+      ],
+      "citation_arxiv_id": [
+        "2411.18279"
+      ],
+      "citation_abstract": [
+        "GUIs have long been central to human-computer interaction, providing an intuitive and visually-driven way to access and interact with digital systems. The advent of LLMs, particularly multimodal models, has ushered in a new era of GUI automation. They have demonstrated exceptional capabilities in natural language understanding, code generation, and visual processing. This has paved the way for a new generation of LLM-brained GUI agents capable of interpreting complex GUI elements and autonomously executing actions based on natural language instructions. These agents represent a paradigm shift, enabling users to perform intricate, multi-step tasks through simple conversational commands. Their applications span across web navigation, mobile app interactions, and desktop automation, offering a transformative user experience that revolutionizes how individuals interact with software. This emerging field is rapidly advancing, with significant progress in both research and industry. To provide a structured understanding of this trend, this paper presents a comprehensive survey of LLM-brained GUI agents, exploring their historical evolution, core components, and advanced techniques. We address research questions such as existing GUI agent frameworks, the collection and utilization of data for training specialized GUI agents, the development of large action models tailored for GUI tasks, and the evaluation metrics and benchmarks necessary to assess their effectiveness. Additionally, we examine emerging applications powered by these agents. Through a detailed analysis, this survey identifies key research gaps and outlines a roadmap for future advancements in the field. By consolidating foundational knowledge and state-of-the-art developments, this work aims to guide both researchers and practitioners in overcoming challenges and unlocking the full potential of LLM-brained GUI agents."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

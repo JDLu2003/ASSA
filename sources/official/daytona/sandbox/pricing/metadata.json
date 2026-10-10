@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "daytona",
+    "product": "sandbox",
+    "id": "pricing",
+    "url": "https://www.daytona.io/pricing",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:04:48.597536+00:00",
+  "path": "sources/official/daytona/sandbox/pricing",
+  "requested_url": "https://www.daytona.io/pricing",
+  "final_url": "https://www.daytona.io/pricing",
+  "http_status": 200,
+  "title": "Daytona - Secure Infrastructure for Running AI-Generated Code",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "38cf6772b65bd41506d2d42c809577183720636ca8e67984ae4171037d5823c8",
+      "bytes": 4225
+    },
+    "page.txt": {
+      "sha256": "09a505c21b3eda278b37e77f34723e0448c859fb72abe4cbf151aadbd5229353",
+      "bytes": 1820
+    },
+    "page.pdf": {
+      "sha256": "2eb94544f51072178c8eaecbd134d0488e70135c444be0ed8fa039a1c1efede1",
+      "bytes": 164071
+    }
+  }
+}

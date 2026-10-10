@@ -1,0 +1,383 @@
+{
+  "run_at": "2026-10-09T12:21:36.040400+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "runtime-quickstart",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:17.347576+00:00",
+      "path": "sources/official/google/agent-platform/runtime-quickstart",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:20:17.347751+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "runtime-scaling",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:17.364925+00:00",
+      "path": "sources/official/google/agent-platform/runtime-scaling",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:20:17.365134+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "sessions",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:17.365171+00:00",
+      "path": "sources/official/google/agent-platform/sessions",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:20:17.365227+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "session-management",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:17.365240+00:00",
+      "path": "sources/official/google/agent-platform/session-management",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:20:17.365287+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform",
+        "id": "agent-evaluation",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:17.365298+00:00",
+      "path": "sources/official/google/agent-platform/agent-evaluation",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:20:17.365439+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "managed-agents",
+        "id": "sandbox-environment",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:17.365453+00:00",
+      "path": "sources/official/google/managed-agents/sandbox-environment",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+      "http_status": 200,
+      "title": "Managed Agents API on Agent Platform sandbox environment  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "7b6a1b3ccd4155a08348fd66a67087f1a6c89e59fc4b3aa35e81876c58dce2ac",
+          "bytes": 9893
+        },
+        "page.txt": {
+          "sha256": "b4352f56079823f26a38d490ba250d6dd1bccafac19cb0d9e192b4ce8ee19f0f",
+          "bytes": 9313
+        },
+        "page.pdf": {
+          "sha256": "14671fbe5b0bf410b399c2437aeeca8b4451aaf90383c0ab98e04732bcdbde83",
+          "bytes": 258851
+        },
+        "page.html": {
+          "sha256": "953eeadec471bb00666638bf428c0544400f24f90ab2641799bcd8e7337614ee",
+          "bytes": 252037
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:20:43.991790+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "shell-quickstart",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:43.991876+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/shell-quickstart",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:20:43.993492+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "management",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-sandboxes",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:43.993540+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/management",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:20:43.993628+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "agent-platform-sandbox",
+        "id": "templates",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:43.993648+00:00",
+      "path": "sources/official/google/agent-platform-sandbox/templates",
+      "status": "skipped",
+      "reason": "Existing directory preserved",
+      "capture_finished_at": "2026-10-09T12:20:43.993748+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "cloud-sandbox-reference",
+        "url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:20:43.994798+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/cloud-sandbox-reference",
+      "requested_url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+      "final_url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+      "http_status": 200,
+      "title": "Cloud sandbox reference - Claude Platform Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "095f9dc807693f971342ffed18fe4c89dfed9f9dcac55d860a9e7290584c02d6",
+          "bytes": 3828
+        },
+        "page.txt": {
+          "sha256": "e71abdac8ce9d875f820d07b06bf8f810592dac25e6b59037b507fd73d241d43",
+          "bytes": 4938
+        },
+        "page.pdf": {
+          "sha256": "0584662c0e440c661b06e48042cfa2e136143adfaa897e8221fab28e36385f7a",
+          "bytes": 253018
+        },
+        "page.html": {
+          "sha256": "1cd089df71a6e0125987bbae098aee43f24e281a440c7b6b7ec1626f030f137f",
+          "bytes": 462019
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:01.219493+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-sdk",
+        "id": "sdk-overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:01.219650+00:00",
+      "path": "sources/official/openai/agents-sdk/sdk-overview",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+      "http_status": 200,
+      "title": "Agents SDK | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "f0a99f5c005b8e614dd08113fa8c9bf19149c6b35ff27815c38ebd9b88757321",
+          "bytes": 4775
+        },
+        "page.txt": {
+          "sha256": "4b03352f35ede07d79f383e895ee99b04629c628e0eb0cd539e478a15d2afd66",
+          "bytes": 4229
+        },
+        "page.pdf": {
+          "sha256": "51263a65d3ed7726cc55f524b99371096e2e3ddf2abed7752e22ef57222c2a85",
+          "bytes": 80943
+        },
+        "page.html": {
+          "sha256": "5e02a9acf0052e4e46698a84672d9cbaebc05ef4d2fe417e5448ddbb4e3d3772",
+          "bytes": 368603
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:06.289563+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "responses",
+        "id": "migration-guide",
+        "url": "https://developers.openai.com/api/docs/guides/migrate-to-responses",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:06.289670+00:00",
+      "path": "sources/official/openai/responses/migration-guide",
+      "requested_url": "https://developers.openai.com/api/docs/guides/migrate-to-responses",
+      "final_url": "https://developers.openai.com/api/docs/guides/migrate-to-responses",
+      "http_status": 200,
+      "title": "Migrate to the Responses API | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "7ddfe38d6aa7d8cbf66cec116ad23fd5e17efedce9575e3b30e5514579e5b81e",
+          "bytes": 24082
+        },
+        "page.txt": {
+          "sha256": "c277e9eb2a0ab0499cf53347b4f4b69babb060c3d2987204f167d65b67876c0d",
+          "bytes": 18950
+        },
+        "page.pdf": {
+          "sha256": "0f98da74788a4da2e382abcd1baa61fc3fcb454e9e44c8facc8812bc3cf5e28a",
+          "bytes": 860780
+        },
+        "page.html": {
+          "sha256": "4049f0c962ed632d36ee7497f1770d18a93723d9cadb57a2179e94f9945f9aeb",
+          "bytes": 979922
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:16.835543+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "sandbox-lifecycle",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:16.835620+00:00",
+      "path": "sources/official/openai/agents-api/sandbox-lifecycle",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+      "http_status": 200,
+      "title": "Sandbox lifecycle | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "07761fd91470d008bb010622af410f36432e1d6993be72c671ae6f98a88f7fbc",
+          "bytes": 4660
+        },
+        "page.txt": {
+          "sha256": "1ecfd131c5bd279d57e07dcc70a8985b158677e2688709b327f11b4c1935b154",
+          "bytes": 5467
+        },
+        "page.pdf": {
+          "sha256": "1561eda14a93fca14e92f51d39a8e8cacbe45cea9962ce7ce7c20d50f0810fc3",
+          "bytes": 268825
+        },
+        "page.html": {
+          "sha256": "ab321abe5305a16a79d65da2621022afd10a0ccbdba540e7c7528f9026a2eae5",
+          "bytes": 366369
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:20.258240+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "sandbox-security",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:20.258323+00:00",
+      "path": "sources/official/openai/agents-api/sandbox-security",
+      "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+      "final_url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+      "http_status": 200,
+      "title": "Sandbox security | OpenAI API",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "c822c0714574abf796f0a64335ab8b0e17e0b6c151c3d4ca6ea0932ba89f8a40",
+          "bytes": 2306
+        },
+        "page.txt": {
+          "sha256": "6b781cec18878795ce43e77eb156bad362a8002ca0a90e6cd3f6d4365c1f6788",
+          "bytes": 3127
+        },
+        "page.pdf": {
+          "sha256": "9ede9d69ded6597cb3e18956e711f7c7a45d6c2615ca51d08fecb73e8d91f159",
+          "bytes": 134382
+        },
+        "page.html": {
+          "sha256": "b43667af3dbfc59df4c96f75d5be212a97c963d59ee3ac9fa3bad63a27b77be8",
+          "bytes": 360650
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:23.134988+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "firecracker",
+        "id": "announcement",
+        "url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T12:21:23.135490+00:00",
+      "path": "sources/official/aws/firecracker/announcement",
+      "requested_url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+      "final_url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+      "http_status": 200,
+      "title": "Firecracker – Lightweight Virtualization for Serverless Computing | AWS News Blog",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "20be8000c5debd5b27a8f8efcf6734cfe3de9aa2e14830da658eddac9920e56f",
+          "bytes": 6813
+        },
+        "page.txt": {
+          "sha256": "dc522959f65dfac00049f08b0cc18feb7425e63d4a78722363771d87b9dfd9be",
+          "bytes": 7832
+        },
+        "page.pdf": {
+          "sha256": "84d972e0333a5f8ab4c66d02e0523238c9ebe2d97f9599476adc35eb6fecfad5",
+          "bytes": 572414
+        },
+        "page.html": {
+          "sha256": "6217e2fab493b38a934fb697a397599624cc04915bcda43a3c5e853cbd10c801",
+          "bytes": 1313965
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:21:35.453156+00:00"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "google",
+    "product": "gemini-api",
+    "id": "pricing",
+    "url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:04:19.297098+00:00",
+  "path": "sources/official/google/gemini-api/pricing",
+  "requested_url": "https://ai.google.dev/gemini-api/docs/pricing",
+  "final_url": "https://ai.google.dev/gemini-api/docs/pricing",
+  "http_status": 200,
+  "title": "Gemini Developer API pricing  |  Gemini API  |  Google AI for Developers",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "7049778b71f53002944d51ae3d36e359c500621dda77c0c5b1b3099ef83e012c",
+      "bytes": 64379
+    },
+    "page.txt": {
+      "sha256": "5bbf31650fd12ad584201ff3a28f6a33e0acb817a959af1d83a6b9ccb7ffa8a7",
+      "bytes": 36302
+    },
+    "page.pdf": {
+      "sha256": "4dfae5920bdaf2ffae69a49270414ea3d60d95c04309392f3f6c7e11fced0b1e",
+      "bytes": 896268
+    }
+  }
+}

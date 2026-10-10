@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore-gateway",
+    "id": "overview",
+    "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:45.604449+00:00",
+  "path": "sources/official/aws/agentcore-gateway/overview",
+  "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+  "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html",
+  "http_status": 200,
+  "title": "Amazon Bedrock AgentCore Gateway: A secure AI gateway for agents, tools, and models - Amazon Bedrock AgentCore",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "9a3556953a6fa239575a7c20c859e0e53e34b2de81ebb333acb5ab5e1383aab2",
+      "bytes": 16804
+    },
+    "page.txt": {
+      "sha256": "edae3bf767d621da4ab0130d6ee151b0d1629d6d29ba90b86e43f10015b6519b",
+      "bytes": 7100
+    },
+    "page.pdf": {
+      "sha256": "568906728dab7746a132e3021be48ffa3cb7baa69c4f3917730256314d466230",
+      "bytes": 127843
+    },
+    "page.html": {
+      "sha256": "ed01c41d9304649b2ba3c5d4a18b1c5dc503b08f6d84788f06af5271c8ee7517",
+      "bytes": 504453
+    }
+  }
+}

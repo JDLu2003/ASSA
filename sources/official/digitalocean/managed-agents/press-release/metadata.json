@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "digitalocean",
+    "product": "managed-agents",
+    "id": "press-release",
+    "url": "https://investors.digitalocean.com/news/news-details/2026/DigitalOcean-Launches-Managed-Agents-Bringing-Agent-Execution-Tool-Access-and-Inference-Together-on-One-Cloud/default.aspx",
+    "kind": "official-web"
+  },
+  "path": "sources/official/digitalocean/managed-agents/press-release",
+  "requested_url": "https://investors.digitalocean.com/news/news-details/2026/DigitalOcean-Launches-Managed-Agents-Bringing-Agent-Execution-Tool-Access-and-Inference-Together-on-One-Cloud/default.aspx",
+  "final_url": "https://investors.digitalocean.com/news/news-details/2026/DigitalOcean-Launches-Managed-Agents-Bringing-Agent-Execution-Tool-Access-and-Inference-Together-on-One-Cloud/default.aspx",
+  "title": "DigitalOcean Launches Managed Agents, Bringing Agent Execution, Tool Access, and Inference Together on One Cloud",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

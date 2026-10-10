@@ -1,0 +1,32 @@
+{
+  "item": {
+    "vendor": "anthropic",
+    "product": "claude-api",
+    "id": "code-execution",
+    "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:03:37.625683+00:00",
+  "path": "sources/official/anthropic/claude-api/code-execution",
+  "requested_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+  "final_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool",
+  "http_status": 200,
+  "title": "Code execution tool - Claude Platform Docs",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "14493ca886ff5518d0361279353dfa14df8f9c5a2f711672879307bc700dec12",
+      "bytes": 33514
+    },
+    "page.txt": {
+      "sha256": "b09e40cb8a206d86e81d70c51e3778591045924888e818ef7511cf2a53f56c2e",
+      "bytes": 30054
+    },
+    "page.pdf": {
+      "sha256": "e4293c1bb10071469404b72edc52d39e1e5980f9f4be64bf6c2205f1ffae7168",
+      "bytes": 735196
+    }
+  }
+}

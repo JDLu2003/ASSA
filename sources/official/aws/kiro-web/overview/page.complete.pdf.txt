@@ -1,0 +1,432 @@
+AGENTS               ENTERPRISE     PRICING    DOCS
+         APPS                                           COMMUNITY             RESOURCES
+
+
+
+
+ SIGN
+  IN
+
+
+DOWNLOADS
+
+
+
+
+   Build, delegate, and steer
+    right from your browser
+Explore ideas, fix bugs, and shape changes. Hand off work end to end, or structure
+ what you want before code ships. Coordinate changes across repos in a single
+                     session. Run recurring tasks on a schedule.
+
+
+   Try Kiro
+                ↗
+     Web
+
+
+                    Available for Kiro Pro, Pro+, Pro Max, and Power users.
+Assign a goal, review the result
+Describe what you need. Kiro builds a plan, spins up a sandboxed environment, and works through it
+end to end, delivering a pull request you can review. No intermediate approvals, no step-by-step
+confirmation. You define the outcome, Kiro decides how to get there.
+From intent to verified code
+Turn on spec mode and shape the work before execution starts. Kiro expands it into structured
+requirements with acceptance criteria, catches ambiguities and conflicts, generates a technical
+design and implementation plan. Intent stays traceable from requirements through to the pull request.
+Coordinate changes across repos, wherever they live
+Pick repos from GitHub, GitLab, or both. Kiro coordinates edits and pull requests in one session, from
+shared libraries to dependent services and clients.
+
+
+
+
+From issue to pull request, sharper every session
+Assign work from issues, review PRs with comments, and Kiro addresses them. Steering files, hooks,
+custom agents, and skills load your coding conventions, architecture patterns, and preferences
+automatically and stay active throughout your session. Feedback and instructions carry forward.
+Recurring work, on your schedule
+Create an automation, select repos and set a schedule. Kiro runs it on that cadence in its own
+sandbox and opens pull requests with the results. No manual session start. Review when you're ready,
+the next run is already queued.
+Secure by default
+Every session runs in its own isolated sandbox. Kiro clones your repos and configures the environment
+from your Dockerfile or detected project settings. Your settings control what the agent can reach:
+network access, environment variables, secrets, and MCP servers.
+
+
+
+
+                                Common questions
+
+How is Kiro Web different from Kiro IDE, CLI, and Kiro Crew?
+
+
+How is Kiro Web different from Kiro IDE, CLI, and Kiro Crew?
+Kiro IDE is for active, local development with real-time agent collaboration. Kiro CLI
+is for terminal-based workflows, custom agents, and deployment pipelines. Kiro Crew
+is the persistent, open source development workspace that coordinates across your
+unique tools and workflows. [Kiro Web](/web/) is for delegating and steering from the
+browser, with sessions that run in isolated cloud [sandboxes](/docs/web/sandbox/),
+keep going when you close your laptop, and coordinate changes across [GitHub]
+(/docs/web/github/) and [GitLab](/docs/web/gitlab/) repos in a single session. All
+three modes ([autonomous](/docs/web/autonomous-mode/), [spec](/docs/specs/), and
+default) are available together in Kiro Web. [Cloud automations]
+(/docs/web/automations/) are only available in Kiro Web today. Use whichever Kiro
+interface fits the work; they work best together. [Steering files](/docs/web/steering/)
+carry across all surfaces, and personal configuration syncs through [cloud
+configuration](/docs/web/cloud-configuration/), so your setup follows you regardless
+of where you work.
+
+
+What are cloud sessions?
+
+
+What are cloud sessions?
+A cloud session runs the [Kiro agent harness](/docs/how-kiro-works/) in a managed
+cloud sandbox instead of on your machine. The session belongs to your Kiro account,
+not to any one app: start it in the browser, hand it a long task, close your laptop, and
+check on it later from your phone, your terminal, or the IDE. The agent keeps working
+in the sandbox whether or not you're connected. Cloud sessions are the execution
+environment behind [Kiro Web](/docs/web/) and [Mobile](/docs/mobile/), and the IDE
+and CLI can create and attach to the same sessions. Because every surface talks to
+the same harness through the same protocol, a cloud session behaves like any other
+Kiro session: same steering and same tools, in an isolated sandbox. Cloud sessions
+also load your configuration from [cloud configuration](/docs/web/cloud-
+configuration/). Available in Kiro CLI v2.17+, Kiro IDE v1.0.293+ (Agent Focus Mode),
+Kiro Web, and Kiro iOS.
+
+
+What is an autonomous agent?
+
+
+What is an autonomous agent?
+An autonomous agent works independently on tasks without requiring constant human
+guidance. In the context of development, agentic development means the AI can take a
+high-level task description, figure out the implementation plan, write code across
+multiple repositories, run tests, and create pull requests—all while you work on other
+things. The agent operates asynchronously in the background rather than requiring you
+to stay in an active session.
+
+
+What is Kiro Web?
+
+
+What is Kiro Web?
+Kiro Web is where you build, delegate, and steer development work with Kiro from your
+browser. Connect your GitHub or GitLab repositories or both, describe what you need,
+and Kiro writes code, coordinates changes across repos, and opens pull requests. Set
+up [automations](/docs/web/automations/) to run recurring work on a schedule.
+Available for Kiro Pro, Pro+, Pro Max, and Power subscribers.
+
+
+How does Kiro Web work?
+
+
+How does Kiro Web work?
+Start a session, select your repositories, and chat with Kiro about your codebase. You
+can iterate on code together and ask Kiro to open a pull request when you’re
+satisfied. Each session runs in an isolated sandbox. Kiro can run tests, open a real
+browser, and verify changes before you review. Turn on spec mode to shape
+requirements, technical design, and implementation plans before execution starts.
+Toggle Autonomous to have Kiro own a task end-to-end. Kiro builds a plan, coordinates
+sub-agents, and delivers a pull request. Or, create an [automation]
+(/docs/web/automations/) to run work on a recurring schedule without starting a
+session manually.
+
+
+How do I get started with Kiro Web?
+
+
+How do I get started with Kiro Web?
+Go to [app.kiro.dev](https://app.kiro.dev), sign in, describe what you need, connect
+your repositories from GitHub or GitLab in Settings if your task needs it, and Kiro
+writes code and opens pull requests across one or multiple repos. You can chat and
+iterate together, or toggle Autonomous to let Kiro own a task end-to-end, use [spec
+mode](/docs/specs/) to shape the work before execution starts, or create an
+automation to run recurring tasks on a schedule. If your organization uses AWS IAM
+Identity Center, your administrator needs to enable cloud sessions first.
+
+
+What if I don’t use autonomous mode?
+
+
+What if I don’t use autonomous mode?
+Work interactively with the agent, explore ideas, talk through an approach, or work
+through a problem step by step. Or turn on spec mode to shape structured
+requirements and a technical design before code starts. You steer, it executes, you
+review. You can also run autonomous execution on a recurring schedule with cloud
+automations.
+
+
+What can I do in autonomous mode?
+
+
+What can I do in autonomous mode?
+Assign a goal (implement a feature, triage a bug, or research a topic) and Kiro owns
+the outcome. It writes code, runs tests, diagnoses failures, and iterates until the
+work is done. When it opens a pull request, it monitors CI results and addresses
+failures. When a reviewer leaves feedback, the agent picks it up and pushes updates.
+You review a merge-ready result, not a first draft.
+
+
+How is spec mode different from autonomous mode?
+
+
+How is spec mode different from autonomous mode?
+[Autonomous mode](/docs/web/autonomous-mode/) and [spec mode](/docs/specs/) are
+two separate end-to-end workflows in Kiro Web. Autonomous mode is for delegating:
+describe a goal, and Kiro owns planning and execution through to a pull request for
+your review. Spec mode is for structuring intent first: Kiro expands your prompt into
+requirements, technical design, and an implementation plan, you review and approve,
+then execution follows the spec. Each runs independently from start to finish.
+
+
+Can I work across multiple repositories in one session?
+
+
+Can I work across multiple repositories in one session?
+Yes. Select multiple repos from GitHub or GitLab, or you can mix GitLab and GitHub
+repositories in a single session. Describe the change, Kiro reads across all of them
+and coordinates the change, opening a pull request on GitHub and a merge request on
+GitLab as appropriate for each. That matters when a change touches a shared library
+in one place and the service that depends on it in another, even when those projects
+live on different providers.
+
+
+How can I work with Kiro directly from GitHub?
+
+
+How can I work with Kiro directly from GitHub?
+[Connect to GitHub](/docs/web/setup/). You can assign work to Kiro directly from
+GitHub issues. Add the `kiro` label to an issue or mention `/kiro` in a comment, Kiro
+picks up the task. When Kiro opens a pull request, you can review it like any other PR,
+leave comments. Use `/kiro all` to address all feedback at once, or `/kiro fix` with
+specific instructions for a particular thread. Your review feedback also teaches Kiro,
+patterns you point out shape how it works on future tasks across your repositories.
+
+
+How do I work with Kiro directly from GitLab?
+
+
+How do I work with Kiro directly from GitLab?
+Kiro Web works with [GitLab](/docs/web/gitlab/) and GitHub. You connect GitLab with
+a personal access token, then add a GitLab project to a session and ask Kiro to do the
+work. Kiro clones the project into its [sandbox](/docs/web/sandbox/), makes the
+changes, and opens a merge request on your behalf. It can also inspect merge requests
+and issues when you ask, so you can list and read them without leaving the session.
+
+
+What are cloud automations?
+
+
+What are cloud automations?
+[Cloud automations](/docs/web/automations/) let you run recurring work on a schedule.
+Create an automation, select repos from GitHub, GitLab, or both, and set a schedule.
+Kiro runs it on that cadence in its own sandbox and opens pull requests with the
+results. Each run uses the same autonomous execution as an on-demand session.
+
+
+How do I create an automation?
+
+
+How do I create an automation?
+Go to the [Automations](https://app.kiro.dev/automations) page in Kiro Web, click
+Create New Automation. Give it a name, write what you want done, select one or more
+repos, and set a schedule (choose a preset like hourly or daily, or write a cron
+expression). Toggle Status to Enabled, then click Create. Kiro picks it up at the next
+scheduled time. You can add up to 5 schedules.
+Can I edit, stop or pause an automation?
+
+
+Can I edit, stop or pause an automation?
+Yes. On the [Automations](https://app.kiro.dev/automations) page, each automation
+shows its status (Active or Inactive). Click Edit on any automation, this opens the
+details: name, task description, repos, schedules, and status are all editable. Edit to
+change anything, toggle status to Disabled to pause it, or Delete it entirely. Changes
+apply to the next scheduled run.
+
+
+How does Kiro Web work with Kiro IDE or CLI?
+
+
+How does Kiro Web work with Kiro IDE or CLI?
+Kiro IDE, CLI, and Web share steering files and learnings. Cloud sessions let you
+start work on one interface and pick up where you left off on another. Start a cloud
+session from IDE or CLI, close your laptop, and resume or steer the session from Kiro
+Web (or vice versa).
+
+
+What is a sandbox?
+
+
+What is a sandbox?
+The sandbox provides a secure, isolated environment where the Kiro agent on the web
+executes tasks. Each task runs in its own sandbox with configurable access controls,
+ensuring your code and resources remain protected. You can configure sandbox access
+and behavior for your tasks from the [Agent settings]
+(https://app.kiro.dev/settings/agent) page under Sandbox, including network access,
+environment variables, secrets, and connect MCP servers or Kiro Powers per sandbox.
+
+
+How do I steer in Kiro Web?
+
+
+How do I steer in Kiro Web?
+Steering gives the agent persistent knowledge about your codebase through markdown
+files. [Steering files](/docs/web/steering/) ensure the agent consistently follows your
+established patterns, libraries, and standards instead of explaining your conventions
+in every session. The agent automatically looks for [steering files] in the
+`.kiro/steering/` folder at the root of your repository. These are markdown files that
+define your team’s standards, architecture decisions, and conventions. For detailed
+guidance on creating steering files, see the [steering documentation](/docs/steering).
+Steering files work the same way across Kiro IDE, Kiro CLI, and Kiro Web. During any
+session, you can steer the agent in real time by providing direction in the chat. The
+agent also learns from your pull request feedback and applies those patterns to future
+work across your repositories, see [Steering the agent](/docs/web/steering/) for
+details. In [autonomous mode](/docs/web/autonomous-mode), direction you provide
+during the task acts as steering for it, and if the agent needs clarification the task
+moves to **Needs attention** and waits for your input. In [spec mode](/docs/specs/),
+the spec itself is your steering: requirements, acceptance criteria, and the technical
+design you approve define what gets built and how. In the [default mode]
+(/docs/web/using-the-agent), you can steer continuously as you iterate together.
+
+
+Will Kiro Web change my repositories automatically?
+
+
+Will Kiro Web change my repositories automatically?
+No. Kiro creates pull requests for your review and never merges automatically.
+
+
+Who has access to Kiro Web?
+
+
+Who has access to Kiro Web?
+Kiro Pro, Pro+, Pro Max, and Power users. [Sign in to get started]
+(https://app.kiro.dev).
+
+
+Is Kiro Web included in my current plan or will I be charged extra?
+
+
+Is Kiro Web included in my current plan or will I be charged
+extra?
+Kiro Web uses the existing credit model. Credits are consumed regardless of which
+interface the work runs on (IDE, CLI, or web). No separate charge for cloud compute.
+Available to Kiro Pro, Pro+, Pro Max, and Power users.
+
+
+What are steering files and learnings?
+
+
+What are steering files and learnings?
+The agent reads `.kiro/` folder files from your connected repos, including steering
+files, hooks, skills, and custom agents, and applies global instructions you set in
+Kiro Web **Settings**. You can also teach the agent through explicit instructions (e.g.
+“always wrap API calls in our retry utility”). It applies what you teach it to every
+session after. You can view and delete learnings in the [Memory](/docs/web/memory/)
+section of Kiro Web **Settings**.
+
+
+How do Kiro powers work with Kiro Web?
+
+
+How do Kiro powers work with Kiro Web?
+Kiro powers are specialized packages that enhance the agent with prebuilt expertise
+for specific tasks. They contain curated MCP servers, steering files, and hooks that
+load on demand. Connect them to your sandbox on Kiro Web. Powers that connect to
+third-party services like Figma, Stripe, or Supabase use a one-time authorization
+flow, authorize once and Kiro uses the connection for all future tasks. They work the
+same way as in the IDE and CLI.
+
+
+Does my organization need to enable cloud sessions separately?
+
+
+Does my organization need to enable cloud sessions
+separately?
+Yes, if your organization uses AWS IAM Identity Center, your administrator needs to
+[enable cloud sessions](/docs/web/identity-center/) before you can start a session in
+Kiro Web. Organizations that already enabled Kiro Web stay enabled. For organizations
+setting up Kiro for the first time, cloud sessions stay disabled until an administrator
+opts in. Cloud sessions are available in AWS US East (N. Virginia) only. MCP and other
+governance controls are not yet supported.
+
+
+Can I turn Kiro Web off?
+
+
+Can I turn Kiro Web off?
+Kiro Web is not active until you sign in at [app.kiro.dev](https://app.kiro.dev) and
+start a session. If you prefer not to use it, skip the setup. It does not affect your
+existing IDE or CLI workflows.
+
+
+Does Kiro use my code to train models?
+
+
+Does Kiro use my code to train models?
+We do not use content from Kiro Pro, Pro+, Pro Max, or Power users that access Kiro
+through AWS IAM Identity Center or external identity provider. We may use certain
+content from Kiro subscribers that access Kiro through a social login provider or AWS
+Builder ID for service improvement. You can opt out of content collection at any time
+using the opt-out mechanism described in our [documentation](/docs/web/data-
+protection/#opt-out-of-data-sharing). For more information, see [Service Improvement]
+(/docs/privacy-and-security/data-protection/#service-improvement).
+
+
+     View
+     docs
+  Bring your next
+   idea, bug, or
+change to Kiro Web
+Hand off your
+                ↗
+  next task
+
+      Available for Kiro Pro, Pro+, Pro Max, and Power users.
+PRODUCT      FOR          SOCIAL
+
+About Kiro   Enterprise
+
+Agents       Startups
+
+IDE          Students
+CLI
+
+Web
+
+Mobile
+
+Crew
+
+Pricing
+
+Downloads
+
+
+
+COMMUNITY                                              RESOURCES
+
+Overview                                               Docs
+
+Ambassadors                                            Blog
+
+Case studies                                           Changelog
+
+Discord                                                FAQs
+
+Events                                                 Report a bug
+
+Powers                                                 Suggest an idea
+
+Shop                                                   Billing support
+
+Showcase
+
+
+
+
+Site TermsLicenseResponsible AI PolicyLegalPrivacy PolicyCookie PreferencesYour Privacy Choices
+

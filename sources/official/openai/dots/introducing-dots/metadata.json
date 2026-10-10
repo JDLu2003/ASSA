@@ -1,0 +1,15 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "dots",
+    "id": "introducing-dots",
+    "url": "https://openai.com/index/introducing-dots/",
+    "kind": "official-web"
+  },
+  "path": "sources/official/openai/dots/introducing-dots",
+  "requested_url": "https://openai.com/index/introducing-dots/",
+  "final_url": "https://openai.com/index/introducing-dots/",
+  "title": "Introducing dots",
+  "status": "link-only",
+  "review_status": "not captured: the host is unreachable from the build environment (egress proxy); cited by URL, content read through web search results"
+}

@@ -1,0 +1,66 @@
+Agents
+Choose a runtime, connect tools, and manage multi-step work.
+       Copy Page
+
+
+
+Agents can plan and complete tasks using tools, work with other agents, and maintain context across steps. Choose a runtime
+based on where you want orchestration to run and who should manage the state between tasks.
+
+
+Choose your starting point
+You want to                                                                                                                      Start here
+
+Run an agent with the Codex harness managed by OpenAI                                                                            Agents API
+
+Control the agent loop in your application with reusable agents, tools, and handoffs                                             Agents SDK
+
+Work directly with model responses and control your integration                                                                  Responses API
+
+Add an embedded chat experience                                                                                                  ChatKit
+
+
+
+Compare agent runtime options
+                     Agents API                                         Agents SDK                                  Responses API
+
+Use for              Long-running tasks where OpenAI manages the        Building agents with custom tools and       Calling models directly or building
+                     agent and saves its progress                       workflows in your application               an agent from scratch
+
+Where the agent      OpenAI runs a managed Codex harness                The SDK runs inside your application        Your application, with optional
+runs                                                                                                                hosted orchestration
+
+Agent integration    Low                                                Medium                                      High
+effort
+
+State between        Saved session configuration, turns, and items      Your storage and SDK sessions, or           Manual history, response chaining,
+tasks                                                                   Responses conversation state                or Conversations
+
+Tool execution       Service-connected tools, application function      Tools and integrations configured in your   Hosted tools and tools your
+                     handlers, and an optional sandbox                  application                                 application runs
+
+Execution            OpenAI hosted sandbox, self-hosted sandbox,        Your runtime and sandbox provider           Your own execution environment
+environment          or no sandbox                                      integrations
+
+Start here           Agents API overview                                Agents SDK overview                         Responses guide
+
+
+
+The Agents API runs the Codex harness and manages the underlying agent infrastructure so you can focus on what your agents do.
+It includes automatic context compaction, multi-agent orchestration, programmatic tool calling, and support for MCP servers. See
+Architecture.
+
+The Agents SDK gives your application control over deployment, storage, approvals, and runtime integration. Its runner handles the
+agent loop and handoffs. See Running agents.
+
+
+Add tools, skills, and prompt caching
+Tool design, reusable skills, and prompt caching apply across agent workflows. Their configuration and lifecycle can differ by API.
+
+       Start with Using tools for function calling, MCP, and hosted capabilities.
+       Read Programmatic Tool Calling for orchestration with JavaScript and the configuration for each API.
+       Use Skills for reusable instructions and the supported loading mechanisms.
+       Read Prompt caching for shared caching behavior, then Agents API observability and usage for session accounting.                           Ask AI
+An Agents API session, an SDK session, a Responses conversation, and a sandbox are different resources. Follow the state and
+cleanup instructions for the runtime you choose.
+

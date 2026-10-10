@@ -1,0 +1,537 @@
+       Core Endpoints          Tavily Search
+
+
+
+
+Core Endpoints
+
+
+Tavily Search                                                                                                Copy page
+
+
+Execute a search query using Tavily Search.
+
+
+  POST        / search
+
+
+  Python SDK                                                                                             Python
+
+
+   from tavily import TavilyClient
+
+   tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+   response = tavily_client.search("Who is Leo Messi?")
+
+   print(response)
+
+
+
+   200       400   401   422   429   432   433    500
+
+
+   {
+       "query": "Who is Leo Messi?",
+       "answer": "Lionel Messi, born in 1987, is an Argentine footballer widely regarded as one of the gre
+       "images": [],
+       "results": [
+         {
+             "title": "Lionel Messi Facts | Britannica",
+             "url": "https://www.britannica.com/facts/Lionel-Messi",
+             "content": "Lionel Messi, an Argentine footballer, is widely regarded as one of the greatest fo
+             "score": 0.81025416,
+             "raw_content": null,
+             "published_date": "Tue, 11 Mar 2025 17:00:00 GMT",
+         This website uses cookies and other tracking technologies to enhance user experience and to analyze
+             "favicon": "https://britannica.com/favicon.png",
+Authorizations
+    performance and traffic on our website. We also share information about your use of our site with our social
+       "images": [
+         media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+               {
+         honored. Further information is available in our Cookie Notice
+                   "url": "<string>",
+Authorization string             header   required
+                   "description": "<string>"
+                                          Do Not Sell or Share My Personal Information
+            }
+Bearer authentication header in the form Bearer , where is your Tavily API key (e.g., Bearer tvly-YOUR_API_KEY).
+         ],
+             "id": "a3f9c2-04"                                  Reject All
+         }
+Body
+   ],                                                                                                       application/json
+                                                            Accept Cookies
+       "response_time": "1.67",
+Parameters for the Tavily Search
+    "auto_parameters":     {     request.
+      "topic": "general",
+      "search_depth": "basic"
+query
+    }, string      required
+     "usage": {
+The search query to execute with Tavily.
+       "credits": 1
+    },
+Example:  "who is "123e4567-e89b-12d3-a456-426614174111"
+    "request_id": Leo Messi?"
+   }
+
+
+search_depth enum<string>              default:basic
+
+Controls the latency vs. relevance tradeoff and how results[].content is generated:
+
+        advanced : Highest relevance with increased latency. Best for detailed, high-precision queries. Returns
+       multiple semantically relevant snippets per URL (configurable via chunks_per_source ).
+
+        basic : A balanced option for relevance and latency. Ideal for general-purpose searches. Returns multiple
+       semantically relevant snippets per URL (configurable via chunks_per_source ).
+
+        fast : Prioritizes lower latency while maintaining good relevance. Returns multiple semantically relevant
+       snippets per URL (configurable via chunks_per_source ).
+
+        ultra-fast : Minimizes latency above all else. Best for time-critical use cases. Returns one NLP summary per
+       URL.
+
+Cost:
+
+        basic , fast , ultra-fast : 1 API Credit
+
+        advanced : 2 API Credits
+
+See Search Best Practices for guidance on choosing the right search depth.
+
+
+Available options: advanced , basic , fast , ultra-fast
+
+
+
+
+chunks_per_source integer               default:3
+
+Chunks are short content snippets (about 500 characters each for basic and fast , 800 for advanced ) pulled
+directly from the source. Use chunks_per_source to define the maximum number of relevant chunks returned per
+source and to control the content length. Chunks will appear in the content field as: <chunk 1> [...] <chunk
+         This website uses cookies and other tracking technologies to enhance user experience and to analyze
+ 2> [...]         and. Adjacent
+          <chunk 3>
+      performance                  chunks
+                       traffic on our     mayWe
+                                      website. bealso
+                                                  joined into
+                                                      share    one longer
+                                                            information   passage,
+                                                                        about your use chunk
+                                                                                    soof       length
+                                                                                         our site      is asocial
+                                                                                                  with our  target, not a
+hard limit. Available
+       media,         whenand
+               advertising                   is advanced
+                              analytics partners.
+                            search_depth          If we have ,detected or opt-out
+                                                                basic an   fast .preference signal then it will be
+         honored. Further information is available in our Cookie Notice
+
+Required range: 1 <= x <= 3
+
+
+
+
+max_results integer            default:10
+
+The maximum number of search results to return.
+Required range: 0 <= x <= 20
+
+
+Example:    1
+
+
+
+topic enum<string>          default:general
+
+The category of the search. news is useful for retrieving real-time updates, particularly about politics, sports, and
+major current events covered by mainstream media sources. general is for broader, more general-purpose
+searches that may include a wide range of sources.
+
+
+Available options: general , news , finance
+
+
+
+
+time_range enum<string>
+
+The time range back from the current date to filter results based on publish date or last updated date. Useful when
+looking for sources that have published or updated data. By default, results with no detectable published date are
+not removed; set filter_by_published_date to true to remove them.
+
+
+Available options: day , week , month , year , d , w , m , y
+
+
+
+
+start_date string
+
+Will return all results after the specified start date based on publish date or last updated date. Required to be written
+in the format YYYY-MM-DD. By default, results with no detectable published date are not removed; set
+ filter_by_published_date to true to remove them.
+
+
+Example:    "2025-02-09"
+
+
+
+end_date string
+
+Will return all results before the specified end date based on publish date or last updated date. Required to be
+written in the format YYYY-MM-DD. By default, results with no detectable published date are not removed; set
+ filter_by_published_date to true to remove them.
+       This website uses cookies and other tracking technologies to enhance user experience and to analyze
+     performance
+Example:         and traffic on our website. We also share information about your use of our site with our social
+          "2025-12-29"
+       media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+       honored. Further information is available in our Cookie Notice
+
+include_published_date boolean                default:false
+
+Include a published_date field in each result. The date is Tavily's best estimate of when the source was published
+or last updated, so it can be later than the original publish date. Results with no detectable date return null .
+Automatically enabled when topic is news .
+Note: this feature is currently in beta.
+
+
+
+
+filter_by_published_date boolean                  default:false
+
+Remove results whose published date falls outside the time_range , start_date , or end_date window. Results
+with no detectable published date are also removed. Setting this to true also enables include_published_date .
+
+If you want date-window filtering but don't want to lose sources without a detectable date, leave this false and set
+ include_published_date: true together with a date range instead.
+
+
+
+
+include_answer boolean                     default:false
+
+Include an LLM-generated answer to the provided query. basic or true returns a quick answer. advanced
+returns a more detailed answer.
+
+
+
+
+include_raw_content boolean                     default:false
+
+Include the cleaned and parsed HTML content of each search result. markdown or true returns search result
+content in markdown format. text returns the plain text from the results and may increase latency.
+
+
+
+
+include_images boolean             default:false
+
+Include images in the response. Returns both a top-level images list of query-related images and an images
+array inside each result object with images extracted from that specific source.
+
+
+
+
+include_image_descriptions boolean                  default:false
+
+When include_images is true , also add a descriptive text for each image.
+
+
+
+
+include_favicon boolean             default:false
+
+Whether to include the favicon URL for each result.
+       This website uses cookies and other tracking technologies to enhance user experience and to analyze
+       performance and traffic on our website. We also share information about your use of our site with our social
+       media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+     honored. Furtherstring[]
+include_domains       information is available in our Cookie Notice
+
+
+A list of domains to specifically include in the search results. Maximum 300 domains.
+
+
+
+
+exclude_domains string[]
+
+A list of domains to specifically exclude from the search results. Maximum 150 domains.
+include_domains_mode enum<string>                default:restrict
+
+Controls how include_domains is applied. restrict limits results to only the listed domains. prefer also
+searches the rest of the web, so results outside include_domains can still surface, rather than excluding them.
+Defaults to restrict , so include_domains acts as a hard filter unless set to prefer . Setting it without
+ include_domains returns a 400 error.
+
+
+Available options: restrict , prefer
+
+
+
+
+country enum<string>
+
+Boost search results from a specific country. This will prioritize content from the selected country in the search
+results. Available only if topic is general .
+
+
+Available options: afghanistan , albania , algeria , andorra , angola , argentina , armenia ,
+ australia , austria , azerbaijan , bahamas , bahrain , bangladesh , barbados , belarus , belgium ,
+ belize , benin , bhutan , bolivia , bosnia and herzegovina , botswana , brazil , brunei , bulgaria ,
+ burkina faso , burundi , cambodia , cameroon , canada , cape verde , central african republic , chad ,
+ chile , china , colombia , comoros , congo , costa rica , croatia , cuba , cyprus , czech republic ,
+ denmark , djibouti , dominican republic , ecuador , egypt , el salvador , equatorial guinea ,
+ eritrea , estonia , ethiopia , fiji , finland , france , gabon , gambia , georgia , germany , ghana ,
+ greece , guatemala , guinea , haiti , honduras , hungary , iceland , india , indonesia , iran ,
+ iraq , ireland , israel , italy , jamaica , japan , jordan , kazakhstan , kenya , kuwait ,
+ kyrgyzstan , latvia , lebanon , lesotho , liberia , libya , liechtenstein , lithuania , luxembourg ,
+ madagascar , malawi , malaysia , maldives , mali , malta , mauritania , mauritius , mexico , moldova ,
+ monaco , mongolia , montenegro , morocco , mozambique , myanmar , namibia , nepal , netherlands ,
+ new zealand , nicaragua , niger , nigeria , north korea , north macedonia , norway , oman , pakistan ,
+ panama , papua new guinea , paraguay , peru , philippines , poland , portugal , qatar , romania ,
+ russia , rwanda , saudi arabia , senegal , serbia , singapore , slovakia , slovenia , somalia ,
+ south africa , south korea , south sudan , spain , sri lanka , sudan , sweden , switzerland , syria ,
+ taiwan , tajikistan , tanzania , thailand , togo , trinidad and tobago , tunisia , turkey ,
+ turkmenistan , uganda , ukraine , united arab emirates , united kingdom , united states , uruguay ,
+ uzbekistan , venezuela , vietnam , yemen , zambia , zimbabwe
+
+
+
+       This website uses cookies and other tracking technologies to enhance user experience and to analyze
+language   stringand traffic on our website. We also share information about your use of our site with our social
+     performance
+       media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+Boost search results
+      honored.       in information
+               Further   a specific language.
+                                     is availableAccepts  an ISONotice
+                                                  in our Cookie  639-1 code (e.g. en , fr , zh-cn ) or an English
+language name (e.g. english , french ). By default this only boosts matching-language results in ranking; pass
+ filter_by_language: true to strictly filter out non-matching results instead. For best results, write your query in
+the same language you set here.
+
+
+Example:    "en"
+filter_by_language boolean              default:false
+
+Strictly filter out search results that don't match the language parameter, instead of only boosting them in ranking.
+Requires language to be set; returns a 400 error otherwise.
+
+
+
+
+auto_parameters boolean             default:false
+
+When auto_parameters is enabled, Tavily automatically configures search parameters based on your query's
+content and intent. You can still set other parameters manually, and your explicit values will override the automatic
+ones. The parameters include_answer , include_raw_content , and max_results must always be set manually,
+as they directly affect response size. Note: search_depth may be automatically set to advanced when it's likely to
+improve results. This uses 2 API credits per request. To avoid the extra cost, you can explicitly set search_depth to
+ basic .
+
+
+
+
+exact_match boolean           default:false
+
+Ensure that only search results containing the exact quoted phrase(s) in the query are returned, bypassing
+synonyms or semantic variations. Wrap target phrases in quotes within your query (e.g. "John Smith" CEO Acme
+ Corp ). Punctuation is typically ignored inside quotes.
+
+
+
+
+include_usage boolean            default:false
+
+Whether to include credit usage information in the response.
+
+
+
+
+safe_search boolean           default:false
+
+Whether to filter out adult or unsafe content from results. Not supported for fast or ultra-fast search depths.
+
+
+
+
+Response                                                                                  200           application/json
+
+
+Search results returned successfully
+
+
+       This website uses cookies and other tracking technologies to enhance user experience and to analyze
+query string        required
+       performance and traffic on our website. We also share information about your use of our site with our social
+       media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+The search query that was executed.
+       honored. Further information is available in our Cookie Notice
+
+Example:   "Who is Leo Messi?"
+
+
+
+answer string         required
+
+A short answer to the user's query, generated by an LLM. Included in the response only if include_answer is
+requested (i.e., set to true , basic , or advanced )
+Example:     "Lionel Messi, born in 1987, is an Argentine footballer widely regarded as one of the
+             greatest players of his generation. He spent the majority of his career playing for FC
+             Barcelona, where he won numerous domestic league titles and UEFA Champions League
+             titles. Messi is known for his exceptional dribbling skills, vision, and goal-scoring
+             ability. He has won multiple FIFA Ballon d'Or awards, numerous La Liga titles with
+             Barcelona, and holds the record for most goals scored in a calendar year. In 2014, he
+             led Argentina to the World Cup final, and in 2015, he helped Barcelona capture another
+             treble. Despite turning 36 in June, Messi remains highly influential in the sport."
+
+
+
+images object[]           required
+
+A list of query-related images from image search. If include_image_descriptions is true, each item will have
+ url and description . Note: per-result images are also returned inside each result object's images field.
+
+
+        Show child attributes
+
+
+
+Example:
+
+
+
+  []
+
+
+
+
+results object[]           required
+
+A list of sorted search results, ranked by relevancy.
+
+
+        Show child attributes
+
+
+
+
+response_time number<float>               required
+
+Time in seconds it took to complete the request.
+
+
+Example:     "1.67"
+         This website uses cookies and other tracking technologies to enhance user experience and to analyze
+         performance and traffic on our website. We also share information about your use of our site with our social
+         media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+auto_parameters object
+         honored. Further information is available in our Cookie Notice
+
+A dictionary of the selected auto_parameters, only shown when auto_parameters is true.
+
+
+Example:
+
+
+
+  {
+       "topic": "general",
+      "search_depth": "basic"
+  }
+
+
+
+
+usage object
+
+Credit usage details for the request.
+
+
+Example:
+
+
+
+  { "credits": 1 }
+
+
+
+
+request_id string
+
+A unique request identifier you can share with customer support to help resolve issues with specific requests.
+
+
+Example:     "123e4567-e89b-12d3-a456-426614174111"
+
+
+
+
+  Introduction
+       Previous
+
+
+
+                                                                                                             Tavily Extract
+                                                                                                                        Next
+
+
+      Ask a question...
+
+
+
+
+         This website uses cookies and other tracking technologies to enhance user experience and to analyze
+         performance and traffic on our website. We also share information about your use of our site with our social
+                                Resources                            Legal
+         media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+         honored. Further information is available in our Cookie Notice
+                                About                                Security & Complian…
+
+                                Tavily Search Crawler                Privacy Policy
+
+                                Tavily Status                        Website Terms of Use
+
+                                                                     Platform Terms of U…
+
+                                                                     Cookie Notice
+                                                              Accessibility Menu
+
+                                                              Do Not Sell or Share…
+
+
+
+
+Assistant
+
+
+  Responses are generated using AI and may
+             contain mistakes.
+
+
+
+
+  This website uses cookies and other tracking technologies to enhance user experience and to analyze
+  performance and traffic on our website. We also share information about your use of our site with our social
+  media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+  honored. Further information is available in our Cookie Notice
+Ask a question...
+
+
+
+
+     This website uses cookies and other tracking technologies to enhance user experience and to analyze
+     performance and traffic on our website. We also share information about your use of our site with our social
+     media, advertising and analytics partners. If we have detected an opt-out preference signal then it will be
+     honored. Further information is available in our Cookie Notice
+

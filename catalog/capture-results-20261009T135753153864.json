@@ -1,0 +1,43 @@
+{
+  "run_at": "2026-10-09T13:57:53.154057+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gemini-enterprise-agent-platform",
+        "id": "agent-evaluation-zh-cn",
+        "kind": "official-documentation",
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn"
+      },
+      "capture_started_at": "2026-10-09T13:57:32.335589+00:00",
+      "path": "sources/official/google/gemini-enterprise-agent-platform/agent-evaluation-zh-cn",
+      "requested_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn",
+      "final_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation?hl=zh-cn",
+      "http_status": 200,
+      "title": "智能体评估  |  Gemini Enterprise Agent Platform  |  Google Cloud Documentation",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "2d2731b01767d83f6452a1afffdafdf2ccfb4becefb6a20c2fa92a8e239378e1",
+          "bytes": 7788
+        },
+        "page.txt": {
+          "sha256": "45ec41d93d9856e0be8e2ba0407ead283f15c4fbcc313bae29b57b3726f85cef",
+          "bytes": 7157
+        },
+        "page.pdf": {
+          "sha256": "5c2e6fdf84c6face2e9e641809871f7aa27bcb543482a8df358df35855e704a5",
+          "bytes": 619644
+        },
+        "page.html": {
+          "sha256": "c932a485a191d3332716d4ef6ef90c7345fd3cc932073e7b741868942590d3f9",
+          "bytes": 227224
+        }
+      },
+      "capture_finished_at": "2026-10-09T13:57:52.749176+00:00"
+    }
+  ]
+}

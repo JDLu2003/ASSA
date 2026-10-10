@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore-code-interpreter",
+    "id": "overview",
+    "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:40.010613+00:00",
+  "path": "sources/official/aws/agentcore-code-interpreter/overview",
+  "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+  "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html",
+  "http_status": 200,
+  "title": "Execute code and analyze data using Amazon Bedrock AgentCore Code Interpreter - Amazon Bedrock AgentCore",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "4847927c5a4c9818288475cea708da6d399903eb68863eb47ab46cdde0b79eca",
+      "bytes": 16810
+    },
+    "page.txt": {
+      "sha256": "1a562f1f510a17a75bb12ba6af6f862b908a71b2d2670bb95b449b8735069a4c",
+      "bytes": 5594
+    },
+    "page.pdf": {
+      "sha256": "9b89a51d4b7a475615ab9e086eb0eb766b08f953c7d9cebf8230c6adf50796da",
+      "bytes": 238778
+    },
+    "page.html": {
+      "sha256": "f5bb7546221a4eb23d6d05464ef0acf927aeb47fe82d14c5a2564b2d8b408748",
+      "bytes": 510999
+    }
+  }
+}

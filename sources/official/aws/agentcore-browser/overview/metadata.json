@@ -1,0 +1,37 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "agentcore-browser",
+    "id": "overview",
+    "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:21:33.016609+00:00",
+  "path": "sources/official/aws/agentcore-browser/overview",
+  "requested_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+  "final_url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html",
+  "http_status": 200,
+  "title": "Interact with web applications using Amazon Bedrock AgentCore Browser - Amazon Bedrock AgentCore",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "1d792980b46e2e90b7b755e0c4e58e9d9123ea696aaf73d4875e4a8e2242b1af",
+      "bytes": 13101
+    },
+    "page.txt": {
+      "sha256": "6bc4254b57f7f17a24440c4306546d91b9b97fc557abf3b5b8ef952aa794a3b3",
+      "bytes": 5400
+    },
+    "page.pdf": {
+      "sha256": "5504ebdb25340a36e29540ac9b0f6617cc1d4424dee3aad2b1c73b37fcd55698",
+      "bytes": 214678
+    },
+    "page.html": {
+      "sha256": "0a531368d6db190bc7602154d9c809d10c299cdaf893b31b55fa022ec52b74d7",
+      "bytes": 501398
+    }
+  }
+}

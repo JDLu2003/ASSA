@@ -1,0 +1,79 @@
+{
+  "item": {
+    "topic": "agent-environments",
+    "id": "safe-to-resume",
+    "arxiv": "2608.29381v1",
+    "kind": "arxiv-paper",
+    "title": "Safe to Resume? Breaking Execution Continuity of Agent Execution via Rollback",
+    "landing_url": "https://arxiv.org/abs/2608.29381v1",
+    "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+    "published": "2026-08-29T17:40:13Z",
+    "authors": [
+      "Guanlong Wu",
+      "Dahui Li",
+      "Ke Jiang",
+      "Jianyu Niu",
+      "Cong Wang",
+      "Yinqian Zhang"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:00:47.123246+00:00",
+  "path": "sources/papers/agent-environments/safe-to-resume",
+  "requested_url": "https://arxiv.org/abs/2608.29381v1",
+  "pdf_url": "https://arxiv.org/pdf/2608.29381v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "bc989266026c57eb78a73a6548f1e1a5e1ed4a2a46f7a5eb68f559b0e6ffb616",
+      "bytes": 1094159
+    },
+    "paper.txt": {
+      "sha256": "3777904235074a99aec063d4ca48c418651b189096423c54881d6b29e78023ff",
+      "bytes": 121602
+    },
+    "paper.pdf": {
+      "sha256": "531cb45c7cc051ef992110f2910911c437b33a88aacf31fe9b1b0be733283048",
+      "bytes": 432998
+    },
+    "landing.html": {
+      "sha256": "a1e5462a377615ccf6cb81edc0fb71655f917b79b6355d68bc9b55d58a02d303",
+      "bytes": 43230
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2608.29381v1",
+    "retrieved_at": "2026-10-09T13:06:16.705923+00:00",
+    "fields": {
+      "citation_title": [
+        "Safe to Resume? Breaking Execution Continuity of Agent Execution via Rollback"
+      ],
+      "citation_author": [
+        "Wu, Guanlong",
+        "Li, Dahui",
+        "Jiang, Ke",
+        "Niu, Jianyu",
+        "Wang, Cong",
+        "Zhang, Yinqian"
+      ],
+      "citation_date": [
+        "2026/08/29"
+      ],
+      "citation_online_date": [
+        "2026/08/29"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2608.29381"
+      ],
+      "citation_arxiv_id": [
+        "2608.29381"
+      ],
+      "citation_abstract": [
+        "AI agents are moving toward persistent, stateful execution across various applications, accumulating execution state and external effects that are costly to reconstruct after failures. Checkpoint and rollback (C/R) are becoming essential for recovery, yet their security implications remain largely unexplored. Correct rollback does not imply secure recovery: a faithfully restored checkpoint may resume an execution whose states, assumptions, and external effects never coexisted in any valid history. In this paper, we present the first systematic security study of checkpoint and rollback in existing agent systems. By examining representative agent C/R systems, we characterize the design space of existing C/R mechanisms and develop a general execution model that captures their recovery boundaries and state dependencies. From this model, we identify five fundamental failure modes spanning incomplete or inconsistent internal state, stale external dependencies, nondeterministic replay, and unrecorded external effects. We further demonstrate their security impact through three end-to-end attacks on Hermes, Cline, and LangGraph, enabling malware-verification bypass, unauthorized mail forwarding, and double payment. To systematically study these failures in practice, we develop a multi-agent analysis pipeline that reconstructs execution semantics, identifies violations of the five failure conditions, and validates them through actual rollback. Across five representative frameworks, our evaluation shows that these failures recur across heterogeneous C/R designs and stem from a common gap between the state restored by a checkpoint and the dependencies required for secure continuation."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

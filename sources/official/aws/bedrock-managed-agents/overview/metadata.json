@@ -1,0 +1,38 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "bedrock-managed-agents",
+    "id": "overview",
+    "url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+    "kind": "official-web",
+    "discovery": "Linked by captured OpenAI Bedrock Managed Agents page"
+  },
+  "capture_started_at": "2026-10-09T12:22:37.314407+00:00",
+  "path": "sources/official/aws/bedrock-managed-agents/overview",
+  "requested_url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+  "final_url": "https://aws.amazon.com/bedrock/managed-agents-openai/",
+  "http_status": 200,
+  "title": "Amazon Bedrock Managed Agents",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "49a981580ba6e2e42dddd17e47f6e9f975a7e3ed89e79aa4a5f7ea11a961e808",
+      "bytes": 5797
+    },
+    "page.txt": {
+      "sha256": "a7fe0a87ab0d719dbc6a2201a629a78f83764563da4860f602becee728b5535e",
+      "bytes": 4684
+    },
+    "page.pdf": {
+      "sha256": "0837186b0999a243466c5131116ffaae97fe9b5cd32055d96ffdf08d2c2d8dd3",
+      "bytes": 2301371
+    },
+    "page.html": {
+      "sha256": "bb1827f82d2bca425b8ca051c9983f588dec385378069c45a13003924fe8933a",
+      "bytes": 660776
+    }
+  }
+}

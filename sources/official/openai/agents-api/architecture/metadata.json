@@ -1,0 +1,49 @@
+{
+  "item": {
+    "vendor": "openai",
+    "product": "agents-api",
+    "id": "architecture",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+    "kind": "official-web"
+  },
+  "capture_started_at": "2026-10-09T12:01:55.525332+00:00",
+  "path": "sources/official/openai/agents-api/architecture",
+  "requested_url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+  "final_url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+  "http_status": 200,
+  "title": "Architecture | OpenAI API",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "3ca7d161ae1f86254287a0d3971a8054cf506959e5daece5d5e6f25f7b91cbd9",
+      "bytes": 1840
+    },
+    "page.txt": {
+      "sha256": "d35782b8baa9b177cd116c647f3917fe89934d09bdfc8b794797426e2e3e1075",
+      "bytes": 4663
+    },
+    "page.pdf": {
+      "sha256": "9194f27b98bab6094c7c41d81c6f2c1bafa034452cc3607896e26f3b76a94b0c",
+      "bytes": 87247
+    },
+    "page.html": {
+      "sha256": "8987f17e7517051272110c4b0900ff673dca9b5855360ad563a680c37cdff4b3",
+      "bytes": 369128
+    },
+    "page.complete.pdf": {
+      "sha256": "8123ddc34a04e20937b05daf166c12e3d55b41b05bb9a57903eedca7fc8424b2",
+      "bytes": 244429
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "8a68da11bd36521d1262454b03718a2849e881165c4a538791138eea94b618dd",
+      "bytes": 4104
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained but clipped by site overflow CSS; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "print-only CSS removes height/overflow clipping; page content unchanged"
+  }
+}

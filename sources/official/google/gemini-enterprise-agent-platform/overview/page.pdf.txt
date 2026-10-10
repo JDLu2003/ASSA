@@ -1,0 +1,80 @@
+Build, scale, govern, and optimize
+with Gemini Enterprise Agent
+Platform
+Gemini Enterprise Agent Platform is our open and comprehensive platform that empowers
+businesses to rapidly build, scale, govern, and optimize enterprise-grade agents grounded in your
+enterprise data. It provides the full-stack foundation and extensive developer choice you need to
+transform your applications and workflows into powerful, reliable agentic systems at global scale.
+
+API quickstart (https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/start)
+
+  Get started in Agent Studio (https://console.cloud.google.com/agent-platform/studio)
+
+  Get an API key (https://console.cloud.google.com/agent-platform/studio/settings/api-keys)
+
+
+
+
+                                               Everything you need to build
+                                                 production-ready agents
+
+                                                               BuildScaleGovernOptimize
+
+
+
+
+   Build with Agent Platform                                     Agent Development Kit                                           Agent Garden
+
+   Learn about the different tools and services                  The Agent Development Kit (ADK) is a modular,                   Explore Google's libra
+   you can use to build agents with Agent                        model-agnostic framework designed to make
+   Platform.                                                     building and deploying complex AI agents feel
+                                                                 just like standard software development.
+
+
+
+
+   arrow_outward   (/gemini-enterprise-agent-platform/build)     arrow_outward   (/gemini-enterprise-agent-platform/build/adk)   arrow_outward   (/gemini-enterpri
+
+
+
+
+                                                                                                                                                            chevron_right
+
+
+
+
+                                                      Built for developers,
+                                                     designed for enterprise
+          Gemini                                                                                             Veo
+
+          Advanced reasoning-first models optimized for complex agentic workflows and                        High-quality video generation models that create
+          coding. Features Gemini 3.1 Pro and Gemini 3 Flash.                                                or image prompts. Features Veo 3.1.
+
+
+
+
+          arrow_outward   (/gemini-enterprise-agent-platform/models/google-models#gemini-models)             arrow_outward   (/gemini-enterprise-agent-platform/models/
+
+
+
+
+                                                                                                                                                                  chevron_right
+
+
+
+
+                                                        Learn more about Agent Platform
+                                           For high-level product overviews and marketing details across Google Cloud products, visit the
+                                                                   Gemini Enterprise Agent Platform product page.
+
+                                          Go to the Agent Platform product page (https://cloud.google.com/products/gemini-enterprise-agent-platform)
+
+
+
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License (https://creativecommons.org/licenses/by/4.0/),
+and code samples are licensed under the Apache 2.0 License (https://www.apache.org/licenses/LICENSE-2.0). For details, see the Google Developers Site Policies
+(https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-10-07 UTC.
+

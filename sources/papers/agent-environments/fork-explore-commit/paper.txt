@@ -1,0 +1,489 @@
+                                             Fork, Explore, Commit: OS Primitives for Agentic Exploration
+                                                                          Cong Wang∗                                                    Yusheng Zheng
+                                                                   Multikernel Technologies, Inc.                              University of California, Santa Cruz
+                                                                               USA                                                            USA
+                                                                     cwang@multikernel.io                                             yzhen165@ucsc.edu
+
+                                         Abstract                                                                   primitives lack nested branching, commit semantics, and unpriv-
+                                         AI agents increasingly perform agentic exploration: pursuing mul-          ileged operation; process management mechanisms lack reliable
+                                         tiple solution paths in parallel and committing only the successful        branch-aware termination and sibling isolation; and stitching these
+                                         one. Because each exploration path may modify files and spawn              together in userspace introduces race windows between steps, error-
+                                         processes, agents require isolated environments with atomic com-           prone cleanup on partial failure, and ordering dependencies that
+arXiv:2602.08199v2 [cs.OS] 19 Mar 2026
+
+
+
+
+                                         mit and rollback semantics for both filesystem state and process state.    defeat correctness (Section 2). In practice, current agent frameworks
+                                         We introduce the branch context, a new OS abstraction that provides:       resort to ad hoc solutions such as git stashing, temporary directo-
+                                         (1) copy-on-write state isolation with independent filesystem views        ries, or container clones [9, 24], which incur significant overhead
+                                         and process groups, (2) a structured lifecycle of fork, explore, and       and cannot capture all filesystem modifications.
+                                         commit/abort, (3) first-commit-wins resolution that automatically             We introduce the branch context, a new OS abstraction that cap-
+                                         invalidates sibling branches, and (4) nestable contexts for hierar-        tures these requirements (Section 3). A branch context is an isolated
+                                         chical exploration. We realize branch contexts in Linux through            execution environment, with a copy-on-write filesystem view and
+                                         two complementary components. First, BranchFS is a FUSE-based              a process group, that follows a fork/explore/commit lifecycle with
+                                         filesystem that gives each branch context an isolated copy-on-write        first-commit-wins resolution and support for nesting. We realize
+                                         workspace, with O(1) creation, atomic commit to the parent, and au-        branch contexts in Linux through two complementary components:
+                                         tomatic sibling invalidation, all without root privileges. BranchFS           (1) BranchFS: A FUSE-based [27] filesystem that gives each
+                                         is open sourced in https://github.com/multikernel/branchfs, along                 branch context an isolated copy-on-write workspace, with
+                                         with a Python integration library, BranchContext [32], that pro-                  O(1) creation, atomic commit to the parent, and automatic
+                                         vides ready-to-use agent exploration patterns. Second, branch()                   sibling invalidation, all without root privileges.
+                                         is a proposed Linux syscall that spawns processes into branch                 (2) branch(): A proposed Linux syscall that spawns processes
+                                         contexts with reliable termination, kernel-enforced sibling isola-                into branch contexts with reliable termination, kernel-enforced
+                                         tion, and first-commit-wins coordination. Preliminary evaluation of               sibling isolation, and first-commit-wins coordination.
+                                         BranchFS shows sub-350 𝜇s branch creation independent of base
+                                         filesystem size, and modification-proportional commit overhead             Preliminary evaluation shows sub-350 𝜇s branch creation and under
+                                         (under 1 ms for small changes).                                            1 ms commit for small changes (Section 6).
+                                                                                                                       We make the following contributions:
+                                         Keywords                                                                       • The branch context, a new OS abstraction for agentic ex-
+                                         Agentic exploration, AI agents, Filesystem branching, Copy-on-                   ploration with copy-on-write isolation, fork/explore/com-
+                                         write, FUSE, Operating system primitives                                         mit lifecycle, first-commit-wins resolution, and nesting (Sec-
+                                                                                                                          tion 3).
+                                         1    Introduction                                                              • Two complementary Linux implementations: BranchFS, a
+                                         Modern AI agents autonomously execute multi-step tasks across do-                FUSE-based branching filesystem (Section 4); and branch(),
+                                         mains such as software engineering [2, 34, 37], computer use [33],               a proposed syscall for process coordination (Section 5).
+                                         and OS tuning [41] through a reason-then-act loop [40], where                  • A preliminary evaluation of BranchFS (Section 6).
+                                         each action (shell commands, file edits, package installations) may
+                                         produce irreversible side effects. Increasingly, agent systems ex-         2 Motivation
+                                         plore multiple solution paths in parallel [25, 37, 39]: for example,
+                                                                                                                    2.1 AI Agent Execution Patterns
+                                         a software engineering agent may try several candidate fixes si-
+                                         multaneously, committing only the one that passes tests. We term           Several agent patterns amplify the side-effect challenge introduced
+                                         this pattern agentic exploration: the autonomous, parallel pursuit         above by exploring multiple execution paths: Tree/Graph-of-Thoughts
+                                         of multiple solution paths with selective commitment of results. It        reasoning [5, 39] searches over candidate solutions in parallel, Re-
+                                         requires isolating two types of state across parallel branches: filesys-   flexion [25] retries tasks after self-critique requiring rollback of
+                                         tem state (workspace modifications) and process state (execution           prior side effects, and software engineering agents such as SWE-
+                                         context), with the ability to commit successful branches and discard       agent [37] and OpenHands [34] attempt multiple fixes each produc-
+                                         failed ones.                                                               ing substantial filesystem changes. These patterns share a common
+                                            Existing OS mechanisms do not meet these requirements in-               need for lightweight, isolated workspaces. Current frameworks use
+                                         dividually, and composing them is fragile: filesystem branching            ad hoc solutions: LangChain [9] and AutoGPT [24] rely on git
+                                                                                                                    stashing, temporary directories, or container clones, while Claude
+                                         ∗ Corresponding author.                                                    Code [2] provides per-file snapshots that cannot capture changes
+Agentic OS Workshop, March 23, 2026, Pittsburgh, USA                                                                               Cong Wang and Yusheng Zheng
+
+
+from shell commands (e.g., npm install) and do not support par-          Table 1: Feature comparison of filesystem branching mecha-
+allel branching. None adequately meets these needs.                      nisms.
+
+2.2     Requirements of Agentic Exploration                               Feature                  OverlayFS/UnionFS          Btrfs/ZFS     DM-Snap        BranchFS
+The agent patterns above impose six requirements on the execution         Portable across FSes                ✓                   ✗              ✓              ✓
+environment:                                                              Nested branches                     ✗                   ✓              ✗              ✓
+                                                                          Commit-to-parent                    ✗                   ✗              ✗              ✓
+   R1: Isolated parallel execution. Because multiple exploration paths    Sibling invalidation                ✗                   ✗              ✗              ✓
+                                                                          No root privileges                  ✗                   ✗              ✗              ✓
+run simultaneously and may modify the same files (e.g., editing
+main.py or running npm install), each path needs its own isolated
+view of filesystem and process state. Without isolation, concurrent      Table 2: Feature comparison of process management mecha-
+modifications corrupt shared state.                                      nisms for agentic exploration.
+   R2: Atomic commit with single-winner resolution. When one path
+succeeds (e.g., tests pass), its changes must be applied atomically       Feature                       pgrp      session       cgroup       PID ns       branch()
+to the shared workspace. All sibling paths must be automatically          Reliable termination            ✗           ✗            ✓            ✓              ✓
+invalidated, since they now operate on stale state and could silently     No escape possible              ✗           ✗            ✓            ✓              ✓
+corrupt the committed result. Failed paths must be discardable with       Sibling isolation               ✗           ✗            ✗            ✓              ✓
+no side effects.                                                          No setup required               ✓           ✓            ✗            ✗              ✓
+                                                                          No root privileges              ✓           ✓            ✗†           ✗              ✓
+  R3: Hierarchical nesting. Tree-of-Thoughts and similar patterns         No PID 1 complexity             ✓           ✓            ✓            ✗              ✓
+explore hierarchically: an agent tries three strategies, each of which    Exclusive groups                ✗           ✗            ✗            ✗              ✓
+may try sub-variants. The execution environment must support                   † Cgroup v2 delegation via systemd can avoid root but requires prior configuration.
+
+nested branches, where each level commits to its immediate parent.
+   R4: Complete filesystem coverage. Agent actions go beyond edit-          Process management. Process groups and sessions [26] allow
+ing source files: they run shell commands that create build artifacts,   group termination, but processes can escape via setsid() or setpgid();
+install packages, and modify dotfiles. The isolation mechanism must      manual PID tracking via /proc suffers from race conditions. Cgroups [14]
+capture all filesystem modifications, not just tracked files.            provide reliable termination but require setup and typically need
+   R5: Lightweight, unprivileged, and portable. Agents create and        root privileges (cgroup v2 delegation via systemd can avoid root but
+discard branches frequently (e.g., per LLM reasoning step). Branch       requires prior configuration), and do not prevent signaling between
+creation must be sub-millisecond, require no root privileges, and        siblings. PID namespaces provide complete isolation but impose
+work portably across underlying filesystems (ext4, XFS, NFS, etc.)       PID 1 init overhead. The clone() syscall [16] enables fine-grained
+since agents run in diverse environments. This rules out heavy-          resource sharing but requires combining multiple mechanisms.
+weight mechanisms such as VM snapshots, privileged container             None satisfies R6 in full.
+runtimes, or filesystem-specific solutions.
+                                                                         3     Branch Contexts
+   R6: Process coordination. Agents spawn processes (compilers,
+                                                                         We now introduce the branch context, a new OS abstraction that
+test runners, package managers) within each path. On commit or
+                                                                         captures the requirements from Section 2. A branch context is an
+abort, all processes in a branch must be reliably terminated; sibling
+                                                                         isolated execution environment, comprising a filesystem view and
+branches must be isolated from each other to prevent cross-path
+                                                                         a process group, that provides copy-on-write state isolation (R1,
+interference (e.g., one branch’s test runner killing another’s).
+                                                                         R4), atomic commit with single-winner resolution (R2), nesting
+                                                                         for hierarchical exploration (R3), lightweight unprivileged creation
+2.3     Limitations of Existing Mechanisms
+                                                                         (R5), and coordinated process lifecycle management (R6). Figure 1
+No existing OS mechanism satisfies these requirements (Tables 1          illustrates how the two components of our framework (BranchFS
+and 2).                                                                  and branch()) realize this abstraction.
+    Filesystem branching. Union filesystems such as UnionFS [36]
+and its successor OverlayFS [7] provide a single writable upper          3.1     Definition
+directory with no native commit-to-parent or sibling invalidation,       A branch context 𝑏𝑖 encapsulates: (1) a filesystem view consisting of
+and mounting requires root privileges. Btrfs [8] and ZFS [6] sup-        the origin’s files overlaid with a copy-on-write delta layer Δ𝑖 , and
+port nested subvolumes and clones but are each tied to a single          (2) a process group whose side effects are confined to 𝑏𝑖 . Branch
+filesystem type and lack native commit-to-parent. Device-mapper          contexts are created in sets of 𝑁 siblings from a single frozen origin,
+snapshots [18] require raw block devices with O(depth) read la-          execute independently, and resolve via atomic commit (promoting
+tency.                                                                   one context’s changes to the parent) or abort (discarding changes).
+    At coarser granularity, VM snapshot systems [11, 17, 23, 30] have       Prior work on speculative OS execution introduced related con-
+whole-VM overhead; recent serverless snapshot work [1, 12, 29]           cepts: Tapus et al. [28] proposed “speculations” for distributed fault-
+reduces startup latency but does not address branching semantics;        tolerance, where a single speculative path runs sequentially from a
+and CRIU [10] requires full state serialization, all violating R5.       checkpoint and an owner process decides whether to accept results.
+Fork, Explore, Commit: OS Primitives for Agentic Exploration                                                 Agentic OS Workshop, March 23, 2026, Pittsburgh, USA
+
+
+                          Parent Process                                                    state. This enables speedup proportional to available paral-
+                                                                                            lelism.
+                                                                                        (3) First-commit-wins. Any context may commit; the first
+                          branch(N=3)          creates N children                           to do so wins, and all siblings are invalidated. This avoids
+                                                                                            merge complexity and suits AI agent workloads where the
+                                                                                            orchestrator cannot predict which branch will succeed.
+                                                                                        (4) Nested branch contexts. A branch context may itself fork
+        Child 1              Child 2                Child 3                                 sub-contexts, forming a tree. Each level commits to its imme-
+                                                                                            diate parent, enabling hierarchical exploration (e.g., an agent
+       Mount NS              Mount NS               Mount NS        isolated views          tries three strategies, each of which tries two sub-variants).
+                                                                                     The following sections describe how we realize branch contexts:
+                                                                                     BranchFS (Section 4) implements the filesystem dimension, and
+                                                                                     branch() (Section 5) implements the process coordination dimen-
+                        BranchFS (FUSE)                                              sion.
+
+                                                                                     4     BranchFS Design and Implementation
+      Branch 1 (Δ)          Branch 2 (Δ)         Branch 3 (Δ)       copy-on-write
+                                                                                     BranchFS is a FUSE-based filesystem that realizes the filesystem
+                                                                                     dimension of branch contexts.
+
+                  Base Directory (Original Files)                                    4.1    File-Level Copy-on-Write
+                                                                                     When a file is first modified on a branch, BranchFS copies the
+Figure 1: Architecture overview. branch() coordinates pro-                           entire file from the base directory (or nearest ancestor branch that
+cess creation and mount namespace isolation; BranchFS                                modified it) into the branch’s delta layer (implemented as a per-
+provides filesystem branching with copy-on-write semantics.                          branch directory on disk). Subsequent reads and writes to that
+Dotted arrows indicate copy-on-write fallback to base.                               file are served entirely from the delta copy. Unmodified files are
+                                                                                     resolved by walking up the branch chain to the base directory.
+                                                                                         This file-level granularity is a deliberate trade-off: it is coarser
+Branch contexts differ in three ways: they support parallel explo-                   than block-level copy-on-write but simpler to implement correctly
+ration of 𝑁 paths simultaneously, use competitive first-commit-wins                  atop FUSE, and the overhead of copying whole files is acceptable
+resolution rather than owner-decided acceptance, and target local                    for the small-to-medium files typical of agent workloads.
+agent workloads rather than distributed system consistency.
+                                                                                     4.2    Branch Chain and Resolution
+3.2     Lifecycle: Fork, Explore, Commit                                             Branches form a chain from the current branch back through an-
+Every branch context follows a three-phase lifecycle:                                cestor branches to the base directory. File lookups traverse this
+                                                                                     chain:
+   Fork. 𝑁 branch contexts are created atomically from a frozen                         (1) Check the current branch’s delta layer.
+origin. Each context 𝑏𝑖 receives its own copy-on-write filesystem                       (2) If not found, check each ancestor branch in order.
+layer and process group.                                                                (3) If not found in any branch, serve from the base directory.
+                                                                                        (4) If a tombstone marker is encountered at any level, the file is
+  Explore. Each branch context executes independently. Filesystem
+                                                                                            reported as deleted.
+modifications are captured in the per-context delta layer Δ𝑖 via
+copy-on-write; all process side effects are confined to the context.                    Tombstone markers are lightweight sentinel files that record
+                                                                                     deletions, ensuring deleted files do not “reappear” from the base
+    Commit/Abort. When a branch context succeeds (e.g., tests pass),                 directory.
+it commits: its delta Δ𝑖 is applied atomically to the parent. A context
+may also abort, discarding its delta with no effect on the parent or                 4.3    Commit and Abort Semantics
+siblings.                                                                               Commit. A commit applies a branch’s changes atomically to its
+                                                                                     parent: (1) Modified files and tombstones are collected from the
+3.3     Core Semantics                                                               committing branch’s delta layer. (2) Deletions (tombstones) are
+Branch contexts are defined by four core semantic properties:                        applied first. (3) Modified files are copied from the committing
+                                                                                     branch’s delta layer into the parent’s delta layer. (4) The parent’s
+   (1) Frozen origin. The parent state becomes read-only when
+                                                                                     epoch counter is incremented, invalidating all sibling branches.
+       branch contexts exist, eliminating merge conflicts by con-
+                                                                                     (5) Memory-mapped regions from invalidated branches trigger
+       struction.
+                                                                                     SIGBUS.
+   (2) Parallel isolated execution. All 𝑁 contexts run simultane-
+       ously, not as sequential retries, and are fully isolated from                    Abort. An abort discards the branch’s delta layer without modi-
+       one another: no context can observe or modify another’s                       fying the parent, incurring negligible cost. Sibling branches remain
+Agentic OS Workshop, March 23, 2026, Pittsburgh, USA                                                                Cong Wang and Yusheng Zheng
+
+
+valid, and memory-mapped regions from the aborted branch trigger                    Listing 1: The branch() syscall interface.
+SIGBUS.
+                                                                          /* Operations */
+                                                                          # define BR_CREATE          1   /* Create branch ( es ) */
+4.4     Mount-Based Isolation and Interface                               # define BR_COMMIT          2   /* Commit to parent */
+BranchFS can be used standalone, without the branch() kernel ex-          # define BR_ABORT           3   /* Discard branch */
+tension. In standalone mode, branches are created, committed, and
+                                                                          /* Flags for BR_CREATE */
+aborted via a CLI tool (branchfs create/commit/abort) or con-
+                                                                          # define BR_FS        (1 <<          0)   /* Branch
+trol files (.branchfs_ctl) within the filesystem, requiring no ker-            filesystem */
+nel modifications. All mounts of the same BranchFS daemon share           # define BR_MEMORY    (1 <<          1)   /* Branch memory */
+a single branch namespace, with each branch accessible as a virtual       # define BR_ISOLATE   (1 <<          2)   /* Sibling
+directory via @branch paths (e.g., /mnt/workspace/@feature-a/).                isolation */
+Per-branch isolation for multi-agent workflows is achieved by plac-       # define BR_CLOSE_FDS (1 <<          3)   /* Close all fds */
+ing each agent in its own mount namespace with only its @branch
+path bind-mounted as the workspace root, preventing agents from           /* Generic ioctls for branching filesystems */
+accessing each other’s branches.                                          # define FS_IOC_BRANCH_CREATE _IO ( 'b ' , 0)
+   When used with branch() (Section 5), branch management is              # define FS_IOC_BRANCH_COMMIT _IO ( 'b ' , 1)
+                                                                          # define FS_IOC_BRANCH_ABORT  _IO ( 'b ' , 2)
+instead driven by the kernel: branch() issues FS_IOC_BRANCH_*
+ioctls to create, commit, and abort branches, and handles mount           union branch_attr {
+namespace setup atomically.                                                  struct { /* BR_CREATE */
+                                                                               __u32 flags ;
+4.5     Agent Integration Library                                              __s32 mount_fd ;    /* workspace fd */
+                                                                               __u32 n_branches ;
+To bridge BranchFS with agent frameworks, we provide Branch-
+                                                                               __u64 child_pids ;  /* pid_t __user * , output
+Context [32], a Python library that wraps BranchFS’s branch-                       */
+ing primitives into high-level exploration patterns. At its core,            } create ;
+a Workspace context manager mounts BranchFS and exposes                      struct { /* BR_COMMIT */
+Branch objects with automatic commit-on-success and abort-on-                  __u32 flags ; /* reserved */
+failure semantics. On top of this, the library provides seven com-           } commit ;
+posable patterns that directly realize the agent strategies described        struct { /* BR_ABORT */
+in Section 2: Speculate races 𝑁 candidates and commits the first suc-          __u32 flags ; /* reserved */
+cess; BestOfN runs 𝑁 candidates and commits the highest-scoring              } abort ;
+                                                                          };
+one; Reflexion retries sequentially, feeding failure feedback into the
+next attempt; TreeOfThoughts explores hierarchical strategy trees
+                                                                          long branch ( int op , union branch_attr * attr ,
+with nested branches; BeamSearch keeps the top-𝐾 branches alive                         size_t size ) ;
+at each depth level; Tournament performs pairwise elimination via
+a judge function; and Cascaded starts with one attempt and adap-
+tively fans out on failure. Each pattern manages branch lifecycle
+(creation, commit, abort) and process isolation (via fork(2) with         operations and flags can be added without changing the syscall
+optional timeout and resource limits) internally, so agent code only      signature.
+supplies the per-branch task logic.                                          The syscall takes an operation code and a union of per-operation
+                                                                          argument structures (Listing 1).
+                                                                             Table 3 summarizes why kernel support is necessary for the core
+5     The branch() Syscall
+                                                                          capabilities. Beyond individual capabilities, the fundamental argu-
+While BranchFS provides filesystem branching, agents must still           ment for a syscall is atomic composition: setting up cgroups, PID
+coordinate processes across branches. We propose branch(), a              namespaces, mount namespaces, filesystem branches, and signal
+Linux syscall that provides this coordination with capabilities that      barriers in userspace is a multi-step process with race windows
+are difficult or impossible to achieve purely in userspace: reliable      between steps (e.g., a process can fork between cgroup creation and
+process termination (no escape via setsid()), kernel-enforced sib-        migration), fragile cleanup on partial failure, and error-prone or-
+ling isolation, memory branching via page tables, and PID preser-         dering dependencies. branch() composes all of these atomically in
+vation on commit.                                                         a single call with kernel-side cleanup on failure, following the same
+                                                                          rationale that motivated clone() over manual fork() + unshare()
+5.1     Interface                                                         sequences.
+The branch() interface is designed around three principles: sim-
+plicity, exposing only three operations (create, commit, abort) that      5.2    Operations and Flags
+mirror the branching lifecycle; flexibility, allowing callers to select     BR_CREATE.. Creates n_branches child processes, each in its
+exactly which resources to branch via composable flags; and exten-        own branch. The kernel issues FS_IOC_BRANCH_CREATE on mount_fd
+sibility, using the bpf(2)-style multiplexed syscall pattern so new       once per child to create filesystem branches, then atomically forks
+Fork, Explore, Commit: OS Primitives for Agentic Exploration                                         Agentic OS Workshop, March 23, 2026, Pittsburgh, USA
+
+
+Table 3: Justification for branch(). Strong justifications re-
+                                                                                    Listing 2: Parallel exploration with first-commit-wins.
+quire kernel support; weak justifications are conveniences.
+                                                                               1     int mnt = open ( " / mnt / workspace " , O_PATH ) ;
+                                                                               2     pid_t pids [3];
+      Capability                   Userspace?                  Justification   3     union branch_attr attr = {
+      Atomic composition           Impossible                  Strong          4        . create = { . flags = BR_FS ,
+                                                                               5                        . mount_fd = mnt ,
+      Memory branching             Impossible                  Strong
+                                                                               6                        . n_branches = 3 ,
+      Process termination          Cgroups only                Strong          7                        . child_pids = ( uintptr_t ) pids }
+      Sibling isolation            PID ns only                 Strong          8     };
+      Atomic mount setup           User ns trick               Weak            9     int idx = branch ( BR_CREATE , & attr , sizeof ( attr
+      Parent read-only             mprotect + FUSE             Weak                        ));
+      First-commit-wins            Atomics                     Weak            10    if ( idx == 0) {
+      Multi-branch create          Fork loop                   Weak            11       /* Parent : wait for winner */
+                                                                               12       while ( wait ( NULL ) > 0) ;
+                                                                               13       /* Winner 's changes now visible in base */
+each child into a new mount namespace and bind-mounts the result-              14    } else {
+ing branch fd over mount_fd using the new mount API (open_tree                 15       /* Child : idx is 1 , 2 , or 3 */
+                                                                               16       bool ok = try_approach ( idx ) ;
++ move_mount). Returns 0 to the parent (with child_pids filled)
+                                                                               17       if ( ok ) {
+and 1..𝑁 to each child (branch index). All branches created in a sin-
+                                                                               18          union branch_attr ca = {. commit = {0}};
+gle call form an exclusive group: only one can commit successfully;            19          int r = branch ( BR_COMMIT , & ca , sizeof ( ca ) )
+others receive -ESTALE. Four flags control branch scope: BR_FS                                  ;
+(required) gives each child a new mount namespace with its branch              20          if ( r == - ESTALE ) _exit (1) ; /* lost */
+mounted as the workspace; BR_MEMORY additionally branches mem-                 21          /* r == 0: FS + process committed
+ory via page table copy-on-write, where writes fault into child-                                atomically */
+owned pages and the parent’s pages become read-only; BR_ISOLATE                22       } else {
+adds kernel-enforced signal/ptrace barriers between siblings via               23          union branch_attr aa = {. abort = {0}};
+branch_id checks; BR_CLOSE_FDS closes inherited file descriptors               24          branch ( BR_ABORT , & aa , sizeof ( aa ) ) ;
+                                                                               25          /* does not return */
+so children re-open files in their branch context.
+                                                                               26       }
+    BR_COMMIT.. The kernel first wins the exclusive group race,                27    }
+then issues FS_IOC_BRANCH_COMMIT on the branch fd to apply
+filesystem changes, commits memory if BR_MEMORY was set, and
+terminates siblings (which receive -ESTALE on their next commit
+attempt). The committing child then optionally replaces the parent             but has a separate address space (memory not part of branch state).
+(analogous to execve()), taking over its PID so the caller sees a              Threads via clone(CLONE_VM) share both mount namespace and
+single continuous process.                                                     address space, so their changes are part of the branch. On commit
+   BR_ABORT.. The kernel issues FS_IOC_BRANCH_ABORT on the                     or abort, all descendants are terminated; the kernel tracks them for
+branch fd to discard filesystem changes, then terminates the branch            reliable cleanup.
+process. If all branches abort, the parent resumes.
+                                                                               5.5     Filesystem-Agnostic Integration
+   Nested Branches. Branches can create sub-branches by calling
+branch() again. A commit replaces only the immediate parent;                   branch() integrates with branching filesystems entirely through
+further propagation requires separate commits.                                 three generic ioctls (FS_IOC_BRANCH_CREATE, _COMMIT, _ABORT),
+                                                                               following the pattern of existing generic ioctls such as FICLONE
+5.3     Usage Example                                                          and FIEMAP. For FUSE-based filesystems like BranchFS, ioctls are
+                                                                               forwarded to the daemon via FUSE_IOCTL; for kernel-native filesys-
+Listing 2 shows the typical pattern for an AI agent exploring three
+                                                                               tems, they are handled directly. Crucially, branch() itself contains
+approaches in parallel. The first branch to succeed commits its
+                                                                               no filesystem-specific code: adding a new branching filesystem
+filesystem changes to the parent; siblings receive -ESTALE and exit.
+                                                                               requires only implementing the three ioctls, with no changes to
+                                                                               branch() or the VFS layer.
+5.4     Parent and Child Semantics
+   Parent Read-Only. While branches exist, the parent becomes read-
+                                                                               6     Preliminary Evaluation
+only for both filesystem (BranchFS denies writes) and memory
+(pages marked read-only, writes return -EAGAIN). This eliminates               We evaluate BranchFS, our implemented FUSE filesystem. The
+conflicts: the parent spawns branches and waits; on commit, the                branch() design is not yet implemented.
+winning branch replaces it.
+                                                                                 Experimental Setup. All experiments run on a machine with an
+   Fork and Threads. fork() within a branch is permitted: the child            AMD Ryzen 5 5500U CPU (6 cores, 12 threads), 8 GB DDR4 RAM,
+inherits the mount namespace (filesystem changes captured in delta)            and a 240 GB NVMe SSD (WDC WDS240G2G0C), running Pop!_OS
+Agentic OS Workshop, March 23, 2026, Pittsburgh, USA                                                                Cong Wang and Yusheng Zheng
+
+
+  Table 4: Branch creation latency vs. base directory size.               7   Related Work
+                                                                             Isolation Mechanisms. Containers [20] combine Linux names-
+               Base Size (files)     Creation Latency (𝜇s)                paces [15] with cgroups [14] for resource isolation, and gVisor [13]
+                             100                          292             adds kernel-level sandboxing. MVVM [38] extends this model to
+                           1,000                          317             cross-platform agent deployment via WebAssembly enclaves. At
+                          10,000                          310             a finer granularity, lwCs [19] provide independent protection do-
+                                                                          mains within a process for fast context switching, Dune [4] uses
+                                                                          hardware virtualization for user-level sandboxing, and Capsicum [35]
+                                                                          introduces capability-based sandboxing for Unix. These systems tar-
+  Table 5: Commit and abort latency vs. modification size.
+                                                                          get general-purpose containment or intra-process isolation, whereas
+                                                                          branch contexts focus on lightweight copy-on-write branching with
+            Modification Size       Commit (𝜇s)        Abort (𝜇s)         coordinated commit/abort semantics across parallel exploration
+                          1 KB                 317           315          paths.
+                        100 KB                 514           365             OS-Level Speculation and Transactions. Speculator [21] pioneered
+                          1 MB               2,100           890          speculative execution with output gating for distributed file systems,
+                                                                          targeting network latency rather than agent exploration. TxOS [22]
+                                                                          introduced OS-level ACID transactions, but transactions are flat,
+   Table 6: Sequential I/O throughput comparison (MB/s).                  short-lived, and require deep kernel modifications. In contrast,
+                                                                          branch contexts support nesting, persist for arbitrary durations,
+              Mode                              Read     Write            and operate entirely in userspace. Baumann et al. [3] argue that
+                                                                          fork() is no longer a good abstraction, and branch() shares this
+              Native filesystem                 8,800       576           motivation, replacing implicit resource inheritance with explicit
+              BranchFS (regular FUSE)           1,655       631           branching via composable flags.
+              BranchFS (passthrough)            7,236       719
+                                                                          8   Discussion and Future Work
+                                                                             Semantic Extensions. Our current prototype isolates only filesys-
+22.04 with Linux kernel 6.17. BranchFS is implemented in approxi-         tem state. External side effects (network, IPC, device I/O) are not
+mately 3,400 lines of Rust using the fuser library (FUSE 3 protocol).     rolled back on abort. A complete solution requires effect gating:
+Each measurement is the median of 10 trials.                              buffering external actions until commit and discarding them on
+                                                                          abort. Agent gateways such as Agentry [31], which mediate all
+   Branch Creation. Branch creation allocates only a new delta            agent-to-external communication through a central gateway, pro-
+layer directory, independent of base filesystem size. We measure          vide a natural interposition point, and Speculator [21] demon-
+internal operation time (excluding CLI overhead) by instrumenting         strated output gating for distributed file systems. Extending these
+the daemon. Table 4 shows that creation latency remains under             ideas to general-purpose I/O is future work. On the resolution side,
+350 𝜇s, confirming O(1) cost.                                             BranchFS currently supports only single-winner semantics and
+                                                                          cannot combine results from multiple branches. Future work will ex-
+   Commit and Abort. Commit overhead is proportional to modi-             plore multi-branch merge, from file-level union of non-overlapping
+fied data volume, not total filesystem size. For small modifications,     changes, through conflict detection for overlapping files, to seman-
+commit completes in under 1 ms. Abort is similarly fast since it          tic merge strategies.
+only removes the delta layer without copying files to the parent.
+Table 5 shows commit and abort latencies for various modification             Implementation Roadmap. branch() is currently a design pro-
+sizes.                                                                    posal. We plan to prototype it on Linux 6.19, initially supporting
+                                                                          BR_FS and BR_ISOLATE, with memory branching (BR_MEMORY) as a
+    I/O Throughput. We measure sequential read and write through-         follow-on effort due to the page table complexity involved. On the
+put on a 50 MB file (64 KB blocks) in three configurations: native        filesystem side, BranchFS’s file-level copy-on-write has known
+filesystem, BranchFS with regular FUSE, and BranchFS with FUSE            limitations: symlinks targeting absolute paths outside the branch
+passthrough. Table 6 summarizes the results.                              resolve to unbranched files, hardlinks lose their link relationship on
+    With file descriptor caching, regular FUSE mode achieves 1,655 MB/s   copy-on-write, special files (FIFOs, sockets, device nodes) are un-
+read throughput (19% of native); the gap reflects the FUSE kernel-        supported in delta layer, and disk space exhaustion causes -ENOSPC
+to-userspace roundtrip. Write throughput slightly exceeds native          errors. These suffice for agent workloads but need addressing for
+because BranchFS treats fsync as a no-op for ephemeral branches           general use.
+(durability is enforced at commit time), avoiding the SSD sync cost.          Current agents (Claude Code, SWE-agent, OpenHands) primar-
+Passthrough mode (FOPEN_PASSTHROUGH) bypasses the daemon for              ily checkpoint via files rather than process memory, suggesting that
+unmodified files, reaching 7,236 MB/s read (82% of native). These         BR_FS-only mode covers most current use cases. The BR_MEMORY
+numbers suffice for agent workloads dominated by LLM API latency          flag provides future capability for agents with significant in-memory
+(100 ms–10 s).                                                            state (e.g., persistent Python interpreters or embedding caches).
+Fork, Explore, Commit: OS Primitives for Agentic Exploration                                                         Agentic OS Workshop, March 23, 2026, Pittsburgh, USA
+
+
+The BranchContext library (Section 4.5) already provides this                                Operating Systems (ASPLOS ’20). ACM, 467–481.
+integration for Python-based agents, wrapping BranchFS into                             [13] Google. 2024. gVisor: Application Kernel for Containers. https://gvisor.dev/.
+                                                                                        [14] Tejun Heo. 2015.         Control Groups v2.        https://www.kernel.org/doc/
+ready-to-use exploration patterns so that agent code only supplies                           Documentation/cgroup-v2.txt.
+per-branch task logic. Agents run unmodified inside their branch’s                      [15] Michael Kerrisk. 2013. Namespaces in Operation. https://lwn.net/Articles/531114/.
+                                                                                             LWN.net (2013).
+mount namespace; the library manages branch lifecycle and process                       [16] Michael Kerrisk. 2024. clone(2) — Linux Manual Page. https://man7.org/linux/
+isolation.                                                                                   man-pages/man2/clone.2.html.
+   Although we focus on AI agents, the fork/explore/commit ab-                          [17] H. Andrés Lagar-Cavilla, Joseph Andrew Whitney, Adin Matthew Scannell,
+                                                                                             Philip Patchin, Stephen M. Rumble, Eyal de Lara, Michael Brudno, and M. Satya-
+straction generalizes: with n_branches=1 it provides single-branch                           narayanan. 2009. SnowFlock: Rapid Virtual Machine Cloning for Cloud Com-
+try-and-rollback useful for package management (try an upgrade,                              puting. In Proceedings of the 4th ACM European Conference on Computer Systems
+abort if it breaks) and system configuration tuning.                                         (EuroSys ’09). ACM, 1–12.
+                                                                                        [18] Linux Kernel Documentation. 2023. Device-Mapper Snapshot. https://www.
+                                                                                             kernel.org/doc/Documentation/device-mapper/snapshot.txt.
+9    Conclusion                                                                         [19] James Litton, Anjo Vahldiek-Oberwagner, Eslam Elnikety, Deepak Garg, Bobby
+                                                                                             Bhattacharjee, and Peter Druschel. 2016. Light-Weight Contexts: An OS Abstrac-
+Agentic exploration requires isolating both filesystem and pro-                              tion for Safety and Performance. In Proceedings of the 12th USENIX Symposium
+                                                                                             on Operating Systems Design and Implementation (OSDI ’16). USENIX Association,
+cess state across parallel execution paths, with atomic commit and                           49–64.
+rollback semantics. We introduce the branch context abstraction                         [20] Dirk Merkel. 2014. Docker: Lightweight Linux Containers for Consistent De-
+to capture these requirements and present two complementary                                  velopment and Deployment. https://www.linuxjournal.com/content/docker-
+                                                                                             lightweight-linux-containers-consistent-development-and-deployment. Linux
+implementations in Linux. BranchFS is a FUSE-based filesystem                                Journal 239 (2014).
+that provides lightweight copy-on-write branching with O(1) cre-                        [21] Edmund B. Nightingale, Peter M. Chen, and Jason Flinn. 2005. Speculative
+ation and atomic commit-to-parent, all without root privileges. On                           Execution in a Distributed File System. In Proceedings of the Twentieth ACM
+                                                                                             Symposium on Operating Systems Principles (SOSP ’05). ACM, 191–205.
+top of BranchFS, the BranchContext Python library provides                              [22] Donald E. Porter, Owen S. Hofmann, Christopher J. Rossbach, Alexander Benn,
+seven composable exploration patterns (parallel speculation, best-                           and Emmett Witchel. 2009. Operating System Transactions. In Proceedings of the
+                                                                                             ACM SIGOPS 22nd Symposium on Operating Systems Principles (SOSP ’09). ACM,
+of-N, reflexion, tree-of-thoughts, and others) for direct integration                        161–176.
+with agent frameworks. branch() is a proposed Linux syscall for                         [23] QEMU Project. 2024. Disk Images. https://www.qemu.org/docs/master/system/
+kernel-enforced process coordination with reliable termination and                           images.html.
+                                                                                        [24] Toran Bruce Richards. 2023. Auto-GPT: An Autonomous GPT-4 Experiment.
+first-commit-wins semantics, integrating with branching filesys-                             https://github.com/Significant-Gravitas/AutoGPT.
+tems through generic FS_IOC_BRANCH_* ioctls that keep the syscall                       [25] Noah Shinn, Federico Cassano, Ashwin Gopinath, Karthik Narasimhan, and
+filesystem-agnostic. Preliminary evaluation shows O(1) branch cre-                           Shunyu Yao. 2023. Reflexion: Language Agents with Verbal Reinforcement
+                                                                                             Learning. In Advances in Neural Information Processing Systems 36 (NeurIPS).
+ation and modification-proportional commit costs.                                       [26] W. Richard Stevens and Stephen A. Rago. 2013. Advanced Programming in the
+                                                                                             UNIX Environment (3rd ed.). Addison-Wesley.
+                                                                                        [27] Miklos Szeredi et al. 2026. libfuse: Reference Implementation of FUSE. https:
+References                                                                                   //github.com/libfuse/libfuse. Accessed: 2026-02-07.
+ [1] Alexandru Agache, Marc Brooker, Alexandra Iordache, Anthony Liguori, Rolf          [28] Cristian Tapus and Jason Hickey. 2006. Speculations: Providing Fault-tolerance
+     Neugebauer, Phil Piwonka, and Diana-Maria Popa. 2020. Firecracker: Lightweight          and Recoverability in Distributed Environments. In Proceedings of the Second
+     Virtualization for Serverless Applications. In Proceedings of the 17th USENIX           Workshop on Hot Topics in System Dependability (HotDep ’06). USENIX Associa-
+     Symposium on Networked Systems Design and Implementation (NSDI ’20). USENIX             tion.
+     Association, 419–434.                                                              [29] Dmitrii Ustiugov, Plamen Petrov, Marios Kogias, Edouard Bugnion, and Boris
+ [2] Anthropic. 2025. Claude Code: An Agentic Coding Tool. https://code.claude.              Grot. 2021. Benchmarking, Analysis, and Optimization of Serverless Function
+     com/docs/en/overview.                                                                   Snapshots. In Proceedings of the 26th ACM International Conference on Architec-
+ [3] Andrew Baumann, Jonathan Appavoo, Orran Krieger, and Timothy Roscoe. 2019.              tural Support for Programming Languages and Operating Systems (ASPLOS ’21).
+     A Fork() in the Road. In Proceedings of the Workshop on Hot Topics in Operating         ACM, 559–572.
+     Systems (HotOS ’19). ACM, 14–22.                                                   [30] VMware. 2021. Performance Best Practices for VMware Snapshots. https://www.
+ [4] Adam Belay, Andrea Bittau, Ali Mashtizadeh, David Terei, David Mazières, and            vmware.com/docs/vsphere-vm-snapshots-perf.
+     Christos Kozyrakis. 2012. Dune: Safe User-level Access to Privileged CPU Fea-      [31] Cong Wang. 2025. Agentry: Orchestration and Memory for Multi-Agent Systems.
+     tures. In Proceedings of the 10th USENIX Symposium on Operating Systems Design          https://github.com/amtp-protocol/agentry.
+     and Implementation (OSDI ’12). USENIX Association, 335–348.                        [32] Cong Wang and Yusheng Zheng. 2026. BranchContext: Copy-on-Write
+ [5] Maciej Besta, Nils Blach, Ales Kubicek, Robert Gerstenberger, Michal Podstawski,        Workspace Branching for AI Agents. https://github.com/multikernel/branching.
+     Lukas Gianinazzi, Joanna Gajda, Tomasz Lehmann, Hubert Niewiadomski, Pi-                Accessed: 2026-03-18.
+     otr Nyczyk, and Torsten Hoefler. 2024. Graph of Thoughts: Solving Elaborate        [33] Lei Wang, Chen Ma, Xueyang Feng, Zeyu Zhang, Hao Yang, Jingsen Zhang,
+     Problems with Large Language Models. In Proceedings of the AAAI Conference on           Zhiyuan Chen, Jiakai Tang, Xu Chen, Yankai Lin, Wayne Xin Zhao, Zhewei Wei,
+     Artificial Intelligence (AAAI).                                                         and Ji-Rong Wen. 2024. A Survey on Large Language Model Based Autonomous
+ [6] Jeff Bonwick, Matt Ahrens, Val Henson, Mark Maybee, and Mark Shellenbaum.               Agents. Frontiers of Computer Science 18, 6 (2024), 186345. doi:10.1007/s11704-
+     2003. The Zettabyte File System. https://www.cs.hmc.edu/~rhodes/cs134/                  024-40231-1
+     readings/The%20Zettabyte%20File%20System.pdf.                                      [34] Xingyao Wang, Boxuan Li, Yufan Song, Frank F. Xu, Xiangru Tang, Mingchen
+ [7] Neil Brown. 2016.          Overlay Filesystem.     https://www.kernel.org/doc/          Zhuge, Jiayi Pan, Yueqi Song, Bowen Li, Jaskirat Singh, Hoang H. Tran, Fuqiang
+     Documentation/filesystems/overlayfs.txt.                                                Li, Ren Ma, Mingzhang Zheng, Bill Qian, Yanjun Shao, Niklas Muennighoff,
+ [8] Btrfs Project. 2023. Btrfs Documentation. https://btrfs.readthedocs.io/.                Yizhe Zhang, Binyuan Hui, Junyang Lin, Robert Brennan, Hao Peng, Heng Ji, and
+ [9] Harrison Chase. 2022. LangChain: Building Applications with LLMs through                Graham Neubig. 2025. OpenHands: An Open Platform for AI Software Developers
+     Composability. https://github.com/langchain-ai/langchain.                               as Generalist Agents. In International Conference on Learning Representations
+[10] CRIU Project. 2024. CRIU: Checkpoint/Restore in Userspace. https://criu.org/.           (ICLR).
+[11] Brendan Cully, Geoffrey Lefebvre, Dutch Meyer, Mike Feeley, Norm Hutchinson,       [35] Robert N. M. Watson, Jonathan Anderson, Ben Laurie, and Kris Kennaway. 2010.
+     and Andrew Warfield. 2008. Remus: High Availability via Asynchronous Virtual            Capsicum: Practical Capabilities for UNIX. In Proceedings of the 19th USENIX
+     Machine Replication. In Proceedings of the 5th USENIX Symposium on Networked            Security Symposium (USENIX Security ’10). USENIX Association, 29–46.
+     Systems Design and Implementation (NSDI ’08). USENIX Association, 161–174.         [36] Charles P. Wright, Jay Dave, Puja Gupta, Harikesavan Krishnan, David P. Quigley,
+[12] Dong Du, Tianyi Yu, Yubin Xia, Binyu Zang, Guanglu Yan, Chenggang Qin, Qix-             Erez Zadok, and Mohammad Nayyer Zubair. 2006. Versatility and Unix Semantics
+     uan Wu, and Haibo Chen. 2020. Catalyzer: Sub-millisecond Startup for Serverless         in Namespace Unification. ACM Transactions on Storage 2, 1 (2006), 74–105.
+     Computing with Initialization-less Booting. In Proceedings of the 25th ACM In-
+     ternational Conference on Architectural Support for Programming Languages and
+Agentic OS Workshop, March 23, 2026, Pittsburgh, USA                                                                                   Cong Wang and Yusheng Zheng
+
+
+[37] John Yang, Carlos E. Jimenez, Alexander Wettig, Kilian Lieret, Shunyu Yao,            Systems 36 (NeurIPS).
+     Karthik Narasimhan, and Ofir Press. 2024. SWE-agent: Agent-Computer Inter-       [40] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan,
+     faces Enable Automated Software Engineering. In Advances in Neural Information        and Yuan Cao. 2023. ReAct: Synergizing Reasoning and Acting in Language
+     Processing Systems 37 (NeurIPS).                                                      Models. In International Conference on Learning Representations (ICLR).
+[38] Yiwei Yang, Aibo Hu, Yusheng Zheng, Brian Zhao, Xinqi Zhang, Dawei Xiang,        [41] Yusheng Zheng, Yiwei Yang, Maolin Chen, and Andrew Quinn. 2024. Kgent:
+     Kexin Chu, Wei Zhang, and Andi Quinn. 2024. MVVM: Deploy Your AI Agents—              Kernel Extensions Large Language Model Agent. In Proceedings of the ACM
+     Securely, Efficiently, Everywhere. arXiv preprint arXiv:2410.15894 (2024).            SIGCOMM 2024 Workshop on eBPF and Kernel Extensions (eBPF ’24). ACM, 30–36.
+[39] Shunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran, Thomas L. Griffiths, Yuan           doi:10.1145/3672197.3673434
+     Cao, and Karthik Narasimhan. 2023. Tree of Thoughts: Deliberate Problem Solv-
+     ing with Large Language Models. In Advances in Neural Information Processing
+

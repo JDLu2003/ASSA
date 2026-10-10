@@ -1,0 +1,226 @@
+ntact-us/?cmpid=docs_headercta_contactus)
+
+service_name=bedrock-agentcore&topic_url=https%3A%2F%2Fdocs.aws.amazon.com%2Fbedrock-agentcore%2Flatest%2Fdevguide%2Fcode-interpreter-tool.html)
+                                                          Get started          Service guides         Developer tools         AI resources
+                                                          (#)                  (#)                    (#)                     (#)
+   (https://docs.aws.amazon.com)
+
+
+
+     Amazon Bedrock                                       Documentation
+                                                                                                            Amazon Bedrock AgentCore
+                                                                                                            (https://docs.aws.amazon.com/bedrock-        Developer Guid
+     AgentCore                                            (https://docs.aws.amazon.com/index.html)
+                                                                                                            agentcore/index.html)
+     Developer Guide
+
+
+
+
+    Overvie (what-is-bedrock-
+                                                          Execute code and analyze data
+    w       agentcore.html)
+                                                          using Amazon Bedrock
+                                                          AgentCore Code Interpreter
+    Supported AWS           (agentcore-
+    Regions                 regions.html)
+
+    Get started with       (agentcore-get-
+    AgentCore              started-cli.html)                       PDF (/pdfs/bedrock-agentcore/latest/devguide/bedrock-agentcore-dg.pdf#code-
+                                                                interpreter-tool)
+    AgentCore harness(harness.html)
+    Understand the available             (develop-
+                                                                   RSS (bedrock-agentcore-dg.rss)                  Markdown (code-interpreter-tool.md)
+    interfaces for using                 agents.htm
+    AgentCore                            l)
+                                                                   Agent Setup              Focus mode
+    AgentCore Runtime:           (agents-tools-
+    Host agent or tools          runtime.html)
+
+    AgentCore Memory: Add                     (memory.
+    memory to your agent                      html)
+                                                          On this page
+    AgentCore Gateway(gateway.html)
+                                                                Overview(#code-interpreter-overview)
+    AgentCore Identity: Provide                 (identi
+                                                                Why use Code Interpreter in agent development(#code-interpreter-why-important)
+    identity management for agent               ty.htm
+    applications                                l)              Best practices(#code-interpreter-best-practices)
+
+    AgentCore payments: Enable                  (paym
+    secure microtransaction                     ents.ht
+    payments for AI agents                      ml)       Did this page help you?
+    AgentCore Code            (code-
+    Interpreter: Execute code interpreter-                         Yes               No
+    and analyze data          tool.html)
+                                                          Provide feedback (https://docs.aws.amazon.com/feedback/doc-feedback.html?
+        Pre-           (code-interpreter-
+                                                          hidden_service_name=bedrock-agentcore&topic_url=https%3A%2F%2Fdocs.aws.amazon.com%2Fbedrock-
+        installed      preinstalled-
+                                                          agentcore%2Flatest%2Fdevguide%2Fcode-interpreter-tool.html)
+        libraries      libraries.html)
+
+        Get started with       (code-
+        AgentCore Code         interpreter-
+        Interpreter            getting-
+                               started.html)
+                                                          The Amazon Bedrock AgentCore Code Interpreter enables AI agents to write and
+        Run code    (code-interpreter-                    execute code securely in sandbox environments, enhancing their accuracy and
+        from agents building-agents.html)
+                                                          expanding their ability to solve complex end-to-end tasks. This is critical in Agentic AI
+        Write files to (code-interpreter-file-            applications where the agents may execute arbitrary code that can lead to data
+        a session      operations.html)
+                                                          compromise or security risks. The AgentCore Code Interpreter tool provides secure
+        Using Terminal   (code-                           code execution, which helps you avoid running into these issues.
+        Commands with an interpreter-s3-
+        execution role   integration.ht                   The Code Interpreter comes with pre-built runtimes for multiple languages and
+                                ml)
+                                                          advanced features, including large file support and internet access, and CloudTrail
+        Resource and (code-interpreter-                   logging capabilities. For inline upload, the file size can be up to 100 MB. And for
+        session      resource-session-
+                                                          uploading to Amazon S3 through terminal commands, the file size can be as large as
+        management management.html)
+                                                          5 GB.
+        File system (code-interpreter-
+        configuratio filesystem-                          Developers can customize environments with session properties and network modes
+        ns           configurations.html)
+                                                          to meet their enterprise and security requirements. The AgentCore Code Interpreter
+    API           (code-interpreter-api-             reduces manual intervention while enabling sophisticated AI development without
+    Reference     reference-                         compromising security or performance.
+    Examples      examples.html)
+
+    Observab (code-interpreter-                      Topics
+    ility    observability.html)
+                                                         Overview (#code-interpreter-overview)
+    Root           (code-interpreter-
+    Certificate    root-ca-                              Why use Code Interpreter in agent development (#code-interpreter-why-important)
+    Authority      certificates.html)
+                                                         Best practices (#code-interpreter-best-practices)
+    Troubleshoot   (code-
+                                                         Pre-installed libraries (./code-interpreter-preinstalled-libraries.html)
+    AgentCore Code interpreter-
+    Interpreter    troubleshooting.                      Get started with AgentCore Code Interpreter (./code-interpreter-getting-started.html)
+                          html)
+                                                         Run code in Code Interpreter from Agents (./code-interpreter-building-agents.html)
+AgentCore Browser: interact (browser-
+                                                         Write files to a session (./code-interpreter-file-operations.html)
+with web applications       tool.html)
+                                                         Using Terminal Commands with an execution role (./code-interpreter-s3-
+AgentCore Observability:               (observab
+Observe your agents and                ility.html)       integration.html)
+resources                                                Resource and session management (./code-interpreter-resource-session-
+AgentCore MCP Server:             (mcp-                  management.html)
+Vibe coding with your             getting-
+coding assistant                  started.htm            File system configurations for AgentCore Code Interpreter (./code-interpreter-
+                                  l)                     filesystem-configurations.html)
+
+Policy in AgentCore: Control            (policy.h        Code Interpreter API Reference Examples (./code-interpreter-api-reference-
+Agent Interactions                      tml)
+                                                         examples.html)
+AgentCore Evaluations:     (evaluatio
+                                                         Observability (./code-interpreter-observability.html)
+Evaluate agent performance ns.html)
+                                                         Configure Root Certificate Authority for Amazon Bedrock AgentCore Code
+AgentCore                 (optimization.htm
+optimization              l)                             Interpreter (./code-interpreter-root-ca-certificates.html)
+
+AWS Agent Registry: Centrally            (registr        Troubleshoot AgentCore Code Interpreter (./code-interpreter-troubleshooting.html)
+catalog and discover AI                  y.html)
+Resources
+AgentCore CLI
+reference
+                    (agentcore-cli-
+                    reference.html)
+                                                     Overview
+AgentCore Python (agentcore-python-
+                                                     The AgentCore Code Interpreter is a capability that allows AI agents to write, execute,
+SDK reference    sdk-reference.html)
+                                                     and debug code securely in sandbox environments. It provides a bridge between
+AgentCore            (agentcore-
+                                                     natural language understanding and computational execution, enabling agents to
+TypeScript SDK       typescript-sdk-
+                                                     manipulate data and perform calculations programmatically.
+reference            reference.html)
+
+Security(security.html)                              The AgentCore Code Interpreter runs in a containerized environment within Amazon
+Tagging resources(tagging.html)                      Bedrock AgentCore, ensuring that code execution remains isolated and secure.
+Quotas(bedrock-agentcore-limits.html)
+Release notes(release-notes.html)
+
+
+
+
+                                                     Why use Code Interpreter in agent development
+                                                     The AgentCore Code Interpreter enhances agent development in the following ways:
+                                                     Execute code securely: Develop agents that can perform complex workflows and
+                                                     data analysis in sandbox environments, while accessing internal data sources
+                                                     without exposing sensitive data or compromising security.
+                                                     Multiple programming languages: The Code Interpreter supports various
+                                                     programming languages including Python, JavaScript, and TypeScript, making it
+                                                     versatile for different use cases.
+                                                     Monitoring and large-scale data processing: Track and troubleshoot code
+                                                     execution. When working with large datasets, you can easily reference files stored
+                                                     in Amazon S3, enabling efficient processing of gigabyte-scale data without API
+                                                     limitations.
+                                                     Ease of use: Use a fully managed default mode with pre-built execution runtimes
+                                                     that support popular programming languages with common libraries pre-
+                                                     installed.
+                                                     Extends problem-solving capabilities: Allows agents to solve computational
+                                                     problems that are difficult to address through reasoning alone and enables
+                                                     precise mathematical calculations and data processing at scale.
+                                                     Long execution duration support: The Code Interpreter tool provides support for
+                                                     a default execution time of 15 minutes, which can be extended for up to eight
+                                                     hours.
+                                                     Handles structured data: Processes CSV, Excel, JSON, and other data formats, and
+                                                     performs data cleaning, and analysis.
+                                                     Enables complex workflows: Allows multi-step problem solving that combines
+                                                     reasoning with computation and facilitates iterative development and debugging.
+
+                                                The AgentCore Code Interpreter makes agents more powerful by complementing their
+                                                reasoning abilities with computational execution, allowing them to tackle a much
+                                                wider range of tasks effectively.
+
+
+
+
+                                                Best practices
+                                                To get the most out of the AgentCore Code Interpreter:
+
+                                                     Keep code snippets concise and focused on specific tasks
+                                                     Use comments to document your code
+                                                     Optimize code for performance when working with large datasets
+                                                     Save intermediate results when performing complex operations
+                                                     Use the code_session context manager to ensure proper cleanup
+                                                     Include try/except blocks in code to handle errors gracefully
+                                                     Code execution results are returned and processed as streams
+                                                     Clean up temporary files when no longer needed
+                                                     Close sessions when you’re done to release resources
+
+
+
+
+Get Started                        Service Guides                     Developer Tools                   Helpful Links
+                                                                                                                                             Top
+AWS Hands-On Tutorials             Choosing a generative AI           AWS Code Example Library          Download the AWS Docs MCP
+(https://aws.amazon.com/getting-   service                            (https://docs.aws.amazon.com/code-Server
+started/hands-on/)                 (https://docs.aws.amazon.com/decision-
+                                                                      library/latest/ug/what-is-code-   (https://github.com/awslabs/mcp/tree/main/src/aws
+
+AWS Solutions Library              guides/latest/decision-            library.html)                     documentation-mcp-server)
+
+(https://aws.amazon.com/solutions/)guides/genai-guide.html)           AWS CLI                           Sign into the AWS Console
+AWS Decision Guides                AWS service guides                 (https://docs.aws.amazon.com/cli/) (https://console.aws.amazon.com/)
+                                   (https://docs.aws.amazon.com/#products)
+(https://docs.aws.amazon.com/decision-                               AWS Builder Center                 AWS re:Post
+guides/)                           AWS CLI Tutorials on               (https://builder.aws.com/)        (https://repost.aws/)
+                                   GitHub
+                                               (https://github.com/aws-                AWS Developer Tools Blog
+                                               samples/sample-developer-               (https://aws.amazon.com/blogs/developer/)
+                                               tutorials)
+
+
+
+Privacy (https://aws.amazon.com/privacy)         |   Site terms (https://aws.amazon.com/terms)   |   Cookie preferences (#)   |   © 2026, Amazon Web Services,
+
+Inc. or its affiliates. All rights reserved.         English
+

@@ -1,0 +1,154 @@
+                                                                         Plans      Try Jules
+
+
+
+
+                                   An Autonomous Coding Agent
+
+
+
+
+ 1   // Objective: Change UserOnboarding to use a state machine for steps
+ 2
+ 3   class UserOnboarding {
+ 4       constructor(user) {
+ 5           this.user = user;
+ 6
+ 7
+ 8           this.currentStep = 0;
+ 9       }
+10
+11       async nextStep() {
+12           if (this.currentStep < this.steps.length -1) {
+13               this.currentStep++;                            Jules does coding tasks you
+14               // TODO: Trigger analytics                          don't want to do.
+15               return this.steps[this.currentStep];
+16           }
+17           return "done";                                      Bug Fixing   Version Bump
+18       }
+19                                                               Tests   Fixing Jed's Code
+20       // Old method - to be removed
+21       legacyNotification() {
+22           alert("Welcome aboard, " + this.user.name);
+23       }
+24   }
+25
+26   const newUser = { name: "David", id: "usr_123" };
+27   const onboardingProcess = new UserOnboarding(newUser);
+28
+29   onboardingProcess.nextStep();
+30   // onboardingProcess.legacyNotification(); // Commented out
+         More time for the code you want to write, and everything else.
+
+
+
+
+GitHub Integration                                   Test Suite
+Jules imports your repos,                            Jules will run existing
+branches changes, and helps                          tests, or create new ones.
+you create a PR.
+
+
+
+
+Virtual Machine                                      Available Anywhere
+Jules clones your code in a                          Use Jules from the CLI or
+Cloud VM and verifies the                            build your own workflows
+changes work.                                        using the API
+    Select your GitHub repository
+    and branch. Write a detailed                @kathy/flipdisc             main
+    prompt for Jules.
+1
+    Use the "jules" label in an                 Can you bump the version of
+    issue to assign a task                      next.js to v15 and convert the
+    directly in GitHub.                         project to use app directory?
+
+
+
+
+                                                              Here is my plan:
+
+                                                              I plan to update the
+                                                              following files to the
+                                                              new app directory
+    Jules fetches your repository,                            structure.
+    clones it to a Cloud VM, and
+2   develops a plan utilizing the latest                       Update 22 Files
+    Gemini 3 Pro model.
+
+
+
+
+                                                     That looks good.
+                                                     Continue!
+
+
+
+
+                                           9
+                                           10           "dependencies": {
+    Jules provides a diff of the           11    -          "next": "10.2.3",
+3   changes. Quickly browse and            11    +          "next": "15.4.5",
+    approve code edits.
+                                           12               "react": "19.1.1",
+                                           13               "react-dom": "19.1.1"
+                                           14           }
+    Jules creates a PR of the changes.
+4   Approve the PR, merge it to your                      Publish Branch
+    branch, and publish it on GitHub.
+
+
+
+
+                  Find the Jules plan that fits your workflow
+           Jules scales with how you build, from quick fixes to fully
+         async, multi-agent development. Choose the plan that gives you
+               the speed, throughput, and model access you need.
+
+
+
+
+               Jules
+               Get started with real coding tasks.
+                 15 tasks per day
+                 3 concurrent tasks
+                 Powered by Gemini 2.5 Pro
+
+
+
+
+               Jules in Pro
+               For devs who ship daily and want to stay in the
+               flow.
+                 100 tasks per day, enough to run Jules
+                 throughout your coding day
+                 15 concurrent tasks, so you can run multiple
+                 threads in parallel
+                 Higher access to the latest models, starting
+                 with Gemini 3 Pro
+
+
+
+
+               Jules in Ultra
+               For builders who run agents at scale.
+                 300 tasks per day to handle the most demanding
+                 development cycles
+60 concurrent tasks, built for massively
+parallel workflows
+Priority access to the latest models, starting
+with Gemini 3 Pro
+
+
+
+
+                  Try Jules
+
+
+                Documentation
+
+
+
+
+             Terms of Service     Privacy Policy
+

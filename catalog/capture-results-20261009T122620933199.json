@@ -1,0 +1,122 @@
+{
+  "run_at": "2026-10-09T12:26:20.933294+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "kiro-web",
+        "id": "overview",
+        "url": "https://kiro.dev/web/",
+        "kind": "official-web",
+        "discovery": "Kiro homepage FAQ identifies Kiro Web and links /web/"
+      },
+      "capture_started_at": "2026-10-09T12:25:57.665378+00:00",
+      "path": "sources/official/aws/kiro-web/overview",
+      "requested_url": "https://kiro.dev/web/",
+      "final_url": "https://kiro.dev/web/",
+      "http_status": 200,
+      "title": "Web - Kiro",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "7ff3e27f68df56af3ecf67074eefe4e26b4aefb6ce87d046517ad9f1f950cdff",
+          "bytes": 6385
+        },
+        "page.txt": {
+          "sha256": "4049e6725da150e074ad670c648671f95688f18f92ba9fa9753686abdb271ecc",
+          "bytes": 17308
+        },
+        "page.pdf": {
+          "sha256": "2474733827f6f44914e4d53d8de84d497dfd3477ec012de4c430a211070d4654",
+          "bytes": 85649
+        },
+        "page.html": {
+          "sha256": "cf283b9c82ba7f6e5df0464624219cc2c6a8b0cd4e188a4effad15e57e37cbe0",
+          "bytes": 270809
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:26:06.800648+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "kiro-web",
+        "id": "sandbox",
+        "url": "https://kiro.dev/docs/web/sandbox/",
+        "kind": "official-web",
+        "discovery": "Kiro homepage FAQ links /docs/web/sandbox/"
+      },
+      "capture_started_at": "2026-10-09T12:26:06.808872+00:00",
+      "path": "sources/official/aws/kiro-web/sandbox",
+      "requested_url": "https://kiro.dev/docs/web/sandbox/",
+      "final_url": "https://kiro.dev/docs/web/sandbox/",
+      "http_status": 200,
+      "title": "Sandbox - Web - Docs - Kiro",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "e4fb4a1531883ed39d1a33b9270bf14b38a5e7c33eabd204e0b1353683c1f5a8",
+          "bytes": 3673
+        },
+        "page.txt": {
+          "sha256": "ae8266ad03616509bb344c1f6f9a95342cf0b22a1d8faf02cb5d3a8957aa6beb",
+          "bytes": 4265
+        },
+        "page.pdf": {
+          "sha256": "1dd900864dcd40ccf326a6281cc0466798ff4d425efb99d5af198411fb65e496",
+          "bytes": 84525
+        },
+        "page.html": {
+          "sha256": "e58d61f7f91597cb2d16e69c93ef9a133c4ef218a20a31978ad9152eb686df85",
+          "bytes": 243881
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:26:16.105513+00:00"
+    },
+    {
+      "item": {
+        "vendor": "github",
+        "product": "copilot-cloud-agent",
+        "id": "api",
+        "url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+        "kind": "official-web",
+        "discovery": "Link extracted from captured GitHub overview"
+      },
+      "capture_started_at": "2026-10-09T12:26:16.105588+00:00",
+      "path": "sources/official/github/copilot-cloud-agent/api",
+      "requested_url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+      "final_url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-via-the-api",
+      "http_status": 200,
+      "title": "Using Copilot cloud agent via the API - GitHub Docs",
+      "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+      "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+      "review_status": "captured; relevance and completeness require source review",
+      "status": "captured",
+      "files": {
+        "page.pdf.txt": {
+          "sha256": "453608902691c27251d5b5606eb301ace99709d518795619e09f04882e08f8e3",
+          "bytes": 15199
+        },
+        "page.txt": {
+          "sha256": "08f72d88d7e664070458ca2d00b3fd48fa3a13410c42200c07cd627704dd4b5e",
+          "bytes": 13033
+        },
+        "page.pdf": {
+          "sha256": "da35257a0169ff4aecfbdd443aec8955b5163135b7b5a16d5eeb9842fda7a451",
+          "bytes": 577140
+        },
+        "page.html": {
+          "sha256": "863f49d3d30f53b5744aebed6a77fe1fa0ab8dbe1d83be7aa1cd4dc31621700f",
+          "bytes": 741838
+        }
+      },
+      "capture_finished_at": "2026-10-09T12:26:20.659510+00:00"
+    }
+  ]
+}

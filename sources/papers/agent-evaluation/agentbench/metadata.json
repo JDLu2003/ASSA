@@ -1,0 +1,83 @@
+{
+  "item": {
+    "topic": "agent-evaluation",
+    "id": "agentbench",
+    "arxiv": "2308.03688",
+    "kind": "arxiv-paper"
+  },
+  "capture_started_at": "2026-10-09T11:59:40.200664+00:00",
+  "path": "sources/papers/agent-evaluation/agentbench",
+  "requested_url": "https://arxiv.org/abs/2308.03688",
+  "pdf_url": "https://arxiv.org/pdf/2308.03688",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "06433b85489795efd570aa8ef63a94f84d918bc29cad93322ea29ea471ceefca",
+      "bytes": 21251381
+    },
+    "paper.txt": {
+      "sha256": "ae52a43bc2a3ac4a56528f7aef9125e4f76244e7ff8cc84ad69b63dc2719e3e2",
+      "bytes": 210222
+    },
+    "paper.pdf": {
+      "sha256": "9c780e35fc0b2de6c2e21e0572f6aaaadcf7ecdd56d63cfaae2b415bc0dc83c3",
+      "bytes": 23017024
+    },
+    "landing.html": {
+      "sha256": "22e40fdd7063a73e52408054c0a3b3930d1bbfb428a23ad602f7acbe265ade8d",
+      "bytes": 44732
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2308.03688",
+    "retrieved_at": "2026-10-09T12:06:39.314055+00:00",
+    "fields": {
+      "citation_title": [
+        "AgentBench: Evaluating LLMs as Agents"
+      ],
+      "citation_author": [
+        "Liu, Xiao",
+        "Yu, Hao",
+        "Zhang, Hanchen",
+        "Xu, Yifan",
+        "Lei, Xuanyu",
+        "Lai, Hanyu",
+        "Gu, Yu",
+        "Ding, Hangliang",
+        "Men, Kaiwen",
+        "Yang, Kejuan",
+        "Zhang, Shudan",
+        "Deng, Xiang",
+        "Zeng, Aohan",
+        "Du, Zhengxiao",
+        "Zhang, Chenhui",
+        "Shen, Sheng",
+        "Zhang, Tianjun",
+        "Su, Yu",
+        "Sun, Huan",
+        "Huang, Minlie",
+        "Dong, Yuxiao",
+        "Tang, Jie"
+      ],
+      "citation_date": [
+        "2023/08/07"
+      ],
+      "citation_online_date": [
+        "2025/10/04"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2308.03688"
+      ],
+      "citation_arxiv_id": [
+        "2308.03688"
+      ],
+      "citation_abstract": [
+        "The potential of Large Language Model (LLM) as agents has been widely acknowledged recently. Thus, there is an urgent need to quantitatively \\textit{evaluate LLMs as agents} on challenging tasks in interactive environments. We present AgentBench, a multi-dimensional benchmark that consists of 8 distinct environments to assess LLM-as-Agent's reasoning and decision-making abilities. Our extensive test over \\num API-based and open-sourced (OSS) LLMs shows that, while top commercial LLMs present a strong ability of acting as agents in complex environments, there is a significant disparity in performance between them and many OSS competitors that are no larger than 70B. We identify the typical reasons of failures in environments and LLMs, showing that poor long-term reasoning, decision-making, and instruction following abilities are the main obstacles for developing usable LLM agents. Improving instruction following and training on high quality multi-round alignment data could improve agent performance. And different from existing assumptions, training on code present ambivalent impacts on different agent tasks. Datasets, environments, and an integrated evaluation package for AgentBench are released at https://github.com/THUDM/AgentBench."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

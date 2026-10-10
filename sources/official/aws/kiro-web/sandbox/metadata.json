@@ -1,0 +1,63 @@
+{
+  "item": {
+    "vendor": "aws",
+    "product": "kiro-web",
+    "id": "sandbox",
+    "url": "https://kiro.dev/docs/web/sandbox/",
+    "kind": "official-web",
+    "discovery": "Kiro homepage FAQ links /docs/web/sandbox/"
+  },
+  "capture_started_at": "2026-10-09T12:26:06.808872+00:00",
+  "path": "sources/official/aws/kiro-web/sandbox",
+  "requested_url": "https://kiro.dev/docs/web/sandbox/",
+  "final_url": "https://kiro.dev/docs/web/sandbox/",
+  "http_status": 200,
+  "title": "Sandbox - Web - Docs - Kiro",
+  "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+  "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+  "review_status": "captured; relevance and completeness require source review",
+  "status": "captured",
+  "files": {
+    "page.pdf.txt": {
+      "sha256": "e4fb4a1531883ed39d1a33b9270bf14b38a5e7c33eabd204e0b1353683c1f5a8",
+      "bytes": 3673
+    },
+    "page.txt": {
+      "sha256": "ae8266ad03616509bb344c1f6f9a95342cf0b22a1d8faf02cb5d3a8957aa6beb",
+      "bytes": 4265
+    },
+    "page.pdf": {
+      "sha256": "1dd900864dcd40ccf326a6281cc0466798ff4d425efb99d5af198411fb65e496",
+      "bytes": 84525
+    },
+    "page.html": {
+      "sha256": "e58d61f7f91597cb2d16e69c93ef9a133c4ef218a20a31978ad9152eb686df85",
+      "bytes": 243881
+    },
+    "page.complete.html": {
+      "sha256": "8081ac663b9670977a4b32d852f38ad8fd9615d5c7281ac31d07659ba29a6e6f",
+      "bytes": 244021
+    },
+    "page.complete.txt": {
+      "sha256": "ae8266ad03616509bb344c1f6f9a95342cf0b22a1d8faf02cb5d3a8957aa6beb",
+      "bytes": 4265
+    },
+    "page.complete.pdf": {
+      "sha256": "d0582d0f3459edfa31d5d4dcee0fe97fedd44b496f28ffcfe844b2965e9c3ca3",
+      "bytes": 84161
+    },
+    "page.complete.pdf.txt": {
+      "sha256": "b2aceaf0f969188abbc48e7fc42e863276d4c0c69ee5580c6b611a635e4d9856",
+      "bytes": 2764
+    }
+  },
+  "print_review": {
+    "original_page_pdf": "retained; fixed-height and no-wrap site elements clip content; use page.complete.pdf",
+    "complete_pdf": "page.complete.pdf",
+    "adjustment": "Print-only reading layout expands fixed-size blocks, wraps text and limits decorative SVG icon size. Original hidden elements remain hidden. Scrolling activates lazy sections. Source text not edited.",
+    "reprinted_at": "2026-10-09T12:34:28.221705+00:00",
+    "reprint_dom_text": "page.complete.txt",
+    "reprint_html": "page.complete.html",
+    "note": "Different browser load; animated terminal content may differ from first capture. Default PDF remains the evidence of the original print layout."
+  }
+}

@@ -1,0 +1,909 @@
+                                            RippleCP: Measuring Counterfactual Checkpoint
+                                                     Advantage in Coding Agents
+
+
+                                                                         Mayur Akewar Ravi Ranjan
+                                                                   makew001@fiu.edu rkuma031@fiu.edu
+                                                                   Florida International University, Miami, USA
+arXiv:2610.09088v1 [cs.AI] 6 Oct 2026
+
+
+
+
+                                                                                     Abstract
+
+                                                 Agent checkpoint systems decide what state is recovery-relevant, how to snapshot it,
+                                                 and whether rollback is admissible. None decides which of the safe boundaries they
+                                                 expose are worth materializing. We formulate this as counterfactual checkpoint
+                                                 advantage, the reduction in future recovery cost obtained by checkpointing a
+                                                 candidate rather than skipping it, and measure it by driving a CP branch and a
+                                                 S KIP branch to the same logical failure and recovering both under matched model,
+                                                 tool, verifier, and stopping conditions. On a frozen pilot of 12 SWE-bench Verified
+                                                 tasks and 106 real recovery branches, checkpointing saves 49.4 s per task, and
+                                                 that figure resolves into two regimes two orders of magnitude apart. The first
+                                                 checkpoint returns 100.0 s on 156.5 s of protected work, a conversion of 0.64; a
+                                                 second one step later returns −1.1 s on 41.8 s, a conversion of −0.03. Recovery is a
+                                                 re-derivation rather than a replay, so preserved work is a poor guide to saved work,
+                                                 and the classical elapsed-work rule misprices the second checkpoint by its full
+                                                 nominal cost. We identify where placement can pay, and set the bar a placement
+                                                 policy must clear.
+
+
+
+                                        1   Introduction
+
+                                        Long-horizon agents increasingly behave like stateful systems: they alternate model calls with shell
+                                        commands, file edits, tests, external tools, retries, and pauses. A late crash can force substantial
+                                        re-execution, and a growing set of runtimes makes checkpoint and restore for such agents practical.
+                                        C RAB detects recovery-relevant OS effects [1], D ELTA B OX targets low-latency sandbox rollback [2],
+                                        and DART reasons about semantically admissible recovery points [3]. Each of them answers where a
+                                        checkpoint may be taken. None answers where one should be: among the safe boundaries a runtime
+                                        exposes, which are worth paying to make durable?
+                                        Classical placement answers that by trading checkpoint overhead against expected recomputation [4],
+                                        which presumes recomputation cost is known. For agents it is not. Downloading a gigabyte may
+                                        be cheap to repeat, while rediscovering a one-line dependency incompatibility can determine every
+                                        subsequent edit, build, and test. We expect checkpoint-worthy agent state to be sparse in bytes but
+                                        dense in downstream influence (Appendix I), which would make the usual proxies of elapsed work
+                                        and bytes changed unreliable. Whether it does is an empirical question, and Section 4 answers it
+                                        directly. Either way the quantity is one to measure rather than assume.
+                                        R IPPLE CP makes it measurable. Rather than labelling a state “important,” we run two matched
+                                        futures from the same candidate: checkpoint now, or skip now. Both are driven by the real agent to
+                                        the same logical failure and recovered under the same model, tool, verifier, and stopping conditions,
+                                        so their cost difference, the checkpoint advantage, comes from executed system behaviour rather than
+                                        from an LLM judge or a human annotation. This paper reports that measurement on a frozen pilot;
+                                        learning a policy from it is future work.
+The result reshapes the placement question: the aggregate advantage is large, but it decomposes
+almost entirely into the value of having a checkpoint at all rather than of choosing where to put it.
+We contribute the advantage formulation, a paired-recovery harness producing labels from executed
+agent branches, and the pilot that separates those regimes and prices each.
+
+2   Checkpoint advantage formulation
+Let an agent produce states s0 , . . . , sT . At safe candidate st , the placement action is at ∈
+{CP, SKIP}. Let c− denote the latest materialized checkpoint before t, and let f ∼ F denote
+a future failure. We define a cost-to-go under action a,
+                                                                          
+                       J(st , a) = Ef ∼F Cplace (a) + L Recover(st , a, f ) ,                  (1)
+where Cplace (SKIP) = 0, Cplace (CP) = Cckpt (st ), and L is future recovery/re-execution loss.
+For connection to value-based decision making, define Q(st , a) = −J(st , a). The checkpoint
+advantage is
+                               ACP (st ) = Q(st , CP) − Q(st , SKIP)                                (2)
+                                         = J(st , SKIP) − J(st , CP).                               (3)
+Thus ACP (st ) > 0 means checkpointing saves more future cost than it adds. Our primary loss is
+wall-clock redo time; repeated tokens, tool calls, and task success remain separate metrics rather than
+hidden scalar weights.
+The formulation is independent of the snapshot mechanism: R IPPLE CP assumes candidates already
+satisfy the runtime’s admissibility rules and asks only whether a safe opportunity is economically
+worth materializing. It is thus complementary to semantic recoverability [3], resume conformance [5],
+rollback defenses [6], and semantic-environment isolation [7].
+
+3   Measuring checkpoint advantage
+Recovery tracers. Offline, we choose a candidate st and a later failure f . We execute two matched
+worlds: CP, which materializes st and recovers from it after f ; and S KIP, which recovers from c− .
+Their measured cost difference estimates ACP (st ). Both branches restore into isolated workspaces,
+run the same pinned agent configuration against the same logical failure step, and stop under the
+same rule: success on the task’s hidden-test verifier, or a predeclared recovery budget. Branch order
+is randomized per pair. Because the agent runtime exposes no controllable sampling seed, repetition
+rather than seed matching controls model nondeterminism; the recorded pair seed governs branch
+order and scheduling only. The label is thus produced by executed system behavior, with no LLM
+judge and no human annotation; Figure 1 in Appendix B diagrams the construction.
+
+Cost accounting. The primary cost J is wall-clock recovery time plus measured checkpoint creation
+time, so CP is charged its own overhead and a positive advantage is a net saving. Repeated tokens
+and tool calls, checkpoint bytes, restore latency, and task correctness are recorded separately, never
+folded into J.
+
+From labels to placement (proposed, not evaluated here). The labels are meant to train a
+placement policy from features cheap to compute online, such as execution cost, state size, verifier
+progress, and provenance-graph statistics, with a gradient-boosted regressor [8] predicting A
+                                                                                            bCP (st )
+under a budget rule; Appendices C–F specify it. This paper measures ACP only, and Section 4 reports
+how much room such a policy would have.
+
+4   Pilot: paired recovery on real agent executions
+Setup. We measure checkpoint advantage on 12 tasks from SWE-bench Verified [9], four each
+from Django, SymPy, and scikit-learn, frozen before any paired run. A pinned agent (Codex CLI
+0.147.0-alpha.6.5, GPT-5.4, xhigh reasoning) produced 12 nominal trajectories of 3–4 steps (mean
+3.25); 10/12 passed the verifier. Checkpoints are archive-backed logical workspace and agent-state
+checkpoints. From 27 safe boundaries we froze 24 selected checkpoint cells, namely one early and
+
+
+                                                  2
+Table 1: Marginal value of a checkpoint, by what the S KIP world falls back to. Each row is a
+within-cell paired contrast over the 10 tasks whose recovery reached the endpoint verified by the
+task’s hidden tests. Brackets are 10,000-replicate task-bootstrap 95% intervals; advantage is net of
+measured creation cost, and conversion is advantage over the nominal work protected.
+
+      Contrast                         Tasks   CP (s)   SKIP (s)   Marginal value (s)    Conversion
+      First checkpoint vs. none          10    100.8      200.8    100.0 [72.4, 131.1]        0.64
+      One additional, one step later     10    100.6       99.5     −1.1 [−9.5, 8.4]         −0.03
+      Pooled over both strata            10    100.7      150.2      49.4 [34.1, 65.5]
+
+
+
+one late checkpoint boundary per task, followed by the next logical failure step, with one failure each,
+then ran two repetitions per cell plus a predeclared third for the 5 sign-unstable cells, for 53 matched
+CP/SKIP pairs, comprising 106 recovery branches. Cells repeat one state, so every interval resamples
+tasks (10,000 replicates, seed 20260818; Appendix A).
+
+What the design contrasts. Taking candidates in trajectory order fixes two things at once, and
+they must be read apart. In every early cell the candidate is the first safe boundary, so S KIP restores
+the pristine workspace and the contrast is one checkpoint versus none. In every late cell an earlier
+checkpoint exists, so S KIP restores a mid-task state one step back, giving one additional checkpoint
+versus the one already taken. Redo distance is identical in both cases, one step for CP and two for
+S KIP, so the strata are separated by fallback identity rather than distance.
+
+The advantage is real, and it belongs to one regime. Pooled over both strata, checkpointing
+saves 49.4 s per task (95% task-bootstrap CI 34.1–65.5), net of the 4.41 s creation cost charged to
+CP. The decomposition in Table 1 places almost all of it on the first checkpoint, worth 100.0 s (95%
+CI 72.4–131.1) and 388,812 re-executed tokens. A second checkpoint one step later returns −1.1 s
+(95% CI −9.5–8.4), an interval that straddles zero and is smaller in magnitude than the cost of taking
+it. CP cost is nearly identical across strata, 100.8 s against 100.6 s, while the late stratum preserves
+strictly more progress. The regimes differ by two orders of magnitude, so the decomposition rather
+than the pooled mean is what to design against.
+
+Preserved work is a poor guide to saved work. A checkpoint at candidate step k protects exactly
+step k’s nominal work, which makes the conversion from protected to saved work directly measurable.
+The first checkpoint protects 156.5 s and returns 100.0 s, a conversion of 0.64. The second protects
+41.8 s and returns −1.1 s, a conversion of −0.03. Work concentration accounts for part of the gap,
+since these trajectories place 73.9% of nominal work in step 1, but not for the collapse in conversion.
+An elapsed-work rule [4] assumes conversion near one and prices the second checkpoint at its full
+41.8 s. Recovery is a re-derivation rather than a replay, and only a paired measurement separates the
+two.
+
+Cheap proxies rank inside a regime, not across it. Ordinary work proxies rank measured ad-
+vantage well among the first-checkpoint cells and not at all among the additional-checkpoint cells
+(Table 2). Ordering candidates is therefore the easy part, and the signal a policy needs is the regime
+boundary itself. Two rows are worth naming. Bytes changed ranks at +0.70, so checkpoint value
+here is not sparse in bytes and the sparse-but-influential state our intuition describes does not arise in
+SWE-bench issue resolution. The importance score the agent assigns each step of its own accord,
+without being asked to price recovery, ranks −0.58 and never positively in any subset, which is why
+labels come from executed behaviour rather than the model’s judgement. The null is regime-specific:
+conditioned on the late failure alone the later boundary is cheaper on 5 of 12 tasks.
+
+5   Related work
+Agent checkpoint and restore is moving quickly: C RAB on semantics-aware checkpoint/restore [1],
+D ELTA B OX on low-latency sandbox C/R [2], DART on admissible local recovery [3], plus resume
+contracts [5], rollback safety [6], causal progress [10], and semantic isolation [7]. R IPPLE CP claims
+no new mechanism; it asks what a safe opportunity those systems expose is economically worth.
+
+
+                                                    3
+Table 2: Spearman correlation between a cheap online proxy and measured advantage, within stratum
+over verified-endpoint cells; pooling the strata would manufacture a correlation from the split alone.
+p-values are permutation tests over 20,000 relabelings; the last column drops the largest cell.
+
+             Proxy                First checkpoint (n=10)    Additional (n=10)     Drop largest
+             Tool calls                 +0.85 (p=0.003)                  +0.34           +0.81
+             Files modified             +0.71 (p=0.025)                  −0.53           +0.72
+             Bytes changed              +0.70 (p=0.030)                  −0.29           +0.83
+             Agent importance           −0.58 (p=0.082)                  +0.06           −0.49
+
+
+
+That question has a long lineage outside agents. Adjoint checkpointing places a bounded number of
+snapshots along a computation to trade storage against recomputation [11], activation checkpointing
+makes the same trade inside a training step [12], materialized view selection persists intermediate
+results under a space budget [13], and classical interval placement balances overhead against expected
+redo [4]. In all of these, recomputation cost is deterministic and analytically known, so placement
+reduces to optimization. For a stochastic agent it is neither. Recovery is a re-derivation rather than a
+replay, so its cost must be measured, and Section 4 shows the measured cost and the analytic proxy
+differing by the whole quantity.
+Causal Agent Replay [14] intervenes on real LLM-agent trajectories to attribute failures to individual
+steps, and meets the same obstacle we do: under a stochastic policy, re-executing a trajectory perturbs
+everything downstream of the intervention. It resolves this with a point-of-commitment rule over
+resampled rollouts, whereas we use repeated paired branches, randomized order, and a predeclared
+sign-stability criterion. The questions differ, one asking which step caused a failure and the other
+what a checkpoint there is worth, but the instrumentation problem is shared and neither yields to
+replaying recorded costs.
+
+
+6    Discussion and limitations
+
+Three things follow for a runtime builder. Take one checkpoint at the first safe boundary: it captures
+the available value for 4.41 s. Do not spend budget ranking later boundaries until the workload is
+known to have more than one expensive step. Price a candidate by the recovery it avoids rather than
+the work it preserves. The bar for a learned policy is now concrete: beat the first-boundary rule at a
+matched budget on a workload where conversion varies across candidates.
+That bar is not clearable here, which is the main limitation. Trajectories are 3–4 steps (mean 3.25)
+with 73.9% of the work in the first, so the workload is close to a single expensive step followed by
+verification. Re-cutting the same tasks at tool-call boundaries would yield 29.2 candidates per task,
+24.8 inside that first step, though the logs carry no per-item timings and so need re-collection rather
+than re-analysis (Appendix G). Workloads with heterogeneous accumulated state, such as dependency
+resolution or multi-stage builds, are where the hypothesis lives.
+Three constraints bound the claims. The first safe boundary is always the one whose S KIP world
+restarts from scratch, so “first” and “earliest” are not separable. The additional-checkpoint estimate
+sits at per-cell resolution, 15.0 s of noise against a 14.4 s effect, so the task-level bootstrap rather than
+any single cell supports it. And 12 tasks from three repositories in one tier, one agent, one model
+version is a small effective sample. We report no learned predictor and no matched-budget study;
+Appendices D and F specify both.
+
+
+7    Conclusion
+
+Checkpoint placement for agents is a question about value, not mechanism. Checkpointing saves
+49.4 s per task pooled, but 100.0 s of that belongs to the first checkpoint and a second one step later
+returns −1.1 s on 41.8 s of protected work. The quantity that governs placement is the conversion
+from preserved work to saved work, which this harness measures and elapsed-work proxies assume.
+
+
+                                                     4
+References
+ [1] Tianyuan Wu, Chaokun Chang, Lunxi Cao, Wei Gao, and Wei Wang. Crab: A semantics-aware
+     checkpoint/restore runtime for agent sandboxes. arXiv preprint arXiv:2604.28138v1, 2026.
+ [2] Yunpeng Dong, Jingkai He, Shiqi Liu, Yuze Hou, Dong Du, Zhonghu Xu, Si Yu, Baochuan
+     Yang, Yubin Xia, and Haibo Chen. Deltabox: Scaling stateful ai agents with millisecond-level
+     sandbox checkpoint/rollback. arXiv preprint arXiv:2605.22781v2, 2026.
+ [3] Ke Yang, Panpan Li, Zonghan Wu, Kejin Xu, Huaxi Huang, and Xiaoshui Huang. DART:
+     Semantic recoverability for structured tool agents. arXiv preprint arXiv:2605.23311v1, 2026.
+ [4] John W. Young. A first order approximation to the optimum checkpoint interval. Communica-
+     tions of the ACM, 17(9):530–531, 1974. doi: 10.1145/361147.361115.
+ [5] Sajjad Khan. Resume means resume: A machine-checked conformance contract for check-
+     point, interrupt, and resume semantics in workflow persistence layers. arXiv preprint
+     arXiv:2608.03836v3, 2026.
+ [6] Yusheng Zheng, Yiwei Yang, Wei Zhang, and Andi Quinn. ACRFence: Preventing semantic
+     rollback attacks in agent checkpoint-restore. arXiv preprint arXiv:2603.20625v1, 2026.
+ [7] Barzan Mozafari. BEGIN AI TRANSACTION: Semantic isolation for durable ai workflows.
+     arXiv preprint arXiv:2608.05412v1, 2026.
+ [8] Tianqi Chen and Carlos Guestrin. XGBoost: A scalable tree boosting system. In Proceedings of
+     the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining,
+     pages 785–794, 2016. doi: 10.1145/2939672.2939785.
+ [9] Carlos E. Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, and
+     Karthik R. Narasimhan. SWE-bench: Can language models resolve real-world github issues?
+     In The Twelfth International Conference on Learning Representations, 2024.
+[10] Wenyi Wu, Sibo Zhu, Kun Zhou, Aayush Salvi, Zixuan Song, and Biwei Huang. Struc-
+     tagent: Harness long-horizon digital agents with unified causal structure. arXiv preprint
+     arXiv:2607.11388v1, 2026.
+[11] Andreas Griewank and Andrea Walther. Algorithm 799: revolve: an implementation of check-
+     pointing for the reverse or adjoint mode of computational differentiation. ACM Transactions on
+     Mathematical Software, 26(1):19–45, 2000. doi: 10.1145/347837.347846.
+[12] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos Guestrin. Training deep nets with sublinear
+     memory cost. arXiv preprint arXiv:1604.06174, 2016.
+[13] Venky Harinarayan, Anand Rajaraman, and Jeffrey D. Ullman. Implementing data cubes
+     efficiently. In Proceedings of the 1996 ACM SIGMOD International Conference on Management
+     of Data, pages 205–216, 1996. doi: 10.1145/233269.233333.
+[14] Jaineet Shah. Causal agent replay: Counterfactual attribution for LLM-agent failures. arXiv
+     preprint arXiv:2606.08275v1, 2026.
+[15] Ravi Ranjan, Olivera Kotevska, and Agoritsa Polyzou. Forgetting only what matters: Layer-
+     selective unlearning toward robust llms. arXiv preprint arXiv:2609.10439, 2026.
+[16] Ravi Ranjan, Utkarsh Grover, Xiaomin Lin, and Agoritsa Polyzou. Razor: Ratio-aware layer
+     editing for targeted unlearning in vision transformers and diffusion models. arXiv preprint
+     arXiv:2603.14819, 2026.
+[17] Ravi Ranjan and Agoritsa Polyzou. Vla-forget: Vision-language-action unlearning for embodied
+     foundation models. In Proceedings of the 4th Workshop on Towards Knowledgeable Foundation
+     Models (KnowFM 2026), pages 60–77, 2026.
+[18] Utkarsh Grover, Ravi Ranjan, Mingyang Mao, Trung Tien Dong, Satvik Praveen, Zhenqi Wu,
+     J Morris Chang, Tinoosh Mohsenin, Yi Sheng, Agoritsa Polyzou, et al. Embodied foundation
+     models at the edge: A survey of deployment constraints and mitigation strategies. arXiv preprint
+     arXiv:2603.16952, 2026.
+
+
+                                                 5
+[19] Ravi Ranjan, Utkarsh Grover, Xiaomin Lin, and Agoritsa Polyzou. G-drift mia: Membership
+     inference via gradient-induced feature drift in llms. In International Conference on Pattern
+     Recognition, pages 359–374. Springer, 2026.
+[20] Ravi Ranjan, Utkarsh Grover, Mayur Akewar, Xiaomin Lin, and Agoritsa Polyzou. Catrag:
+     Functor-guided structural debiasing with retrieval augmentation for fair llms. arXiv preprint
+     arXiv:2603.21524, 2026.
+[21] Ravi Ranjan, Utkarsh Grover, and Agorista Polyzou. Position: Llms must use functor-based
+     and rag-driven bias mitigation for fairness. arXiv preprint arXiv:2603.07368, 2026.
+[22] Ravi Ranjan, Utkarsh Grover, Xiaomin Lin, and Agoritsa Polyzou. Persa: Reinforcement
+     learning for professor-style personalized feedback with llms. arXiv preprint arXiv:2605.01123,
+     15, 2026.
+[23] Ravi Ranjan, Utkarsh Grover, Xiaomin Lin, and Agoritsa Polyzou. Listening with atten-
+     tion: Entropy-guided explainability for transformer-based audio models. arXiv preprint
+     arXiv:2606.14647, 2026.
+[24] Mayur Akewar and Ravi Ranjan. Safecommit: Certifying when memory-grounded agents may
+     safely act. arXiv preprint arXiv:2608.04289, 2026.
+[25] Damien Ernst, Pierre Geurts, and Louis Wehenkel. Tree-based batch mode reinforcement
+     learning. Journal of Machine Learning Research, 6:503–556, 2005.
+
+
+
+
+                                                6
+A    Detailed experimental protocol
+Task selection. Task IDs were frozen before any paired run. The workload is 12 tasks from SWE-
+bench Verified, the human-validated subset of SWE-bench [9]: four each from django/django 4.2,
+sympy/sympy 1.12, and scikit-learn/scikit-learn 1.3, all drawn from the benchmark’s
+15 min–1 hour difficulty tier. Exact issue IDs, base commits, benchmark source checksum, hidden-test
+patches, normalized verifier commands, and pinned Python 3.10 environments are retained with the
+run artifacts. Base-fail/gold-pass validation succeeded for all 12 tasks and all 24 expected worlds;
+this establishes benchmark integrity only and is not an agent result. Tasks that never reach a safe
+candidate would be excluded and reported; none were. Because this study measures ACP rather
+than fitting a predictor, no train/validation/test split was drawn, and uncertainty is a task-level boot-
+strap throughout. A predictor study would additionally require repository-level separation, ideally
+leave-one-repository-out.
+
+Trajectory collection. One nominal trajectory per task was recorded with Codex CLI 0.147.0-
+alpha.6.5, GPT-5.4, xhigh reasoning at sandbox level workspace-write and approval policy never,
+capturing every model call and observable tool boundary with timestamps, token counts (input, cached
+input, output), tool arguments and return status, workspace hashes, verifier outcomes, and produced
+artifacts. Raw JSONL event streams, stderr, prompts, verifier outputs, and per-branch timings are
+retained beneath the run directory. The agent runtime does not expose a controllable model-sampling
+seed; the recorded pair seed therefore controls branch order and experiment scheduling, not model
+randomness. This is a limitation of the harness, not a design choice, and is the reason repetitions
+rather than seed matching are used to control nondeterminism.
+
+Candidate boundaries. Candidates come only from safe boundaries exposed by the runtime:
+post-tool-return, post-commit, and post-test points. The placement model never decides checkpoint
+correctness. From 27 nominal safe boundaries we selected 24 cells under a frozen stratification: one
+early and one late checkpoint boundary per task, followed by the next logical failure step. Candidates
+therefore sit at steps 1–3 and failures at steps 2–4. Selection was completed before any paired
+recovery was executed. Because candidates are taken in trajectory order, the first selected boundary is
+also the only one whose S KIP world has no earlier checkpoint to fall back on: the early cells restore
+the pristine workspace and the late cells restore a mid-task state one logical step back. Boundary
+position and fallback identity are therefore coupled by construction, which is why Section 4 reports
+the strata as two marginal contrasts rather than as an comparison of early against late. This realizes
+the temporal axis of the protocol only. The protocol also called for stratifying over physical size,
+semantic progress, and ripple score, and for including late as well as near failure offsets; at this scale
+we spent the cell budget on the timing contrast and on repetition instead. One consequence is that the
+pilot cannot test the paper’s motivating “sparse in bytes, dense in downstream influence” hypothesis,
+which needs the size and ripple axes.
+
+Paired execution and stopping rule. Each cell was run with two repetitions by default. A separate,
+resumable stabilization pass then froze the cells whose first two paired advantages changed sign
+and ran exactly one additional pair for each, adding 5 pairs and preserving the predeclared 2-or-3
+repetition rule without broadening expense. Branch order was randomized per pair (26 CP-first, 27
+S KIP-first across 53 pairs). Both branches of a pair share the same task state, logical failure step,
+model and tool settings, and stopping rule. A branch runs the agent to its own completion under
+a hard per-branch cap of 1800 s, after which the task’s hidden-test verifier gates success. The cap
+was never reached, since the longest branch spent 463 s of agent time, so in practice every branch
+terminated on agent completion and was then judged by the verifier. Branches on the two tasks whose
+nominal trajectory never passed the verifier therefore terminate with a failing verdict rather than at a
+cost ceiling, which is why those tasks enter the analysis only as a termination-cost sensitivity.
+
+Trustworthy and adaptive foundation-model systems. More broadly, reliable agent execution
+depends not only on recovering state, but also on controlling what models retain, adapt, expose,
+and act upon: recent work studies selective unlearning across LLMs, vision models, and embod-
+ied agents [15–17], together with deployment constraints for embodied foundation models at the
+edge [18]. Complementary directions address privacy leakage [19], fairness and retrieval-guided
+debiasing [20, 21], personalized adaptation [22], and model explainability [23], highlighting that
+trustworthy behavior depends on preserving or modifying the right internal and external information
+
+
+                                                    7
+at the right time. For memory-grounded agents, SafeCommit further studies when accumulated
+state is sufficient for an agent to act safely [24]; RippleCP is complementary in asking when such
+recoverable agent state is economically worth materializing as a checkpoint.
+
+Checkpoint contents. A checkpoint is archive-backed logical checkpoints containing workspace
+files and preserved agent-visible state. Concretely, the backend archives the task workspace, excluding
+.git, virtualenvs, and build/cache directories, together with the preserved transcript and discovered
+facts, and records creation latency and compressed size for every artifact. Checkpoint creation latency
+was 4.38 s mean (median 4.09 s; range 2.50–6.68 s) over the 53 CP branches; restore latency was
+9.69 s mean (median 6.76 s; p95 20.8 s) over all 106 branches; compressed checkpoint size was mean
+13.94 MB; median 10.44 MB; range 7.25–23.35 MB over the 39 stored artifacts. Process state and
+tool-session state are not captured; the harness reconstructs agent-visible state from the archived
+transcript rather than from an OS-level image.
+
+B    Counterfactual advantage oracle
+For each trajectory, candidate st , and sampled future failure fj :
+1. restore to st from a common pre-candidate state;
+2. in the CP branch, materialize st ; in S KIP, do not;
+3. drive both branches to the same logical failure location and inject a fail-stop termination;
+4. recover CP from st and S KIP from c− under matched model, tool, and verifier settings, in
+   randomized branch order;
+5. continue to the task’s verified endpoint or a fixed recovery budget, applying the same stopping
+   rule to both worlds;
+6. record total redo time, repeated tokens and tool calls, task correctness under the hidden-test verifier,
+   and measured C/R overhead.
+Estimate
+                                              K
+                               bCP (st ) = 1
+                                             X                                
+                               A                  Jj (st , SKIP) − Jj (st , CP) .                                                                  (4)
+                                           K j=1
+In the pilot of Section 4, K = 1: each selected candidate carries a single frozen logical failure, and
+repetition is spent on re-running that same cell rather than on sampling additional offsets. This is a
+deliberate trade at pilot scale. It buys tighter per-cell estimates under a stochastic agent at the cost of
+averaging over the failure distribution, and it is why the analysis stratifies over candidates by what
+the S KIP world falls back to, rather than sweeping offsets within a candidate. A study that aims to
+characterize F itself should invert that trade.
+                                                                                                                 Measure cost in time,
+                                                                                                            tokens, tools, or total failure cost
+
+
+                                                                 CP world      Same future
+                                                                                               recover from st        J(CP)
+                                                               checkpoint st       failure
+                                 Evaluate whether saving                                                           recovery cost
+                                 this state is worthwhile
+                                                                               at time t + ∆
+                                                            branch
+                   Previous       Candidate state
+                  checkpoint            st
+                      c−
+                                                               SKIP world      Same future
+                                                                                                                     J(SKIP)
+                                                                  do not           failure
+                                                                                               recover from c−     recovery cost
+                                                                checkpoint     at time t + ∆
+
+                                             Checkpoint Advantage label
+                                            ACP (st ) = J(SKIP) − J(CP)
+                                            Positive value ⇒ checkpointing
+                                             st avoids future recovery cost.
+
+
+
+Figure 1: Counterfactual labeling. From the previous checkpoint c− and candidate st we run two
+matched worlds, CP, which materializes st , and SKIP, which does not, to the same future failure,
+then recover both and measure J(CP) and J(SKIP). Their difference is the label ACP (st ).
+
+The oracle is an expected systems measurement, not an LLM judgment. Because the agent is
+stochastic and no sampling seed is controllable, individual pair differences can change sign; the
+protocol handles this by repeating unstable cells and by resampling tasks for uncertainty, never by
+discarding a sign-inconsistent observation.
+
+
+                                                                           8
+C     Feature and ripple-graph specification
+This appendix specifies the feature families intended for a learned placement policy. None of them is
+evaluated in this paper: the pilot measures ACP and does not fit a predictor, so no correlation between
+any feature below and measured advantage is reported or implied.
+
+    Table 3: Proposed online feature families for advantage prediction. Not evaluated in this paper.
+
+     Group                  Examples
+     Execution cost         elapsed seconds; tokens since last checkpoint; tool calls; retries; errors;
+                            expensive-tool count
+     Physical state         files touched; bytes modified; artifact size; optional process-state size
+     Verified progress      newly passing tests; completed subgoals; verifier events; newly validated
+                            artifacts/facts
+     Ripple / graph         new descendant count; dependency fanout; downstream verified nodes; affected
+                            artifact count; centrality proxy
+     Context                distance from last checkpoint; time since last progress; branch depth; recent
+                            error trend
+
+Edges must be observable: command→file-write, file-version→test-result, build-input→build-output,
+tool-result→artifact, or explicit workflow dependencies. If any natural-language dependency is
+inferred by an LLM, it should be isolated as a separate feature family and ablated. Calling these
+dependency or ripple features is a claim about observable provenance, not about causal influence; the
+counterfactual recovery measurement, not the graph, is the ground-truth target.
+
+D     Small-data training protocol (future work)
+No predictor is trained in this paper. This appendix records the protocol a follow-on study should use,
+so that the measurement design and the eventual learning design can be reviewed together.
+The project assumes no pre-existing checkpoint-value dataset; labels come from the counterfactual
+oracle of Appendix B. Statistical independence is at the task/repository level, so candidate states must
+never be split randomly: all states from one task belong to one partition, and leave-one-repository-out
+is preferable once enough repositories are available. The pilot reported here yields 24 labelled cells
+from 12 tasks, which is enough to estimate the population effect but not enough to fit and honestly
+evaluate a predictor; scaling the labelled set is the precondition for the rest of this appendix.
+
+Primary model. Start with linear/ridge regression and gradient-boosted trees. The target is mea-
+sured ACP (st ); an alternative binary target is ⊮[ACP > 0], which the pilot suggests is a meaningfully
+unbalanced problem (17 of 24 cells positive). Tune only on validation tasks. Report rank quality
+alongside error, because placement is a prioritization problem.
+
+Required baseline. Any predictor must be compared against the rule implied by the measured
+decomposition, namely take the first checkpoint then stop, at a matched budget. The pilot measures
+the decomposition; it does not run such a policy. Given how sharply advantage separates by fallback
+identity (Section 4), a learned model that does not beat that rule has not demonstrated that learning is
+necessary, and the correct conclusion would be to report the negative result and keep the simpler rule.
+
+Why not deep RL first? Online agent episodes are expensive and the action space is only {check-
+point, skip}. The supervised advantage label already estimates the local action difference directly.
+Deep Q-learning is justified only if sequential interaction among checkpoint decisions materially
+improves end-to-end cost; Appendix E states that hypothesis separately.
+
+E     Optional sequential Q-learning extension (future work)
+Checkpoint placement is sequential because a checkpoint changes the identity of the next previous
+checkpoint and consumes budget. To test whether this interaction matters, define simulator state
+                              zt = [xt , distance to last CP, Bremaining ]
+
+
+                                                     9
+and actions at ∈ {CP, SKIP}. Rewards are negative checkpoint cost when materializing and negative
+redo/recovery cost when a simulated failure occurs. A fitted-Q iteration (FQI) baseline [25] would
+learn Q(z, a) from trace-replay transitions rather than from expensive new online agent episodes.
+
+Decision criterion. Q-R IPPLE should enter the main paper only if it provides a meaningful held-out
+benefit over local advantage ranking at the same budget. If the gain is negligible, the negative result
+should be reported and the simpler model kept. This prevents “RL for RL’s sake.” Neither Q-R IPPLE
+nor the local ranking policy it would be compared against has been run on the real workload, so this
+paper reports no result for either.
+
+A caution from the pilot. Trace-replay transitions are only as good as the cost model behind them.
+The additional-checkpoint contrast shows a mean advantage of −1.1 s, smaller in magnitude than
+the 4.41 s cost of taking the checkpoint, so a simulator that models redo cost as monotone in elapsed
+work would systematically misprice exactly the decisions a budgeted policy has to get right. Any
+fitted-Q study should therefore be validated against measured paired recoveries, not only against
+replayed traces.
+
+F    Baselines, budgets, and metrics (specification for the policy study)
+The baselines below are specified so that the eventual policy comparison is fixed in advance. None
+was run in this paper, and no claim is made about how R IPPLE CP would compare to any of them.
+
+Baselines.
+
+No checkpoint          Restart from task beginning.
+Every turn             Upper-overhead reference; not a budget-matched competitor.
+Fixed-k                Checkpoint every k safe boundaries; tune k to match budget.
+Time-based             Fixed wall-clock interval, validation-tuned to match budget.
+First-boundary         Spend the budget on the earliest safe boundaries. This is the rule implied by
+                       the decomposition in Section 4 and is the baseline a learned policy most needs
+                       to beat.
+State-change           Trigger by bytes/files changed using a validation threshold.
+Progress               Trigger after a predefined verifier/test/subgoal progress event.
+Failure-risk           Predict near-term failure using non-ripple features and preserve highest-risk
+                       states. This separates “failure is likely” from “state is valuable.”
+Random                 Uniform safe candidates at the same budget; average multiple seeds.
+Oracle                 Rank by measured ACP ; unattainable upper bound.
+Q-Ripple               Optional fitted-Q policy from Appendix E.
+
+Primary metrics.
+                       LostWork = wall-clock re-execution after injected failure,
+                                    redo time avoided vs. no checkpoint
+               RecoveryEfficiency =                                     ,
+                                         checkpoint time overhead
+                TotalFailureCost = normal run cost + C/R overhead + redo cost.
+Report task completion, repeated tokens and tool calls, bytes written, checkpoint latency, and restore
+latency separately rather than folding them into one weighted scalar.
+
+Matched budgets. Compare policies at equal checkpoint count and, where C/R cost varies by
+checkpoint size, at equal measured checkpoint-time or checkpoint-byte budgets. A placement
+method must not win merely by checkpointing more often. The pilot supplies the overhead constants
+such a comparison needs: 4.38 s mean creation cost and mean 13.94 MB; median 10.44 MB; range
+7.25–23.35 MB.
+
+
+                                                  10
+G     Extended pilot results
+
+This appendix reports the full pilot results underlying Section 4. Every value is computed from the
+retained run records by the analysis code released with the paper, and the two analysis paths that
+overlap are checked against each other and agree exactly. Appendices D and F state what each would
+require.
+
+G.1   All-task termination-cost sensitivity
+
+The main-text estimates are restricted to the 10 tasks where both branches reached the endpoint
+verified by the hidden tests. Including the two tasks that neither branch solved, the pooled figure
+becomes 61.3 s (95% CI 40.4–88.5) over all 12 frozen tasks, with CP at 105.4 s and S KIP at 166.7 s.
+We report this only as a sensitivity: for the unsolved tasks it measures cost under the fixed recovery
+procedure, not time to a verified fix, so it is not comparable to the verified-endpoint numbers and is
+not used for any claim.
+
+G.2   Marginal value of a checkpoint
+
+
+                                           cost of taking it (4.4 s)
+               First checkpoint                                                     +100.0 s
+            (vs. no checkpoint)
+                One more, one                -1.1 s
+                    step later
+                                  25   0      25      50      75 100 125             150       175
+                                             Marginal value of the checkpoint (s)
+
+Figure 2: Marginal value of a checkpoint by what the S KIP world falls back to, over the 10 verified-
+endpoint tasks, with task-bootstrap 95% intervals. The dashed rule is measured creation cost. These
+are the first two rows of Table 1.
+
+
+G.3   Do cheap proxies rank measured advantage?
+
+Table 2 in the main text reports these correlations, including the discovered-facts row omitted there
+for space (+0.43, p=0.210, and −0.21 in the additional-checkpoint cells). Rank correlations are
+computed within stratum. The two contrasts differ by two orders of magnitude, so pooling them
+would manufacture a correlation out of the stratum split alone. p-values are two-sided permutation
+tests over 20,000 relabelings, which is the right tool at this n; the normal approximation would
+overstate confidence.
+Three readings. Work proxies rank advantage well inside the first-checkpoint regime and not at
+all inside the additional-checkpoint regime, so the difficulty in placement is identifying which
+regime a candidate is in, not ordering candidates once the regime is known. Bytes changed ranks at
++0.70, which locates the motivating intuition rather than confirming it: on this workload checkpoint
+value is not sparse in bytes, and the contrast behind R IPPLE CP (Appendix I) belongs to workloads
+that accumulate heterogeneous state. The importance score the agent assigns each step of its own
+accord, without being asked to price recovery, never ranks positively in any subset, which at n=10
+is suggestive rather than conclusive and is why labels come from executed behaviour instead of the
+model’s judgement.
+
+Why checkpoint archive size is not in that table. Archive size correlates −0.31 with advantage,
+which invites reading as evidence that physical size does not predict value. It is not. Archive size
+here is a repository fingerprint: within-repository spread is 1% for Django, 12% for scikit-learn, and
+39% for SymPy, against 16.1 MB of overall spread. Correlating it with advantage largely tests which
+repository a cell came from. A genuine size feature has to vary within a repository, which is what the
+bytes a step modifies does.
+
+
+                                                       11
+G.4   Measurement reliability
+
+Mean within-cell standard deviation of paired advantage across repetitions is 24.1 s. Split by stratum,
+the first-checkpoint cells have 33.1 s of noise against a 121.9 s mean effect (noise-to-signal 0.27),
+while the additional-checkpoint cells have 15.0 s against 14.4 s (noise-to-signal 1.04). The additional-
+checkpoint effect is therefore at the resolution of a single cell measured two or three times, and the
+aggregate claim rests on the task-level bootstrap rather than on any individual cell. A study wanting
+to resolve an effect of that size per cell should budget roughly an order of magnitude more repetitions.
+For planning, one label cost 8.4 min of agent time.
+
+G.5   What a finer candidate set would cost
+
+The frozen study takes candidates at coarse turn boundaries: one early and one late per task. The
+nominal event logs already record every tool call, so the boundaries for a finer re-cut can be counted
+without collecting anything new. Across the 12 nominal trajectories there are 350 completed tool-call
+items (276 command executions, 34 file changes, the rest agent messages and planning items): 29.2
+per task, of which 24.8 on average (range 12–41) fall inside the first turn, the one carrying 73.9% of
+the nominal work, where this design currently places exactly one candidate.
+That is the missing resolution, and it is available on the existing workload. What is not available is
+the cost of those boundaries: the recorded events carry turn-level token and timing totals only, with
+no per-item timestamps, so the work protected by a tool-call candidate cannot be priced from the
+current artifacts. A re-cut therefore requires re-collecting nominal trajectories with per-item timing
+instrumented, after which the paired-recovery harness applies unchanged. We flag this as the concrete
+next step rather than an open-ended call for a deeper workload.
+
+G.6   Where the nominal work is
+
+Table 4: Distribution of nominal (pre-failure) work over logical steps, across all 12 frozen trajectories.
+A checkpoint at candidate step k protects exactly step k’s work: the S KIP world restores at k − 1 and
+re-executes step k before continuing to the same failure. The workload is close to a single expensive
+step followed by verification.
+
+                         Step    Trajectories   Mean (s)    Share    Cumulative
+                         1                12       172.1   73.9%          73.9%
+                         2                12        45.5   19.5%          93.4%
+                         3                12        13.9    6.0%          99.4%
+                         4                 3         5.4    0.6%           100%
+
+
+Averaged per task rather than pooled, the first step carries 72.8% of that task’s nominal work, and it
+exceeds 70% on 9 of 12 tasks. Matching each stratum’s candidate step to that step’s nominal duration
+on the 10 verified-endpoint tasks, the first checkpoint protects 156.5 s of nominal work and returns
+100.0 s of measured advantage (conversion 0.64), while the additional checkpoint protects 41.8 s and
+returns −1.1 s (conversion −0.03). An elapsed-work placement rule, which implicitly assumes a
+conversion near one, would therefore have valued the second checkpoint at roughly 41.8 s and been
+wrong by its full nominal cost. We report this as a two-point observation: the strata differ in fallback
+identity as well as in protected work, so it motivates advantage-based placement without constituting
+a controlled test of it.
+
+G.7   Recovery cost by restore depth
+
+G.8   Retrospective one-checkpoint placement
+
+For a task whose nominal trajectory is exactly three logical steps, all four recoveries a single-
+checkpoint policy needs were executed: checkpointing the first boundary gives restore@1 against the
+step-2 failure (the early cell’s CP branch) and restore@1 against the step-3 failure (the late cell’s S KIP
+branch); checkpointing the second boundary gives restore from pristine against the step-2 failure,
+because that checkpoint does not exist yet (the early cell’s S KIP branch), and restore@2 against the
+step-3 failure (the late cell’s CP branch). We weight the two failure points equally. Four-step tasks
+
+
+                                                   12
+Table 5: Mean recovery cost by how much progress the restore point preserved, over all 106 branches.
+Descriptive only: these are not within-task paired contrasts, and the deepest bucket is drawn from the
+three four-step tasks alone. The paired contrasts in Table 1 are the controlled version of the same
+comparison.
+
+                     Restore point             Branches       Cost (s)     Tokens re-executed
+                     Pristine (start over)            24        226.5                  640,651
+                     After step 1                     45        108.6                  162,656
+                     After step 2                     29        103.3                  154,439
+                     After step 3                      8         95.6                  118,976
+
+
+are excluded because their late cell falls back to step 2, so “checkpoint first, fail last” was never run; a
+no-checkpoint policy is excluded because restore from pristine was only ever executed against the
+step-2 failure. This reuses frozen measurements and is not a matched-budget experiment.
+
+Table 6: Retrospective single-checkpoint placement on the 9 three-step tasks (7 of which reached the
+verified endpoint), under a uniform prior over the two measured failure points. Lower is better. An
+oracle that picks the better boundary per task coincides with the first-boundary row on 9/9 tasks, so it
+is not shown separately.
+
+                           Single-checkpoint policy                  Verified (s)     All (s)
+                           Checkpoint at first safe boundary                 105.9     112.1
+                           Checkpoint at second safe boundary                155.9     175.6
+
+
+This table adds no evidence beyond Table 1. Writing F and S for the first- and second-boundary
+costs, F = 21 (CPearly + SKIPlate ) and S = 12 (SKIPearly + CPlate ), so S − F is identically half the
+difference between the first-checkpoint and additional-checkpoint contrasts. The recast is useful
+because it states the decomposition in the units a system designer budgets in, not because it is an
+independent measurement, and its margin is dominated by the arm in which the second-boundary
+policy holds no checkpoint at all.
+
+                                    checkpoint at first boundary         checkpoint at second boundary
+            sympy-23950
+           sklearn-25747
+            django-16315
+            django-15814
+            sympy-24443
+           sklearn-26323
+           sklearn-25931
+            django-15731
+            sympy-23824
+                           75     100      125 150 175 200 225 250                                       275
+                                         Recovery cost at a one-checkpoint budget (s)
+
+Figure 3: Retrospective one-checkpoint budget, per task, on the 9 three-step tasks. Placing the single
+checkpoint at the first safe boundary is cheaper on every task. Because the second-boundary policy
+holds no checkpoint at the step-2 failure, this margin restates the first-checkpoint contrast rather than
+measuring placement.
+
+The one contrast that isolates placement. On the 3 four-step tasks the late cell sits at boundary
+three with its fallback at boundary two, so comparing “checkpoint at boundary two” against “check-
+point at boundary three” holds the early arm identical, since both restore from pristine at the step-2
+failure, and varies only placement among mid-trajectory boundaries. The earlier boundary wins on
+3/3 tasks, by 8.6 s (86.2 s versus 94.7 s). With 3 tasks we quote no interval; the point is the order
+of magnitude, which is comparable to the 4.41 s cost of the checkpoint rather than to the 100.0 s
+
+
+                                                         13
+first-checkpoint effect. Conditioned on the late failure alone, the later boundary is in fact cheaper on
+5 of the 12 tasks, so a policy that knew where the failure would land could beat the fixed rule.
+
+G.9    Per-task advantage
+
+                                           Checkpoint advantage by task and timing
+                  sympy/sympy-23950
+
+                 django/django-15814
+
+                 django/django-16315
+
+                  sympy/sympy-24213
+
+         scikit-learn/scikit-learn-25747
+
+                  sympy/sympy-24443
+
+         scikit-learn/scikit-learn-26323
+
+         scikit-learn/scikit-learn-25931
+
+         scikit-learn/scikit-learn-26194
+
+                 django/django-16136
+
+                  sympy/sympy-23824
+
+                 django/django-15731                                              Early      Django            SymPy
+                                                                                  Late       scikit-learn      Unsolved endpoint
+                                                0        50        100        150           200         250         300
+                                                         Checkpoint advantage, SKIP cost - CP cost (seconds)
+
+Figure 4: Per-task, per-stratum checkpoint advantage (J(SKIP) − J(CP)), by repository and stratum.
+Hollow markers are the two tasks whose nominal trajectory never reached the endpoint verified by
+the hidden tests; they are excluded from the primary estimate and shown here for completeness. The
+legend’s “Early” and “Late” are the first-checkpoint and additional-checkpoint contrasts of Table 1.
+Additional-checkpoint points sit near zero in every repository (Django mean −7.5 s, scikit-learn
++4.2 s, SymPy +5.4 s), and 5 of the 12 are individually positive.
+
+G.10    Per-repository breakdown
+
+G.11    Secondary cost measures
+
+Wall-clock advantage is the primary outcome, but the same interventions moved the token and
+tool-call measures in the same direction, which is a useful consistency check on the pairing. On
+verified-endpoint tasks, CP re-executed 203,171 fewer tokens and 7.5 fewer tool calls per task on
+average than S KIP. The gap tracks the decomposition closely: the first-checkpoint contrast saved
+388,812 tokens and 14.4 tool calls per task, the additional-checkpoint contrast only 17,530 tokens
+and 0.6 tool calls. We report these as separate observed quantities and do not combine them with
+wall-clock time into a single weighted cost.
+Semantic rediscovery and divergent rework were not manually annotated in this pilot. The harness
+records fields for both, but they are zero throughout the real run rather than measured, and must not
+be read as evidence that no rediscovery occurred.
+
+H      Threats to validity and reproducibility
+Counterfactual nondeterminism. Model stochasticity can make paired recoveries diverge, and the
+agent runtime exposes no controllable sampling seed, so branch-order randomization and repetition,
+
+
+                                                                   14
+Table 7: Per-task means over the task’s two frozen cells. Advantage is the mean of J(SKIP) − J(CP)
+across those cells; positive favors checkpointing. “Verified” indicates whether both recovery branches
+reached the endpoint verified by the hidden tests (identical to the nominal outcome on this workload).
+“Pairs” counts repeated CP/SKIP measurements and sums to 53 across the table.
+
+            Task              Repository          Verified   Pairs   CP (s)     SKIP (s)   Adv. (s)
+            django-15731      django/django           yes       5       107.5     115.9         8.3
+            django-15814      django/django           yes       4        92.1     181.8        89.7
+            django-16136      django/django           yes       5        88.0     118.1        30.1
+            django-16315      django/django           yes       4       132.5     214.8        82.3
+            sklearn-25747     scikit-learn             no       4       148.4     212.1        63.7
+            sklearn-25931     scikit-learn            yes       4       102.6     146.0        43.5
+            sklearn-26194     scikit-learn            yes       5       104.8     135.0        30.3
+            sklearn-26323     scikit-learn            yes       4       111.6     168.3        56.7
+            sympy-23824       sympy/sympy             yes       5        89.0     112.9        23.9
+            sympy-23950       sympy/sympy              no       5       109.2     286.6       177.4
+            sympy-24213       sympy/sympy             yes       4        80.5     150.0        69.5
+            sympy-24443       sympy/sympy             yes       4        98.6     158.9        60.3
+
+Table 8: Per-repository means over all frozen cells, including the two tasks that neither branch solved
+(4 tasks each). Restricted to verified-endpoint tasks the advantages are 52.6 s, 43.5 s, and 51.2 s
+respectively; the SymPy figure below is inflated by the unsolved sympy-23950. Shown directly
+rather than bootstrapped: three repositories cannot support a repository-level resampling interval.
+
+             Repository                  Tasks     CP (s)    SKIP (s)     Advantage (s)    Verified
+             django/django                    4    105.0       157.6               52.6        4/4
+             scikit-learn/scikit-learn        4    116.8       165.4               48.5        3/4
+             sympy/sympy                      4     94.3       177.1               82.7        3/4
+
+
+not seed matching, are what control it. Advantage is therefore an expected value with task-level
+uncertainty, and individual pair differences can change sign; 5 of the 24 cells did, and each received a
+third repetition under the predeclared rule rather than being discarded.
+
+Small effective sample size. The 24 candidate cells are not 24 independent samples. Confidence
+intervals resample tasks: the 10 verified-endpoint tasks for the first-checkpoint, additional-checkpoint,
+and pooled estimates, and all 12 for the termination-cost sensitivity. Repository results are shown
+directly. The workload is one difficulty tier of one benchmark, in one language, executed by one
+agent and one model version, and the reported effect sizes should not be extrapolated beyond that.
+
+Single-shot failure sampling. Each candidate carries one frozen logical failure (K = 1 in Ap-
+pendix B), so measured advantage is conditional on that failure location rather than averaged over
+a failure distribution. Fallback identity enters as a stratification across candidates instead. A study
+characterizing F would need multiple offsets per candidate.
+
+Failure-model specificity. Fail-stop failures isolate placement but omit semantic corruption and
+irreversible side effects; those require complementary recovery semantics.
+
+Scope of claims. This paper reports a measurement. It does not claim that R IPPLE CP outperforms
+any checkpoint-placement heuristic, that checkpoint advantage can be predicted on held-out tasks, or
+that ripple features are more informative than physical state size. Those experiments have not been
+run on this workload.
+
+Reproducibility. Released or archived with the paper: exact task IDs, base commits, and benchmark
+checksum; agent, model version, and sampling configuration (Codex CLI 0.147.0-alpha.6.5, GPT-
+5.4, xhigh reasoning); checkpoint backend and contents (archive-backed logical workspace and
+agent-state checkpoints); candidate-boundary rules and the frozen stratification; failure locations; the
+paired-recovery harness and its preflight checks; branch-order and repetition seeds; the per-pair audit
+records and the list of cells that received a third repetition; the 10,000-replicate bootstrap procedure
+
+
+                                                       15
+and its seed (20260818); and the analysis code that produces every table and figure in this paper.
+Total experiment cost was 28,125,711 re-executed tokens, 3.38 agent-hours, and 3.85 branch-hours
+of recovery execution (excluding checkpoint creation) across 106 branches; monetary cost is not
+reported because the agent was run under an interactive subscription that does not expose per-run
+billing.
+
+I     Motivating intuition
+The placement problem this paper measures is motivated by a mismatch between how much state an
+action changes and how much future work that state protects. Figure 5 contrasts the two cases. The
+pilot in Section 4 does not test this mechanism directly, since it measures the advantage itself rather
+than its cause, so the figure is included as motivation rather than as a result.
+
+                       Large state change, low value                         Tiny state change, high value
+
+                               Large state change                                    Tiny semantic decision
+ Temporary
+   artifact                     Download / build                                    Library X is incompatible
+                                    1–2 GB                                              with CUDA 12.6
+
+    Build
+    cache                             Checkpoint                                          Checkpoint
+                                     now or skip?                                        now or skip?
+                 Small ripple
+                                           skip
+              Few future decisions
+              depend on this state
+                                        Later
+                                                                         Change        Update     Successful    Tests
+                                      execution                        dependency      config       build       pass
+
+                                                                                                                          Large ripple
+                                       Failure                                                Later                     Many future actions
+                                                                                             failure                       depend on
+                                                                                                                          one decision
+                                Cheap recovery
+                                  Re-download                                 Expensive recovery if skipped
+                                    or rebuild                                  Rediscover cause and repeat
+                               with little lost work                          reasoning, tools, edits, and tests
+
+                                                    RippleCP: checkpoint based
+                                                     on future work protected,
+                                                     not simply bytes changed.
+
+
+Figure 5: RippleCP intuition. A large physical state change may have low checkpoint value when
+it is cheap to reproduce (left), whereas a small semantic decision can have high value when many
+subsequent actions depend on it (right). RippleCP estimates whether checkpointing the current state
+avoids enough future recovery cost to justify materializing it.
+
+
+
+
+                                                                  16
+

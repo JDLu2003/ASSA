@@ -1,0 +1,1320 @@
+         RLinf: Flexible and Efficient Large-Scale
+       Reinforcement Learning via Macro-to-Micro
+                   Flow Transformation
+ Chao Yu, Tsinghua University; Yuanqing Wang, Infinigence AI and Peking University; Zhen Guo,
+        Hao Lin, and Si Xu, Infinigence AI; Hongzhi Zang, Tsinghua University; Quanlu Zhang,
+    Infinigence AI; Yongji Wu, University of California, Berkeley; Chunyang Zhu and Junhao Hu,
+Infinigence AI; Zixiao Huang, Tsinghua University and Infinigence AI; Mingjie Wei, Zhongguancun
+ Academy; Yuqing Xie, Tsinghua University; Ke Yang, Zhongguancun Academy; Bo Dai, Beihang
+           University and Infinigence AI; Zhexuan Xu and Jiakun Du, Tsinghua University;
+      Xiangyuan Wang, Peking University and Infinigence AI; Xu Fu and Letong Shi, Infinigence
+     AI; Zhihao Liu, Zhongguancun Academy; Kang Chen, Peking University and Zhongguancun
+     Academy; Weilin Liu, Infinigence AI; Gang Liu, Tsinghua University; Boxun Li, Infinigence AI;
+  Jianlei Yang, Beihang University; Zhi Yang, Peking University; Guohao Dai, Shanghai Jiao Tong
+                     University and Infinigence AI; Yu Wang, Tsinghua University
+               https://www.usenix.org/conference/osdi26/presentation/yu-chao
+
+   This paper is included in the Proceedings of the 20th USENIX
+  Symposium on Operating Systems Design and Implementation.
+                            July 13–15, 2026 • Seattle, WA, USA
+                                     ISBN 978-1-939133-55-7
+
+
+              Open access to the Proceedings of the 20th USENIX Symposium on
+               Operating Systems Design and Implementation is sponsored by
+            RLinf: Flexible and Efficient Large-Scale Reinforcement Learning via
+                            Macro-to-Micro Flow Transformation
+
+       Chao Yu1 , Yuanqing Wang3,4 , Zhen Guo3 , Hao Lin3 , Si Xu3 , Hongzhi Zang1 , Quanlu Zhang3 ,
+     Yongji Wu5 , Chunyang Zhu3 , Junhao Hu3 , Zixiao Huang1,3 , Mingjie Wei2 , Yuqing Xie1 , Ke Yang2 ,
+    Bo Dai6,3 , Zhexuan Xu1 , Jiakun Du1 , Xiangyuan Wang4,3 , Xu Fu3 , Letong Shi3 , Zhihao Liu2 , Kang Chen4,2 ,
+          Weilin Liu3 , Gang Liu1 , Boxun Li3 , Jianlei Yang6 , Zhi Yang4 , Guohao Dai7,3 , Yu Wang1∗
+                       1 Tsinghua University            2 Zhongguancun Academy            3 Infinigence AI
+         4 Peking University           5 UC Berkeley          6 Beihang University      7 Shanghai Jiaotong University
+
+                                    GitHub Repo: https://github.com/RLinf/RLinf
+                             Abstract                                     However, efficient RL training for various scenarios such
+Reinforcement learning (RL) has demonstrated immense po-               as reasoning, agentic and embodiment at the scale of modern
+tential in advancing artificial general intelligence, agentic in-      large models is challenging, which combines highly heteroge-
+telligence, and embodied intelligence. However, the inherent           neous components with diverse workload characteristics and
+heterogeneity and dynamicity of RL workflows often lead to             resource demands, such as LLM generation, inference and
+low hardware utilization and slow training on existing sys-            training, reward models, critic models, agent tooling and em-
+tems. In this paper, we present RLinf, a high-performance RL           bodied environment simulators. For instance, LLM training
+training system based on our key observation that the major            consumes more accelerator (e.g., GPU) memory than LLM
+roadblock to efficient RL training lies in system flexibility.         generation and inference (prefill-only generation) to maintain
+To maximize flexibility and efficiency, RLinf is built atop a          gradients and optimizer states, while LLM generation shows
+novel RL system design paradigm called macro-to-micro flow             high dynamicity in response lengths, leading to low accel-
+transformation (M2Flow), which automatically breaks down               erator utilization. Moreover, components like LLM training
+high-level, easy-to-compose RL workflows at both the tem-              support diverse parallelization strategies (e.g., data, tensor,
+poral and spatial dimensions, and recomposes them into opti-           pipeline parallelism), whereas others scale only via instance
+mized execution flows. Supported by RLinf worker’s adaptive            replication and may yield computation workloads distinct
+communication capability, we devise context switching and              from common tensor computation in LLM, e.g., embodied
+elastic pipelining to realize M2Flow transformation, and a             simulators [10, 54] that require CPU for physics simulation
+profiling-guided scheduling policy to generate optimal execu-          and GPU graphics pipeline for 3D rendering.
+tion plans. Extensive evaluations on both reasoning RL and                Single execution mode of existing RL training systems
+embodied RL tasks demonstrate that RLinf consistently out-             fails to capture this diversity, leading to suboptimal efficiency.
+performs state-of-the-art systems, achieving 1.07×∼2.43×               Collocated execution, where components sequentially occupy
+speedup in end-to-end training throughput.                             accelerators [51], suffers from the long-tail problem due to
+                                                                       varying generation lengths, leaving accelerators idle. Dis-
+                                                                       aggregated pipelining, where components run concurrently
+1     Introduction                                                     on separate accelerators with pipelining [13], mitigates the
+                                                                       long-tail issue but introduces memory and computation imbal-
+The rapid progress of large language models (LLMs) has                 ance (§2.2). Neither mode is universally optimal. Many RL
+reached a point where further scaling the model alone yields           workloads demand hybrid scheduling of the components to
+diminishing returns. To push intelligence beyond pretrain-             maximize efficiency, i.e., mixing collocation and pipelining
+ing, reinforcement learning (RL) has emerged as a cru-                 in a more flexible way. However, supporting such flexible
+cial paradigm. Recent advances such as RLHF [8, 38],                   execution modes for a single programmed workflow is a sig-
+GRPO [49], and RL for embodied agents [24, 25] and Deep                nificant challenge, as they often require different program
+Research [35, 69] all rely on RL to align LLMs with human              structures and communication patterns. Also, identifying the
+preferences, improve reasoning, and enable autonomous inter-           right scheduling for a given workflow usually requires con-
+action with complex environments. OpenAI and others predict            siderable manual tuning.
+that RL workloads will soon consume more computational
+                                                                          In this paper, we present RLinf, an RL training system
+resources than LLM pretraining [37], making RL training
+                                                                       that maximizes system flexibility to achieve efficient execu-
+efficiency the most critical system concern.
+                                                                       tion of a logically programmed RL workflow. At its core is
+     ∗ Corresponding author. Email: yu-wang@tsinghua.edu.cn            a new paradigm called macro-to-micro flow transformation
+
+
+
+USENIX Association                               20th USENIX Symposium on Operating Systems Design and Implementation               829
+(M2Flow), i.e., macro logical flow with micro execution flow,                                                                               Rollout
+
+which decouples the logical programming of RL workflows                                                   Rollout                         Search server
+                                                                          Rollout
+from their physical execution planning. With M2Flow, devel-                                               Simulator
+                                                                                                                                           Generation
+                                                                         Generation
+opers program RL workflows imperatively, using a natural
+                                                                                                        Generation
+programming interface to define how components commu-                     Inference                                                        Inference
+nicate and synchronize at a coarse granularity. RLinf then
+automatically transforms this logical flow into a fine-grained            Training                        Training                          Training
+
+execution plan tailored to the workload and hardware at both          GRPO workflow                  Embodied RL                     Deep research RL
+spatial and temporal dimensions. By decoupling program
+                                                                                                          Actor-Generation
+semantics from execution modes, M2Flow lets developers
+preserve clean, intuitive workflows while the system explores                    Actor-Infer.    Ref-Infer.      Reward-Infer.    Critic-Infer.
+a vast scheduling space, including temporal multiplexing, spa-
+tial pipelining, and hybrid scheduling.                                                         Actor-Training          Critic-Training
+
+   RLinf achieves this through three key mechanisms. First,                                            RLHF workflow
+a worker abstraction that encapsulates each RL component                              Data transmission                   Model weight update
+for flexible placement, and built-in adaptive communication           Figure 1: Diverse RL workflows in various scenarios.
+that allows direct and efficient communication between com-
+ponents regardless of worker and data placement. Second,              ciency and flexibility compared to existing approaches.
+elastic pipelining and automatic context switching that enable
+M2Flow transformation and expand the scheduling space,            2     Background and Motivation
+achieving pipeline granularity tuning and temporal acceler-
+ator multiplexing without modifying the logical workflow.         2.1     RL Workflows in LLM Era
+Third, a profiling-guided scheduling policy that automatically
+selects efficient execution modes, balancing utilization across   Various RL Algorithms and Scenarios. With the slow-
+heterogeneous components. Together, these capabilities de-        down of scaling gains in large language models, reinforce-
+liver high flexibility, efficiency, and programmability.          ment learning has become increasingly important for advanc-
+   We implement RLinf using Ray for cluster management            ing LLM intelligence. Unlike traditional RL, RL in the LLM
+and worker process launch on remote nodes. Apart from the         era often involves multiple LLMs in the loop. Given the scale
+core mechanisms, RLinf also provides rich support for com-        of modern models (tens to hundreds of billions of parameters),
+mon RL components, algorithms, and models to facilitate RL        fitting RL training into available accelerators (e.g., GPUs) is
+workflow programming (§4). We extensively evaluate RLinf          already challenging. Figure 1 illustrates four representative
+on both reasoning and embodied RL training across diverse         RL workflows across different scenarios and algorithms.
+models (e.g., Qwen2.5-1.5/7/32B [40], Qwen3 [59], Open-               The simplest is GRPO [49], an RL algorithm designed to
+VLA [24], OpenVLA-OFT [23]) and varying scales. Our               reduce reliance on reward models. It involves a single LLM
+evaluation shows that RLinf improves end-to-end throughput        that generates multiple responses, e.g., 8, for a query (i.e.,
+(i.e., tokens per second) by up to 1.7× compared to state-        Generation), computes logarithmic probabilities for these
+of-the-art RL training systems in reasoning RL, and by up         responses (i.e., Inference), and uses the results as training
+to 2.43× in embodied RL. We have open-sourced the full            data to update the same model (i.e., Training). The updated
+codebase of RLinf to accelerate RL innovations in the LLM         weights are then synchronized back for inference and genera-
+era.                                                              tion, completing one training iteration.
+   This paper makes the following contributions:                      In contrast, the RLHF [38] workflow adopts PPO [48],
+• Analysis of representative RL algorithms and scenarios,         resulting in a more complex design involving four LLMs. The
+  identifying characteristics of modern RL workflows and          actor model serves as the core policy, generating responses
+  highlighting inefficiencies in current systems.                 to queries. The reference model remains fixed to constrain
+                                                                  the actor from drifting too far from its initialization. The
+• A novel RL system paradigm M2Flow that decouples logi-
+                                                                  reward model assigns scalar rewards to generated responses,
+  cal workflow programming from execution planning, en-
+                                                                  while the critic model estimates expected rewards to stabilize
+  abling intuitive programming with flexible execution.
+                                                                  training. Actor and critic are trainable, whereas reference and
+• A cohesive set of mechanisms, i.e., worker abstraction,         reward models are frozen. These components interact closely,
+  elastic pipelining, context switching, adaptive communica-      as shown in the figure.
+  tion, and a profiling-guided scheduler, that jointly realize        Beyond algorithms, RL workflows also vary by application
+  M2Flow and enable efficient RL training.                        scenario. In embodied intelligence [24,25], RL relies on simu-
+• Comprehensive evaluations of RLinf across various RL            lators that simulate the physical world. An LLM interacts with
+  workloads show that RLinf significantly improves effi-          the simulator by generating actions and receiving feedback,
+
+
+
+830   20th USENIX Symposium on Operating Systems Design and Implementation                                                       USENIX Association
+                1.0                                    100                                               1.2                                           1.0
+                                                                                                         1.0
+
+
+
+
+                                                                                         Time (second)
+
+
+
+
+                                                                                                                                       Time (second)
+                                                                                                                                                       0.8
+   Proportion
+
+
+
+                                                                                                         0.8
+
+
+
+
+                                             Percent
+                                                                                                                                                       0.6
+                0.5                                     50                                               0.6
+                                                                                                         0.4                                           0.4
+                                                                                                         0.2                                           0.2
+                0.0                                     0                                                0.0                                           0.0
+                      0      100      200                    0      100      200                                   20             40                              20              40
+                          Rollout Time (s)                       Rollout Time (s)                                  Batch Size                                Number of Environments
+
+     (a) CDF of response time.                    (b) Unfinished responses.                                (a) Generation time.                          (b) Simulator time.
+
+Figure 2: The distribution of response lengths and the number                          Figure 3: The execution time of generation and simulator with
+of unfinished responses over time in the generation phase of                           different batch sizes respectively, batch size in simulator is
+a math RL experiment.                                                                  the number of environments.
+
+producing trajectories that serve as training data. Similarly,                         outs are executed in batches, these variations create a long-tail
+in Deep Research [35, 69], RL improves model performance                               problem where a few slow queries block the entire phase from
+through interaction with a search server that retrieves online                         proceeding to inference or training. The problem commonly
+information. The resulting rollout results are fed into training,                      exists in the collocated mode (e.g., veRL [51]), where gen-
+while inference follows the GRPO workflow.                                             eration, inference, and training sequentially share GPUs by
+                                                                                       swapping between CPU and GPU memory. We conducted
+Characteristics of RL Workflows. RL workflows con-
+                                                                                       an experiment of a 7B math reasoning RL training [40] on
+sist of heterogeneous components with distinct demands on
+                                                                                       8 nodes with 8 H100 GPUs each, as shown in Figure 2. The
+GPU memory, computation cores, accelerator types, and par-
+                                                                                       number of unfinished responses quickly shrinks to less than
+allelization strategies. For example, training requires substan-
+                                                                                       5%, where a very small set of long-tail responses stalls the
+tially more GPU memory than inference to maintain gradients
+                                                                                       generation, leaving many GPUs underutilized or idle. Scaling
+and optimizer states. Unlike training, generation often under-
+                                                                                       out with more GPUs worsens the problem as idle time grows.
+utilizes GPU cores, as its matrix and vector multiplications
+                                                                                          Pipelining alleviates this by allocating fewer GPUs to gen-
+are bottlenecked by memory bandwidth. Some components
+                                                                                       eration and leaving the rest for inference and training. In this
+(e.g., simulator) run on CPUs, or use GPUs for non-tensor
+                                                                                       setup, inference and training start once partial samples are
+computations (e.g., 3D rendering). Parallelization also dif-
+                                                                                       ready. However, pipelining introduces its own inefficiency
+fers significantly, e.g., LLM training exploits data, tensor, and
+                                                                                       since inference and training must wait for the first batch to
+pipeline parallelism, whereas simulators typically scale only
+                                                                                       be generated. Thus, neither approach is universally optimal,
+through multiple instances. Maximizing overall utilization
+                                                                                       and supporting both collocated mode and pipelining within a
+across such heterogeneous components is a great challenge.
+                                                                                       single framework remains a significant challenge.
+   Further, RL workflows exhibit complex dependencies, pri-
+marily through data flow and weight updates. Data flow can                             Simple Execution Modes Cannot Fit Diverse Components.
+occur at different granularities, e.g., per response between gen-                      Collocated and pipelined modes are two extremes, i.e., all
+eration and inference, or at least a micro-batch of responses                          components on the same GPUs versus fully disaggregated
+between generation and training. Some workflows even in-                               GPUs. Some RL workloads, however, do not fit neatly into
+troduce cyclic data flows, such as in embodied RL and Deep                             either mode. Their diverse component characteristics require
+Research (Figure 1), which further complicates coordination.                           more flexible orchestration. Take embodied RL (Figure 1) as
+Weight updates, in contrast, act as barriers that synchronize                          an example. Figure 3 shows computation profiles of genera-
+generation and training. These complex dependencies require                            tion and simulator. The execution time of simulator increases
+more fine-grained scheduling.                                                          slightly with the number of environments and its GPU utiliza-
+                                                                                       tion remains low (i.e., <24%), while its memory usage grows
+                                                                                       linearly with the number of environments. In contrast, gener-
+2.2               Inefficiencies in Diverse RL Workflows                               ation scales linearly in both runtime and memory with batch
+                                                                                       size, while keeping GPU cores highly utilized (i.e., >70%).
+We analyzed different RL workflows to identify the source of
+                                                                                       Training consumes more memory, but its execution time is
+inefficiencies as follows.
+                                                                                       only one-third as long as generation’s.
+Dynamicity in Rollout Wastes Computation. The roll-                                       This profile rules out simple execution modes. The sim-
+out phase is inherently dynamic. Lengths fluctuate across re-                          ulator should scale with as many parallel environments as
+sponses of the same query, and even more so across different                           possible to reduce its total runtime. However, this prevents
+queries. Embodied tasks such as grasping can take different                            collocation with generation due to memory contention. A bet-
+numbers of steps. In deep research, generating a report may                            ter choice is running on disaggregated GPUs with pipelining
+involve varying numbers of search interactions. Since roll-                            for higher efficiency. Training, in contrast, would waste com-
+
+
+
+USENIX Association                                                 20th USENIX Symposium on Operating Systems Design and Implementation                                           831
+                                                                                3     RLinf Design
+      Procedural Programming Interface
+
+                                                                                3.1    Overview
+                                    Workflow                Controller
+       Communicator                                          Worker             In pursuit of efficient, flexible, and intuitive RL systems,
+                                                            Dispatcher
+         Offloading                Scheduler
+                                                                                we propose a new design paradigm termed M2Flow, i.e.,
+                                                             Exec Flow          macro logical flow executed with micro execution flow. In
+                                     Profiler                Manager
+       Data Channel
+                                                            Connection
+                                                                                this paradigm, developers program the complex RL workflow
+        Worker                        Policy                 Manager            by imperatively specifying the logical communication flow
+      Worker Group
+                                                                                among the RL components at a coarse granularity (macro
+           Spatial Scheduling                    Temporal Scheduling
+                                                                                logical flow), while the system automatically transforms the
+                                                                                workflow into a fine-grained execution flow (micro execution
+                                                                                flow). Essentially, M2Flow decouples programmable code
+                                                                         Time   logic from the physical execution and scheduling of the in-
+           Elastic Pipelining                      Context Switch
+                                                                                dividual RL components, so as to maximize the efficiency
+                M2Flow Transformation & Scheduling
+                                                                                while minimizing the programming complexity.
+               Data Plane: Adaptive communication                                  Figure 4 shows the architecture of RLinf that realizes
+                                                                                M2Flow. As illustrated, RLinf provides an easy-to-use proce-
+                                Launcher (Ray)                                  dural programming interface for users to construct RL work-
+                                                                                flows imperatively, which describe the data communication
+            Figure 4: The architecture of RLinf.                                and interaction among the RL components. RL components
+                                                                                are then encapsulated as workers in RLinf, each implementing
+pute if fully disaggregated, so it should share GPUs. After                     the main logic of this component. Workers are equipped with
+rollout, simulator and generation are swapped to CPU, and                       communication functionality to freely communicate with each
+training takes over the GPU. The result is a hybrid mode that                   other, as well as a resource offloading mechanism to enable
+combines collocation and pipelining to balance efficiency.                      temporal multiplexing of hardware resources. This worker
+                                                                                abstraction enables RLinf to retain substantial scheduling
+Identifying Suitable Orchestration is Challenging. The                          flexibility at both the spatial and temporal dimensions, while
+orchestration of the hybrid mode depends on the analysis of                     following the procedural workflow. Spatial scheduling assigns
+the components. However, finding the most suitable orchestra-                   workers to accelerators, temporal scheduling determines their
+tion for a given RL workflow is challenging, as the character-                  execution periods, and spatio–temporal scheduling governs
+istics are diverse and the dependencies are complex. Manually                   their pipelined execution granularity.
+enumerating options is tedious, time-consuming, and risks                          To produce a desirable micro execution flow across these
+overlooking better choices. Moreover, no clear guidelines                       scheduling dimensions, the core of the scheduler module is
+exist to identify the most suitable orchestration.                              a profiling-guided scheduling policy, which utilizes runtime
+                                                                                profiling of worker characteristics to search for the optimal
+                                                                                execution mode of each worker. Based on the determined
+                                                                                execution mode, the Controller assigns workers to accelera-
+2.3   Flexibility as a Key to Efficiency                                        tors, manages inter-worker connections, and orchestrates the
+                                                                                execution flow by dispatching function invocations to the cor-
+Maximizing computation efficiency for an RL workload re-                        responding workers. To realize this, two mechanisms named
+quires flexible orchestration that aligns with component and                    elastic pipelining and context switch are devised to enable
+workflow characteristics. However, adjusting the execution                      spatial and temporal orchestration of workers, respectively.
+mode without changing the programmed workflow is chal-                          Adaptive communication utilities such as point-to-point com-
+lenging. Collocated and disaggregated pipelining modes dif-                     munication and data channel act as the data plane to support
+fer significantly. Collocated mode operates at coarse-grained,                  scalable worker interactions. The entire system leverages
+phase-level execution. Each phase starts after the previous                     Ray [33] to remotely launch and control workers.
+phase is complete. However, disaggregated pipelining runs
+at fine-grained, batch-level with precise timing to minimize                    3.2    Workflow Construction Interface
+pipeline bubbles. Mixing these modes further increases com-
+plexity. We advocate a system design that bridges this gap,                        The design philosophy of RLinf is to maximize system flex-
+enabling RL developers to maintain an intuitive, logically or-                  ibility to achieve high efficiency, which is also the guideline
+ganized workflow while achieving high execution efficiency                      for RLinf’s programming interface design. To this end, unlike
+with flexible execution modes.                                                  traditional graph-based declarative programming [1] that sac-
+
+
+
+832   20th USENIX Symposium on Operating Systems Design and Implementation                                               USENIX Association
+                                                                                  Micro Execution Flow      Macro Logic Flow
+class Worker:
+  def send(self, obj, dst, async_op)                                                   Iter1     Iter2      Iter1   Iter2
+  def recv(self, src, async_op)
+  @overload
+  def onload(self)
+                                                                                                                               for data in data_iter:
+  @overload                                                            Iter1:
+                                                                                                                                generate(data,ch1)
+  def offload(self)                                                    4 to 4             Channel
+                                                                                                                                inference(ch1,ch2)
+                                                                     Pipelining
+                                                                                                                                h=training(ch2,None)
+class RolloutWorker(Worker):                                                                                                    h.wait()
+  def generate(self, in_channel, out_channel):                                                                                  update_weight()
+    with self.device_lock:
+      batch_size = 0                                                   Iter1:
+                                                                       4 to 2              Channel
+      while batch_size < self.total_batch_size:
+        batch = in_channel.get()                                     Pipelining
+        res = self.model.gen(batch)
+        out_channel.put(res)                                                                                                           Exec. Flow
+                                                                                                                                        Manager
+        batch_size += batch.size
+                                                                                                            Weight Update
+                  (a) A typical RLinf worker.                                        Flexible Control of                       Pipelining       Context
+                                                                                   Pipelining Granularity                      Granularity      Switch
+class RLWorkflowRunner:
+  def __init__(self):
+    cluster = Cluster(num_nodes=4, devices_per_node=8)                            Figure 6: The M2Flow execution logic.
+    self.rollout_group = RolloutWorker.launch(cluster)
+    self.actor_group = ActorWorker.launch(cluster)
+    self.data_ch = Channel.create("Data")                           same worker are collectively managed via the WorkerGroup
+    self.rollout_ch = Channel.create("Rollout")
+  def run(self):                                                    abstraction of RLinf (e.g., rollout_group), which automat-
+    for batch in batch_iterator:                                    ically assumes the public functions defined in the worker
+      self._update_rollout_weights()
+      self.data_ch.put(batch)                                       class and dispatches them to all (or a selective portion) of the
+      self.rollout_group.generate(                                  worker processes if invoked. The functions of a WorkerGroup
+        in_channel=self.data_ch,
+        out_channel=self.rollout_ch                                 are inherently asynchronous and return a result handle, whose
+      )                                                             wait primitive provides synchronization barriers, enabling
+      self.actor_group.train(self.rollout_ch).wait()
+                                                                    computation at a certain data granularity. For example, in
+                (b) A workflow runner example.                      GRPO training, rollout can proceed per query, but normaliza-
+                                                                    tion must aggregate all responses for a query, which pauses
+     Figure 5: RLinf workflow programming interface.                the pipeline at this step until normalization completes. The
+rifices control flow flexibility, debuggability and transparency    core facility for connecting the data flow among distributed
+for optimization opportunity, RLinf adopts a procedural pro-        worker groups is the data channel (detailed in §3.5), which de-
+gramming paradigm that enables developers to flexibly ex-           couples the control and data flows of dependent components,
+press workflows imperatively. An example workflow based on          enabling highly flexible programming while exposing a broad
+this interface is shown in Figure 5. As shown, an RL program        optimization space, as shown below.
+based on RLinf consists of two parts: (1) worker programs
+that define the logic of each RL component (e.g., simulator,        3.3      M2Flow Transformation
+LLM generation, actor training), and (2) a workflow runner
+that orchestrates the overall workflow by invoking the work-        The programming interface shown in Figure 5b offers a flow-
+ers’ core functions and defining inter-worker interactions.         like programming model, with which developers describe
+   Figure 5a demonstrates a typical worker implementation           the high-level, logical control and data flows among workers.
+atop RLinf. The base Worker class provides communication            Having obtained the logical flows, RLinf follows the M2Flow
+primitives such as send and recv for inter-worker communi-          paradigm to transform the logical flows (i.e., how should the
+cation. All workers that inherit from the base class automati-      workers run) into the concrete execution flow, i.e., where (spa-
+cally gain the capability to communicate with other workers         tial) and when (temporal) should the workers run. In this
+(§3.5), which is also the foundation for higher-level commu-        section, we focus on two enabling mechanisms of M2Flow
+nication facilities like the data channel. To manage limited        transformation and flexible scheduling—elastic pipelining
+device resources like GPU memory, all workers are required          and context switching. In §3.4, we will describe the schedul-
+to implement resource management functions (onload and              ing policy that determines the optimal execution flow.
+offload) for acquiring and releasing the resources.                    Based on the programmed workflow, the key idea of
+                                                                    M2Flow transformation is to control the spatial and tempo-
+   After implementing workers, developers can compose
+                                                                    ral scheduling of workers by throttling their data processing
+the overall RL workflow as in Figure 5b. First, the runner
+                                                                    granularity and concurrent resource accesses, respectively.
+launches workers on a cluster of nodes and devices in an
+SPMD manner. The scheduler module decides the place-                Spatial Scheduling via Elastic Pipelining. For spatial
+ment of each worker process before its launch, which can            scheduling, workers can be executed in a pipelined manner
+also be manually specified if desired. All processes of the         with a different number of accelerators/devices. To maximize
+
+
+
+USENIX Association                              20th USENIX Symposium on Operating Systems Design and Implementation                                    833
+                     LLM Generation              LLM Inference         LLM Train            i Embodied Simulator        Offload         Onload
+                                      Weight update                      Weight update                                            Weight update
+              GPU1                                          GPU1                             …           GPU1                                     …
+
+              GPU2                                          GPU2                             …           GPU2                                     …
+
+              GPU3                                          GPU3                                 …       GPU3                                     …
+
+              GPU4                                          GPU4                                     …   GPU4 1 2 1 2 1 2 1 2            1212 …
+
+
+                         Temporal Scheduling                        Spatial Scheduling                                Spatial and Temporal
+                         via Context Switching                     via Elastic Pipelining                                  Scheduling
+
+                                            Figure 7: Spatial and temporal scheduling of workers.
+pipeline flexibility, RLinf introduces elastic pipelining to en-                   formation to define lock acquiring priority, i.e., child workers
+able workers to flexibly process data at different granularity                     that depend on the outputs of parent workers can only acquire
+with the given device resources. Elastic pipelining builds                         the lock after the parents have enqueued data and released
+upon our insight that in RL training and agentic scenarios,                        the lock, so as to avoid lock contention and deadlock. Also,
+most workers follow the SPMD pattern, allowing execution                           it utilizes device placement information from the Controller
+across varying batch sizes. For instance, LLM serving en-                          to avoid unnecessary resource loading and offloading when
+gines like SGLang and vLLM can process a single prompt                             workers are placed on different devices.
+or a list of prompts at a time, and inference (i.e., prefill-only
+                                                                                   M2Flow Execution. Figure 6 shows how M2Flow man-
+computation of a model) similarly supports single-batch or
+                                                                                   ages execution. The workflow is written imperatively, i.e.,
+multi-batch execution. This flexibility enables the Execution
+                                                                                   a for loop iterating over main logic, with three workers,
+Flow Manager of RLinf to achieve flexible pipelining of a
+                                                                                   i.e., rollout, inference, and training. A rollout task such as
+worker task via dynamic data granularity—output data can be
+                                                                                   generate(data, ch1) processes data and enqueues results
+forwarded once a configured size of data batch is ready, allow-
+                                                                                   to channel ch1. The Execution Flow Manager can divide
+ing downstream workers to start earlier with smaller batches
+                                                                                   the input data into smaller chunks, allowing workers to pro-
+or later with larger batches. Notably, the scheduling space
+                                                                                   cess outputs at a smaller data granularity. Alternatively, tasks
+is further affected by individual worker’s internal computa-
+                                                                                   can be coalesced into fewer, larger sub-tasks with larger
+tion semantics. For example, training workers operate with
+                                                                                   data chunks to realize different temporal scheduling. Mean-
+both the micro-batch and global-batch concepts—the micro-
+                                                                                   while, the device lock enables automatic resource manage-
+batch defines forward/backward units, while the global-batch
+                                                                                   ment among workers with data dependencies, enabling spatial
+determines when model updates occur.
+                                                                                   scheduling via context switching.
+Temporal Scheduling via Automatic Context Switching.                                  With M2Flow, user-defined workflows can be orchestrated
+Beyond spatial scheduling, RLinf also supports natural tem-                        across a complete spatial–temporal scheduling space. Figure 7
+poral multiplexing of devices via automatic context switching,                     illustrates several representative execution modes suited to
+further expanding the scheduling space. Context switching                          different RL workloads and configurations.
+enables workers that cannot co-reside in the same accelerators                        The left part of Figure 7 shows pure temporal scheduling,
+with limited device resources (e.g., GPU memory) to share                          where each worker occupies all accelerators. Once a worker
+devices by executing sequentially. In RLinf, this is realized                      completes its task, it is swapped out and the next worker is
+via a distributed device lock of the data channel facility, i.e.,                  swapped in. For the illustrated case, since inference and train-
+device_lock as shown in Figure 5a. This lock serves as the                         ing share the same model weights, no offloading or reloading
+primitive to throttle concurrent resource access by multiple                       is required. This mode is particularly useful when a worker
+workers that are on the same devices and have data flow depen-                     must use all devices to be runnable, such as a large model’s
+dencies, i.e., producers and consumers of the same channel.                        training. It also maximizes resource sharing among collocated
+Before using device resources, a worker must acquire the lock,                     workers and avoids inter-worker pipeline imbalance. How-
+whose state is globally consistent to all workers and can only                     ever, it suffers from GPU idleness due to long-tail effects, e.g.,
+be changed atomically, thus ensuring exclusive access to the                       the longest response length in the rollout stage determines
+resources. Upon lock acquiring, the worker’s device resources                      the overall completion time of the stage. This mode is there-
+are automatically loaded by calling the onload function of the                     fore suboptimal when the workload exhibits high variance in
+worker if the resources have been offloaded. After completing                      component runtime, as is typical in long-context reasoning or
+its task, the worker releases the lock and offloads its resources                  open-ended embodied rollouts.
+via the offload function to free up device resources for child                        The middle part illustrates spatial scheduling, where work-
+workers in the workflow. Unlike a conventional lock, the                           ers are assigned to separate GPUs. Because workers depend
+device lock leverages the data channel’s data dependency in-                       on one another, pipelining is applied to mitigate idle time.
+
+
+
+834   20th USENIX Symposium on Operating Systems Design and Implementation                                                               USENIX Association
+Achieving efficient pipelining requires balancing resources           Algorithm 1: Worker scheduling policy.
+across workers so that their execution times align. Spatial               Input :Workflow graph G, execution time estimation function E
+scheduling effectively hides the long tail of dynamic stages                      for each component, and number of devices N.
+by overlapping them with downstream components, but it                    Output :A worker schedule Sbest and its estimated time Tbest .
+may introduce compute and memory imbalance when one                  1 Dtable ←{}; // graph map to (time, schedule)
+component dominates GPU memory (e.g., training with op-              2 Gdag ←ConvertCircleToNode (G);
+                                                                     3 Tbest , Sbest ←FindSchedule (Gdag , N, Dtable );
+timizer states) while others underutilize their allocation. In
+                                                                     4   Function FindSchedule(G, N, Dtable ):
+such cases, dedicating disjoint GPU sets to every component           5     if (G,N) in Dtable then
+forces compute-light components to retain GPUs they cannot             6          return Dtable [(G,N)];
+fully exploit, leading to overall resource waste.                      7    end
+   Finally, RL workflows are often too complex for purely              8    if G is a node then
+                                                                       9          return Enode , Snode ;
+temporal or spatial scheduling to remain efficient. M2Flow           10     end
+therefore supports hybrid scheduling, as shown on the right          11     Tbest ←+in f ; Sbest ←None;
+of Figure 7. Some workers are distributed across GPUs with           12     for Gs , Gt in TraverseStCuts (G) do
+pipelined execution, but once the workers’ stage completes,          13           /* Gs and Gt share the same gpus */
+                                                                     14           Ts , Ss ←FindSchedule (Gs , N, Dtable );
+they can be swapped out and replaced by successors to con-           15           Tt , St ←FindSchedule (Gt , N, Dtable );
+tinue the workflow. Hybrid scheduling preserves resource             16           Dtable [(Gs ,N)]←(Ts , Ss );
+sharing for the subset of components with large memory               17           Dtable [(Gt ,N)]←(Tt , St );
+footprints (e.g., training and inference that share weights),        18           if Tbest > Ts + Tt then
+                                                                     19                  Tbest ←Ts +Tt ; Sbest ←shared(Ss , St );
+while pipelining the dynamic, long-tail-prone components             20           end
+(e.g., generation, simulators) on dedicated devices to mask          21           /* Gs and Gt use different devices */
+their variability. This trade-off can be applied at fine granular-   22           for Ns , Nt in TraverseGpuNum (N) do
+                                                                     23                  /* Ns +Nt equals N */
+ity, with the choice for each component aligned to its compute
+                                                                     24                  Ts , Ss ←FindSchedule (Gs , Ns , Dtable );
+and memory profile, its position in the dependency graph, and        25                  Tt , St ←FindSchedule (Gt , Nt , Dtable );
+the dynamicity of its inputs.                                        26                  Dtable [(Gs ,Ns )]←(Ts , Ss );
+                                                                     27                  Dtable [(Gt ,Nt )]←(Tt , St );
+                                                                     28                  if Tbest >PipeliningTime (Ts , Tt ) then
+3.4    Scheduling Policy                                              29                        Tbest ←PipeliningTime (Ts , Tt );
+                                                                      30                        Sbest ←pipeline(Ss , St );
+RLinf offers a large scheduling space through flexible orches-       31                  end
+tration of workers, thus finding the most efficient execution        32           end
+mode is challenging. To this end, RLinf introduces two mod-          33     end
+                                                                     34     return Tbest , Sbest ;
+ules: the profiler and the scheduler. The profiler is used to
+                                                                     35 end
+measure and estimate the execution characteristics of each
+component under different numbers of GPUs. The scheduler
+then utilizes this information to compose an overall execu-
+tion plan, containing specific GPU assignments and pipelin-          allel configuration to decide the data parallel size, which can
+ing configurations. The two modules form a fully automated           usually be determined by the model size and GPU memory.
+profiling-to-scheduling pipeline. After developers define the        With the profiled data, the profiler extrapolates the execution
+worker logic and workflow runner, RLinf runs offline profiling       time and memory usage for larger data parallel sizes using
+over a small set of representative data parallel sizes, extrap-      polynomial extrapolation, outputting an execution time esti-
+olates each component’s execution time and memory usage,             mation function E for each component. This function is then
+and passes the results to the scheduler, which finds the global      fed to the scheduler for it to estimate each component’s exe-
+execution plan before training begins. Users do not manually         cution time and whether it can be fitted into memory given
+choose among temporal, spatial, and hybrid modes; they only          a selected number of GPUs. Moreover, during profiling, the
+declare the resource budget (§4) and, optionally, parallelism        overall RL workflow is also captured into a workflow graph in
+hints for very large models.                                         a just-in-time manner, by tracing the data flow among workers
+                                                                     through the communication primitives.
+Profiler. The profiler measures each component’s execution
+time and memory usage under different data parallel sizes,           Scheduler. The scheduling policy of the scheduler is shown
+because data parallel size tends to have a positive (sometimes       in Algorithm 1. The input of the policy includes the work-
+nearly linear) relation with the component throughput as data        flow graph G, the execution time estimation function E pro-
+is consumed faster with the increasing data parallel size. For       duced by the profiler, and the total number of GPU devices.
+non-model components like simulators, the data parallel size         Specifically, the scheduling algorithm recursively partitions
+is the number of instances. For model training and generation        the workflow graph into two subgraphs, Gs and Gt , connected
+components, the profiler requires users to provide model par-        by directed edges known as the s–t cuts [11]. For each parti-
+
+
+
+USENIX Association                             20th USENIX Symposium on Operating Systems Design and Implementation                        835
+tion, it evaluates the time cost of both the temporal and spatial    sands of iterations, so the checkpoint-and-redeploy overhead
+scheduling policies. In the temporal scheduling, Gs and Gt           is negligible relative to total training time. We quantify the
+share the same set of devices (e.g., GPUs)—Gs processes its          sensitivity of RLinf to profile noise in §5.2.
+batch, and upon completion Gt consumes its output. In the
+spatial scheduling, Gs and Gt are assigned to disjoint device        3.5    Adaptive Communication
+sets and executed in a pipelined fashion. The scheduler uses
+the profiling results to find the optimal device allocation and      To support flexible worker orchestration, RLinf’s communica-
+data processing granularity for each subgraph. The algorithm         tion layer needs to realize two key design goals. (1) Flexible.
+then selects the most performant scheduling, and applies this        Any two workers should be able to communicate with each
+process recursively until each subgraph reduces to a single          other, regardless of the worker placement and program logic.
+node, at which point the node returns its profiled execution         (2) Adaptive. Communication primitives should be able to
+time under the assigned placement.                                   adapt to arbitrary data living in different devices (CPUs and
+   Modeling the execution time of Gs and Gt is the key to            GPUs across nodes), while achieving maximum throughput
+finding the optimal scheduling. In the temporal scheduling           of the underlying communication links.
+where workers share devices, the cost is the sum of Gs and Gt           However, existing collective communication libraries for
+plus any resource offloading and reloading overhead. In the          GPU and CPU data, e.g., NCCL [36], Gloo [39], and MPI [12],
+spatial scheduling, the runtime is estimated as                      fail to meet our goals as they are mostly built for standard
+                                                                     communication patterns across a fixed number of processes
+               Tcritical + (M/m − 1) × Tbottleneck ,                 in traditional model training and serving scenarios. In con-
+                                                                     trast, RL components manifest considerable spatial and tem-
+where Tcritical is the pipeline warm up and cool down time,          poral dynamicity. Spatially, components can collocate on the
+Tbottleneck is the runtime of the slowest subgraph, M is the total   same device, or be distributed across different devices. Tempo-
+batch size, and m is the data processing granularity.                rally, components can be launched or terminated at arbitrary
+   Before invoking FindSchedule, the workflow graph is pre-          times. However, state-of-the-art libraries like NCCL do not
+processed to collapse cycles into single nodes. When recur-          support flexible rank scaling and efficient intra-device com-
+sion reaches such a node, its computation is evenly partitioned      munications. Furthermore, the data communicated between
+across GPUs. This avoids exhaustive partition enumeration            components can be complex data structures beyond standard
+while still achieving near-optimal performance.                      contiguous GPU/CPU data buffers, e.g., a composition of
+Algorithmic Complexity. Let V be the number of nodes in              multiple data buffers with varying sizes. Efficient handling of
+the post-collapse workflow DAG and N the number of devices.          such data dynamicity is also missing in existing libraries.
+With memoization, the DP visits O(V 2 ) distinct subgraphs for       Communication Protocol and Primitives. To achieve the
+the chain-like workflows typical in RL, and each (subgraph,          design goals, we devise worker and data placement-aware
+device-count) state takes O(V · N) time because it enumerates        communication protocol and primitives, which enhance ex-
+O(V ) s-t cuts and, per cut, iterates over device partitions Ns +    isting CPU/GPU communication libraries in terms of both
+Nt = N ′ . Summing over all O(V 2 · N) states yields an overall      flexibility and performance in the RL scenario.
+search cost of O(V 3 · N 2 ). For a given workflow, the search          At the protocol level, RLinf features transparent connec-
+cost is O(N 2 ) as the topology is fixed. We empirically validate    tion lifecycle management, which avoids manual connection
+this scaling up to 4096 GPUs in §5.2.                                management as in traditional communication libraries, and
+Adaptive Re-Profiling for Runtime Dynamicity. Some                   handles dynamic worker placement and scaling automatically.
+RL training is inherently dynamic: for LLM, as the model             Specifically, upon launch, each worker’s placement, IP and
+learns, the rollout response length distribution drifts, causing     port information will be registered into a global worker man-
+components such as generation to speed up or slow down over          ager. Connections among workers are then established with
+time. A static plan derived from initial profiling may therefore     the information lazily when workers invoke communication
+become suboptimal mid-training. To handle this, RLinf em-            primitives to reduce connection overhead and enhance scala-
+beds a runtime profiler inside each worker that continuously         bility. When a group of workers establish a connection, the
+records per-invocation execution time, and a lightweight con-        connection metadata is maintained both locally by workers
+troller routine that compares these measurements against the         and globally by a connection manager. When a worker is
+scheduler’s estimated execution times. When the deviation            terminated, the connection manager will notify all connected
+exceeds a configurable threshold (15% sustained over a slid-         workers to teardown the connection and release resources.
+ing window in our default configuration), RLinf checkpoints             At the primitive level, like existing libraries, RLinf of-
+the training state, re-runs the scheduling algorithm with the        fers both synchronous and asynchronous send and recv
+updated profile, and resumes training under the new execu-           primitives for point-to-point communication, as well as col-
+tion plan. In typical reasoning RL training, response-length         lective communication primitives like broadcast. Differ-
+drift is gradual and re-scheduling is warranted only after thou-     ently, RLinf’s primitives automatically exploit the worker
+
+
+
+836   20th USENIX Symposium on Operating Systems Design and Implementation                                    USENIX Association
+and data placement information of the communicating work-             Table 1: RL algorithm categories supported by RLinf.
+ers to select the most efficient communication backend, e.g.,
+                                                                    Category     Algorithms
+NCCL for GPU-GPU communication, zero-copy cudaIPC                   On-policy    GRPO [49], PPO [48], DAPO [61], REINFORCE++ [16]
+for intra-GPU communication, and Gloo for CPU commu-                Off-policy   Async PPO, SAC [14], CrossQ [5],
+nication. For data dynamicity, both the asynchronous and                         RLPD [4], SAC-Flow [65], DSRL [56]
+synchronous primitives support arbitrary Python objects as          Imitation    DPO [41], Full-param SFT, LoRA SFT, VLM SFT,
+                                                                                 DAgger, HG-DAgger
+the communication payload, which are serialized and dese-
+rialized in a structure-aware manner, i.e., data buffers are
+extracted from the objects and communicated directly with-         covering synchronous on-policy methods, off-policy and
+out serialization/deserialization overhead. Also, data structure   asynchronous methods, and imitation learning. Notably, the
+information is piggybacked in the communication metadata           M2Flow paradigm naturally generalizes to complex asyn-
+to facilitate efficient deserialization at the receiver side.      chronous algorithms and to agentic workflows with tool calls
+Load-Balancing Data Channel. Atop the above com-                   and multi-agent settings (e.g., Search-R1 [22], rStar2 [47]),
+munication primitives, we further build a high-level FIFO          simply by adapting the workflow to the components.
+queue-like communication facility (termed data channel) for           Differently, asynchronous algorithms differ in workflow
+producer-consumer worker communication in the workflow.            structure from their synchronous counterparts: instead of exe-
+This enables decoupling of both the control and data flows of      cuting lock-step phases, they run long-lived concurrent work-
+producer and consumer workers, which is essential for flexi-       ers and synchronize weights non-blockingly. Despite this,
+ble pipelining. The data channel maintains its data queue in a     expressing such workflows in RLinf remains concise:
+special channel worker process, and can be accessed by any         class AsyncRunner:
+other worker processes by passing the channel handle. The            def run(self):
+                                                                       self.update_rollout_weights()
+channel supports both CPU and GPU data, and can be config-             env_h = self.env.interact(
+ured for offloading GPU data to CPU to reduce GPU memory                 self.env_ch, self.rollout_ch, self.actor_ch
+                                                                       )
+consumption. Furthermore, the data channel is enhanced with            rollout_h = self.rollout.generate(
+load-balancing capability. Each item enqueued to the channel               self.rollout_ch, self.env_ch
+                                                                       )
+can be assigned a weight value, which is used to balance the           while step < max_steps:
+load across multiple consumers dequeuing from the channel.               self.actor.run_training(self.actor_ch).wait()
+                                                                         if step % sync_interval == 0:
+The consumers can also define custom load-balancing poli-                  self.update_rollout_weights()
+cies, which are invoked by the channel upon each dequeue               self.env.stop(); self.rollout.stop()
+
+operation to select the desired items from the channel.
+                                                                      The environment, rollout, and actor workers run as per-
+                                                                   sistent asynchronous tasks streaming data through channels,
+4   Implementation                                                 while training proceeds concurrently without blocking on roll-
+                                                                   out completion. This shows that M2Flow’s channel-based
+RLinf is implemented in 20K lines of Python code. Among            decoupling generalizes naturally to asynchronous settings.
+them, 5K lines are for the core worker, controller, and sched-        For models, we have implemented support for language
+uler components. 2K for common workers such as rollout             models like Qwen [40], multi-modal models like VLM [3],
+workers based on serving engines like SGLang, vLLM and             VLA models like OpenVLA [23, 24] and Pi0 [55], and world
+HuggingFace Transformers, training actors based on Mega-           models like OpenSora [70] and Wan [57]. The rich RL work-
+tron and FSDP, and embodied simulators, which can be used          flow, algorithm and model support not only accelerates the de-
+out of the box for any future RL models and workflows. The         velopment of new RL workflows with RLinf, but also demon-
+remaining 13K lines are mostly rich support for various RL         strates its generality, versatility and extensibility in practice.
+algorithms like PPO and GRPO. Notably, a typical workflow          Cluster Management and Device Allocation. RLinf lever-
+runner like the LLM reasoning RL workflow implementation           ages Ray to realize cluster management, launching worker
+is less than 100 lines of code, and requires no code changes       processes on remote nodes, and dispatching worker function
+to be scheduled both temporally and spatially.                     executions. RLinf does not rely on Ray for device allocation
+   Currently, RLinf supports not only traditional LLM-based        to workers, because Ray only supports rigid packed-style (i.e.,
+reasoning RL, but also agentic RL with tooling, and em-            consecutive devices) or spread-style (i.e., spread-across-node
+bodied RL involving complex workloads like 3D render-              first) resource allocation [33], which are not flexible enough
+ing, physics simulation, and robotic control. For RL algo-         for today’s complex and dynamic RL workflows. Instead,
+rithms, RLinf supports popular algorithms like PPO [48],           RLinf offers a flexible device allocation strategy, which al-
+GRPO [49], DAPO [61], and REINFORCE++ [16], as well as             lows each worker process to be allocated with any device or
+some of their off-policy asynchronous versions. Table 1 sum-       devices of any node across the cluster, by simply specifying
+marizes the broader set of algorithms supported by RLinf,          the target devices’ global IDs. Also, hardware devices be-
+
+
+
+USENIX Association                           20th USENIX Symposium on Operating Systems Design and Implementation               837
+yond accelerators such as robot arms are also abstracted and                                         veRL            RLinf-Temporal
+managed as schedulable devices in the same manner as accel-
+
+
+
+
+                                                                   Tokens Per Second
+                                                                                              1.5B Model          7B Model        32B Model
+erators. This enables RLinf to scale on all kinds of hardware                          400K                               80K
+                                                                                                           300K
+that foundation models can interact with.                                              300K                               60K
+                                                                                                          200K
+                                                                                       200K                               40K
+Multi-Tenant Resource Boundary. In multi-tenant clus-
+                                                                                       100K               100K            20K
+ters, a cluster manager (e.g., SLURM, Kubernetes) assigns
+each job a fixed set of nodes. RLinf scopes its runtime to                                0                  0              0 OOM
+                                                                                               64 128 256      64 128 256       64 128 256
+this allocation, and the scheduler explores execution modes                               Number of GPUs
+only within it, so M2Flow does not alter the job’s resource       Figure 8: GRPO training throughput of Qwen2.5 on RLinf
+contract with the cluster manager. Within the allocation, the     and veRL under different cluster scales and model sizes.
+distributed device lock of the data channel (§3.5) enforces
+exclusive accelerator access when components share devices        VLA [24], OpenVLA-OFT [23]), two RL algorithms (i.e.,
+via temporal scheduling, preventing intra-job contention.         GRPO [49], PPO [48]), and multiple cluster scales. Overall,
+                                                                  our key findings include:
+Heterogeneous Hardware Support. RLinf abstracts ac-
+celerators behind a unified hardware interface, allowing the      • RLinf consistently outperforms state-of-the-art RL systems
+scheduler to target clusters that mix GPUs/NPUs from differ-        veRL [51] and Slime [71] by 1.07×∼1.70× on a variety
+ent vendors (e.g., NVIDIA, AMD, Intel, Ascend, MUSA) and            of math-reasoning RL settings. The results also show that
+non-standard devices such as robotic arms. Nodes are grouped        different RL settings favor different execution modes.
+by hardware type, and a declarative placement configuration       • RLinf demonstrates higher training throughput on embod-
+maps each workflow component to one or more groups. The             ied RL tasks in both ManiSkill [54] and LIBERO [27]. On
+profiler measures each component on its actual device type,         LIBERO, RLinf achieves a 1.05×∼2.43× speedup over
+so the scheduler accounts for heterogeneous execution times         SimpleVLA-RL [25]; on ManiSkill, its hybrid mode yields
+when searching the spatio-temporal plan.                            up to 1.87× improvement over other strategies.
+Fault Tolerance. The distributed, multi-component nature          • The scheduling policy identifies the best execution mode
+of RLinf makes worker process crashes, node failures, and net-      within 7 × 10−4 ∼ 5.98s on the clusters of 8 to 1024 GPUs.
+work issues unavoidable in long training runs. RLinf adopts       • The models trained with RLinf achieve SOTA or better
+checkpoint-based recovery: when any worker fails, it detects        benchmark scores after RL fine-tuning.
+the failure via heartbeat and notifies the Controller, which
+halts the entire training job to prevent dependent workers
+from timing out or producing inconsistent state. Users can        5.1                   End-to-End Experiments
+then restart from the latest checkpoint, and RLinf replays the
+                                                                  The end-to-end experiments run on a 32-node cluster, where
+offline profiling phase if the resource boundary has changed
+                                                                  each node is equipped with 8 NVIDIA H100-80GB GPUs,
+before resuming under a possibly updated execution plan.
+                                                                  2 Intel Xeon Platinum 8558 CPUs (2.1 GHz, 48 cores), and
+Performance Profiling. Performance profiling support is           2 TB of memory. Intra-node communication uses NVLink,
+not only crucial for developers to understand system bottle-      while inter-node communication uses 8 Mellanox ConnectX-
+necks, but also serves as the key to our scheduling policy.       7 RDMA NICs per node, each providing 400 Gbps bandwidth
+Thus, RLinf provides a worker-group-level timer for every         with RoCEv2.
+public function invoked remotely by the workflow runner. The
+timer automatically captures the execution time of a worker
+                                                                  5.1.1                  Reasoning RL Training
+function, whose value can be retrieved via the asynchronous
+handle returned by the corresponding worker group function;
+                                                                  Experimental Setup. We evaluate using Qwen2.5 Mod-
+the values of all processes in the worker group will be reduced
+                                                                  els [40] distilled by DeepSeek-R1, covering sizes from 1.5B
+to a single value via a specified reduction method (e.g., mean,
+                                                                  to 32B parameters and Qwen3-30B-A3B [59], which is an
+max, min). Beyond this, developers can also create custom
+                                                                  MoE model, and using the AReaL-boba-Data dataset [58],
+timers for more fine-grained profiling of any code region, and
+                                                                  which integrates multiple standard datasets including Deep-
+retrieve the timer values similarly.
+                                                                  ScaleR, Open-Reasoner-Zero, Light-R1, etc. We compare
+                                                                  RLinf with two state-of-the-art open-source RL systems, i.e.,
+5     Evaluation                                                  veRL v0.5 [51] and Slime v0.1 [71]. To ensure fairness, all
+                                                                  systems use SGLang [68] for rollouts and Megatron-LM [52]
+We extensively evaluate RLinf across math-reasoning and           for training, with the same parallelism setting (e.g., tensor
+embodied RL workloads, covering four different models of          parallelism configuration). Training speed is reported in to-
+different sizes (i.e., Qwen2.5 [40], Qwen3-MoE [59], Open-        kens/sec, defined as the total number of prompt and response
+
+
+
+838    20th USENIX Symposium on Operating Systems Design and Implementation                                                  USENIX Association
+                           veRL Rollout          veRL Logprob         veRL Training       ranging from 256 to 1024 depending on GPU count. RLinf-
+                           RLinf Rollout         RLinf Logprob        RLinf Training      Spatial allocates GPUs in a 4:1:1:1:1 ratio for rollout, actor
+                                                                                          inference, actor training, critic inference, and critic training.
+              256 GPUs
+                                                                                          Figure 10 presents the results. For the 1.5B model, RLinf-
+              128 GPUs                                                                    Spatial outperforms veRL by 69.6%, 35.0%, and 35.6% on
+                                                                                          16, 32, and 64 GPUs, respectively. In contrast to the GRPO ex-
+                     64 GPUs                                                              periment, RLinf-Spatial surpasses RLinf-Temporal by 39.8%,
+                               0       250         500    750         1000    1250        19.4%, and 18.6%.
+                                                     Time (s)                                For the 7B model, RLinf-Spatial outperforms both veRL
+Figure 9: Latency breakdown of Qwen2.5 7B model training.                                 and RLinf-Temporal by 38.7–60.7% and 19.0–44.8%, respec-
+                                                                                          tively. As shown in Figure 11, RLinf-Temporal exceeds veRL
+                           veRL             RLinf-Temporal              RLinf-Spatial     mainly due to speedups in “Others”, which includes context-
+ Tokens Per Second
+
+
+
+
+                           1.5B Model            7B Model            14B Model            switch overhead (offload/onload), parameter resharding, ad-
+                     40K                   40K               40K
+                     30K                   30K               30K                          vantage computation, and inter-stage synchronization. RLinf-
+                     20K                   20K               20K                          Spatial performs faster than RLinf-Temporal because rollout,
+                     10K                   10K               10K                          inference, and training overlap effectively. Although rollout
+                       0                     0                   0                        in spatial mode is 39.3% slower than in temporal mode, infer-
+                            16 32 64             32 64 128           64 128 256
+                                                                                          ence and training finish quickly once rollout completes. The
+                      Number of GPUs
+                                                                                          14B model shows similar trends with smaller gains, i.e., RLinf-
+Figure 10: PPO training throughput of Qwen2.5 on RLinf and
+                                                                                          Spatial is 27.2–56.5% and 17.7–25.7% faster than veRL and
+veRL under different cluster scales and model sizes.
+                                                                                          RLinf-Temporal, respectively.
+tokens in a global batch divided by the iteration time. All                               Qwen3-30B-A3B with GRPO. We evaluate the MoE
+performance results are averaged over 10 training iterations                              model Qwen3-30B-A3B on 32, 64, and 128 GPUs with a
+after warm-up.                                                                            rollout batch size of 1536 and sequence length 20480. We dis-
+Qwen2.5 with GRPO. We evaluate the Qwen2.5 1.5B,                                          able logprob recomputation, a common configuration in RL,
+7B, and 32B dense models on 64, 128, and 256 GPUs, re-                                    which removes the inference stage. Since Slime is optimized
+spectively, using a rollout batch size of 512 and maximum se-                             for MoE RL training, we compare against two variants: Slime
+quence length 28672. As shown in Figure 8, RLinf in temporal                              (spatial mode without pipelining, as Slime does not support
+mode consistently outperforms veRL across all model scales,                               pipelining) and Slime-Colocate (temporal mode). As shown
+achieving 1.10× to 1.58× speedups. Since RLinf ’s temporal                                in Figure 12, Slime is the slowest because rollout and training
+mode is similar to veRL’s design, the gains primarily stem                                run on disjoint GPU sets with no execution overlap. For 32
+from faster rollouts enabled by larger KV-cache allocations                               and 64 GPUs, RLinf-Temporal performs similarly to Slime-
+(RLinf has better GPU memory management) and reduced                                      Colocate, while RLinf-Spatial (1:1 rollout-to-training GPUs)
+synchronization overhead between upstream and downstream                                  is 31.2% and 7.2% faster than Slime-Colocate, respectively.
+stages of the middle inference stage, as illustrated in Figure 9.                            Figure 13 presents the performance breakdown. Spatial
+   Figure 8 also shows that veRL scales poorly as GPU num-                                mode achieves shorter rollout time because temporal mode
+ber increases, largely because inference becomes a growing                                suffers from memory contention between rollout and training,
+bottleneck, with its proportion of total execution time rising                            forcing much smaller parallelism (i.e., max_running_requests
+from 15.2% to 19.9% when scaling from 64 to 256 GPUs. In                                  of 128 vs. 256 in SGLang). In addition, RLinf-Spatial
+addition, veRL’s unoptimized rollout engine leads to excessive                            achieves good rollout–training overlap. On 128 GPUs, RLinf-
+peak memory usage, forcing smaller KV-cache allocations                                   Temporal outperforms Slime-Colocate by 3.7% due to bet-
+and causing rollout time to decrease only sublinearly.                                    ter scaling from decoupled system design; both stages run
+                                                                                          slightly faster. RLinf-Spatial underperforms because rollout
+   We also tested spatial mode, but it underperforms veRL
+                                                                                          and training do not overlap well, where training continues for
+by 44.3-68.6% for the 7B model, because rollout, inference,
+                                                                                          80 seconds after rollout completes.
+and training run on disjoint smaller sets of GPUs, slowing
+both rollout and training. With the long sequence length (i.e.,
+28672), the training stage also waits longer for the first batch                          5.1.2   Agentic RL Training
+of rollouts to be generated. In addition, the rollout batch size
+                                                                                          To demonstrate RLinf’s flexibility beyond standard reasoning
+is relatively smaller, reducing the overlapping time.
+                                                                                          workloads, we evaluate it on Search-R1-style [22] retrieval-
+Qwen2.5 with PPO. We train PPO with Qwen2.5 as both                                       augmented agentic RL workflows that require external tool
+the actor and critic, using model sizes of 1.5B, 7B, and 14B,                             calls and search interactions. Unlike the rigid structure of
+scaling from 16 to 256 GPUs. We use a rule-based reward, a                                standard PPO or GRPO, these workflows introduce highly
+maximum sequence length of 12288, and a rollout batch size                                variable-length tool-call traces. RLinf seamlessly supports
+
+
+
+USENIX Association                                                    20th USENIX Symposium on Operating Systems Design and Implementation            839
+                           Rollout        Inference          Training      Switch       Others                             Slime             RLinf-Temporal
+                                                                                                                           Slime-Colocate    RLinf-Spatial                    Rollout          Training       Switch           Others
+                                 veRL                                                                                    40K                                              Slime
+
+
+
+
+                                                                                                     Tokens Per Second
+ RLinf-Temporal                                                                                                          30K                                     Slime-Colocate
+
+                                                                                                                         20K                                     RLinf-Temporal
+              RLinf-Spatial
+                                                                                                                         10K                                       RLinf-Spatial
+                                          0                  10           20               30                                                                                      0    250     500 750 1000 1250
+                                                                  Time (s)                                                 0                                                                      Time (s)
+                                                                                                                                32 GPUs 64 GPUs 128 GPUs
+Figure 11: Latency breakdown of Qwen2.5 Figure 12: RL training through- Figure 13: Latency breakdown of Qwen3-
+7B with PPO on 32 GPUs. The vertical width put of Qwen3-30B-A3B on 30B-A3B with GRPO on 32 GPUs. The verti-
+of bar presents the number of GPUs.        RLinf and Slime under different cal width of bar is proportional to the number
+                                           cluster scales.                 of GPUs.
+
+                                     Temporal      Spatial        Hybrid         SimpleVLA-RL      Hybrid                      Temporal            SimpleVLA Rollout      Spatial Rollout       Hybrid Rollout          Temporal Rollout
+ Throughput (steps / s)
+
+
+
+
+                                                                                                                                                   SimpleVLA Training     Spatial Training      Hybrid Training         Temporal Training
+                          40
+                                                                           100
+                                                                                                                                              ManiSkill
+                          20                                                50
+
+                                                                                                                                               LIBERO
+                           0                                                 0
+                                8 GPUs          16 GPUs       32 GPUs             8 GPUs        16 GPUs                    32 GPUs
+                                                                                                                                                          0             200                   400                 600                800
+           (a) ManiSkill             (b) LIBERO                                                                                                                                          Time (s)
+Figure 14: End-to-end throughput of RLinf and SimpleVLA-
+                                                                                                                                              Figure 15: Latency breakdown of ManiSkill and LIBERO.
+RL under different cluster scales.
+
+                                                                                                                                             tion. Figure 14(a) reports end-to-end throughput across three
+these complex patterns with its unified worker abstraction.
+                                                                                                                                             execution modes in RLinf on 8, 16, and 32 GPUs. RLinf-
+By leveraging M2Flow to overlap generation, external tool
+                                                                                                                                             Hybrid achieves 52.2–69.1% higher throughput than RLinf-
+invocation, and training steps, RLinf drastically improves ex-
+                                                                                                                                             Temporal and 60.7–87.2% higher than RLinf-Spatial. For
+ecution efficiency.
+                                                                                                                                             ManiSkill environment, the per-step environment time re-
+   We compare RLinf against the official Search-R1 imple-
+                                                                                                                                             mains nearly constant as parallelism increases (Figure 3b) and
+mentation [21], which is built on veRL. Both systems train
+                                                                                                                                             scaling parallel environments is primarily limited by GPU
+Qwen2.5-3B with the Search-R1 agentic workflow on a single
+                                                                                                                                             memory. Thus, dedicating GPUs to environment execution is
+node with 8 NVIDIA H100 GPUs, using the same dataset and
+                                                                                                                                             advantageous. As rollout (i.e., environment and generation)
+hyperparameters. RLinf achieves an end-to-end throughput
+                                                                                                                                             and training all require GPU memory, temporally sharing
+of 67.3 requests/s compared to the 30.4 requests/s of the stan-
+                                                                                                                                             GPUs between rollout and training is more effective. Thus,
+dard Search-R1 implementation, delivering a 2.2× throughput
+                                                                                                                                             RLinf-Hybrid performs much better than the other two. In
+improvement.
+                                                                                                                                             RLinf-Temporal, environments and generation must coexist
+                                                                                                                                             in memory, constraining both the number of environments and
+5.1.3                           Embodied RL Training                                                                                         the batch size, ultimately reducing GPU utilization. RLinf-
+                                                                                                                                             Spatial splits GPUs across the components, forcing training
+Experimental Setup. We evaluate on OpenVLA [24]                                                                                              to retain a sufficient number of GPUs, which leaves too few
+and OpenVLA-OFT [23], two vision-language-action mod-                                                                                        GPUs for rollout and significantly slows it down.
+els that are supervised-finetuned using RL4VLA [28] and
+                                                                                                                                             LIBERO Environment. We train OpenVLA-OFT on the
+SimpleVLA-RL [25], respectively. We train OpenVLA on
+                                                                                                                                             public benchmark task groups provided by LIBERO, using
+ManiSkill [54] and OpenVLA-OFT on LIBERO [27], two
+                                                                                                                                             512 parallel environments, each running 64 steps per itera-
+widely used embodied environments that emulate physical
+                                                                                                                                             tion. The results in Figure 14(b) show that RLinf-Temporal is
+tasks such as pick-and-place. On LIBERO, we compare RLinf
+                                                                                                                                             37.8%, 42.6%, 143.4% faster than SimpleVLA-RL on 8, 16,
+with SimpleVLA-RL (commit d001d) [25], which is built on
+                                                                                                                                             32 GPUs respectively. As shown in Figure 15, both rollout and
+veRL. On ManiSkill, no distributed RL baseline exists, so
+                                                                                                                                             training are faster in RLinf-Temporal than in SimpleVLA-RL
+we compare different execution modes of RLinf. Training
+                                                                                                                                             due to (1) the elimination of redundant environment initializa-
+speed is reported in steps/sec, computed as the total number
+                                                                                                                                             tion during rollout, and (2) the use of a single forward pass to
+of environment steps divided by the iteration time.
+                                                                                                                                             compute both action and log probability, with only a modest
+ManiSkill Environment.       We train OpenVLA on the                                                                                         memory increase. RLinf-Temporal also scales better thanks to
+“PutCarrotOnPlateInScene-v2” task [28] using 256 parallel                                                                                    its decoupled system design and more efficient implementa-
+ManiSkill environments, each stepping for 80 steps per itera-                                                                                tion. In contrast to ManiSkill, RLinf-Hybrid performs worse
+
+
+
+840                            20th USENIX Symposium on Operating Systems Design and Implementation                                                                                                       USENIX Association
+                  Temporal-Real             Spatial-Real                                                     Reasoning
+
+
+
+
+                                                                                                                                              Normalized Throughput
+                  Temporal-Predicted        Spatial-Predicted                                                Embodiment                                               1.0
+            500                                                                        100
+
+
+
+
+                                                                Search Overhead (s)
+            400                                                                         10                                                                            0.8
+                                                                                         1
+ Time (s)
+
+
+
+
+            300
+                                                                                        0.1                                                                           0.6
+            200
+                                                                                       0.01
+                                                                                                                                                                                                              rollout
+            100                                                                       0.001                                                                           0.4                                     training
+              0                                                               0.0001
+                  Case 1   Case 2      Case 3   Case 4                                        8   16   32   64 128 256 512 1024 2048 4096
+                                                                                                       Number of GPUs                                                 0.2
+                                                                                                                                                                            -30% -20% -10%   0%   10%   20%   30%     40%     50%
+                 (a)                             (b)                                                                                                                                          Noise Level
+Figure 16: (a) The real and predicted latency in different cases.
+(b) The search overhead under different cluster scales.
+                                                                                                                                            Figure 17: Sensitivity of RLinf’s scheduling to profiling noise.
+
+than RLinf-Temporal because LIBERO environment is CPU-                                                                                      Table 2: Evaluation scores of RLinf-math-1.5B/7B and open-
+intensive; allocating environments on a subset of GPUs limits                                                                               source models. GPQA represents GPQA-diamond.
+the utilization of CPU cores, making its rollout stage even
+                                                                                                                                                                Model                  AIME24    AIME25       GPQA          Avg.
+slower than that of SimpleVLA-RL.
+                                                                                                                                                                                          1.5B models
+                                                                                                                                                                Base model              28.33     24.90       27.45      26.89
+                                                                                                                                                                DeepScaleR [30]         40.41     30.93       27.54      32.96
+5.2               Effectiveness of Search Policy                                                                                                                AReaL [13]              44.42     34.27       33.81      37.50
+                                                                                                                                                                FastCuRL [53]           43.65     32.49       35.00      37.05
+We evaluate the search policy along two dimensions: (a) the                                                                                                     RLinf                   48.44     35.63       38.46      40.84
+accuracy of end-to-end throughput estimates derived from                                                                                                                                   7B models
+profiling data, and (b) the search speed as the number of                                                                                                       Base model              54.90     40.20       45.48      46.86
+GPUs increases.                                                                                                                                                 AReaL [13]              61.66     49.38       46.93      52.66
+                                                                                                                                                                Skywork [15]            66.87     52.49       44.43      54.60
+Estimation Accuracy. Figure 16(a) compares real and pre-                                                                                                        Polaris [2]             68.55     51.24       43.88      54.56
+dicted iteration times across four Qwen2.5–GRPO settings.                                                                                                       AceMath [29]            67.30     55.00       45.57      55.96
+                                                                                                                                                                RLinf                   68.33     52.19       48.18      56.23
+Cases 1 and 2 use the 1.5B model on 128 GPUs with temper-
+atures 0.6 and 1.0, while Cases 3 and 4 use the 7B model on
+64 GPUs with the same temperature settings. Temporal mode                                                                                   Specifically, it tolerates underestimated rollout times (nega-
+achieves estimation errors below 2% because its end-to-end                                                                                  tive noise) down to roughly −29% and overestimated training
+time is well approximated by summing profiled worker times.                                                                                 times (positive noise) up to roughly +48%. Because GPU
+Spatial mode with pipelining shows slightly higher errors                                                                                   allocation is discrete, minor variations in estimated phase la-
+(<5%), mainly due to response-length variability that causes                                                                                tencies do not shift performance bottlenecks enough to alter
+pipeline imbalance. These errors are small enough that they                                                                                 the optimal resource distribution; the search policy simply
+do not change the ranking of feasible execution modes, allow-                                                                               converges on the same physical placement. The throughput
+ing the search policy to consistently select the most efficient                                                                             drops only occur when extreme noise tricks the algorithm into
+mode for the above end-to-end experiments.                                                                                                  a suboptimal configuration. This confirms RLinf achieves op-
+Search Speed. Search complexity is dominated by the                                                                                         timal scheduling without requiring perfectly precise profiling.
+number of workflow-graph nodes and available GPUs. RL
+workflows typically have fewer than ten nodes, allowing our                                                                                 5.3                        Model Performance
+dynamic-programming search to finish quickly. For a graph
+with three nodes (e.g., Qwen2.5-GRPO or ManiSkill) and                                                                                      We comprehensively evaluate the performance of the models
+GPU counts ranging from 8 to 4096 (Figure 16(b)), search                                                                                    produced by the reasoning and the embodied RL training,
+time grows polynomially with the GPU count, consistent with                                                                                 respectively, to demonstrate the effectiveness of RLinf. We
+the O(N 2 ) analysis in §3.4, and remains under 60 seconds on                                                                               emphasize that RLinf does not modify the underlying RL
+4096 GPUs, demonstrating the efficiency of our algorithm.                                                                                   algorithms. The downstream task scores reported below serve
+                                                                                                                                            only to confirm that RLinf trains models correctly, and that
+Sensitivity Analysis. To evaluate RLinf’s robustness against
+                                                                                                                                            its higher per-iteration throughput translates into improved
+profiling inaccuracies, we conduct a sensitivity analysis by
+                                                                                                                                            model quality within a fixed wall-clock and compute budget.
+injecting synthetic noise into the profiled execution times
+for different phases and measuring the actual throughput                                                                                    Reasoning RL Training. We applied GRPO training, a
+of the resulting placement. The experiment runs on a 1.5B                                                                                   built-in RL algorithm in RLinf, on two base models, i.e.,
+model trained with GRPO on 128 GPUs. As Figure 17 shows,                                                                                    DeepSeek-R1-Distill-Qwen-1.5B and DeepSeek-R1-Distill-
+RLinf maintains optimal throughput across a wide noise range.                                                                               Qwen-7B, to improve their math reasoning ability. As shown
+
+
+
+USENIX Association                                                                                          20th USENIX Symposium on Operating Systems Design and Implementation                                                   841
+Table 3: OpenVLA model success rate results on ManiSkill3.                    introduces the ZeRO family of techniques [42, 43, 46] that
+                                                                              shard optimizer states, gradients, and activations to reduce
+      Model            Vision      Semantic      Position       Avg.
+      RL4VLA [28]     80.47%        75.00%       81.77%        79.15%
+                                                                              GPU memory usage. Although distributed RL systems face
+      RLinf           82.03%        78.35%       85.42%        81.93%         similar multi-device scaling challenges, RL workflows are
+Table 4: OpenVLA-OFT success rate after RL on LIBERO.                         more dynamic due to interactive data generation and asyn-
+                                                                              chronous updates, making system design and optimization
+ Model                        Spatial   Object    Goal       Long     Avg.    substantially more complex.
+ OpenVLA-OFT(one-traj) [25]   56.45%    25.60%   45.59%      9.68%   34.33%
+ RLinf                        98.99%    98.99%   98.99%     94.35%   97.83%   Dataflow System. Traditional dataflow systems [9, 19, 34,
+                                                                              62] excel at large-scale data processing through static task
+in Table 2, the models trained with RLinf achieve the best av-                graphs and centralized scheduling, making them efficient for
+erage performance compared to the baseline systems. RLinf                     batch and streaming workloads with predictable structures. In
+1.5B model outperforms the baselines across all the three                     contrast, RL training pipelines feature dynamic task graphs
+benchmarks (i.e., AIME 24 [63], AIME 25 [64], GPQA-                           and asynchronous components (e.g., data collection, policy
+diamond [45]), improving by up to 20 points over its base                     updates), requiring more flexible coordination than existing
+model. RLinf 7B model achieves the highest performance on                     systems. Modern frameworks such as Ray [33] fill this gap
+GPQA-diamond.                                                                 with actor-based execution and decentralized control, making
+Embodied RL Training. We also evaluate the performance                        them better suited for orchestrating complex RL workflows.
+of the models after embodied RL training using RLinf. Table 3
+and Table 4 present the evaluation results on the ManiSkill
+and LIBERO tasks by training OpenVLA and OpenVLA-OFT
+                                                                              7   Conclusion
+models respectively, using the PPO algorithm. For ManiSkill,
+                                                                              Reinforcement learning is poised to surpass pretraining as
+the trained OpenVLA achieves higher success rate than the
+                                                                              the driving force behind LLM progress, but its workflows are
+RL4VLA [28] baseline system. For LIBERO, we further train
+                                                                              too diverse and dynamic for rigid execution models. RLinf
+the publicly released OpenVLA-OFT model (one-trajectory
+                                                                              shows that by decoupling workflow logic from execution
+fine-tuned version) from SimpleVLA-RL [25]. By comparing
+                                                                              through the novel macro-to-micro transformation mechanism,
+its task success rates with those of the model RL trained using
+                                                                              we can unlock both efficiency and programmability. Beyond
+RLinf, we find that RLinf significantly improves OpenVLA-
+                                                                              RL, we see this approach as a blueprint for future AI runtimes:
+OFT’s performance on the LIBERO tasks.
+                                                                              systems that flexibly orchestrate heterogeneous components,
+                                                                              e.g., training, inference, simulation, and reasoning, under one
+6     Related Works                                                           unified execution framework. We believe RLinf marks an
+                                                                              early step toward the operating system for AI workloads.
+RL Training Frameworks. RL training frameworks adopt
+varying system designs to support large-scale alignment
+                                                                              Acknowledgments
+tasks [8, 38], typically falling into either task-colocated or
+task-separated execution modes. For task-colocated systems,
+                                                                              We thank our anonymous reviewers and shepherd for their
+DeepSpeed Chat [60] and veRL [51] put all training phases
+                                                                              invaluable suggestions. We also express our sincere appreci-
+on shared GPUs for simplified orchestration. In contrast,
+                                                                              ation to the RLinf open-source community. The continuous
+task-separated systems like NeMo-Aligner [50] and Open-
+                                                                              stream of code contributions, feature requests, and user expe-
+RLHF [17] divide components across devices to improve
+                                                                              rience feedback from our GitHub contributors has been vital
+modularity and scalability. AReaL [13] further introduces an
+                                                                              to the system’s success and optimization. This work was par-
+asynchronous model-update algorithm upon task-separated
+                                                                              tially supported by National Natural Science Foundation of
+systems to increase training throughput. Unlike these frame-
+                                                                              China (No.62406159, 62325405), Zhongguancun Academy
+works, RLinf provides a more flexible component-to-device
+                                                                              (Grant No. C20250301), Shenzhen Science and Technology
+placement mechanism, enabling practitioners to explore and
+                                                                              Program (No. AI2026016).
+deploy more efficient execution configurations tailored to
+workload characteristics.
+Distributed Training Systems for LLM.             Distributed                 References
+training frameworks for LLMs [26, 66, 67] and system-
+level optimizations for memory [7, 18, 32] and communi-                        [1] Martín Abadi, Paul Barham, Jianmin Chen, Zhifeng
+cation [6, 20, 31] have significantly advanced large-model                         Chen, Andy Davis, Jeffrey Dean, Matthieu Devin, San-
+scaling. Megatron-LM [52] combines tensor, pipeline, and                           jay Ghemawat, Geoffrey Irving, Michael Isard, et al.
+data parallelism to improve scalability, while DeepSpeed [44]                      Tensorflow: a system for large-scale machine learning.
+
+
+
+842    20th USENIX Symposium on Operating Systems Design and Implementation                                            USENIX Association
+     In 12th USENIX symposium on operating systems de-           [13] Wei Fu, Jiaxuan Gao, Xujie Shen, Chen Zhu, Zhiyu
+     sign and implementation (OSDI 16), pages 265–283,                Mei, Chuyi He, Shusheng Xu, Guo Wei, Jun Mei, Ji-
+     2016.                                                            ashu Wang, et al. Areal: A large-scale asynchronous
+                                                                      reinforcement learning system for language reasoning.
+ [2] Chenxin An, Zhihui Xie, Xiaonan Li, Lei Li, Jun Zhang,           arXiv preprint arXiv:2505.24298, 2025.
+     Shansan Gong, Ming Zhong, Jingjing Xu, Xipeng Qiu,
+     Mingxuan Wang, and Lingpeng Kong. Polaris: A post-          [14] Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and
+     training recipe for scaling reinforcement learning on            Sergey Levine. Soft actor-critic: Off-policy maximum
+     advanced reasoning models, 2025.                                 entropy deep reinforcement learning with a stochastic
+                                                                      actor. International Conference on Machine Learning
+ [3] Shuai Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wen-            (ICML), 2018.
+     bin Ge, Sibo Song, Kai Dang, Peng Wang, Shijie Wang,
+     Jun Tang, et al. Qwen2. 5-vl technical report. arXiv        [15] Jujie He, Jiacai Liu, Chris Yuhao Liu, Rui Yan,
+     preprint arXiv:2502.13923, 2025.                                 Chaojie Wang, Peng Cheng, Xiaoyu Zhang, Fux-
+                                                                      iang Zhang, Jiacheng Xu, Wei Shen, Siyuan
+ [4] Philip J. Ball, Laura Smith, Ilya Kostrikov, and Sergey          Li, Liang Zeng, Tianwen Wei, Cheng Cheng,
+     Levine. Efficient online reinforcement learning with             Yang Liu, and Yahui Zhou.     Skywork open rea-
+     offline data, 2023.                                              soner series.     https://capricious-hydrogen-
+                                                                      41c.notion.site/Skywork-Open-Reaonser-
+ [5] Aditya Bhatt, Daniel Palenicek, Boris Belousov, Max Ar-          Series-1d0bc9ae823a80459b46c149e4f51680,
+     gus, Artemij Amiranashvili, Thomas Brox, and Jan Pe-             2025. Notion Blog.
+     ters. Crossq: Batch normalization in deep reinforcement
+     learning for greater sample efficiency and simplicity. In   [16] Jian Hu. Reinforce++: A simple and efficient approach
+     International Conference on Learning Representations,            for aligning large language models. arXiv preprint
+     2024.                                                            arXiv:2501.03262, 2025.
+
+                                                                 [17] Jian Hu, Xibin Wu, Zilin Zhu, Weixun Wang, Dehao
+ [6] Chang Chen, Xiuhong Li, Qianchao Zhu, Jiangfei Duan,
+                                                                      Zhang, Yu Cao, et al. Openrlhf: An easy-to-use, scalable
+     Peng Sun, Xingcheng Zhang, and Chao Yang. Cen-
+                                                                      and high-performance rlhf framework. arXiv preprint
+     tauri: Enabling efficient scheduling for communication-
+                                                                      arXiv:2405.11143, 2024.
+     computation overlap in large model training via commu-
+     nication partitioning. In Proceedings of ASPLOS, pages      [18] Zixiao Huang, Junhao Hu, Hao Lin, Chunyang Zhu,
+     178–191, 2024.                                                   Yueran Tang, Quanlu Zhang, Zhen Guo, Zhenhua Li,
+                                                                      Shengen Yan, Zhenhua Zhu, Guohao Dai, and Yu Wang.
+ [7] Tianqi Chen, Bing Xu, Chiyuan Zhang, and Carlos
+                                                                      Stalloc: Enhancing memory efficiency in large-scale
+     Guestrin. Training deep nets with sublinear memory
+                                                                      model training with spatio-temporal planning. In Pro-
+     cost. arXiv preprint arXiv:1604.06174, 2016.
+                                                                      ceedings of EuroSys, page 728–743, 2026.
+ [8] Paul F Christiano, Jan Leike, Tom Brown, Miljan Martic,     [19] Michael Isard, Mihai Budiu, Yuan Yu, Andrew Birrell,
+     Shane Legg, and Dario Amodei. Deep reinforcement                 and Dennis Fetterly. Dryad: distributed data-parallel pro-
+     learning from human preferences. Advances in Neural              grams from sequential building blocks. In Proceedings
+     Information Processing Systems, 2017.                            of EuroSys, pages 59–72, 2007.
+ [9] Jeffrey Dean and Sanjay Ghemawat. Mapreduce: simpli-        [20] Anand Jayarajan, Jinliang Wei, Garth Gibson, Alexan-
+     fied data processing on large clusters. Communications           dra Fedorova, and Gennady Pekhimenko. Priority-based
+     of the ACM, 51(1):107–113, 2008.                                 parameter propagation for distributed dnn training. Pro-
+                                                                      ceedings of MLSys, 1:132–145, 2019.
+[10] Jiafei Duan, Samson Yu, Hui Li Tan, Hongyuan Zhu, and
+     Cheston Tan. A survey of embodied ai: From simulators       [21] Bowen Jin, Hansi Zeng, Zhenrui Yue, Dong Wang,
+     to research tasks. Proceedings of IEEE, 2022.                    Hamed Zamani, and Jiawei Han. Search-R1: An
+                                                                      efficient, scalable RL training framework for reason-
+[11] Lester Randolph Ford and Delbert Ray Fulkerson. Flows            ing & search engine calling interleaved LLM based
+     in networks. 2015.                                               on veRL. https://github.com/PeterGriffinJin/
+                                                                      Search-R1, 2025.
+[12] Message Passing Interface Forum. Mpi: A message-
+     passing interface standard. https://www.mpi-forum.          [22] Bowen Jin, Hansi Zeng, Zhenrui Yue, Dong Wang,
+     org, 2025.                                                       Hamed Zamani, and Jiawei Han. Search-r1: Training
+
+
+
+USENIX Association                          20th USENIX Symposium on Operating Systems Design and Implementation           843
+      LLMs to reason and leverage search engines with rein-    [31] Kshiteej Mahajan, Ching-Hsiang Chu, Srinivas Sridha-
+      forcement learning. arXiv preprint arXiv:2503.09516,          ran, and Aditya Akella. Better together: Jointly opti-
+      2025.                                                         mizing ml collective scheduling and execution planning
+                                                                    using syndicate. In Proceedings of NSDI, pages 809–
+[23] Moo Jin Kim, Chelsea Finn, and Percy Liang. Fine-              824, 2023.
+     tuning vision-language-action models: Optimizing
+     speed and success. arXiv preprint arXiv:2502.19645,       [32] Chen Meng, Minmin Sun, Jun Yang, Minghui Qiu, and
+     2025.                                                          Yang Gu. Training deeper models by gpu memory opti-
+                                                                    mization on tensorflow. In Proceedings of ML Systems
+[24] Moo Jin Kim, Karl Pertsch, Siddharth Karamcheti, Ted           Workshop in NIPS, volume 7, 2017.
+     Xiao, Ashwin Balakrishna, Suraj Nair, Rafael Rafailov,
+     Ethan Foster, Grace Lam, Pannag Sanketi, Quan Vuong,      [33] Philipp Moritz, Robert Nishihara, Stephanie Wang,
+     Thomas Kollar, Benjamin Burchfiel, Russ Tedrake,               Alexey Tumanov, Richard Liaw, Eric Liang, Melih Eli-
+     Dorsa Sadigh, Sergey Levine, Percy Liang, and Chelsea          bol, Zongheng Yang, William Paul, Michael I Jordan,
+     Finn. Openvla: An open-source vision-language-action           et al. Ray: A distributed framework for emerging {AI}
+     model. arXiv preprint arXiv:2406.09246, 2024.                  applications. In 13th USENIX symposium on operating
+                                                                    systems design and implementation (OSDI 18), pages
+[25] Haozhan Li, Yuxin Zuo, Jiale Yu, Yuhao Zhang, Zhao-            561–577, 2018.
+     hui Yang, Kaiyan Zhang, Xuekai Zhu, Yuchen Zhang,
+     Tianxing Chen, Ganqu Cui, Dehui Wang, Dingxiang           [34] Derek G Murray, Frank McSherry, Rebecca Isaacs,
+     Luo, Yuchen Fan, Youbang Sun, Jia Zeng, Jiangmiao              Michael Isard, Paul Barham, and Martín Abadi. Na-
+     Pang, Shanghang Zhang, Yu Wang, Yao Mu, Bowen                  iad: a timely dataflow system. In Proceedings of SOSP,
+     Zhou, and Ning Ding. Simplevla-rl: Scaling vla training        pages 439–455, 2013.
+     via reinforcement learning, 2025.
+                                                               [35] Reiichiro Nakano, Jacob Hilton, Suchir Balaji, Jeff Wu,
+[26] Shenggui Li, Hongxin Liu, Zhengda Bian, Jiarui Fang,           Long Ouyang, Christina Kim, Christopher Hesse, Shan-
+     Haichen Huang, Yuliang Liu, Boxiang Wang, and Yang             tanu Jain, Vineet Kosaraju, William Saunders, et al. We-
+     You. Colossal-ai: A unified deep learning system for           bgpt: Browser-assisted question-answering with human
+     large-scale parallel training. In Proceedings of ICPP,         feedback. arXiv preprint arXiv:2112.09332, 2021.
+     pages 766–775, 2023.                                      [36] NVIDIA.       Nvidia collective communications li-
+                                                                    brary (nccl).    https://developer.nvidia.com/
+[27] Bo Liu, Yifeng Zhu, Chongkai Gao, Yihao Feng, Qiang
+                                                                    nccl, 2025.
+     Liu, Yuke Zhu, and Peter Stone. Libero: Benchmarking
+     knowledge transfer for lifelong robot learning. arXiv     [37] OpenAI.      Learning to reason with llms.
+     preprint arXiv:2306.03310, 2023.                               https://openai.com/index/learning-to-
+                                                                    reason-with-llms/, 2025.
+[28] Jijia Liu, Feng Gao, Bingwen Wei, Xinlei Chen, Qing-
+     min Liao, Yi Wu, Chao Yu, and Yu Wang. What can RL        [38] Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida,
+     bring to VLA generalization? an empirical study. In The        Carroll Wainwright, Pamela Mishkin, Chong Zhang,
+     Thirty-ninth Annual Conference on Neural Information           Sandhini Agarwal, Katarina Slama, Alex Ray, et al.
+     Processing Systems, 2025.                                      Training language models to follow instructions with
+                                                                    human feedback. Advances in neural information pro-
+[29] Zihan Liu, Yang Chen, Mohammad Shoeybi, Bryan                  cessing systems, 35:27730–27744, 2022.
+     Catanzaro, and Wei Ping. Acemath: Advancing frontier
+     math reasoning with post-training and reward modeling.    [39] PyTorch. Gloo: Collective communications library.
+     arXiv preprint, 2024.                                          https://github.com/pytorch/gloo, 2025.
+
+[30] Michael Luo, Sijun Tan, Justin Wong, Xiaoxiang            [40] Qwen, :, An Yang, Baosong Yang, Beichen Zhang,
+     Shi, William Y. Tang, Manan Roongta, Colin Cai,                Binyuan Hui, Bo Zheng, Bowen Yu, Chengyuan Li, Day-
+     Jeffrey Luo, Li Erran Li, Raluca Ada Popa, and Ion             iheng Liu, Fei Huang, Haoran Wei, Huan Lin, Jian Yang,
+     Stoica. Deepscaler: Surpassing o1-preview with a               Jianhong Tu, Jianwei Zhang, Jianxin Yang, Jiaxi Yang,
+     1.5b model by scaling rl. https://pretty-radio-                Jingren Zhou, Junyang Lin, Kai Dang, Keming Lu, Ke-
+     b75.notion.site/DeepScaleR-Surpassing-O1-                      qin Bao, Kexin Yang, Le Yu, Mei Li, Mingfeng Xue, Pei
+     Preview-with-a-1-5B-Model-by-Scaling-RL-                       Zhang, Qin Zhu, Rui Men, Runji Lin, Tianhao Li, Tianyi
+     19681902c1468005bed8ca303013a4e2, 2025. Notion                 Tang, Tingyu Xia, Xingzhang Ren, Xuancheng Ren,
+     Blog.                                                          Yang Fan, Yang Su, Yichang Zhang, Yu Wan, Yuqiong
+
+
+
+844   20th USENIX Symposium on Operating Systems Design and Implementation                            USENIX Association
+     Liu, Zeyu Cui, Zhenru Zhang, and Zihan Qiu. Qwen2.5               Chuan Wu. Hybridflow: A flexible and efficient rlhf
+     technical report, 2025.                                           framework. In Proceedings of the Twentieth European
+                                                                       Conference on Computer Systems, pages 1279–1297,
+[41] Rafael Rafailov, Archit Sharma, Eric Mitchell, Christo-           2025.
+     pher D Manning, Stefano Ermon, and Chelsea Finn. Di-
+     rect preference optimization: Your language model is         [52] Mohammad Shoeybi, Mostofa Patwary, Raul Puri,
+     secretly a reward model. Advances in Neural Informa-              Patrick LeGresley, Jared Casper, and Bryan Catanzaro.
+     tion Processing Systems, 36, 2023.                                Megatron-lm: Training multi-billion parameter lan-
+                                                                       guage models using model parallelism. arXiv preprint
+[42] Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and             arXiv:1909.08053, 2019.
+     Yuxiong He. Zero: Memory optimizations toward train-
+     ing trillion parameter models. In Proceedings of SC,         [53] Mingyang Song, Mao Zheng, Zheng Li, Wenjie Yang,
+     pages 1–16, 2020.                                                 Xuan Luo, Yue Pan, and Feng Zhang. Fastcurl: Cur-
+                                                                       riculum reinforcement learning with stage-wise context
+[43] Samyam Rajbhandari, Olatunji Ruwase, Jeff Rasley,                 scaling for efficient training r1-like reasoning models,
+     Shaden Smith, and Yuxiong He. Zero-infinity: Breaking             2025.
+     the gpu memory wall for extreme scale deep learning.
+     In Proceedings of SC, pages 1–14, 2021.                      [54] Stone Tao, Fanbo Xiang, Arth Shukla, Yuzhe Qin,
+                                                                       Xander Hinrichsen, Xiaodi Yuan, Chen Bao, Xinsong
+[44] Jeff Rasley, Samyam Rajbhandari, Olatunji Ruwase, and             Lin, Yulin Liu, Tse kai Chan, Yuan Gao, Xuanlin Li,
+     Yuxiong He. Deepspeed: System optimizations enable                Tongzhou Mu, Nan Xiao, Arnav Gurha, Viswesh Na-
+     training deep learning models with over 100 billion pa-           gaswamy Rajesh, Yong Woo Choi, Yen-Ru Chen, Zhiao
+     rameters. In Proceedings of SIGKDD, pages 3505–3506,              Huang, Roberto Calandra, Rui Chen, Shan Luo, and Hao
+     2020.                                                             Su. Maniskill3: Gpu parallelized robotics simulation
+                                                                       and rendering for generalizable embodied ai. Robotics:
+[45] David Rein, Betty Li Hou, Asa Cooper Stickland, Jack-
+                                                                       Science and Systems, 2025.
+     son Petty, Richard Yuanzhe Pang, Julien Dirani, Julian
+     Michael, and Samuel R. Bowman. GPQA: A graduate-             [55] Physical Intelligence team. openpi holds open-source
+     level google-proof q&a benchmark. In First Conference             models and packages for robotics. https://github.
+     on Language Modeling, 2024.                                       com/Physical-Intelligence/openpi, 2025.
+[46] Jie Ren, Samyam Rajbhandari, Reza Yazdani Am-                [56] Andrew Wagenmaker, Mitsuhiko Nakamoto, Yunchu
+     inabadi, Olatunji Ruwase, Shuangyan Yang, Minjia                  Zhang, Seohong Park, Waleed Yagoub, Anusha Naga-
+     Zhang, Dong Li, and Yuxiong He. Zero-offload: Democ-              bandi, Abhishek Gupta, and Sergey Levine. Steering
+     ratizing billion-scale model training. In Proceedings of          your diffusion policy with latent space reinforcement
+     ATC, pages 551–564, 2021.                                         learning, 2025.
+[47] Microsoft Research. rStar2-Agent: Agentic reasoning          [57] Team Wan, Ang Wang, Baole Ai, Bin Wen, Chao-
+     technical report. arXiv preprint, 2025.                           jie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haim-
+                                                                       ing Zhao, Jianxiao Yang, Jianyuan Zeng, Jiayu Wang,
+[48] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec              Jingfeng Zhang, Jingren Zhou, Jinkai Wang, Jixuan
+     Radford, and Oleg Klimov. Proximal policy optimiza-               Chen, Kai Zhu, Kang Zhao, Keyu Yan, Lianghua Huang,
+     tion algorithms. arXiv preprint arXiv:1707.06347, 2017.           Mengyang Feng, Ningyi Zhang, Pandeng Li, Pingyu
+[49] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu,                   Wu, Ruihang Chu, Ruili Feng, Shiwei Zhang, Siyang
+     Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan                    Sun, Tao Fang, Tianxing Wang, Tianyi Gui, Tingyu
+     Zhang, YK Li, Yang Wu, et al. Deepseekmath: Pushing               Weng, Tong Shen, Wei Lin, Wei Wang, Wei Wang, Wen-
+     the limits of mathematical reasoning in open language             meng Zhou, Wente Wang, Wenting Shen, Wenyuan Yu,
+     models. arXiv preprint arXiv:2402.03300, 2024.                    Xianzhong Shi, Xiaoming Huang, Xin Xu, Yan Kou,
+                                                                       Yangyu Lv, Yifei Li, Yijing Liu, Yiming Wang, Yingya
+[50] Gerald Shen, Zhilin Wang, Olivier Delalleau, Jiaqi Zeng,          Zhang, Yitong Huang, Yong Li, You Wu, Yu Liu, Yulin
+     Yi Dong, Daniel Egert, Shengyang Sun, Jimmy Zhang,                Pan, Yun Zheng, Yuntao Hong, Yupeng Shi, Yutong
+     Sahil Jain, Ali Taghibakhshi, et al. Nemo-aligner: Scal-          Feng, Zeyinzi Jiang, Zhen Han, Zhi-Fan Wu, and Ziyu
+     able toolkit for efficient model alignment. arXiv preprint        Liu. Wan: Open and advanced large-scale video genera-
+     arXiv:2405.01481, 2024.                                           tive models, 2025.
+[51] Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu,         [58] Huggingface xDAN-datasets (xDAN Back). xdan-
+     Wang Zhang, Ru Zhang, Yanghua Peng, Haibin Lin, and               datasets/areal-boba-data. https://huggingface.
+
+
+
+USENIX Association                          20th USENIX Symposium on Operating Systems Design and Implementation          845
+      co/datasets/xDAN-datasets/AReaL-boba-Data,                 [69] Yuxiang Zheng, Dayuan Fu, Xiangkun Hu, Xiaojie Cai,
+      2025.                                                           Lyumanshan Ye, Pengrui Lu, and Pengfei Liu. Deep-
+                                                                      researcher: Scaling deep research via reinforcement
+[59] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang,                 learning in real-world environments. arXiv preprint
+     Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chen-                arXiv:2504.03160, 2025.
+     gen Huang, Chenxu Lv, et al. Qwen3 technical report.
+     arXiv preprint arXiv:2505.09388, 2025.                      [70] Zangwei Zheng, Xiangyu Peng, Tianji Yang, Chenhui
+                                                                      Shen, Shenggui Li, Hongxin Liu, Yukun Zhou, Tianyi
+[60] Zhewei Yao, Reza Yazdani Aminabadi, Olatunji Ruwase,             Li, and Yang You. Open-sora: Democratizing efficient
+     Samyam Rajbhandari, Xiaoxia Wu, Ammar Ahmad                      video production for all, 2024.
+     Awan, Jeff Rasley, Minjia Zhang, Conglong Li, Connor
+     Holmes, et al. Deepspeed-chat: Easy, fast and affordable    [71] Zilin Zhu, Chengxing Xie, Xin Lv, and slime Contrib-
+     rlhf training of chatgpt-like models at all scales. arXiv        utors. slime: An llm post-training framework for rl
+     preprint arXiv:2308.01320, 2023.                                 scaling. https://github.com/THUDM/slime, 2025.
+                                                                      GitHub repository. Corresponding author: Xin Lv.
+[61] Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan,
+     Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian Fan, Gao-
+     hong Liu, Lingjun Liu, et al. Dapo: An open-source llm
+     reinforcement learning system at scale. arXiv preprint
+     arXiv:2503.14476, 2025.
+[62] Matei Zaharia, Reynold S Xin, Patrick Wendell, Tatha-
+     gata Das, Michael Armbrust, Ankur Dave, Xiangrui
+     Meng, Josh Rosen, Shivaram Venkataraman, Michael J
+     Franklin, et al. Apache spark: a unified engine for
+     big data processing. Communications of the ACM,
+     59(11):56–65, 2016.
+[63] Yifan Zhang and Team Math-AI. American invitational
+     mathematics examination (aime) 2024, 2024.
+[64] Yifan Zhang and Team Math-AI. American invitational
+     mathematics examination (aime) 2025, 2025.
+[65] Yixian Zhang, Shu’ang Yu, Tonghe Zhang, Mo Guang,
+     Haojia Hui, Kaiwen Long, Yu Wang, Chao Yu, and
+     Wenbo Ding. Sac flow: Sample-efficient reinforce-
+     ment learning of flow-based policies via velocity-
+     reparameterized sequential modeling, 2026.
+[66] Yanli Zhao, Andrew Gu, Rohan Varma, Liang Luo,
+     Chien-Chin Huang, Min Xu, Less Wright, Hamid Sho-
+     janazeri, Myle Ott, Sam Shleifer, et al. Pytorch fsdp:
+     experiences on scaling fully sharded data parallel. arXiv
+     preprint arXiv:2304.11277, 2023.
+[67] Lianmin Zheng, Zhuohan Li, Hao Zhang, Yonghao
+     Zhuang, Zhifeng Chen, Yanping Huang, Yida Wang,
+     Yuanzhong Xu, Danyang Zhuo, Eric P Xing, et al. Alpa:
+     Automating inter-and {Intra-Operator} parallelism for
+     distributed deep learning. In Proceedings of OSDI,
+     pages 559–578, 2022.
+[68] Lianmin Zheng, Liangsheng Yin, Zhiqiang Xie, Chuyue
+     Sun, Jeff Huang, Cody Hao Yu, Shiyi Cao, Christos
+     Kozyrakis, Ion Stoica, Joseph E. Gonzalez, Clark Bar-
+     rett, and Ying Sheng. Sglang: Efficient execution of
+     structured language model programs, 2024.
+
+
+
+846   20th USENIX Symposium on Operating Systems Design and Implementation                            USENIX Association
+

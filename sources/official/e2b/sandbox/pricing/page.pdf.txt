@@ -1,0 +1,249 @@
+[ PRICING ]
+
+
+PAY FOR WHAT YOU RUN
+NOTHING MORE
+Free Hobby tier, and paid upgrades to cover all needs. Separate usage costs.
+
+
+  ↓ CALCULATE YOUR COSTS ↓
+
+
+
+
+      HOBBY
+
+
+
+   FREE          /$100 of usage in credits
+
+   + Usage Costs
+   See our cost calculator
+
+
+
+
+   $100 one-time usage credit
+
+   Sessions up to 1 hour
+
+   20 concurrent sandboxes
+
+   Default sandbox CPU and RAM
+
+
+
+     START FOR FREE
+
+   (✓) NO CREDIT CARD REQUIRED We use cookies to analyze traffic and improve your
+                                        experience. Read our Privacy Policy.
+
+                                             ACCEPT ALL    REJECT ALL
+
+      PRO
+$150          /month
+
+
++ Usage Costs
+See our cost calculator
+
+
+
+
+Everything in Hobby, usage billed by the second
+
+Sessions up to 24 hours
+
+100 concurrent sandboxes, expandable to 1,100
+
+Custom sandbox CPU and RAM
+
+
+
+  CHOOSE PRO
+
+(S) BILLED THROUGH STRIPE
+
+
+
+
+   ENTERPRISE
+
+
+
+CUSTOM
++ Usage Costs
+See our cost calculator
+
+
+
+
+Committed usage, custom billing
+
+Multi-day and persistent sessions
+
+Tens of thousands of concurrent sandboxes
+                                  We use cookies to analyze traffic and improve your
+Custom sizes, plus BYOC deploymentexperience. Read our Privacy Policy.
+
+
+
+  TALK TO AN ENGINEER
+  ($) CUSTOM DEPLOYMENT AND BILLING
+
+
+
+
+Workload pricing estimator
+We charge per second of a running sandbox. See a detailed breakdown below.
+
+
+
+
+   Compute Configuration
+
+   vCPUs                        RAM (GiB)                     Run Hours / Month
+
+    2                            4                              1000
+
+   Run Hours = total sandbox runtime.
+   Example: 100 sandboxes × 10 hrs = 1,000 hrs
+
+
+
+
+   Concurrency
+
+
+     Hobby — 20 concurrent                                                       Included
+                                     We use cookies to analyze traffic and improve your
+                                     experience. Read our Privacy Policy.
+     Pro — 100 concurrent                                                        Included
+  Pro+ — 600 concurrent                                                    +$500/mo
+
+
+
+  Pro++ — 1,100 concurrent                                                +$1,000/mo
+
+
+
+
+Pro Plan Monthly Cost
+
+
+Usage Cost                                                                         $166
+
+
+Pro Plan Base                                                                      $150
+
+
+Concurrency Addon                                                                       $0
+
+
+
+
+Total Monthly
+                                                                           $316
+  Max Concurrent Sandboxes                                                        100
+
+
+
+
+Enterprise requires $3,000/mo minimum. Your estimated costs are below that threshold.
+
+
+
+
+                                  We use cookies to analyze traffic and improve your
+                                  experience. Read our Privacy Policy.
+ESTIMATE YOUR MONTHLY CO
+Pricing guide
+We charge per second of a running sandbox. See a detailed breakdown below.
+
+
+    VCPUS     RAM   STORAGE
+
+
+
+      vCPUs                   Plan                           Costs
+
+1                             Hobby / Pro                    $0.000014/s
+
+2 [Default]                   Hobby / Pro                    $0.000028/s
+
+4                             Hobby / Pro                    $0.000056/s
+
+6                             Hobby / Pro                    $0.000084/s
+
+8                             Hobby / Pro                    $0.000112/s
+
+
+
+Let us know if you need more powerful compute.
+
+
+
+
+                                  We use cookies to analyze traffic and improve your
+                                  experience. Read our Privacy Policy.
+                                    1B+ SANDBOXES STARTED
+
+
+
+                          GIVE EVERY AGENT
+                             A MACHINE
+                        START BUILDING         TALK TO AN ENGINEER
+
+
+                          pip install e2b // npm i e2b · FREE TIER
+
+
+
+
+FOLLOW US ON:
+
+
+
+    SOC 2 ·     HIPAA
+
+
+
+COMPANY                                        RESOURCES
+
+About                                          All Resources
+
+Careers                                        Blog
+                                     We use cookies to analyze traffic and improve your
+Contact                              experience.Case
+                                                 Readstudies
+                                                       our Privacy Policy.
+
+
+Security                                       Cookbook
+Brand assets                                      Docs
+
+                                                  E2B for Research
+
+                                                  E2B for Startups
+
+                                                  Open source
+
+                                                  Product updates
+
+
+
+
+© 2026 FoundryLabs, inc. dba E2B. All rights reserved.
+
+
+  All Systems Operational
+
+
+Privacy   Terms   Security   Cookie settings   Do Not Sell or Share My Personal Information
+
+
+
+
+                                        We use cookies to analyze traffic and improve your
+                                        experience. Read our Privacy Policy.
+

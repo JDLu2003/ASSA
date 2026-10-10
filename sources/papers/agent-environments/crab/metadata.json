@@ -1,0 +1,77 @@
+{
+  "item": {
+    "topic": "agent-environments",
+    "id": "crab",
+    "arxiv": "2604.28138v1",
+    "kind": "arxiv-paper",
+    "title": "Crab: A Semantics-Aware Checkpoint/Restore Runtime for Agent Sandboxes",
+    "landing_url": "https://arxiv.org/abs/2604.28138v1",
+    "discovered_by": "all:agent AND (all:sandbox OR all:checkpoint OR all:rollback)",
+    "published": "2026-04-30T17:20:19Z",
+    "authors": [
+      "Tianyuan Wu",
+      "Chaokun Chang",
+      "Lunxi Cao",
+      "Wei Gao",
+      "Wei Wang"
+    ]
+  },
+  "capture_started_at": "2026-10-09T13:00:41.766012+00:00",
+  "path": "sources/papers/agent-environments/crab",
+  "requested_url": "https://arxiv.org/abs/2604.28138v1",
+  "pdf_url": "https://arxiv.org/pdf/2604.28138v1",
+  "source_status": "downloaded",
+  "text_method": "pdftotext -layout",
+  "review_status": "captured; relevance requires source review",
+  "status": "captured",
+  "files": {
+    "source.tar": {
+      "sha256": "6b9b82ff70df7fc6fe5330103477298c289f1a6a9eed77b0e47420aa2eb5010e",
+      "bytes": 813506
+    },
+    "paper.txt": {
+      "sha256": "8cffee9052599d6b38d2b983b6885c4cc0e34eeb21d18c0b1ceb8c8d76dae42f",
+      "bytes": 135129
+    },
+    "paper.pdf": {
+      "sha256": "faa2188190cc191240596a92487b86df4fda75e345da8b3b41542773c0ab23c0",
+      "bytes": 1496161
+    },
+    "landing.html": {
+      "sha256": "8d7c05e0fb5e8ed3cbef9a37a24b9ff2675d7295c5a1b51d403ac096976ae340",
+      "bytes": 42287
+    }
+  },
+  "bibliographic_metadata": {
+    "source_url": "https://arxiv.org/abs/2604.28138v1",
+    "retrieved_at": "2026-10-09T13:06:16.531692+00:00",
+    "fields": {
+      "citation_title": [
+        "Crab: A Semantics-Aware Checkpoint/Restore Runtime for Agent Sandboxes"
+      ],
+      "citation_author": [
+        "Wu, Tianyuan",
+        "Chang, Chaokun",
+        "Cao, Lunxi",
+        "Gao, Wei",
+        "Wang, Wei"
+      ],
+      "citation_date": [
+        "2026/04/30"
+      ],
+      "citation_online_date": [
+        "2026/04/30"
+      ],
+      "citation_pdf_url": [
+        "https://arxiv.org/pdf/2604.28138"
+      ],
+      "citation_arxiv_id": [
+        "2604.28138"
+      ],
+      "citation_abstract": [
+        "Autonomous agents act through sandboxed containers and microVMs whose state spans filesystems, processes, and runtime artifacts. Checkpoint and restore (C/R) of this state is needed for fault tolerance, spot execution, RL rollout branching, and safe rollback-yet existing approaches fall into two extremes: application-level recovery preserves chat history but misses OS-side effects, while full per-turn checkpointing is correct but too expensive under dense co-location. The root cause is an agent-OS semantic gap: agent frameworks see tool calls but not their OS effects; the OS sees state changes but lacks turn-level context to judge recovery relevance. This gap hides massive sparsity: over 75% of agent turns produce no recovery-relevant state, so most checkpoints are unnecessary. Crab (Checkpoint-and-Restore for Agent SandBoxes) is a transparent host-side runtime that bridges this gap without modifying agents or C/R backends. An eBPF-based inspector classifies each turn's OS-visible effects to decide checkpoint granularity; a coordinator aligns checkpoints with turn boundaries and overlaps C/R with LLM wait time; and a host-scoped engine schedules checkpoint traffic across co-located sandboxes. On shell-intensive and code-repair workloads, Crab raises recovery correctness from 8% (chat-only) to 100%, cuts checkpoint traffic by up to 87%, and stays within 1.9% of fault-free execution time."
+      ]
+    },
+    "method": "HTML citation meta tags; no inferred bibliographic facts"
+  }
+}

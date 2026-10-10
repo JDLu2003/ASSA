@@ -1,0 +1,54 @@
+{
+  "item": {
+    "id": "murakkab",
+    "topic": "agent-systems",
+    "title": "Murakkab: Resource-Efficient Agentic Workflow Orchestration in Cloud Platforms",
+    "url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+    "pdf_url": "https://www.usenix.org/system/files/osdi26-chaudhry.pdf",
+    "venue": "OSDI 2026",
+    "kind": "publisher-paper"
+  },
+  "path": "sources/papers/agent-systems/murakkab",
+  "capture_started_at": "2026-10-09T13:08:21.951573+00:00",
+  "status": "captured",
+  "requested_url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+  "pdf_url": "https://www.usenix.org/system/files/osdi26-chaudhry.pdf",
+  "landing_capture": {
+    "requested_url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+    "final_url": "https://www.usenix.org/conference/osdi26/presentation/chaudhry",
+    "http_status": 200,
+    "title": "Murakkab: Resource-Efficient Agentic Workflow Orchestration in Cloud Platforms | USENIX",
+    "text_method": "Playwright rendered body.inner_text; PDF text via pdftotext",
+    "print_adjustment": "CSS print-only overflow and max-height overrides to avoid clipping; original text unchanged",
+    "review_status": "captured; relevance and completeness require source review"
+  },
+  "source_status": "no_source_archive_link_observed_on_captured_publisher_page",
+  "text_method": "pdftotext -layout for original publisher PDF; Playwright for landing page",
+  "files": {
+    "paper.txt": {
+      "sha256": "0afc75e702a2a9e058bacc8df5c995416667c008519100395fbf6237d8e605f8",
+      "bytes": 226254
+    },
+    "paper.pdf": {
+      "sha256": "9c9aa888b675c7849467d5b594e640996fee57f32b79fc9cf443fb549587c0e0",
+      "bytes": 1648218
+    },
+    "landing.html": {
+      "sha256": "5f42caf20e54b52b6530943fc2c67cddf72615bdaf2e20c432dd39dfd5a60f51",
+      "bytes": 53163
+    },
+    "landing.txt": {
+      "sha256": "908cf1353db4b762250b99812ebc70ac77de5d2a93774e2a4213699a0c34af49",
+      "bytes": 2973
+    },
+    "landing.pdf.txt": {
+      "sha256": "2077d9b2017ca7745398c8d335e31236bbe861516f6fd64d8046186943af6da6",
+      "bytes": 2817
+    },
+    "landing.pdf": {
+      "sha256": "14420c450ab44424ceb3ee7e52d25137b387ffef48359c67f401ec7dbf4f9d50",
+      "bytes": 41498
+    }
+  },
+  "capture_finished_at": "2026-10-09T13:08:26.740357+00:00"
+}

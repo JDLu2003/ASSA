@@ -1,0 +1,465 @@
+{
+  "run_at": "2026-10-09T11:59:50.471435+00:00",
+  "results": [
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:32.951228+00:00",
+      "path": "sources/official/openai/agents-api/overview",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://developers.openai.com/api/docs/guides/agents-api/overview\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/overview\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:33.093693+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "architecture",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/architecture",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:33.093826+00:00",
+      "path": "sources/official/openai/agents-api/architecture",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://developers.openai.com/api/docs/guides/agents-api/architecture\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/architecture\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:33.226741+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "configuration",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/configuration",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:33.226850+00:00",
+      "path": "sources/official/openai/agents-api/configuration",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://developers.openai.com/api/docs/guides/agents-api/configuration\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/configuration\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:36.246922+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "hosted-sandbox",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:36.246986+00:00",
+      "path": "sources/official/openai/agents-api/hosted-sandbox",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:39.294985+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-api",
+        "id": "self-hosted-sandbox",
+        "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:39.295564+00:00",
+      "path": "sources/official/openai/agents-api/self-hosted-sandbox",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:42.326663+00:00"
+    },
+    {
+      "item": {
+        "vendor": "openai",
+        "product": "agents-sdk",
+        "id": "overview",
+        "url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:42.326743+00:00",
+      "path": "sources/official/openai/agents-sdk/overview",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://developers.openai.com/api/docs/guides/agents-sdk\nCall log:\n  - navigating to \"https://developers.openai.com/api/docs/guides/agents-sdk\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:45.355193+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "product-blog",
+        "url": "https://claude.com/resources/articles/building-with-claude-managed-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:45.355244+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/product-blog",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://claude.com/resources/articles/building-with-claude-managed-agents\nCall log:\n  - navigating to \"https://claude.com/resources/articles/building-with-claude-managed-agents\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:48.391486+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "self-hosted-sandboxes",
+        "url": "https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:48.391542+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/self-hosted-sandboxes",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes\nCall log:\n  - navigating to \"https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:51.418181+00:00"
+    },
+    {
+      "item": {
+        "vendor": "anthropic",
+        "product": "claude-managed-agents",
+        "id": "updates",
+        "url": "https://claude.com/blog/claude-managed-agents-updates",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:51.418233+00:00",
+      "path": "sources/official/anthropic/claude-managed-agents/updates",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://claude.com/blog/claude-managed-agents-updates\nCall log:\n  - navigating to \"https://claude.com/blog/claude-managed-agents-updates\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:54.451344+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "runtime",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:54.451413+00:00",
+      "path": "sources/official/aws/agentcore-runtime/runtime",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html\nCall log:\n  - navigating to \"https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:58:57.505578+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "shell-commands",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:58:57.505700+00:00",
+      "path": "sources/official/aws/agentcore-runtime/shell-commands",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html\nCall log:\n  - navigating to \"https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-execute-command.html\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:00.584817+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "instances",
+        "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:00.584891+00:00",
+      "path": "sources/official/aws/agentcore-runtime/instances",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html\nCall log:\n  - navigating to \"https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:03.699171+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "deep-research-blog",
+        "url": "https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:03.699227+00:00",
+      "path": "sources/official/aws/agentcore-runtime/deep-research-blog",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/\nCall log:\n  - navigating to \"https://aws.amazon.com/blogs/machine-learning/running-deep-research-ai-agents-on-amazon-bedrock-agentcore/\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:06.748093+00:00"
+    },
+    {
+      "item": {
+        "vendor": "aws",
+        "product": "agentcore-runtime",
+        "id": "persistent-filesystem",
+        "url": "https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:06.748172+00:00",
+      "path": "sources/official/aws/agentcore-runtime/persistent-filesystem",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/\nCall log:\n  - navigating to \"https://aws.amazon.com/blogs/machine-learning/persist-session-state-with-filesystem-configuration-and-execute-shell-commands/\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:09.857392+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "hosted-agents",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:09.857460+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/hosted-agents",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents\nCall log:\n  - navigating to \"https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:12.889535+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "runtime-contract",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:12.889597+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/runtime-contract",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract\nCall log:\n  - navigating to \"https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agent-contract\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:15.908236+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "networking",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:15.908336+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/networking",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive\nCall log:\n  - navigating to \"https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agents-networking-deep-dive\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:18.936849+00:00"
+    },
+    {
+      "item": {
+        "vendor": "microsoft",
+        "product": "foundry-hosted-agents",
+        "id": "management",
+        "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:18.936909+00:00",
+      "path": "sources/official/microsoft/foundry-hosted-agents/management",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent\nCall log:\n  - navigating to \"https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:21.967323+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "overview",
+        "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:21.967375+00:00",
+      "path": "sources/official/google/vertex-agent-engine/overview",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview\nCall log:\n  - navigating to \"https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/overview\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:25.010919+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "pricing-update",
+        "url": "https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:25.010975+00:00",
+      "path": "sources/official/google/vertex-agent-engine/pricing-update",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/\nCall log:\n  - navigating to \"https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder/\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:28.051043+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "evaluation",
+        "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:28.051099+00:00",
+      "path": "sources/official/google/vertex-agent-engine/evaluation",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate\nCall log:\n  - navigating to \"https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/evaluate\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:31.091774+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "cloud-run-sandboxes",
+        "id": "announcement",
+        "url": "https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:31.091857+00:00",
+      "path": "sources/official/google/cloud-run-sandboxes/announcement",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/\nCall log:\n  - navigating to \"https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-run-sandboxes-are-in-public-preview/\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:34.113252+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "gke-agent-sandbox",
+        "id": "pod-snapshot-blog",
+        "url": "https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:34.113343+00:00",
+      "path": "sources/official/google/gke-agent-sandbox/pod-snapshot-blog",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots\nCall log:\n  - navigating to \"https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-supercharging-agents-on-gke-with-agent-sandbox-and-pod-snapshots\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:37.161596+00:00"
+    },
+    {
+      "item": {
+        "vendor": "google",
+        "product": "vertex-agent-engine",
+        "id": "session-management",
+        "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api",
+        "kind": "official-web"
+      },
+      "capture_started_at": "2026-10-09T11:59:37.161648+00:00",
+      "path": "sources/official/google/vertex-agent-engine/session-management",
+      "status": "failed",
+      "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api\nCall log:\n  - navigating to \"https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/sessions/manage-sessions-api\", waiting until \"domcontentloaded\"\n",
+      "capture_finished_at": "2026-10-09T11:59:40.200588+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "agentbench",
+        "arxiv": "2308.03688",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T11:59:40.200664+00:00",
+      "path": "sources/papers/agent-evaluation/agentbench",
+      "requested_url": "https://arxiv.org/abs/2308.03688",
+      "pdf_url": "https://arxiv.org/pdf/2308.03688",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "06433b85489795efd570aa8ef63a94f84d918bc29cad93322ea29ea471ceefca",
+          "bytes": 21251381
+        },
+        "paper.txt": {
+          "sha256": "ae52a43bc2a3ac4a56528f7aef9125e4f76244e7ff8cc84ad69b63dc2719e3e2",
+          "bytes": 210222
+        },
+        "paper.pdf": {
+          "sha256": "9c780e35fc0b2de6c2e21e0572f6aaaadcf7ecdd56d63cfaae2b415bc0dc83c3",
+          "bytes": 23017024
+        }
+      },
+      "capture_finished_at": "2026-10-09T11:59:42.410910+00:00"
+    },
+    {
+      "item": {
+        "topic": "agent-evaluation",
+        "id": "swe-bench",
+        "arxiv": "2310.06770",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T11:59:42.410989+00:00",
+      "path": "sources/papers/agent-evaluation/swe-bench",
+      "requested_url": "https://arxiv.org/abs/2310.06770",
+      "pdf_url": "https://arxiv.org/pdf/2310.06770",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "94f17e81e566501a16eaa542fa2bf3df26aeb731ed089d0393e384528d249701",
+          "bytes": 2455152
+        },
+        "paper.txt": {
+          "sha256": "f0311335751baf064ddff46ec7a88a619dc6236b481a25f9e7822af54ffaa951",
+          "bytes": 183283
+        },
+        "paper.pdf": {
+          "sha256": "f7e8e1df64129742b8199a21a042734519a823a1dafd6f48f8f3ddcfb48ee296",
+          "bytes": 4533722
+        }
+      },
+      "capture_finished_at": "2026-10-09T11:59:43.914712+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "sglang",
+        "arxiv": "2312.07104",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T11:59:43.914777+00:00",
+      "path": "sources/papers/model-serving/sglang",
+      "requested_url": "https://arxiv.org/abs/2312.07104",
+      "pdf_url": "https://arxiv.org/pdf/2312.07104",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "5d411c22fcadb44c1aaf5569aeb31bffe6fb88da0a31ec18aba1eda172febbdd",
+          "bytes": 823092
+        },
+        "paper.txt": {
+          "sha256": "e8f441f4828b15e0bd51aadc3b356a2d2a264ff430906930abb4e5896c35db47",
+          "bytes": 99739
+        },
+        "paper.pdf": {
+          "sha256": "161e0a0123a89cd8a57d68734ae704680b0e577fee41e1e7e1029c37a9d99b57",
+          "bytes": 1383463
+        }
+      },
+      "capture_finished_at": "2026-10-09T11:59:44.556909+00:00"
+    },
+    {
+      "item": {
+        "topic": "model-serving",
+        "id": "serverlessllm",
+        "arxiv": "2401.14351",
+        "kind": "arxiv-paper"
+      },
+      "capture_started_at": "2026-10-09T11:59:44.556965+00:00",
+      "path": "sources/papers/model-serving/serverlessllm",
+      "requested_url": "https://arxiv.org/abs/2401.14351",
+      "pdf_url": "https://arxiv.org/pdf/2401.14351",
+      "source_status": "downloaded",
+      "text_method": "pdftotext -layout",
+      "review_status": "captured; relevance requires source review",
+      "status": "captured",
+      "files": {
+        "source.tar": {
+          "sha256": "d874e025daeb6619f52c82c266f5b11bdf7228b262752e4927add49f10eabd02",
+          "bytes": 15860562
+        },
+        "paper.txt": {
+          "sha256": "f1574340d41a4dcac86efe52d90859a65a4584d04a6c22b76cd9e909279c7cd5",
+          "bytes": 161416
+        },
+        "paper.pdf": {
+          "sha256": "7b39c246c79218277ac1d1e1af213345721ed7977bb7643ad878ed58b8fc4424",
+          "bytes": 798652
+        }
+      },
+      "capture_finished_at": "2026-10-09T11:59:50.374315+00:00"
+    }
+  ]
+}

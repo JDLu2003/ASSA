@@ -1,0 +1,140 @@
+{
+  "note": "Navigation-discovered replacements for redirected candidates, plus verified arXiv titles. These are primary-source captures only.",
+  "official": [
+    {
+      "vendor": "google",
+      "product": "agent-platform",
+      "id": "runtime-quickstart",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform",
+      "id": "runtime-scaling",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform",
+      "id": "sessions",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform",
+      "id": "session-management",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sessions/manage-with-api",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform",
+      "id": "agent-evaluation",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "managed-agents",
+      "id": "sandbox-environment",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/managed-agents/sandbox-environment",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform-sandbox",
+      "id": "shell-quickstart",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/shell-sandbox-quickstart",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform-sandbox",
+      "id": "management",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-sandboxes",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "google",
+      "product": "agent-platform-sandbox",
+      "id": "templates",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/sandbox/manage-templates",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "anthropic",
+      "product": "claude-managed-agents",
+      "id": "cloud-sandbox-reference",
+      "url": "https://platform.claude.com/docs/en/managed-agents/cloud-sandboxes-reference",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-sdk",
+      "id": "sdk-overview",
+      "url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "responses",
+      "id": "migration-guide",
+      "url": "https://developers.openai.com/api/docs/guides/migrate-to-responses",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "sandbox-lifecycle",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "openai",
+      "product": "agents-api",
+      "id": "sandbox-security",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/environments/security",
+      "kind": "official-web"
+    },
+    {
+      "vendor": "aws",
+      "product": "firecracker",
+      "id": "announcement",
+      "url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+      "kind": "official-web"
+    }
+  ],
+  "papers": [
+    {
+      "topic": "agent-surveys",
+      "id": "autonomous-agents-survey",
+      "arxiv": "2308.11432",
+      "title": "A Survey on Large Language Model based Autonomous Agents",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-surveys",
+      "id": "rise-and-potential-survey",
+      "arxiv": "2309.07864",
+      "title": "The Rise and Potential of Large Language Model Based Agents: A Survey",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-evaluation",
+      "id": "ai-agents-that-matter",
+      "arxiv": "2407.01502",
+      "title": "AI Agents That Matter",
+      "kind": "arxiv-paper"
+    },
+    {
+      "topic": "agent-evaluation",
+      "id": "the-agent-company",
+      "arxiv": "2412.14161",
+      "title": "TheAgentCompany: Benchmarking LLM Agents on Consequential Real World Tasks",
+      "kind": "arxiv-paper"
+    }
+  ]
+}
