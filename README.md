@@ -20,4 +20,4 @@ To run: Actions → **Capture original sources** → Run workflow. No credential
 
 ## Survey
 
-`survey/index.html` is the survey built from this archive: a paged web document (open it in a browser; ← → to turn pages). Every citation in it links to the archived PDF and extracted text under `sources/`. After adding sources, regenerate the citation index with `python3 survey/build_sources.py`.
+`survey/site/index.html` is the survey built from this archive: a paged web document (open it in a browser; ← → to turn pages), published with GitHub Pages at https://jdlu2003.github.io/ASSA/. Every citation in it links to the archived PDF and extracted text under `sources/`. After adding sources, regenerate the citation index with `python3 survey/build_sources.py`.
