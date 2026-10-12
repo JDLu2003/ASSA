@@ -743,6 +743,22 @@
     const i = pages.findIndex((p) => p.dataset.id === id);
     return i >= 0 ? i : 0;
   }
+  /* ---------------- image viewer: click to enlarge, click again to close ---------------- */
+  const lb = document.createElement("div");
+  lb.className = "lb";
+  lb.hidden = true;
+  lb.innerHTML = '<img alt="">';
+  document.body.appendChild(lb);
+  const closeLb = () => { lb.hidden = true; document.documentElement.style.overflow = ""; };
+  lb.addEventListener("click", closeLb);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
+  $$(".figure .frame.photo img").forEach((im) => im.addEventListener("click", () => {
+    $("img", lb).src = im.currentSrc || im.src;
+    $("img", lb).alt = im.alt;
+    lb.hidden = false;
+    document.documentElement.style.overflow = "hidden";
+  }));
+
   $("#prev").addEventListener("click", () => show(cur - 1, true));
   $("#next").addEventListener("click", () => show(cur + 1, true));
   $("#foot-prev").addEventListener("click", () => show(cur - 1, true));
@@ -756,13 +772,13 @@
   });
   window.addEventListener("hashchange", () => show(fromHash(), false));
   document.addEventListener("keydown", (e) => {
-    if (e.target.matches("input, select, textarea")) return;
+    if (!lb.hidden || e.target.matches("input, select, textarea")) return;
     if (e.key === "ArrowRight") show(cur + 1, true);
     if (e.key === "ArrowLeft") show(cur - 1, true);
   });
   let tx = null, ty = null;
   document.addEventListener("touchstart", (e) => {
-    if (e.target.closest(".dgm-wrap, .matrix, .tmap, .frame")) { tx = null; return; }
+    if (e.target.closest(".dgm-wrap, .matrix, .tmap, .frame, .lb")) { tx = null; return; }
     tx = e.touches[0].clientX; ty = e.touches[0].clientY;
   }, { passive: true });
   document.addEventListener("touchend", (e) => {
